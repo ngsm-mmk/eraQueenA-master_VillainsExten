@@ -12,7 +12,7 @@ Fandoms and Characters:
 
 Published by @ngsm_mmk
 
-If you have any questions or would like to make suggestions to us, please submit issues on [Github](https://github.com/ngsm-mmk/eraQueenA-master_VillainsExten).
+If you have any questions or would like to make suggestions to us, please submit issues on [GitHub](https://github.com/ngsm-mmk/eraQueenA-master_VillainsExten).
 
 ## Version
 

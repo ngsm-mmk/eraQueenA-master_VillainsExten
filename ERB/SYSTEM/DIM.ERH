@@ -1,0 +1,28 @@
+﻿#DIM 觸手
+#DIM 射精值
+#DIM 人外類型
+#DIM 臉圖判定
+#DIM 圖片編號
+#DIM 種族
+#DIM 助手種族
+#DIMS 性格名称
+#DIM 性格
+#DIMS 立繪顯示, 10
+#DIM SAVEDATA 發情期
+#DIM SAVEDATA 嫉妒開關
+#DIM SAVEDATA COM_FILTER, 1000
+#DIM SAVEDATA 逆推開關
+#DIM 逆推同意
+#DIM 逆推渴望
+#DIM NPC回合
+#DIM SAVEDATA 催眠技术
+#DIM SAVEDATA 催眠EXP
+#DIMS SAVEDATA 催眠暗示
+#DIM SAVEDATA 每日催眠可实行次数
+#DIM 催眠返回
+#DIM 升級催眠EXP
+#DIM 房間推倒中
+#DIM 外出人数
+#DIM 外出对象
+#DIM 外出服
+#DIM 外出模式

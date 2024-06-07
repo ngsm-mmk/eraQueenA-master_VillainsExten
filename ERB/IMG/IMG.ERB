@@ -1,0 +1,313 @@
+﻿@CHARA_FACE
+臉圖判定 = 0
+CALL NINGAI_CHECK
+IF TARGET > 0 && ASSI > 0
+	IF CSTR:66 != "" && CSTR:66 != "0"
+			立繪顯示:1 '= "<shape type='space' param='0'><img src='"+ (CSTR:66) + "' width='870' height='870' ypos='100'>"
+	ELSE
+		IF NO:TARGET == 200  && CFLAG:666 == 0
+			立繪顯示:1 '= "<shape type='space' param='0'><img src='N200' width='870' height='870' ypos='100'>"
+		ELSEIF TALENT:人外 && CFLAG:600 == 0 && CFLAG:666 == 0
+			立繪顯示:1 '= "<shape type='space' param='0'><img src='X" + TOSTR(人外類型) + "' width='870' height='870' ypos='100'>"
+		ELSE
+			IF CFLAG:666 == 0
+			立繪顯示:1 '= "<shape type='space' param='0'><img src='600_" + TOSTR(CFLAG:TARGET:600) + "' width='870' height='870' ypos='100'>"
+			ELSE
+			立繪顯示:1 '= "<shape type='space' param='0'><img src='F" + TOSTR(CFLAG:TARGET:666) + "' width='870' height='870' ypos='100'>"
+			ENDIF
+		ENDIF
+	ENDIF
+ 	HTML_PRINT 立繪顯示:1
+ELSEIF TARGET > 0 && ASSI < 1
+	IF CSTR:66 != "" && CSTR:66 != "0"
+		立繪顯示:1 '= "<shape type='space' param='0'><img src='"+ (CSTR:66) + "' width='870' height='870' ypos='-100'>"
+	ELSE
+		IF NO:TARGET == 200 && CFLAG:666 == 0
+			立繪顯示:1 '= "<shape type='space' param='0'><img src='N200' width='870' height='870' ypos='-100'>"
+		ELSEIF TALENT:人外 && CFLAG:600 == 0 && CFLAG:666 == 0
+			立繪顯示:1 '= "<shape type='space' param='0'><img src='X" + TOSTR(人外類型) + "' width='870' height='870' ypos='-100'>"
+		ELSE
+			IF CFLAG:666 == 0
+			立繪顯示:1 '= "<shape type='space' param='0'><img src='600_" + TOSTR(CFLAG:TARGET:600) + "' width='870' height='870' ypos='-100'>"
+			ELSE
+			立繪顯示:1 '= "<shape type='space' param='0'><img src='F" + TOSTR(CFLAG:TARGET:666) + "' width='870' height='870' ypos='-100'>"
+			ENDIF
+		ENDIF
+	ENDIF
+ 	HTML_PRINT 立繪顯示:1
+ELSE
+	RETURN 0
+ENDIF
+IF ASSI > 0
+	IF CFLAG:ASSI:1 == 3
+		立繪顯示:2 '= "<shape type='space' param='4200'><img src='S1' width='870' height='870' ypos='-0'>"
+	ELSE
+	IF CSTR:ASSI:66 != "" && CSTR:ASSI:66 != "0"
+		立繪顯示:2 '= "<shape type='space' param='4200'><img src='"+ (CSTR:ASSI:66) + "' width='-870' height='870' ypos='-0'>"
+	ELSE
+		IF NO:ASSI == 200  && CFLAG:ASSI:666 == 0
+		立繪顯示:2 '= "<shape type='space' param='4200'><img src='N200' width='-870' height='870' ypos='-0'>"
+		ELSEIF TALENT:ASSI:人外 && CFLAG:ASSI:600 == 0 && CFLAG:ASSI:666 == 0
+			REPEAT 21
+			助手種族 = 165 + COUNT
+			SIF TALENT:ASSI:助手種族 == 1
+				立繪顯示:2 '= "<shape type='space' param='4200'><img src='X" + TOSTR(助手種族) + "' width='-870' height='870' ypos='-0'>"
+			REND
+			IF TALENT:ASSI:132
+			立繪顯示:2 '= "<shape type='space' param='4200'><img src='X132' width='-870' height='870' ypos='-0'>"
+			ELSEIF TALENT:ASSI:316
+			立繪顯示:2 '= "<shape type='space' param='4200'><img src='X316' width='-870' height='870' ypos='-0'>"
+;			ELSE
+;			立繪顯示:2 '=	""	
+			ENDIF
+		ELSE
+			IF CFLAG:ASSI:666 == 0 
+			立繪顯示:2 '= "<shape type='space' param='4200'><img src='600_" + TOSTR(CFLAG:ASSI:600) + "' width='-870' height='870' ypos='-0'>"
+			ELSE
+			立繪顯示:2 '= "<shape type='space' param='4200'><img src='F" + TOSTR(CFLAG:ASSI:666) + "' width='-870' height='870' ypos='-0'>"
+			ENDIF
+		ENDIF
+	ENDIF
+	ENDIF
+ 	 HTML_PRINT 立繪顯示:2
+ELSE
+	RETURN 0
+ENDIF
+    ;牢   奴隸未陷落，顯示
+    ;SIF !(TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8)
+    ;    HTML_PRINT "<shape type='space' param='0'><img src='L2' width='900' height='1100' ypos='-300'>"
+;用于采购时的显示
+@CHARA_FACE2
+	臉圖判定 = 0
+	CALL NINGAI_CHECK
+		IF NO:TARGET == 200  && CFLAG:666 == 0
+			立繪顯示:3 '= "<shape type='space' param='1900'><img src='N200' width='-870' height='870' ypos='200'>"
+		ELSEIF TALENT:人外 && CFLAG:600 == 0 && CFLAG:666 == 0
+			立繪顯示:3 '= "<shape type='space' param='1900'><img src='X" + TOSTR(人外類型) + "' width='-870' height='870' ypos='200'>"
+		ELSE
+			IF CFLAG:666 == 0
+			立繪顯示:3 '= "<shape type='space' param='1900'><img src='600_" + TOSTR(CFLAG:TARGET:600) + "' width='-870' height='870' ypos='200'>"
+			ELSE
+			立繪顯示:3 '= "<shape type='space' param='1900'><img src='F" + TOSTR(CFLAG:TARGET:666) + "' width='-870' height='870' ypos='200'>"
+			ENDIF
+		ENDIF
+ 	 HTML_PRINT 立繪顯示:3
+
+;用于个人房间显示
+@CHARA_FACE3(ARG)
+	臉圖判定 = 1
+	CALL NINGAI_CHECK
+	IF CSTR:ARG:66 != "" && CSTR:ARG:66 != "0"
+		立繪顯示:4 '= "<shape type='space' param='2400'><img src='"+ (CSTR:ARG:66) + "' width='-870' height='870' ypos='-750'>"
+	ELSE
+		IF NO:ARG == 200  && CFLAG:ARG:666 == 0
+		立繪顯示:4 '= "<shape type='space' param='2400'><img src='N200' width='-870' height='870' ypos='-750'>"
+		ELSEIF TALENT:ARG:人外 && CFLAG:ARG:600 == 0 && CFLAG:ARG:666 == 0
+		立繪顯示:4 '= "<shape type='space' param='2400'><img src='X" + TOSTR(人外類型) + "' width='-870' height='870' ypos='-750'>"
+		ELSE
+			IF CFLAG:ARG:666 == 0
+			立繪顯示:4 '= "<shape type='space' param='2400'><img src='600_" + TOSTR(CFLAG:ARG:600) + "' width='-870' height='870' ypos='-750'>"
+			ELSE
+			立繪顯示:4 '= "<shape type='space' param='2400'><img src='F" + TOSTR(CFLAG:ARG:666) + "' width='-870' height='870' ypos='-750'>"
+			ENDIF
+		ENDIF
+	ENDIF
+ 	 HTML_PRINT 立繪顯示:4
+	 
+;用于人物簡介时的显示
+@CHARA_FACE4(ARG)
+	臉圖判定 = 1
+		IF FLAG:9 == 200 && CFLAG:ARG:666 == 0
+			立繪顯示:5 '= "<shape type='space' param='1900'><img src='N200' width='-870' height='870' ypos='-200'>"
+		ELSEIF TALENT:ARG:人外 && CFLAG:ARG:600 == 0 && CFLAG:ARG:666 == 0
+			IF 人外類型 > 0
+			立繪顯示:5 '= "<shape type='space' param='1900'><img src='X" + TOSTR(人外類型) + "' width='-870' height='870' ypos='-200'>"
+			ELSE
+			立繪顯示:5 '=	""	
+			ENDIF
+		ELSE
+			IF CFLAG:ARG:666 == 0
+			立繪顯示:5 '= "<shape type='space' param='1900'><img src='600_" + TOSTR(CFLAG:ARG:600) + "' width='-870' height='870' ypos='-200'>"
+			ELSE
+			立繪顯示:5 '= "<shape type='space' param='1900'><img src='F" + TOSTR(CFLAG:ARG:666) + "' width='-870' height='870' ypos='-200'>"
+			ENDIF
+		ENDIF
+ 	 HTML_PRINT 立繪顯示:5
+
+@NINGAI_CHECK(ARG)
+SIF 臉圖判定 == 0 && TARGET > 0
+ARG = TARGET
+REPEAT 21
+	種族 = 165 + COUNT
+	SIF TALENT:ARG:種族 == 1
+	人外類型 = 165 + COUNT
+REND
+	IF TALENT:ARG:132
+		人外類型 = 132
+	ELSEIF TALENT:ARG:316
+		人外類型 = 316
+	ENDIF	
+
+;修改立绘--其他立绘 CFLAG:666------------------------------------------------
+@CHANGE_FACE
+	$INPUT_LOOP_FACE
+	PRINTL 
+	PRINTFORML 要修改『 %CALLNAME% 』的立绘？
+	PRINTL 
+	PRINTL [10] 是，更改为其他立绘
+	PRINTL [11] 否，保持现在的立绘
+	SIF CFLAG:666 > 0
+	PRINTL [12] 还原成预设的性格或种族立绘
+	INPUT
+	IF RESULT == 10
+		PRINTL 选择哪一个立绘？
+		PRINTL
+		PRINTL
+		PRINT [ 20] F20                
+		PRINTL [ 21] F21
+		PRINTL
+			HTML_PRINT "<shape type='space' param='600'><img src='F20' width='-500' height='500' ypos='-400'>"
+			HTML_PRINT "<shape type='space' param='1800'><img src='F21' width='-500' height='500' ypos='-500'>"
+		PRINT [ 22] F22              　
+		PRINTL [ 23] F23
+		PRINTL
+			HTML_PRINT "<shape type='space' param='600'><img src='F22' width='-500' height='500' ypos='-400'>"
+			HTML_PRINT "<shape type='space' param='1800'><img src='F23' width='-500' height='500' ypos='-500'>"
+		PRINT [ 24] F24                
+		PRINTL [ 25] F25
+		PRINTL
+			HTML_PRINT "<shape type='space' param='600'><img src='F24' width='-500' height='500' ypos='-400'>"
+			HTML_PRINT "<shape type='space' param='1800'><img src='F25' width='-500' height='500' ypos='-500'>"
+		PRINT [ 26] F26                
+		PRINTL [ 27] F27
+		PRINTL
+			HTML_PRINT "<shape type='space' param='600'><img src='F26' width='-500' height='500' ypos='-400'>"
+			HTML_PRINT "<shape type='space' param='1800'><img src='F27' width='-500' height='500' ypos='-500'>"
+		PRINT [ 28] F28                
+		PRINTL [ 29] F29
+		PRINTL
+			HTML_PRINT "<shape type='space' param='600'><img src='F28' width='-500' height='500' ypos='-400'>"
+			HTML_PRINT "<shape type='space' param='1800'><img src='F29' width='-500' height='500' ypos='-500'>"
+		PRINTL [ 998] 修改成其他更多的自定义图片
+		PRINTL
+		PRINTL [ 999] 放弃更改
+
+		INPUT
+		SELECTCASE RESULT
+			CASE 20 
+			CASE 21 			
+			CASE 22 
+			CASE 23 
+			CASE 24 
+			CASE 25
+			CASE 26
+			CASE 27
+			CASE 28
+			CASE 29
+			CASE 998
+				PRINTL   前置准备：
+				PRINTL   A.将图片（大小435x435）命名『 F+数字 』放到resources资料夹里  EX：F99.png
+				PRINTL   B.在resources资料夹中的img.csv里面登录图片（参考文件中其他图片的写法）
+				SETCOLOR 0xece352
+				PRINTL   PS:须先完成前置准备，重开游戏之後在此处输入编号才有作用！！
+				RESETCOLOR
+				PRINTL
+				PRINTL 在下方输入准备好的自定义图片编号（比如F99.png，就输入99）
+				PRINTL 请输入数值（数值1-99，若为其他数值则会取消返回）
+				INPUT
+				IF RESULT < 1 || RESULT > 99
+					PRINTW 取消自定义图片修改
+					RETURN 0
+				ELSE	
+				ENDIF
+			CASE 999
+				RETURN 0
+			CASEELSE
+				GOTO INPUT_LOOP_FACE
+		ENDSELECT
+			圖片編號 = RESULT
+			PRINTFORML 将 F{圖片編號} 设置成目前使用的立绘(若下方沒有預覽圖片，表示前置準備未完成!)
+			HTML_PRINT "<shape type='space' param='1400'><img src='F" + TOSTR(圖片編號) + "' width='-500' height='500' ypos='50'>"
+		PRINTL 这样可以吗？
+		PRINTL [30] 是
+		PRINTL [31] 否
+		$INPUT_LOOP_FACE1
+		INPUT
+		IF RESULT != 30 && RESULT != 31
+		GOTO INPUT_LOOP_FACE1
+		ELSEIF RESULT == 30	
+			SIF CSTR:66 != ""
+				CSTR:66 = 0
+			CFLAG:666 = 圖片編號
+			圖片編號 = 0			
+		ELSEIF RESULT == 31
+			RETURN 0
+		ENDIF
+	ELSEIF RESULT == 11
+		RETURN 0
+	ELSEIF RESULT == 12
+		CFLAG:666 = 0
+		RETURN 0
+	ENDIF	
+;-------------------------------------------------------------------------------
+;    BARの色違え版
+;-------------------------------------------------------------------------------
+;    例  PRINTFORM %PRINT_COLORBAR(40,100,8,%UNICODE(0x2584)%,%UNICODE(0x2584)%,,0x404040)%
+;        [===     ]
+;    引数はBARとほぼ一緒 + ARGSで描写文字の変更が可能(不指定場合はBARと同じ仕様)
+;    ARG:3はバーの色(0xFFFFFF形式で指定),ARG:4はバーの背景色(0xFFFFFF形式で指定)
+;===============================================================================
+@PRINT_COLORBAR(ARG, ARG:1, ARG:2, ARGS = "*", ARGS:1 = ".", ARG:3, ARG:4)
+#LOCALSIZE 5
+LOCAL:1 = ARG * ARG:2 / ARG:1
+LOCAL:2 = GETCOLOR()
+FOR LOCAL, 1, ARG:2 + 1
+	IF LOCAL:1 >= LOCAL
+		IF !LOCAL:3
+			SETCOLOR ARG:3
+			LOCAL:3 = 1
+		ENDIF
+		PRINTFORM %ARGS%
+	ELSE
+		IF !LOCAL:4
+			SETCOLOR ARG:4
+			LOCAL:4 = 1
+		ENDIF
+		PRINTFORM %ARGS:1%
+	ENDIF
+NEXT
+SETCOLOR LOCAL:2
+VARSET LOCAL
+
+
+;-------------------------------------------------
+;カスタムバー用色布景関数@BARCOLORSET
+;PRINT_COLORBARのARG:3に利用し、ARG;4にRESULTを使う
+;-------------------------------------------------
+@BARCOLORSET, ARGS
+#FUNCTION
+ ;LOCALに色を代入
+SELECTCASE ARGS
+	CASE "赤"
+		RESULT:1 = 0x502020
+		RETURNF 0xC07070
+	CASE "青"
+		RESULT:1 = 0x202050
+		RETURNF 0x7070C0
+	CASE "緑"
+		RESULT:1 = 0x205020
+		RETURNF 0x70C070
+	CASE "紫"
+		RESULT:1 = 0x502050
+		RETURNF 0xC070C0
+	CASE "黄"
+		RESULT:1 = 0x505020
+		RETURNF 0xC0C070
+	CASE "青緑"
+		RESULT:1 = 0x205050
+		RETURNF 0x70C0C0
+	 ;白
+	 CASEELSE
+		RESULT:1 = 0x202020
+		RETURNF 0xC0C0C0
+ENDSELECT

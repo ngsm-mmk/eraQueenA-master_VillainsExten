@@ -1,0 +1,625 @@
+﻿;SHOP.ERBは完全に各関数を呼び出すエントランス化
+;元の処理はSHOP2.ERB及びITEM.ERBに移动
+;今後は頻繁にいじる必要が無くなるはず
+;-------------------------
+;FLAG:1502 用于控制横板/竖版
+;FLAG:1503 用于控制立绘显示
+;FLAG:1504 一次性事件开关
+;FLAG:1507 問候語
+;-------------------------
+@EVENTSHOP
+#PRI
+DRAWLINE
+
+@SHOW_SHOP
+#DIM TEMP, 300
+;發情期判定
+IF (FLAG:81)%15 == 0
+	發情期 = 1
+ELSE
+	發情期 = 0
+ENDIF
+;拡張機能制御関数呼び出し
+CALL ADD_ALL
+;DRAWLINE
+;购买道具処理用
+SIF TFLAG:0 > 0
+	TFLAG:0 = 0
+IF TFLAG:0 == 0
+	REPEAT 100
+		ITEMSALES:COUNT = 0
+	REND
+	CALL KAIGYO
+	DRAWLINE
+	PRINTFORM  - 主人：%NAME:MASTER%
+	IF 發情期 && TALENT:MASTER:164
+		SETCOLOR 0xFF6A6A
+		PRINTFORM %UNICODE(0x2665)%发情中%UNICODE(0x2665)%
+		RESETCOLOR
+	ENDIF
+    IF TALENT:MASTER:153
+        PRINT （怀孕中） -
+ 	ELSEIF CFLAG:MASTER:109
+        PRINT （排卵诱发剂发挥中） -
+ 	ELSEIF CFLAG:MASTER:108
+        PRINT （使用高性能避孕具） -
+	ELSE
+        PRINT  -
+    ENDIF
+
+	;使节時に表示
+	IF FLAG:5 == 8
+		PRINT FREE MISSION 
+		PRINTV FLAG:24
+		PRINT 　
+	ENDIF
+	PRINT   第
+	PRINTV DAY
+	PRINT 日
+	IF TIME == 0
+		PRINT (昼)
+	ELSE
+		PRINT (夜)
+	ENDIF
+
+	;カレンダーを随机に作成します
+	IF FLAG:80 == 0
+		D = RAND:12
+		FLAG:80 = D + 1
+		D = RAND:31
+		SIF FLAG:80 == 2
+			D = RAND:28
+		SIF FLAG:80 == 4 || FLAG:80 == 6 || FLAG:80 == 9 || FLAG:80 == 11
+			D = RAND:30
+		FLAG:81 = D + 1
+		D = RAND:3
+		FLAG:83 = D
+	ENDIF
+	;月齢と仮想年号取得してみる
+	CALL LUNAR_AGE
+	;閏年用
+	D = FLAG:83 % 4
+	IF (FLAG:80 == 2 && FLAG:81 == 29 && D != 0) || (FLAG:80 == 2 && FLAG:81 == 30 && D == 0) || ((FLAG:80 == 4 || FLAG:80 == 6 || FLAG:80 == 9 || FLAG:80 == 11) && FLAG:81 == 31) || FLAG:81 == 32
+		FLAG:81 = 1
+		FLAG:80 += 1
+		SIF FLAG:80 == 13
+			FLAG:80 = 1
+		;%月齢計算でついでに仮想年号も取得しているのでプラス
+		SIF FLAG:80 == 1 && FLAG:81 == 1
+			FLAG:83 += 1
+	ENDIF
+	SIF FLAG:82 == 7
+		FLAG:82 = 0
+
+	PRINTFORM 　{FLAG:80}月{FLAG:81}日
+		SIF FLAG:82 == 0
+			PRINT (星期日)
+		SIF FLAG:82 == 1
+			PRINT (星期一)
+		SIF FLAG:82 == 2
+			PRINT (星期二)
+		SIF FLAG:82 == 3
+			PRINT (星期三)
+		SIF FLAG:82 == 4
+			PRINT (星期四)
+		SIF FLAG:82 == 5
+			PRINT (星期五)
+		SIF FLAG:82 == 6
+			PRINT (星期六)
+	PRINTFORML 　所持金：${MONEY}
+	DRAWLINE
+	IF TARGET > 0 && CFLAG:7000
+	SETCOLOR 0x99BBFF
+	PRINTFORML                %UNICODE(0x2721)%催眠控制%UNICODE(0x2721)%
+	RESETCOLOR
+	ENDIF
+    SIF ASSI < 1
+		PRINTFORML
+	SIF TARGET <= 0
+		PRINTL （没有调教对象）
+    ;頭像添加
+    IF FLAG:1503 == 0 && (TARGET > 0 || ASSI > 0)
+        CALL CHARA_FACE
+    ENDIF
+    ;問候語	
+	SIF TARGET > 0 && FLAG:1507
+	CALL ONE_WORD
+       PRINTFORML
+IF FLAG:1503 == 0
+	IF TARGET > 0 && ASSI < 1
+		IF 發情期 && TALENT:164	
+			PRINTFORM                调教中：%NAME:TARGET,12,LEFT%
+			SETCOLOR 0xFF6A6A
+			PRINTFORML  %UNICODE(0x2665)%发情中%UNICODE(0x2665)%
+			RESETCOLOR
+		ELSE
+			PRINTFORML                调教中：%NAME:TARGET,12,LEFT%
+		ENDIF		
+			PRINT                体力
+			CALL PRINT_COLORBAR, BASE:TARGET:体力, MAXBASE:TARGET:体力, 6, UNICODE(0x2584), UNICODE(0x2584), BARCOLORSET("青緑"), RESULT:1
+			PRINTFORML ({BASE:TARGET:体力,5}/{MAXBASE:TARGET:体力,5})
+			PRINT                气力
+			CALL PRINT_COLORBAR, BASE:TARGET:气力, MAXBASE:TARGET:气力, 6, UNICODE(0x2584), UNICODE(0x2584), BARCOLORSET("黄"), RESULT:1
+			PRINTFORML ({BASE:TARGET:气力,5}/{MAXBASE:TARGET:气力,5})
+			SIF CFLAG:TARGET:109
+				PRINT               （排卵诱发剂发挥中）
+			SIF CFLAG:TARGET:108
+				PRINT               （使用高性能避孕具）
+		PRINTFORML
+	ELSEIF TARGET > 0 && ASSI > 0
+	   IF 發情期
+			IF TALENT:164 && TALENT:ASSI:164
+				PRINTFORM                调教中：%NAME:TARGET,11,LEFT%
+				SETCOLOR 0xFF6A6A
+				PRINTFORM  %UNICODE(0x2665)%发情中%UNICODE(0x2665)%
+				RESETCOLOR
+				PRINTFORM          助手：%NAME:ASSI,13,LEFT%
+				SETCOLOR 0xFF6A6A
+				PRINTFORML  %UNICODE(0x2665)%发情中%UNICODE(0x2665)%
+				RESETCOLOR
+			ELSEIF TALENT:164 && !TALENT:ASSI:164
+				PRINTFORM                调教中：%NAME:TARGET,11,LEFT%
+				SETCOLOR 0xFF6A6A
+				PRINTFORM  %UNICODE(0x2665)%发情中%UNICODE(0x2665)%
+				RESETCOLOR
+				PRINTFORML          助手：%NAME:ASSI,13,LEFT%
+			ELSEIF !TALENT:164 && TALENT:ASSI:164
+				PRINTFORM                调教中：%NAME:TARGET,11,LEFT%                   助手：%NAME:ASSI,13,LEFT%
+				SETCOLOR 0xFF6A6A
+				PRINTFORML  %UNICODE(0x2665)%发情中%UNICODE(0x2665)%
+				RESETCOLOR
+			ELSE
+				PRINTFORML                调教中：%NAME:TARGET,11,LEFT%                   助手：%NAME:ASSI,13,LEFT%
+			ENDIF
+	   ELSE
+				PRINTFORML                调教中：%NAME:TARGET,11,LEFT%                   助手：%NAME:ASSI,13,LEFT%
+	   ENDIF
+       PRINT                体力
+       CALL PRINT_COLORBAR, BASE:TARGET:体力, MAXBASE:TARGET:体力, 6, UNICODE(0x2584), UNICODE(0x2584), BARCOLORSET("青緑"), RESULT:1
+	   PRINTFORM ({BASE:TARGET:体力,5}/{MAXBASE:TARGET:体力,5})
+       PRINT          体力
+       CALL PRINT_COLORBAR, BASE:ASSI:体力, MAXBASE:ASSI:体力, 6, UNICODE(0x2584), UNICODE(0x2584), BARCOLORSET("青緑"), RESULT:1
+       PRINTFORML ({BASE:ASSI:体力,5}/{MAXBASE:ASSI:体力,5})
+       PRINT                气力
+       CALL PRINT_COLORBAR, BASE:TARGET:气力, MAXBASE:TARGET:气力, 6, UNICODE(0x2584), UNICODE(0x2584), BARCOLORSET("黄"), RESULT:1
+       PRINTFORM ({BASE:TARGET:气力,5}/{MAXBASE:TARGET:气力,5})
+       PRINT          气力
+       CALL PRINT_COLORBAR, BASE:ASSI:气力, MAXBASE:ASSI:气力, 6, UNICODE(0x2584), UNICODE(0x2584), BARCOLORSET("黄"), RESULT:1
+       PRINTFORML ({BASE:ASSI:气力,5}/{MAXBASE:ASSI:气力,5})
+		IF CFLAG:TARGET:109	   
+			IF CFLAG:ASSI:109
+				PRINT               （排卵诱发剂发挥中）                   （排卵诱发剂发挥中)	   
+			ELSEIF CFLAG:ASSI:108	
+				PRINT               （排卵诱发剂发挥中）                   （使用高性能避孕具)
+			ELSE				
+				PRINT               （排卵诱发剂发挥中）
+			ENDIF
+		ELSEIF CFLAG:TARGET:108
+			IF CFLAG:ASSI:108
+				PRINT               （使用高性能避孕具）                   （使用高性能避孕具)	   
+			ELSEIF CFLAG:ASSI:109	
+				PRINT               （使用高性能避孕具）                   （排卵诱发剂发挥中)
+			ELSE				
+				PRINT               （使用高性能避孕具）
+			ENDIF
+		ELSEIF CFLAG:ASSI:109 && !CFLAG:TARGET:108 && !CFLAG:TARGET:109
+				PRINT                                                        (排卵诱发剂发挥中)
+		ELSEIF CFLAG:ASSI:108 && !CFLAG:TARGET:108 && !CFLAG:TARGET:109
+				PRINT                                                        (使用高性能避孕具)
+		ELSE
+		ENDIF
+	PRINTFORML
+	ENDIF	
+ELSE
+	IF TARGET > 0 && ASSI < 1
+       PRINTFORM 调教中：%NAME:TARGET,12,LEFT%
+		IF 發情期 && TALENT:164	
+			SETCOLOR 0xFF6A6A
+			PRINTFORML  %UNICODE(0x2665)%发情中%UNICODE(0x2665)%
+			RESETCOLOR
+		ENDIF
+       PRINTFORML
+       PRINT 体力
+       CALL PRINT_COLORBAR, BASE:TARGET:体力, MAXBASE:TARGET:体力, 6, UNICODE(0x2584), UNICODE(0x2584), BARCOLORSET("青緑"), RESULT:1
+       PRINTFORML ({BASE:TARGET:体力,5}/{MAXBASE:TARGET:体力,5})
+       PRINT 气力
+       CALL PRINT_COLORBAR, BASE:TARGET:气力, MAXBASE:TARGET:气力, 6, UNICODE(0x2584), UNICODE(0x2584), BARCOLORSET("黄"), RESULT:1
+       PRINTFORML ({BASE:TARGET:气力,5}/{MAXBASE:TARGET:气力,5})
+	   	SIF CFLAG:TARGET:109
+		PRINT （排卵诱发剂发挥中）
+	   	SIF CFLAG:TARGET:108
+		PRINT （使用高性能避孕具）
+	ELSEIF TARGET > 0 && ASSI > 0
+	   IF 發情期
+			IF TALENT:164 && TALENT:ASSI:164
+				PRINTFORM 调教中：%NAME:TARGET,11,LEFT%
+				SETCOLOR 0xFF6A6A
+				PRINTFORM  %UNICODE(0x2665)%发情中%UNICODE(0x2665)%
+				RESETCOLOR
+				PRINTFORM                   助手：%NAME:ASSI,13,LEFT%
+				SETCOLOR 0xFF6A6A
+				PRINTFORML  %UNICODE(0x2665)%发情中%UNICODE(0x2665)%
+				RESETCOLOR
+			ELSEIF TALENT:164 && !TALENT:ASSI:164
+				PRINTFORM 调教中：%NAME:TARGET,11,LEFT%
+				SETCOLOR 0xFF6A6A
+				PRINTFORM  %UNICODE(0x2665)%发情中%UNICODE(0x2665)%
+				RESETCOLOR
+				PRINTFORML                  助手：%NAME:ASSI,13,LEFT%
+			ELSEIF !TALENT:164 && TALENT:ASSI:164
+				PRINTFORM 调教中：%NAME:TARGET,11,LEFT%                           助手：%NAME:ASSI,13,LEFT%
+				SETCOLOR 0xFF6A6A
+				PRINTFORML  %UNICODE(0x2665)%发情中%UNICODE(0x2665)%
+				RESETCOLOR
+			ELSE
+				PRINTFORML 调教中：%NAME:TARGET,11,LEFT%                           助手：%NAME:ASSI,13,LEFT%
+			ENDIF
+	   ELSE
+				PRINTFORML 调教中：%NAME:TARGET,11,LEFT%                           助手：%NAME:ASSI,13,LEFT%
+	   ENDIF
+       PRINT 体力
+       CALL PRINT_COLORBAR, BASE:TARGET:体力, MAXBASE:TARGET:体力, 6, UNICODE(0x2584), UNICODE(0x2584), BARCOLORSET("青緑"), RESULT:1
+       PRINTFORM ({BASE:TARGET:体力,5}/{MAXBASE:TARGET:体力,5})
+       PRINT                  体力
+       CALL PRINT_COLORBAR, BASE:ASSI:体力, MAXBASE:ASSI:体力, 6, UNICODE(0x2584), UNICODE(0x2584), BARCOLORSET("青緑"), RESULT:1
+       PRINTFORML ({BASE:ASSI:体力,5}/{MAXBASE:ASSI:体力,5})
+       PRINT 气力
+       CALL PRINT_COLORBAR, BASE:TARGET:气力, MAXBASE:TARGET:气力, 6, UNICODE(0x2584), UNICODE(0x2584), BARCOLORSET("黄"), RESULT:1
+       PRINTFORM ({BASE:TARGET:气力,5}/{MAXBASE:TARGET:气力,5})
+       PRINT                  气力
+       CALL PRINT_COLORBAR, BASE:ASSI:气力, MAXBASE:ASSI:气力, 6, UNICODE(0x2584), UNICODE(0x2584), BARCOLORSET("黄"), RESULT:1
+       PRINTFORML ({BASE:ASSI:气力,5}/{MAXBASE:ASSI:气力,5})
+	   	IF CFLAG:TARGET:109	   
+			IF CFLAG:ASSI:109
+				PRINTL  （排卵诱发剂发挥中）                         （排卵诱发剂发挥中)	   
+			ELSEIF CFLAG:ASSI:108	
+				PRINTL  （排卵诱发剂发挥中）                         （使用高性能避孕具)
+			ELSE				
+				PRINTL  （排卵诱发剂发挥中）
+			ENDIF
+		ELSEIF CFLAG:TARGET:108
+			IF CFLAG:ASSI:108
+				PRINTL  （使用高性能避孕具）                         （使用高性能避孕具)	   
+			ELSEIF CFLAG:ASSI:109	
+				PRINTL  （使用高性能避孕具）                         （排卵诱发剂发挥中)
+			ELSE				
+				PRINTL  （使用高性能避孕具）
+			ENDIF
+		ELSEIF CFLAG:ASSI:109 && !CFLAG:TARGET:108 && !CFLAG:TARGET:109
+				PRINTL                                                (排卵诱发剂发挥中)
+		ELSEIF CFLAG:ASSI:108 && !CFLAG:TARGET:108 && !CFLAG:TARGET:109
+				PRINTL                                                (使用高性能避孕具)
+		ENDIF 
+	ENDIF
+	PRINTL
+ENDIF
+        
+		CALL STATUS
+        ;現助手＋元助手のキャラ数の确认
+        S = 0
+        T = 0
+        REPEAT CHARANUM
+            ;育児部屋に移动しているキャラは除外
+            C = COUNT
+            CALL CHECK_CHILD_CARE
+            SIF RESULT == 1
+                CONTINUE
+            SIF CFLAG:COUNT:1 > 1
+                S += 1
+            SIF CFLAG:COUNT:1 == 1 || CFLAG:COUNT:1 == 2
+                T += 1
+        REND
+        ;TIMEに合った调教キャラが居るか
+        E = 0
+        REPEAT CHARANUM
+            ;主人と奴隶と労役中のキャラは排除
+            SIF COUNT == MASTER
+                CONTINUE
+            SIF COUNT == TARGET
+                CONTINUE
+            ;共犯者、マスターは排除
+            SIF CFLAG:COUNT:1 > 2
+                CONTINUE
+            SIF CFLAG:COUNT:12 > 0
+                CONTINUE
+            ;育児部屋に移动しているキャラは除外
+            C = COUNT
+            CALL CHECK_CHILD_CARE
+            SIF RESULT == 1
+                CONTINUE
+            E += 1
+        REND
+    DRAWLINE
+    RESETCOLOR
+	IF !FLAG:1502 == 1
+        SETCOLORBYNAME Gray
+;	    PRINTL
+	ENDIF
+	IF !FLAG:1502 == 1
+        IF TARGET >= 0 && TARGET != MASTER
+            PRINTLCD [100] 开始调教
+        ELSE
+            PRINTLC [---]
+        ENDIF
+    ELSE
+        SIF TARGET >= 0 && TARGET != MASTER
+            PRINTL [100] 开始调教
+    ENDIF
+	IF !FLAG:1502 == 1
+        IF CHARANUM > 0
+            PRINTLCD [101] 状态
+        ELSE
+            PRINTLC [---]
+        ENDIF
+    ELSE
+        SIF CHARANUM > 0
+            PRINTL [101] 状态
+    ENDIF
+	IF !FLAG:1502 == 1
+        IF CHARANUM > 0
+            PRINTLCD [102] 能力上升
+        ELSE
+            PRINTLC [---]
+        ENDIF
+    ELSE
+        SIF CHARANUM > 0
+            PRINTL [102] 能力上升
+    ENDIF
+    IF !FLAG:1502 == 1
+        IF E >= 1
+            PRINTLCD [103] 替换调教对象
+            PRINTL
+        ELSE
+            PRINTLC [---]
+            PRINTL
+        ENDIF
+    ELSE
+        SIF E >= 1
+            PRINTL [103] 替换调教对象
+    ENDIF
+    IF !FLAG:1502 == 1
+        IF S >= 1
+            PRINTLCD [104] 变更助手
+        ELSE
+            PRINTLC [---]
+        ENDIF
+    ELSE
+        SIF S >= 1
+            PRINTL [104] 变更助手
+    ENDIF
+    IF !FLAG:1502 == 1
+        PRINTLCD [105] 购买道具
+        PRINTLCD [106] 休息
+        ;!;PRINTLCD [107] 观看日常事件
+        PRINTL
+    ELSE
+        PRINTL [105] 购买道具
+        PRINTL [106] 休息
+        ;!;PRINTL [107] 观看日常事件
+    ENDIF
+    IF !FLAG:1502 == 1
+        IF CHARANUM >= 2
+            PRINTLCD [108] 人际关系
+        ELSE
+            PRINTLC [---]
+        ENDIF
+    ELSE
+        SIF CHARANUM >= 2
+            PRINTL [108] 人际关系
+    ENDIF
+	;--------------------------------------------------
+	;调教者变更機能拡張
+	;SIF S >= 1 && (FLAG:2 & 1)
+	;	PRINTL [108] - 调教者变更
+	;--------------------------------------------------
+    IF !FLAG:1502 == 1
+        IF CHARANUM < 100
+            PRINTLCD [111] 奴隶采购
+        ELSE
+            PRINTLC [人数上限，功能关闭]
+        ENDIF
+    ELSE
+        SIF CHARANUM < 100
+            PRINTL [111] 奴隶采购
+    ENDIF
+    IF !FLAG:1502 == 1
+        PRINTLCD [112] 劳役指示
+        ;SIF FLAG:5 == 8
+        ;	PRINTL [113] - 目标确认
+        PRINTLCD [114] 剧情任务
+        PRINTL
+        PRINTLCD [200] SAVE
+        PRINTLCD [300] LOAD
+        PRINTLCD [400] OPTION
+        ;!;PRINTLCD [450] HELP
+    ELSE
+        PRINTL [112] 劳役指示
+        ;SIF FLAG:5 == 8
+        ;	PRINTL [113] - 目标确认
+        PRINTL [114] 剧情任务
+        PRINTL [200] SAVE
+        PRINTL [300] LOAD
+        PRINTL [400] OPTION
+        ;!;PRINTL [450] HELP
+    ENDIF
+IF !FLAG:1503 && TARGET > 0 
+	IF  !FLAG:1502 == 1
+		RESETCOLOR
+		PRINTL
+		PRINTLC [499] 更改立绘
+	ELSE
+		PRINTL [499] 更改立绘
+	ENDIF
+ELSEIF !FLAG:1503 && TARGET < 1 
+	PRINTL
+ENDIF
+SIF FLAG:1503 && TARGET > 0 
+PRINTL
+    IF !FLAG:1502 == 1
+;ゲームクリアの设定金額がスタート時に提示される金額と異なるので变更しました。：2011/06/05
+        IF (MONEY >= 500000 && FLAG:5 == 0 && FLAG:23 <= 0) || FLAG:40 == 10
+			IF TARGET < 0 
+				RESETCOLOR
+				PRINTL
+				IF MONEY >= 500000 && FLAG:5 == 0 && FLAG:23 <= 0
+                PRINTL [500] 纳金
+				ELSEIF FLAG:40 == 10
+					     ;!;PRINTL [550] 开始新周目
+				ENDIF
+			 ELSE
+				IF MONEY >= 500000 && FLAG:5 == 0 && FLAG:23 <= 0
+                PRINTLCD [500] 纳金
+				ELSEIF FLAG:40 == 10
+                ;!;PRINTLCD [550] 开始新周目
+				ENDIF
+			ENDIF
+        ENDIF
+    ELSE
+         IF (MONEY >= 500000 && FLAG:5 == 0 && FLAG:23 <= 0) || FLAG:40 == 10
+             IF MONEY >= 500000 && FLAG:5 == 0 && FLAG:23 <= 0
+                 PRINTL [500] 纳金
+             ELSEIF FLAG:40 == 10
+                 ;!;PRINTL [550] 开始新周目
+             ENDIF
+         ENDIF
+     ENDIF
+PRINTL
+PRINTL
+
+SIF !FLAG:1502 == 1
+    RESETCOLOR
+
+PRINTL [800] 外出
+PRINTL
+DRAWLINE
+	;呼出愛心貼士
+	SIF FLAG:97 == 1
+		CALL TIPS
+	SIF FLAG:97 == 2
+		CALL TIPS_1
+ENDIF
+
+IF TFLAG:0 < 0
+	IF TFLAG:0 == -2
+		CALL ITEM_LIST
+		;使节に对応
+;		IF FLAG:5 != 8
+			CALL SALEITEM_CHECK
+;		ELSE
+;			CALL FREE_MISSION_SALEITEM_CHECK
+;		ENDIF
+
+		DRAWLINE
+		$SHOP_LOOP
+		PRINT_SHOPITEM
+	ENDIF
+	DRAWLINE
+	PRINTL [900] - 返回
+ENDIF
+
+@USERSHOP
+IF RESULT == 100 && TARGET >= 0
+    IF CFLAG:2404 == 1
+        PRINTL
+        PRINTFORML 房间里的%CALLNAME%被带出来了
+        PRINTW
+        CFLAG:2404 = 0
+    ELSEIF CFLAG:2414 == 1
+        C = 0
+        REPEAT CHARANUM
+            SIF CFLAG:COUNT:(NO:TARGET+3000) == 1
+                C = COUNT
+        REND
+        PRINTL
+        PRINTFORML 在%CALLNAME:C%房间里的%CALLNAME%被带出来了
+        PRINTW
+        CFLAG:2414 = 0
+        CFLAG:C:(NO:TARGET+3000) = 0
+        CFLAG:C:2404 = 0
+    ENDIF
+	;開啟嫉妒後有50%觸發機率
+	SIF 嫉妒開關 != 1 && !RAND:3
+	CALL 嫉妒打断
+	BEGIN TRAIN
+	RETURN 1
+ELSEIF RESULT == 101 && CHARANUM > 0
+	CALL SHOW_CHARADATA
+ELSEIF RESULT == 102 && CHARANUM > 0
+	CALL SHOP_ABLUP(TARGET)
+ELSEIF RESULT == 103 && E >= 1 && TFLAG:0 == 0
+	CALL CHANGE_TARGET
+ELSEIF RESULT == 104 && S >= 1 && TFLAG:0 == 0
+	CALL SELECT_ASSI
+ELSEIF RESULT == 106
+	;休憩フラグを立てる（ここは特別）
+	FLAG:0 = 2
+	BEGIN TURNEND
+	RETURN 1
+;!;ELSEIF RESULT == 107
+	;休憩フラグを立てる（ここは特別）
+;!;	FLAG:0 = 2
+;!;	SIF CHARANUM > 1
+;!;		CALL DAILY_LIFE
+;!;	BEGIN TURNEND
+;!;	RETURN 1
+ELSEIF RESULT == 108 && CHARANUM >= 2
+	CALL RELATIONS_WATCH
+ELSEIF RESULT == 111 && CHARANUM < 100 && TFLAG:0 == 0
+	K = 0
+	CALL CHARA_BUY
+ELSEIF RESULT == 112 && TFLAG:0 == 0
+	CALL CHARA_WORKING
+;フリー使节
+ELSEIF RESULT == 113 && FLAG:5 == 8 && TFLAG:0 == 0
+	CALL FREE_MISSION_CONFIRM
+;剧情任务
+ELSEIF RESULT == 114 && TFLAG:0 == 0
+    CALL SHOW_QUEST
+ELSEIF RESULT == 200 && TFLAG:0 == 0
+;	SAVEGAME
+    CALL SYSTEM_SAVEGAME
+ELSEIF RESULT == 300 && TFLAG:0 == 0
+;	LOADGAME
+    CALL SYSTEM_LOADGAME
+ELSEIF RESULT == 400 && TFLAG:0 == 0
+	CALL OPTION
+;!;ELSEIF RESULT == 450
+	;!;CALL DICTIONARY_MENU
+ELSEIF RESULT == 499
+	CALL CHANGE_FACE
+ELSEIF RESULT == 900 && TFLAG:0 != 0
+	TFLAG:0 = 0
+;エンディング処理
+;ゲームクリアの设定金額がスタート時に提示される金額と異なるので变更しました。：2011/06/05
+ELSEIF RESULT == 500 && MONEY >= 500000 && FLAG:5 == 0 && FLAG:23 <= 0 && TFLAG:0 == 0
+	CALL ENDING_CHECK
+;強くてニューゲーム
+;!;ELSEIF RESULT == 550 && FLAG:40 == 10
+	;!;CALL TSUYOKUTE_GAME
+ELSEIF RESULT == 800
+  CALL 外出劇情
+ELSEIF RESULT == 9988
+	CALL DEBUG_MENU_U
+ENDIF
+
+;道具表示の処理
+SIF RESULT != 105
+	RETURN 0
+
+A = 0
+CALL ITEM_LIST
+;使节に对応
+;IF FLAG:5 != 8
+	CALL SALEITEM_CHECK
+;ELSE
+;	CALL FREE_MISSION_SALEITEM_CHECK
+;ENDIF
+
+DRAWLINE
+$SHOP_LOOP
+PRINT_SHOPITEM
+
+@SHOP_ABLUP(ARG)
+CALL LIST_CHARA2
+
+

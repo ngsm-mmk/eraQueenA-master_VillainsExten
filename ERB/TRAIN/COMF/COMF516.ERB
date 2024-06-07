@@ -1,0 +1,322 @@
+﻿;-------------------------------------------------
+;打屁股肛
+;做爱系派生指令
+;-------------------------------------------------
+@COM516
+IF TFLAG:54 == 1 
+	PRINTL 打屁股逆肛
+	STR:0 = 打屁股逆肛
+ELSE
+	PRINTL 打屁股肛交
+	STR:0 = 打屁股肛交
+ENDIF
+TFLAG:56 = SELECTCOM
+SELECTCOM = 516
+
+
+;丝袜びりびりフラグ
+IF TEQUIP:1 == 5 || TEQUIP:1 == 6
+	TFLAG:55 = 1
+ENDIF
+
+;调教对象が后庭处子だった場合の喪失フラグ
+IF TALENT:161
+	TFLAG:161 = 1
+ENDIF
+;调教者が童贞だった場合の喪失フラグ
+IF TALENT:PLAYER:160
+	TFLAG:160 = 2
+ENDIF
+;主人による做爱ならフラグを立てる
+IF ASSIPLAY == 0
+	TFLAG:163 = 1
+ENDIF
+
+;-------------------------------------------------
+;射精槽チェック
+;-------------------------------------------------
+B = 1500
+
+;ABL:调教者の技巧をみる
+IF ABL:PLAYER:2 == 0
+	TIMES B , 1.00
+ELSEIF ABL:PLAYER:2 == 1
+	TIMES B , 1.20
+ELSEIF ABL:PLAYER:2 == 2
+	TIMES B , 1.40
+ELSEIF ABL:PLAYER:2 == 3
+	TIMES B , 1.60
+ELSEIF ABL:PLAYER:2 == 4
+	TIMES B , 1.80
+ELSE
+	TIMES B , 2.00
+ENDIF
+
+;ABL:顺从をみる
+IF ABL:0 == 0
+	TIMES B , 0.80
+ELSEIF ABL:0 == 1
+	TIMES B , 0.90
+ELSEIF ABL:0 == 2
+	TIMES B , 1.00
+ELSEIF ABL:0 == 3
+	TIMES B , 1.10
+ELSEIF ABL:0 == 4
+	TIMES B , 1.20
+ELSE
+	TIMES B , 1.30
+ENDIF
+
+;ABL:欲望をみる
+IF ABL:1 == 0
+	TIMES B , 1.00
+ELSEIF ABL:1 == 1
+	TIMES B , 1.10
+ELSEIF ABL:1 == 2
+	TIMES B , 1.20
+ELSEIF ABL:1 == 3
+	TIMES B , 1.30
+ELSEIF ABL:1 == 4
+	TIMES B , 1.40
+ELSE
+	TIMES B , 1.50
+ENDIF
+
+;PALAM:润滑をみる
+IF PALAM:4 < PALAMLV:1
+	TIMES B , 0.60
+ELSEIF PALAM:4 < PALAMLV:2
+	TIMES B , 0.80
+ELSEIF PALAM:4 < PALAMLV:3
+	TIMES B , 1.00
+ELSEIF PALAM:4 < PALAMLV:4
+	TIMES B , 1.20
+ELSEIF PALAM:4 >= PALAMLV:4
+	TIMES B , 1.40
+ENDIF
+
+;プ雷ヤーのABL:Ｃ感觉をみる
+IF ABL:PLAYER:3 == 0
+	TIMES B , 1.00
+ELSEIF ABL:PLAYER:3 == 1
+	TIMES B , 1.50
+ELSEIF ABL:PLAYER:3 == 2
+	TIMES B , 2.00
+ELSEIF ABL:PLAYER:3 == 3
+	TIMES B , 2.50
+ELSEIF ABL:PLAYER:3 == 4
+	TIMES B , 3.50
+ELSE
+	TIMES B , 5.00
+ENDIF
+
+;再装填処理中は射精槽は20分の1に
+SIF CFLAG:PLAYER:9 > 0
+	B /= 20
+
+;ABL:调教者の嗜虐快乐经验をみる
+IF EXP:PLAYER:32 < EXPLV:1
+	TIMES B , 1.00
+ELSEIF EXP:PLAYER:32 < EXPLV:2
+	TIMES B , 1.20
+ELSEIF EXP:PLAYER:32 < EXPLV:3
+	TIMES B , 1.40
+ELSEIF EXP:PLAYER:32 < EXPLV:4
+	TIMES B , 1.60
+ELSEIF EXP:PLAYER:32 < EXPLV:5
+	TIMES B , 1.80
+ELSE
+	TIMES B , 2.00
+ENDIF
+
+
+IF TALENT:PLAYER:137 || TALENT:PLAYER:139 || TALENT:PLAYER:140
+	BASE:PLAYER:2 += B
+ELSE
+	B = B/6
+	BASE:PLAYER:2 += B
+ENDIF
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 140
+LOSEBASE:1 += 160
+
+SOURCE:2 = 400
+SOURCE:4 = 200
+SOURCE:7 = 1200
+SOURCE:8 = 400
+SOURCE:9 = 200
+SOURCE:13 = 50
+SOURCE:17 = 200
+SOURCE:18 = 650
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 500
+;痛苦のパラメータによる痛苦のソース増加は先に処理しておく
+IF PALAM:10 < PALAMLV:1
+	TIMES SOURCE:7 , 1.00
+ELSEIF PALAM:10 < PALAMLV:2
+	TIMES SOURCE:7 , 1.50
+ELSEIF PALAM:10 < PALAMLV:3
+	TIMES SOURCE:7 , 2.00
+ELSEIF PALAM:10 < PALAMLV:4
+	TIMES SOURCE:7 , 2.50
+ELSEIF PALAM:10 >= PALAMLV:4
+	TIMES SOURCE:7 , 3.00
+ENDIF
+
+;小人体型で调教者が巨根か尺寸傲人の場合、痛苦と恐怖のソースを追加
+IF TALENT:142
+	IF TALENT:PLAYER:116
+		SOURCE:7 += 200
+		SOURCE:8 += 500
+	ELSEIF TALENT:PLAYER:117
+		SOURCE:7 += 500
+		SOURCE:8 += 1000
+	ENDIF
+ENDIF
+
+;调教者が尺寸傲人の場合
+IF TALENT:PLAYER:117
+	;Ａ扩张经验一定以上で中毒充足のソースを追加
+	IF EXP:53 >= 20
+		SOURCE:9 += 500
+	;Ａ扩张经验一定以下で痛苦と恐怖のソースを追加
+	ELSE
+		SOURCE:7 += 500
+		SOURCE:8 += 1000
+	ENDIF
+ENDIF
+
+;Aへの痛苦は先に処理しておく
+;EXP:Ａ经验をみる
+IF EXP:1 < EXPLV:1
+	TIMES SOURCE:7 , 3.00
+	TIMES SOURCE:18 , 3.00
+ELSEIF EXP:1 < EXPLV:2
+	TIMES SOURCE:7 , 1.20
+	TIMES SOURCE:18 , 2.00
+ELSEIF EXP:1 < EXPLV:3
+	TIMES SOURCE:7 , 0.80
+	TIMES SOURCE:18 , 1.50
+ELSEIF EXP:1 < EXPLV:4
+	TIMES SOURCE:7 , 0.60
+	TIMES SOURCE:18 , 1.20
+ELSEIF EXP:1 < EXPLV:5
+	TIMES SOURCE:7 , 0.40
+ELSEIF EXP:1 >= EXPLV:5
+	TIMES SOURCE:7 , 0.20
+ENDIF
+
+;PALAM:润滑をみる
+IF PALAM:4 < PALAMLV:1
+	TIMES SOURCE:7 , 1.20
+	TIMES SOURCE:18 , 1.50
+ELSEIF PALAM:4 < PALAMLV:2
+	TIMES SOURCE:7 , 0.70
+	TIMES SOURCE:18 , 1.20
+ELSEIF PALAM:4 < PALAMLV:3
+	TIMES SOURCE:7 , 0.40
+ELSEIF PALAM:4 < PALAMLV:4
+	TIMES SOURCE:7 , 0.10
+ELSEIF PALAM:4 >= PALAMLV:4
+	TIMES SOURCE:7 , 0.10
+ENDIF
+
+;中毒による中毒充足のソースは先に処理しておく
+;性成瘾を見る
+IF ABL:18 == 1
+	TIMES SOURCE:9 , 0.00
+ELSEIF ABL:18 == 2
+	TIMES SOURCE:9 , 0.30
+ELSEIF ABL:18 == 3
+	TIMES SOURCE:9 , 0.60
+ELSEIF ABL:18 == 4
+	TIMES SOURCE:9 , 0.90
+ELSEIF ABL:18 == 5
+	TIMES SOURCE:9 , 1.20
+ELSEIF ABL:18 == 6
+	TIMES SOURCE:9 , 1.50
+ELSEIF ABL:18 == 7
+	TIMES SOURCE:9 , 1.80
+ELSEIF ABL:18 == 8
+	TIMES SOURCE:9 , 2.30
+ELSEIF ABL:18 == 9
+	TIMES SOURCE:9 , 3.00
+ELSEIF ABL:18 >= 10
+	TIMES SOURCE:9 , 5.00
+ENDIF
+
+;手指灵巧持ちで着衣のとき
+IF TALENT:MASTER:58 && (TEQUIP:2 || TEQUIP:4)
+	TIMES SOURCE:4 , 0.90
+	TIMES SOURCE:17 , 1.70
+ENDIF
+
+;-------------------------------------------------
+;射精チェック
+;-------------------------------------------------
+CALL SAMEN_CHECK
+
+;射精時の処理
+IF E >= 1
+	;射精先タイプの设定
+	TFLAG:703 = 2
+	;射精先選択の可・不可
+	TFLAG:704 = 1
+	;汎用的な処理はこの関数で行う
+	;（射精槽の再計算や射精经验の上昇と共通部分の表示）
+	CALL SAMEN_SHOOT
+ENDIF
+
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;射精に関係なく行われる処理はここから
+;奴隶のＡ⇔调教者のＰの汚れが移动
+STAIN:4 |= STAIN:PLAYER:2
+STAIN:PLAYER:2 |= STAIN:4
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;A经验
+EXP:1 += 2
+PRINTL Ａ经验＋２
+
+;调教者が尺寸傲人で奴隶が小人体型だった場合、Ａ扩张经验
+IF TALENT:142 && TALENT:PLAYER:117
+	IF EXP:53 == 0
+		EXP:50 += 1
+		PRINTL 异常经验＋１
+	ENDIF
+	EXP:53 += 1
+	PRINTL Ａ扩张经验＋１
+ENDIF
+
+;性交经验
+EXP:4 += 1
+EXP:PLAYER:4 += 1
+PRINTS EXPNAME:4
+PRINTL +1
+
+;蔷薇经验とか加算
+CALL COM_EXP(3)
+
+
+;依赖度ベクトル
+TFLAG:33 = 1
+
+;依赖度補正値(服从で1、隶属で2）
+IF TALENT:5 && ASSIPLAY == 0
+	TFLAG:30 += 1
+ELSEIF TALENT:8 && ASSIPLAY == 0
+	TFLAG:30 += 2
+ENDIF
+
+RETURN 1

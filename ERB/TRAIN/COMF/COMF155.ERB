@@ -1,0 +1,195 @@
+﻿;-------------------------------------------------
+;兽姦
+;严厉な调教指令
+;-------------------------------------------------
+@COM155
+PRINTL 兽奸
+STR:0 = 兽奸
+
+
+
+;下半身着衣、又はＡとＶ両方開いていない
+IF (TEQUIP:2 || TEQUIP:4 == 2) || ((TEQUIP:13 || TALENT:140) && (TEQUIP:14 || TEQUIP:15 || TEQUIP:21 || TEQUIP:22 || TEQUIP:23))
+;男性、又はＶに道具插入
+ELSEIF TEQUIP:13 || TALENT:140
+;后庭处子だった場合の喪失フラグ
+	IF TALENT:161
+		TFLAG:161 = 1
+	ENDIF
+ELSE
+;V经验を伴う指令のフラグ(处女膜再生对応)
+	TFLAG:19 = 1
+ENDIF
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 250
+LOSEBASE:1 += 250
+
+SOURCE:7 = 700
+SOURCE:8 = 1000
+SOURCE:14 = 1200
+SOURCE:15 = 800
+SOURCE:17 = 1000
+SOURCE:18 = 1000
+
+;下半身着衣、又はＡとＶ両方開いていない
+IF (TEQUIP:2 || TEQUIP:4 == 2) || ((TEQUIP:13 || TALENT:140) && (TEQUIP:14 || TEQUIP:15 || TEQUIP:21 || TEQUIP:22 || TEQUIP:23))
+	SOURCE:0 = 100
+;男性、又はＶに道具插入
+ELSEIF TEQUIP:13 || TALENT:140
+	SOURCE:2 = 200
+	SOURCE:7 += 400
+	SOURCE:8 += 400
+ELSE
+	SOURCE:1 = 200
+	SOURCE:7 += 400
+	SOURCE:8 += 400
+ENDIF
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;下半身着衣、又はＡとＶ両方開いていない
+IF (TEQUIP:2 || TEQUIP:4 == 2) || ((TEQUIP:13 || TALENT:140) && (TEQUIP:14 || TEQUIP:15 || TEQUIP:21 || TEQUIP:22 || TEQUIP:23))
+;男性、又はＶに道具插入
+ELSEIF TEQUIP:13 || TALENT:140
+	;Aへの痛苦は先に処理しておく
+	;EXP:Ａ经验をみる
+	IF EXP:1 < EXPLV:1
+		TIMES SOURCE:7 , 3.00
+		TIMES SOURCE:18 , 3.00
+	ELSEIF EXP:1 < EXPLV:2
+		TIMES SOURCE:7 , 1.20
+		TIMES SOURCE:18 , 2.00
+	ELSEIF EXP:1 < EXPLV:3
+		TIMES SOURCE:7 , 0.80
+		TIMES SOURCE:18 , 1.50
+	ELSEIF EXP:1 < EXPLV:4
+		TIMES SOURCE:7 , 0.60
+		TIMES SOURCE:18 , 1.20
+	ELSEIF EXP:1 < EXPLV:5
+		TIMES SOURCE:7 , 0.40
+	ELSEIF EXP:1 >= EXPLV:5
+		TIMES SOURCE:7 , 0.20
+	ENDIF
+
+	;PALAM:润滑をみる
+	IF PALAM:4 < PALAMLV:1
+		TIMES SOURCE:7 , 1.20
+		TIMES SOURCE:18 , 2.00
+	ELSEIF PALAM:4 < PALAMLV:2
+		TIMES SOURCE:7 , 1.00
+		TIMES SOURCE:18 , 1.50
+	ELSEIF PALAM:4 < PALAMLV:3
+		TIMES SOURCE:7 , 0.60
+	ELSEIF PALAM:4 < PALAMLV:4
+		TIMES SOURCE:7 , 0.30
+	ELSEIF PALAM:4 >= PALAMLV:4
+		TIMES SOURCE:7 , 0.20
+	ENDIF
+ELSE
+	;Vへの痛苦は先に処理しておく
+	;EXP:Ｖ经验をみる（处女の反感は別途処理済みなので省略）
+	IF EXP:0 < EXPLV:1
+		TIMES SOURCE:7 , 2.50
+	ELSEIF EXP:0 < EXPLV:2
+		TIMES SOURCE:7 , 0.80
+		TIMES SOURCE:18 , 1.20
+	ELSEIF EXP:0 < EXPLV:3
+		TIMES SOURCE:7 , 0.40
+	ELSEIF EXP:0 < EXPLV:4
+		TIMES SOURCE:7 , 0.10
+	ELSEIF EXP:0 < EXPLV:5
+		TIMES SOURCE:7 , 0.00
+	ELSEIF EXP:0 >= EXPLV:5
+		TIMES SOURCE:7 , 0.00
+	ENDIF
+
+	;PALAM:润滑をみる
+	IF PALAM:4 < PALAMLV:1
+		TIMES SOURCE:7 , 1.20
+		TIMES SOURCE:18 , 1.50
+	ELSEIF PALAM:4 < PALAMLV:2
+		TIMES SOURCE:7 , 0.70
+		TIMES SOURCE:18 , 1.20
+	ELSEIF PALAM:4 < PALAMLV:3
+		TIMES SOURCE:7 , 0.40
+	ELSEIF PALAM:4 < PALAMLV:4
+		TIMES SOURCE:7 , 0.10
+	ELSEIF PALAM:4 >= PALAMLV:4
+		TIMES SOURCE:7 , 0.10
+	ENDIF
+ENDIF
+
+;特に严厉な指令では、异常经验に応じて効果を減らす
+IF EXP:50 < EXPLV:1
+	TIMES SOURCE:8 , 1.20
+	TIMES SOURCE:17 , 1.20
+	TIMES SOURCE:18 , 1.20
+ELSEIF EXP:50 < EXPLV:2
+	TIMES SOURCE:8 , 0.90
+	TIMES SOURCE:17 , 0.90
+	TIMES SOURCE:18 , 0.90
+ELSEIF EXP:50 < EXPLV:3
+	TIMES SOURCE:8 , 0.80
+	TIMES SOURCE:17 , 0.80
+	TIMES SOURCE:18 , 0.80
+ELSEIF EXP:50 < EXPLV:4
+	TIMES SOURCE:8 , 0.70
+	TIMES SOURCE:17 , 0.70
+	TIMES SOURCE:18 , 0.70
+ELSEIF EXP:50 < EXPLV:5
+	TIMES SOURCE:8 , 0.60
+	TIMES SOURCE:17 , 0.60
+	TIMES SOURCE:18 , 0.60
+ELSE
+	TIMES SOURCE:8 , 0.50
+	TIMES SOURCE:17 , 0.50
+	TIMES SOURCE:18 , 0.50
+ENDIF
+
+;-------------------------------------------------
+;经验の処理
+;汚れの処理
+;-------------------------------------------------
+;下半身着衣、又はＡとＶ両方開いていない
+IF (TEQUIP:2 || TEQUIP:4 == 2) || ((TEQUIP:13 || TALENT:140) && (TEQUIP:14 || TEQUIP:15 || TEQUIP:21 || TEQUIP:22 || TEQUIP:23))
+;男性、又はＶに道具插入
+ELSEIF TEQUIP:13 || TALENT:140
+	EXP:1 += 2
+	PRINTL Ａ经验＋２
+	STAIN:4 = 32
+ELSE
+	IF TALENT:0 == 1 || TALENT:1 == 1
+		EXP:50 += 2
+		PRINTL 异常经验＋２
+		STAIN:6 |= 64
+	ENDIF
+	EXP:0 += 2
+	PRINTL Ｖ经验＋２
+	STAIN:3 = 32
+	STAIN:6 = 32
+ENDIF
+
+
+;异常经验が5未満のとき、异常经验追加
+IF EXP:50 < 5
+	EXP:50 += 1
+	PRINTL 异常经验＋１
+ENDIF
+
+;依赖度ベクトル
+TFLAG:33 = 5
+
+;依赖度補正値(服从で1、隶属で2）
+IF TALENT:5 && ASSIPLAY == 0
+	TFLAG:30 += 1
+ELSEIF TALENT:8 && ASSIPLAY == 0
+	TFLAG:30 += 2
+ENDIF
+
+RETURN 1
+

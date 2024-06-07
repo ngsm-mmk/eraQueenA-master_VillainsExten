@@ -1,0 +1,426 @@
+﻿;-------------------------------------------------
+;天使种族口上
+;-------------------------------------------------
+;
+;-------------------------------------------------
+;调教前と调教後の台詞
+;-------------------------------------------------
+;eraQueenA用口上テンプレート
+;口上を書けた部分の「CFLAG:2XX = 1」や「CFLAG:2XX = 2」のコメントアウトは解除してください。
+;-------------------------------------------------
+;--------------------------------------------------
+;口上ファイルの存在判定
+;--------------------------------------------------
+@EVENTSHOP
+#PRI
+FLAG:417 = 1
+SIF FLAG:7 == 0
+	FLAG:7 = 1
+;--------------------------------------------------
+;EVENTTRAIN関係
+;调教開始時のセリフ CFLAG 201～219を使用
+;--------------------------------------------------
+@EVENTTRAIN
+;オプションで口上をオフした時は駄目
+SIF FLAG:7 <= 0
+	RETURN 0
+SIF !TALENT:天使 && !CFLAG:600
+	RETURN 0
+
+@KOJO_EVENTTRAIN_K417
+;--------------------------------------------------
+;特定助手時に特殊助手口上を呼び出す(Y1を助手との関係设定(CFLAG:2000～2100)の値に置換）
+;--------------------------------------------------
+;IF ASSI > 0 && ASSIPLAY
+;	IF CFLAG:(NO:ASSI + 2000) == Y1
+;		CALL EVENTTRAIN_PY1
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;--------------------------------------------------
+;簡易助手口上の発動時に初调教時口上をスキップ（Y1を助手のキャラ性格番号にする）
+;複数人いる際には、SIF CFLAG:(NO:ASSI + 2000) == Y1 || CFLAG:(NO:ASSI + 2000) == Z1と追加していく
+;初调教時口上をスキップしない場合は使わなくてもいい
+;--------------------------------------------------
+;IF CFLAG:201 == 0 && ASSI > 0
+;	SIF CFLAG:(NO:ASSI + 2000) == Y1
+;		CFLAG:201 =1
+;ENDIF
+;-------------------------------------------------
+;调教開始時（一回のみの台詞） CFLAG201
+;-------------------------------------------------
+DRAWLINE
+SIF CFLAG:201 == 6
+	GOTO INPUT_ZHU
+;----------------------------------------------------------------------------
+;初调教時 孩子是奴隶的场合
+IF CFLAG:201 == 0 && TALENT:TARGET:天使
+	 IF CFLAG:2000 == 5 || CFLAG:2000 == 6
+		IF !MALE(MASTER)
+			PRINTFORM 「妈妈？
+		ELSE
+			PRINTFORM 「爸爸？
+		ENDIF
+	 ELSE
+		PRINTFORM 「…%CALLNAME:MASTER%大人？
+	 ENDIF
+	 PRINTL
+	 PRINT 　
+	 IF !RAND:2
+		PRINTFORMW  是来看%CSTR:0%的吗？%CSTR:0%好高兴！」
+	 ELSE
+		PRINTFORMW  要来陪%CSTR:0%玩吗？」
+	 ENDIF
+	 PRINTFORMW 当%PLAYER_NAME()%一走进房间，%NAME%就亲昵地贴了上来。
+	 PRINTFORMW 他伸出手来轻轻拉着%PLAYER_NAME()%的衣摆，背後洁白小小的翅膀颤动着，露出了开心的表情。
+	 PRINTFORMW 被%PLAYER_NAME()%抱起来的时後，他便信任安心地依偎在%PLAYER_NAME()%的怀里。
+	 PRINTFORMW 当%PLAYER_NAME()%对%NAME%说明完来意之後，他偏着头乖巧地回答
+	 PRINTFORMW 「要教%CSTR:0%？好的，%CSTR:0%一定会好好学习的！」
+	 PRINTFORMW %NAME%好像听不懂什么是调教，似乎认为这是学习的一种。
+	 PRINTFORMW 嘛，把生理保健归类为学习，也没啥不对吧……
+		CFLAG:201 = 1
+		;很单纯乖巧不会抗拒，初始顺从为3
+		ABL:TARGET = 3
+		RETURN 0	
+ENDIF
+;----------------------------------------------------------------------------
+;初调教時
+IF CFLAG:201 == 0
+	PRINTFORMW 在微暗的房间里，身为天使的%NAME%就那样静静地伫立着。
+	PRINTFORMW 即使那洁白的翅膀收束在背後，他的全身也宛如会反光似地有一层淡淡的光辉营绕着。
+	PRINTFORMW 而那单薄的牢服与沈重的锁链缠绕在他身上，更衬托出了一种亵渎圣洁事物的背德感。
+	PRINTFORML
+	PRINTFORMW 当%PLAYER_NAME()%一走进房间，%NAME%就用那高雅纯净如圣乐的嗓音开口说着
+	PRINTFORMW 「……人类。%CSTR:0%是天使%CALLNAME%……请问这里，是什么地方？」
+	PRINTFORMW 尽管被囚禁，魔力被封印，%NAME%似乎没把%PLAYER_NAME()%当成威胁，平静地发出了疑问。
+	PRINTFORML
+	PRINTFORMW %PLAYER_NAME()%简洁地说明完来意，%NAME%忍不住皱起了眉头，露出了失望的眼神。
+	PRINTFORMW 「虽然听说过人类很容易被引诱而耽溺於堕落，但真没想到已经严重到这种程度了吗……？」
+	PRINTFORMW 说完，%NAME%叹了一口气，然後他用那端丽无暇的容颜露出了谴责的表情。
+	PRINTFORMW 「调教？贩卖？居然在神明的国度里，做出这种恶魔的行径？」
+	PRINTFORMW %PLAYER_NAME()%露出从容的笑容，平静地解释自己就是这个世界的神明。
+	PRINTFORML
+	PRINTFORMW 「住口！这个亵神的蝼蚁！」
+	PRINTFORMW %NAME%似乎被激怒了，但是却挣脱不开锁链，只能用冰冷的目光狠狠地瞪视%PLAYER_NAME()%。
+	PRINTFORMW 「神明是……是……」
+	PRINTFORMW %NAME%正想继续反驳的时候，发现自己对神明的记忆居然是一片空白……
+	PRINTFORMW 难道除了魔力被封印之外，自己还被邪恶的力量洗脑了吗？
+	PRINTFORMW 身为天使怎么可能会…震惊的%NAME%露出了难以置信的表情……
+	PRINTFORMW 不等动摇的%NAME%回过神来，%PLAYER_NAME()%便无情地将他推倒了……
+	PRINTL
+	PRINTFORMW ――对%NAME%的第一次调教开始了――
+	CFLAG:201 = 1
+	RETURN 0
+;恋慕陷落ルート
+ELSEIF (CFLAG:201 < 5 && TALENT:3) || (CFLAG:201 < 6 && TALENT:6)
+	IF CFLAG:201 < 5 && TALENT:恋慕
+		PRINTFORMW
+		CFLAG:201 = 5
+		RETURN 0
+	;相亲相爱
+	ELSEIF CFLAG:201 < 6 && TALENT:相亲相爱
+		PRINTFORMW
+		CFLAG:201 = 6
+		RETURN 0
+	ENDIF
+;淫乱陷落ルート
+ELSEIF (CFLAG:201 < 5 && TALENT:4) || (CFLAG:201 < 6 && TALENT:7)
+	IF CFLAG:201 < 5 && TALENT:淫乱
+		
+		;CFLAG:201 = 5
+		;RETURN 0
+	;娼妇
+	ELSEIF CFLAG:201 < 6 && TALENT:娼妇
+		;PRINTFORMW 
+		;PRINTFORMW 
+		;CFLAG:201 = 6
+		;RETURN 0
+	ENDIF
+;服从陷落ルート
+ELSEIF (CFLAG:201 < 5 && TALENT:5) || (CFLAG:201 < 6 && TALENT:8)
+	IF CFLAG:201 < 5 && TALENT:服从
+		;PRINTFORMW 
+		;PRINTFORMW 
+		;CFLAG:201 = 5
+		;RETURN 0
+	ELSEIF CFLAG:201 < 6 && TALENT:隶属
+		;PRINTFORMW 
+		;PRINTFORMW 
+		;MASTERNAME = %CALLNAME:MASTER%大人
+		;口調が敬語タイプになる
+		;CFLAG:601 = 2
+		;CFLAG:201 = 6
+		;RETURN 0
+	ENDIF
+;初めて屈服刻印Lv1になった
+ELSEIF CFLAG:201 < 2 && MARK:2 == 1
+	PRINTFORMW 「尽管只是一时的软弱，下次必定不会再……」
+	PRINTFORMW %NAME%闭上了眼睛，双手在胸前交握，虔诚地祈祷忏悔着……
+	CFLAG:201 = 2
+	RETURN 0
+;初めて屈服刻印Lv2になった
+ELSEIF CFLAG:201 < 3 && MARK:2 == 2
+	PRINTFORMW 「不，这不可能…%CSTR:0%…%CSTR:0%怎么会…」
+	PRINTFORMW %NAME%露出动摇的神情，又马上强迫自己镇定下来祈祷着……
+	CFLAG:201 = 3
+	RETURN 0
+;初めて屈服刻印Lv3になった
+ELSEIF CFLAG:201 < 4 && MARK:2 == 3
+	PRINTFORMW 「居然屈服於这种…恶行…%CSTR:0%的灵魂…也污浊了吗…？」
+	PRINTFORMW %NAME%露出绝望的表情，眼神黯淡失去了光芒……
+	CFLAG:201 = 4
+	RETURN 0
+ENDIF
+
+$INPUT_ZHU
+;-------------------------------------------------
+;簡易助手口上（Y1を助手との関係设定の値に置換)
+;-------------------------------------------------
+;助手の有無をチェック（いない場合は二回目以降へ飛ぶ）
+IF ASSI < 0 
+	CALL EVENTTRAIN_SECOND_K417
+;例:助手が调教对象の兄の場合（CFLAG:(NO:ASSI + 2000)を1に设定）
+;ELSEIF CFLAG:(NO:ASSI + 2000) == 1
+;	;初めて
+;	IF CFLAG:(NO:ASSI + 700) == 0
+;		PRINTFORMW 
+;		CFLAG:(NO:ASSI + 700) = 1
+	;二回目以降
+;	ELSEIF CFLAG:(NO:ASSI + 700) < 2 || FLAG:7 ==2
+;		PRINTFORMW 
+;		CFLAG:(NO:ASSI + 700) = 2
+;	ENDIF
+;Y1を助手との関係设定の値に置換
+;ELSEIF CFLAG:(NO:ASSI + 2000) == Y1
+;	;初めて
+;	IF CFLAG:(NO:ASSI + 700) == 0
+;		PRINTFORMW 
+;		CFLAG:(NO:ASSI + 700) = 1
+	;二回目以降
+;	ELSEIF CFLAG:(NO:ASSI + 700) < 2 || FLAG:7 ==2
+;		PRINTFORMW 
+;		CFLAG:(NO:ASSI + 700) = 2
+;	ENDIF
+;口上のある助手が居ない場合は、通常の二回目以降の口上へ飛ぶ
+ELSE
+	CALL EVENTTRAIN_SECOND_K417
+ENDIF
+
+;-------------------------------------------------
+;调教開始時（2回目以降、「一回だけ表示」に设定してなければ何度も显示台詞です）
+;何度も显示わけなので、何種類かの短い台詞を用意したほうがいいかもしれません。
+;毎回表示されたら面倒くさいかもしれないので、「一回だけ表示」に设定していれば、三分の一の確率で表示されることしました。
+;-------------------------------------------------
+@EVENTTRAIN_SECOND_K417
+;反抗刻印Lv3が消された場合、「一回だけ表示」用のフラグを解除。
+SIF MARK:反抗刻印 < 3 && CFLAG:202 == 4
+	CFLAG:202 = 0
+;反抗刻印Lv3（最初に反抗刻印Lv3をついた時のの場合）
+IF MARK:反抗刻印 == 3 && CFLAG:202 < 4
+	IF TALENT:高傲 || TALENT:自大
+		PRINTFORML 「居然还胆敢出现在%CSTR:0%的面前，这该下地狱的蝼蚁！！」
+	ELSE
+		PRINTFORML 「地狱一定充满了与%CSTR:1%趣味相投之辈，何不速去？」
+	ENDIF
+		PRINTFORMW %NAME%用极度蔑视的眼神看了过来……
+		CFLAG:202 = 4
+;反抗刻印Lv3、屈服刻印 < 2、顺从 <= 2　（毎回表示の場合）
+ELSEIF MARK:反抗刻印 == 3 && MARK:屈服刻印 < 2 && ABL:顺从 <= 2 && (CFLAG:202 < 4 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	;随机で口上が変化する
+	;随机で口上が変化する　!RAND:2→二分の一の確率、!RAND:3→三分の一の確率…以下同類
+	;随机で三種類の台詞から選ぶ時は「IF !RAND:3 ～　ELSEIF !RAND:2 ～　ELSE」にすればＯＫ。
+	IF !RAND:2
+		PRINTFORML 「%CSTR:1%这份毫无廉耻的勇气，真不知该如何评价了……」
+	ELSE
+		PRINTFORML 「犯下如此罪不可赦的恶行，%CSTR:1%竟还能坦然地前来？」
+	ENDIF
+		PRINTFORMW %NAME%似乎觉得连看到%PLAYER_NAME()%一眼，都是亵渎那般转过了头去……
+	CFLAG:202 = 4
+;屈服刻印Lv0
+;ELSEIF MARK:2 == 0 && (CFLAG:202 < 1 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+;	PRINTFORMW 
+;	CFLAG:202 = 1
+;屈服刻印Lv1以下
+ELSEIF MARK:2 <= 1 && (CFLAG:202 < 2 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	IF !RAND:2
+		;PRINTFORML 
+		;PRINTFORMW 
+	ELSE
+		;PRINTFORML 
+		;PRINTFORMW 
+	ENDIF
+	;CFLAG:202 = 2
+;屈服刻印Lv2
+ELSEIF MARK:2 == 2 && (CFLAG:202 < 3 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	IF !RAND:2
+		;PRINTFORML 
+		;PRINTFORMW 
+	ELSE
+		;PRINTFORML 
+		;PRINTFORMW 
+	ENDIF
+	;CFLAG:202 = 3
+;屈服刻印Lv3＋陷落素質无
+ELSEIF MARK:2 == 3 && !KANRAKU(TARGET) && (CFLAG:202 < 4 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	IF !RAND:2
+		PRINTFORML 「…………」
+		PRINTFORMW 看见%PLAYER_NAME()%走进房间後，%NAME%一句话也不想说，摆出消极的反应……
+	ELSE
+		PRINTFORML 「这副在人间的血肉之躯会怎样都无所谓…只要…灵魂…灵魂……」
+		PRINTFORMW 与其说是在与%PLAYER_NAME()%对话，其实更像是%NAME%在说服自己那般……
+	ENDIF
+	CFLAG:202 = 4
+;恋慕陷落ルート
+ELSEIF (TALENT:3 || TALENT:6) && (CFLAG:202 < 6 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	;恋慕
+	IF TALENT:3 && (CFLAG:202 < 5 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+
+		IF !RAND:2
+			;PRINTFORML 
+			;PRINTFORMW 
+		ELSE
+			;PRINTFORML 
+			;PRINTFORMW 
+		ENDIF
+		;CFLAG:202 = 5
+	;相亲相爱
+	ELSEIF TALENT:6 && (CFLAG:202 < 6 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+		IF !RAND:2
+			;PRINTFORML 
+			;PRINTFORMW 
+		ELSE
+			;PRINTFORML 
+			;PRINTFORMW 
+		ENDIF
+		;CFLAG:202 = 6
+	ENDIF
+;淫乱陷落ルート
+ELSEIF (TALENT:4 || TALENT:7) && (CFLAG:202 < 6 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	IF TALENT:淫乱 && (CFLAG:202 < 5 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+		IF !RAND:2
+			;PRINTFORML 
+			;PRINTFORMW 
+		ELSE
+			;PRINTFORML 
+			;PRINTFORMW 
+		ENDIF
+		;CFLAG:202 = 5
+	ELSEIF TALENT:娼妇 && (CFLAG:202 < 6 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+		IF !RAND:2
+			;PRINTFORML 
+			;PRINTFORMW 
+		ELSE
+			;PRINTFORML 
+			;PRINTFORMW 
+		ENDIF
+		;CFLAG:202 = 6
+	ENDIF
+;服从陷落ルート
+ELSEIF (TALENT:5 || TALENT:8) && (CFLAG:202 < 6 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	IF TALENT:服从 && (CFLAG:202 < 5 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+		IF !RAND:2
+			;PRINTFORML 
+			;PRINTFORMW 
+		ELSE
+			;PRINTFORML 
+			;PRINTFORMW 
+		ENDIF
+		;CFLAG:202 = 5
+	;隶属
+	ELSEIF TALENT:隶属 && (CFLAG:202 < 6 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+		IF !RAND:2
+			;PRINTFORML 
+			;PRINTFORMW 
+		ELSE
+			;PRINTFORML 
+			;PRINTFORMW 
+		ENDIF
+		;CFLAG:202 = 6
+	ENDIF
+ENDIF
+RETURN 0
+
+;-------------------------------------------------
+;EVENTEND関係
+;调教结束時のセリフ
+;-------------------------------------------------
+@EVENTEND
+SIF FLAG:7 <= 0
+	RETURN 0
+SIF NO:TARGET != 417
+	RETURN 0
+
+@KOJO_EVENTEND_K417
+;--------------------------------------------------
+;调教结束時のセリフ
+;--------------------------------------------------
+;调教をすぐやめたときは口上を不显示
+SIF PREVCOM == -1
+	RETURN 0
+DRAWLINE
+
+;最初に反抗刻印Lv3を取った時（一回だけ）
+IF MARK:3 == 3 && CFLAG:217 < 1
+	PRINTFORML 「无可救药的凡人，罪该万死！！」
+	PRINTFORMW %NAME%的眼神如刀剑般锐利冰冷，那股森寒带着浓烈的杀气……
+	CFLAG:217 = 1
+;反抗刻印Lv3、屈服刻印 < 2、顺从 <= 2
+ELSEIF MARK:反抗刻印 == 3 && MARK:屈服刻印 < 2 && ABL:顺从 <= 2 && (CFLAG:217 < 1 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	PRINTDATAL
+		DATAFORM 「下地狱去吧！危害世界的秽物！！」
+		DATAFORM 「罪孽深重的凡人，终遭神裁，死无葬身之地！！」
+	ENDDATA
+	PRINTFORMW %NAME%愤怒说着宛如审判死刑的言语……
+	CFLAG:217 = 1
+;屈服刻印Lv1以下
+ELSEIF MARK:2 <= 1 && (CFLAG:219 < 1 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	;PRINTFORML 
+	;PRINTFORMW 
+	;CFLAG:219 = 1
+;屈服刻印Lv2
+ELSEIF MARK:2 == 2 && (CFLAG:219 < 2 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	;PRINTFORML 
+	;PRINTFORMW 
+	;CFLAG:219 = 2
+;屈服刻印Lv3＋陷落素質无
+ELSEIF MARK:2 == 3 && !KANRAKU(TARGET) && (CFLAG:219 < 2 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	;PRINTFORML 
+	;PRINTFORMW 
+	;CFLAG:219 = 3
+;陷落済み＋体力500未満
+ELSEIF KANRAKU(TARGET) && BASE:0 < 500 && (CFLAG:218 < 1 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	;恋慕陷落ルート
+	IF (TALENT:3 || TALENT:6)
+		;PRINTFORML 
+		;PRINTFORMW 
+	;淫乱陷落ルート
+	ELSEIF (TALENT:4 || TALENT:7)
+		;PRINTFORML 
+		;PRINTFORMW 
+	;服从陷落ルート
+	ELSEIF (TALENT:5 || TALENT:8)
+		;PRINTFORML 
+		;PRINTFORMW 
+	ENDIF
+	;CFLAG:218 = 1
+;陷落済み
+ELSEIF KANRAKU(TARGET) && (CFLAG:219 < 4 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	;恋慕陷落ルート
+	IF (TALENT:3 || TALENT:6)
+		;PRINTFORML 
+		;PRINTFORMW 
+	;淫乱陷落ルート
+	ELSEIF (TALENT:4 || TALENT:7)
+		;PRINTFORML 
+		;PRINTFORMW 
+	;服从陷落ルート
+	ELSEIF (TALENT:5 || TALENT:8)
+		;PRINTFORML 
+		;PRINTFORMW 
+		
+	ENDIF
+	;CFLAG:219 = 4
+ENDIF
+DRAWLINE
+RETURN 0
+

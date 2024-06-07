@@ -1,0 +1,2932 @@
+﻿;劳役指示
+@CHARA_WORKING
+CALL KAIGYO
+A = 0
+B = 0
+D = 0
+E = 0
+F = 0
+G = 0
+J = 0
+REPEAT CHARANUM
+	SIF COUNT == MASTER
+		CONTINUE
+	SIF CFLAG:COUNT:1 != 2
+		CONTINUE
+	SIF CFLAG:COUNT:12 > 0
+		CONTINUE
+	;育児部屋に移动しているキャラは除外
+	C = COUNT
+	CALL CHECK_CHILD_CARE
+	SIF RESULT == 1
+		CONTINUE
+	SIF (TALENT:COUNT:3 || TALENT:COUNT:6) && BASE:COUNT:0 >= 800
+		A += 1
+	SIF (TALENT:COUNT:4 || TALENT:COUNT:7) && TIME == 0 && BASE:COUNT:0 >= 500
+		B += 1
+	IF (TALENT:COUNT:5 || TALENT:COUNT:8) && TIME == 0 && BASE:COUNT:0 >= 500
+		D += 1
+		SIF (TALENT:COUNT:怀孕 && CFLAG:COUNT:110 - 11 <= DAY) || TALENT:COUNT:育儿中
+			D -= 1
+	ENDIF
+	SIF KANRAKU(COUNT) && ABL:COUNT:14 >= 2 && BASE:COUNT:0 >= 800
+		E += 1
+	SIF (TALENT:COUNT:4 || TALENT:COUNT:7) && BASE:COUNT:0 > 800
+		F += 1
+	SIF (TALENT:COUNT:5 || TALENT:COUNT:8) && TALENT:COUNT:158 == 0 && BASE:COUNT:0 >= 300
+		G += 1
+	SIF (TALENT:COUNT:3 || TALENT:COUNT:6 || TALENT:COUNT:4 || TALENT:COUNT:7 || TALENT:COUNT:5 || TALENT:COUNT:8) && BASE:COUNT:0 >= 500 && !TIME
+		J += 1
+	SIF (TALENT:COUNT:4 || TALENT:COUNT:7 || TALENT:COUNT:5 || TALENT:COUNT:8) && BASE:COUNT:0 >= 500 && TIME
+		J += 1
+REND
+IF TARGET > 0 && TARGET != MASTER
+	SIF (TALENT:3 || TALENT:6) || ABL:0 >= 2
+		H = 1
+ENDIF
+SIF ABL:MASTER:2 > 3 && (FLAG:30 + FLAG:31 + FLAG:32) >= 3
+	I = 1
+DRAWLINE
+PRINTL 请选择要进行的劳役
+DRAWLINE
+;调教者变更に对応
+SIF MASTER == 0 || CFLAG:MASTER:1 == 3
+	PRINTL [  0] - 拍卖
+SIF A
+	PRINTL [  1] - 经营售餐棚
+SIF B
+	PRINTL [  2] - 娼馆打工
+SIF D
+	PRINTL [  3] - 出租奴隶
+SIF E
+	PRINTL [  4] - 演唱会
+SIF F
+	PRINTL [  5] - 乱交LIVE
+SIF G
+	PRINTL [  6] - 公共便所PLAY
+SIF J
+	PRINTL [  7] - 画室打工
+SIF FLAG:28
+	PRINTL [ 10] - 让见习调教师独立
+IF H
+	SIF TARGET != -1
+	PRINTFORML [ 50] - 让%CALLNAME:TARGET%做饭
+ENDIF
+SIF I
+	PRINTL [ 51] - 自己做饭
+DRAWLINE
+PRINTL [100] - 返回
+$INPUT_LOOP
+INPUT
+IF RESULT == 100
+	RETURN 0
+ELSEIF RESULT == 0
+	CALL CHARA_SELL
+ELSEIF RESULT == 1 && A
+	CALL LUNCH_STALL
+ELSEIF RESULT == 2 && B
+	CALL PROSTITUTION
+ELSEIF RESULT == 3 && D
+	CALL RENTAL_SLAVE
+ELSEIF RESULT == 4 && E
+	CALL CONCERT
+ELSEIF RESULT == 5 && F
+	CALL PROMISCUOUS_SEX_LIVE
+ELSEIF RESULT == 6 && G
+	CALL PUBLIC_TOILET
+ELSEIF RESULT == 7 && J
+    CALL NUDE_MODEL
+ELSEIF RESULT == 10 && FLAG:28
+	CALL MINARAI_HITORIDACHI
+ELSEIF RESULT == 50 && H
+	CALL LUNCH_JUDGE
+ELSEIF RESULT == 51 && I
+	CALL LUNCH_SELF
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+
+RETURN 0
+
+@MINARAI_HITORIDACHI
+DRAWLINE
+PRINTL 要让谁独立出去？
+PRINTL 
+FLAG:28 = 0
+REPEAT CHARANUM
+	IF CFLAG:COUNT:35
+		FLAG:28 += 1
+		IF COUNT < 10
+			PRINTFORML [ {COUNT}] %CALLNAME:COUNT%
+		ELSE
+			PRINTFORML [{COUNT}] %CALLNAME:COUNT%
+		ENDIF
+	ENDIF
+REND
+PRINTL [999] 返回
+INPUT
+SIF RESULT == 999 || !CFLAG:RESULT:35
+	RETURN 0
+FLAG:28 -= 1
+TFLAG:403 = TARGET
+SIF ASSI == RESULT
+	ASSI = -1
+TARGET = RESULT
+
+IF CFLAG:2404 == 1
+    PRINTL
+    PRINTFORML 房间里的%CALLNAME%被带出来了
+    PRINTW
+    CFLAG:2404 = 0
+ELSEIF CFLAG:2414 == 1
+    C = 0
+    REPEAT CHARANUM
+        SIF CFLAG:COUNT:(NO:TARGET+3000) == 1
+            C = COUNT
+    REND
+    PRINTL
+    PRINTFORML 在%CALLNAME:C%房间里的%CALLNAME%被带出来了
+    PRINTW
+    CFLAG:2414 = 0
+    CFLAG:C:(NO:TARGET+3000) = 0
+    CFLAG:C:2404 = 0
+ENDIF
+
+;イベント口上はひとまず无
+PRINTFORMW %NAME%离开宅邸了
+;見習いの父か母を捜す 主人以外
+LOCAL = 0
+REPEAT CHARANUM
+	SIF COUNT != MASTER && (CFLAG:(2000+NO:COUNT) == 5 || CFLAG:(2000+NO:COUNT) == 6)
+		LOCAL = COUNT
+REND
+;居なかったら次に一番相性の高いヤツを探す　150以上ないと駄目　主人以外
+IF LOCAL == 0 
+	REPEAT CHARANUM
+		SIF COUNT != MASTER && RELATION:COUNT:(NO:TARGET) >= 150 && RELATION:COUNT:(NO:TARGET) >= RELATION:LOCAL:(NO:TARGET)
+			LOCAL = COUNT
+	REND
+ENDIF
+IF LOCAL > 0 
+	PRINTL
+	IF (CFLAG:(2000+NO:LOCAL) == 5 || CFLAG:(2000+NO:LOCAL) == 6)
+		IF MALE(TARGET)
+			PRINT 儿子（？）
+		ELSE
+			PRINT 女儿
+		ENDIF
+	ENDIF
+	PRINTFORM %CALLNAME%离开后，
+	SIF CFLAG:(2000+NO:LOCAL) != 5 && CFLAG:(2000+NO:LOCAL) != 6
+		PRINTFORM 与%CALLNAME%关系很好的
+	PRINTFORMW %CALLNAME:LOCAL%好像感到非常沮丧…
+	SIF !TALENT:LOCAL:失意
+		PRINTFORMW %CALLNAME:LOCAL%陷入了｢失意｣状态
+	TALENT:LOCAL:失意 = 1
+	CFLAG:LOCAL:36 += 20
+ENDIF
+;現在の子供の数フラグ－
+SIF NO:TARGET >= 300
+	FLAG:33--
+DELCHARA TARGET
+TARGET = -1
+ASSI = -1
+
+;奴隶拍卖の処理
+@CHARA_SELL
+DRAWLINE
+PRINTL 要拍卖谁？
+PRINTL 
+REPEAT CHARANUM
+	TFLAG:COUNT = 0
+	SIF COUNT == MASTER
+		CONTINUE
+	SIF CFLAG:COUNT:1 == 3
+		CONTINUE
+	SIF CFLAG:COUNT:12 > 0
+		CONTINUE
+	;育児部屋に移动しているキャラは除外
+	C = COUNT
+	CALL CHECK_CHILD_CARE
+	;烙印付きは売れない→売れるようにした
+	;SIF TALENT:COUNT:159
+	;	CONTINUE
+	SIF RESULT == 1
+		CONTINUE
+	IF CFLAG:COUNT:1 >= 1 && CFLAG:COUNT:1 <= 3 && CFLAG:COUNT:7 == 0
+		PRINTFORM [{COUNT}] %NAME:COUNT% 
+		IF ASSI == COUNT
+			PRINT (助手)
+		ELSEIF ISASSI:COUNT == 1
+			PRINT (原助手)
+		ELSEIF CFLAG:COUNT:1 == 2
+			PRINT (助手可)
+		ENDIF
+		PRINTL 
+	ENDIF
+REND
+PRINTFORML [100] 返回
+
+$INPUT_LOOP
+INPUT
+
+IF RESULT == 100
+	RETURN 0
+ELSEIF RESULT < 0 || RESULT >= CHARANUM
+	GOTO INPUT_LOOP
+ELSEIF CFLAG:RESULT:1 < 1 || CFLAG:RESULT:1 == 3 || CFLAG:RESULT:7 > 0 || CFLAG:RESULT:12 > 0 || RESULT == MASTER
+	GOTO INPUT_LOOP
+ELSE
+	C = RESULT
+	CALL CHECK_CHILD_CARE
+	SIF RESULT == 1
+		GOTO INPUT_LOOP
+	;拍卖処理
+	TFLAG:403 = TARGET
+	TFLAG:404 = ASSI
+	TARGET = C
+ENDIF
+
+S = 0
+
+;ABLによる基礎値計算
+V = 0
+;ABL:顺从をみる
+IF ABL:0 == 0
+	V = 0
+ELSEIF ABL:0 == 1
+	V = 1200
+ELSEIF ABL:0 == 2
+	V = 1800
+ELSEIF ABL:0 == 3
+	V = 2500
+ELSEIF ABL:0 == 4
+	V = 3300
+ELSEIF ABL:0 == 5
+	V = 4200
+ELSEIF ABL:0 == 6
+	V = 6200
+ELSEIF ABL:0 == 7
+	V = 9000
+ELSEIF ABL:0 == 8
+	V = 13000
+ELSEIF ABL:0 == 9
+	V = 18000
+ELSE
+	V = 25000
+ENDIF
+SIF V > 0
+	PRINTFORML %ABLNAME:0%LV{ABL:0} +{V}
+S += V
+
+
+;ABL:欲望をみる
+IF ABL:1 == 0
+	V = 0
+ELSEIF ABL:1 == 1
+	V = 1000
+ELSEIF ABL:1 == 2
+	V = 1500
+ELSEIF ABL:1 == 3
+	V = 2100
+ELSEIF ABL:1 == 4
+	V = 2800
+ELSEIF ABL:1 == 5
+	V = 3600
+ELSEIF ABL:1 == 6
+	V = 5500
+ELSEIF ABL:1 == 7
+	V = 8000
+ELSEIF ABL:1 == 8
+	V = 12000
+ELSEIF ABL:1 == 9
+	V = 16000
+ELSE
+	V = 22000
+ENDIF
+SIF V > 0
+	PRINTFORML %ABLNAME:1%LV{ABL:1} +{V}
+S += V
+
+
+;ABL:技巧をみる
+IF ABL:2 == 0
+	V = 0
+ELSEIF ABL:2 == 1
+	V = 800
+ELSEIF ABL:2 == 2
+	V = 1200
+ELSEIF ABL:2 == 3
+	V = 1700
+ELSEIF ABL:2 == 4
+	V = 2300
+ELSEIF ABL:2 == 5
+	V = 3000
+ELSEIF ABL:2 == 6
+	V = 4800
+ELSEIF ABL:2 == 7
+	V = 7000
+ELSEIF ABL:2 == 8
+	V = 11000
+ELSEIF ABL:2 == 9
+	V = 15000
+ELSE
+	V = 21000
+ENDIF
+SIF V > 0
+	PRINTFORML %ABLNAME:2%LV{ABL:2} +{V}
+S += V
+
+
+;ABL:Ｃ感觉をみる
+IF ABL:3 == 0
+	V = 0
+ELSEIF ABL:3 == 1
+	V = 800
+ELSEIF ABL:3 == 2
+	V = 1200
+ELSEIF ABL:3 == 3
+	V = 1700
+ELSEIF ABL:3 == 4
+	V = 2300
+ELSEIF ABL:3 == 5
+	V = 3000
+ELSEIF ABL:3 == 6
+	V = 4800
+ELSEIF ABL:3 == 7
+	V = 7000
+ELSEIF ABL:3 == 8
+	V = 11000
+ELSEIF ABL:3 == 9
+	V = 15000
+ELSE
+	V = 21000
+ENDIF
+SIF V > 0
+	PRINTFORML %ABLNAME:3%LV{ABL:3} +{V}
+S += V
+
+
+;ABL:Ｖ感觉をみる
+IF ABL:4 == 0
+	V = 0
+ELSEIF ABL:4 == 1
+	V = 800
+ELSEIF ABL:4 == 2
+	V = 1200
+ELSEIF ABL:4 == 3
+	V = 1700
+ELSEIF ABL:4 == 4
+	V = 2300
+ELSEIF ABL:4 == 5
+	V = 3000
+ELSEIF ABL:4 == 6
+	V = 4800
+ELSEIF ABL:4 == 7
+	V = 7000
+ELSEIF ABL:4 == 8
+	V = 11000
+ELSEIF ABL:4 == 9
+	V = 15000
+ELSE
+	V = 21000
+ENDIF
+SIF V > 0
+	PRINTFORML %ABLNAME:4%LV{ABL:4} +{V}
+S += V
+
+
+;ABL:Ａ感觉をみる
+IF ABL:5 == 0
+	V = 0
+ELSEIF ABL:5 == 1
+	V = 800
+ELSEIF ABL:5 == 2
+	V = 1200
+ELSEIF ABL:5 == 3
+	V = 1700
+ELSEIF ABL:5 == 4
+	V = 2300
+ELSEIF ABL:5 == 5
+	V = 3000
+ELSEIF ABL:5 == 6
+	V = 4800
+ELSEIF ABL:5 == 7
+	V = 7000
+ELSEIF ABL:5 == 8
+	V = 11000
+ELSEIF ABL:5 == 9
+	V = 15000
+ELSE
+	V = 21000
+ENDIF
+SIF V > 0
+	PRINTFORML %ABLNAME:5%LV{ABL:5} +{V}
+S += V
+
+
+;ABL:Ｂ感觉をみる
+IF ABL:6 == 0
+	V = 0
+ELSEIF ABL:6 == 1
+	V = 800
+ELSEIF ABL:6 == 2
+	V = 1200
+ELSEIF ABL:6 == 3
+	V = 1700
+ELSEIF ABL:6 == 4
+	V = 2300
+ELSEIF ABL:6 == 5
+	V = 3000
+ELSEIF ABL:6 == 6
+	V = 4800
+ELSEIF ABL:6 == 7
+	V = 7000
+ELSEIF ABL:6 == 8
+	V = 11000
+ELSEIF ABL:6 == 9
+	V = 15000
+ELSE
+	V = 21000
+ENDIF
+SIF V > 0
+	PRINTFORML %ABLNAME:6%LV{ABL:6} +{V}
+S += V
+
+
+;ABL:Ｗ感觉をみる
+IF ABL:22 == 0
+	V = 0
+ELSEIF ABL:22 == 1
+	V = 800
+ELSEIF ABL:22 == 2
+	V = 1200
+ELSEIF ABL:22 == 3
+	V = 1700
+ELSEIF ABL:22 == 4
+	V = 2300
+ELSEIF ABL:22 == 5
+	V = 3000
+ELSEIF ABL:22 == 6
+	V = 4800
+ELSEIF ABL:22 == 7
+	V = 7000
+ELSEIF ABL:22 == 8
+	V = 11000
+ELSEIF ABL:22 == 9
+	V = 15000
+ELSE
+	V = 21000
+ENDIF
+SIF V > 0
+	PRINTFORML %ABLNAME:22%LV{ABL:22} +{V}
+S += V
+
+
+;ABL:Ｔ感觉をみる
+IF ABL:23 == 0
+	V = 0
+ELSEIF ABL:23 == 1
+	V = 800
+ELSEIF ABL:23 == 2
+	V = 1200
+ELSEIF ABL:23 == 3
+	V = 1700
+ELSEIF ABL:23 == 4
+	V = 2300
+ELSEIF ABL:23 == 5
+	V = 3000
+ELSEIF ABL:23 == 6
+	V = 4800
+ELSEIF ABL:23 == 7
+	V = 7000
+ELSEIF ABL:23 == 8
+	V = 11000
+ELSEIF ABL:23 == 9
+	V = 15000
+ELSE
+	V = 21000
+ENDIF
+SIF V > 0
+	PRINTFORML %ABLNAME:23%LV{ABL:23} +{V}
+S += V
+
+;ABL:Ｅ感觉をみる
+IF ABL:24 == 0
+	V = 0
+ELSEIF ABL:24 == 1
+	V = 800
+ELSEIF ABL:24 == 2
+	V = 1200
+ELSEIF ABL:24 == 3
+	V = 1700
+ELSEIF ABL:24 == 4
+	V = 2300
+ELSEIF ABL:24 == 5
+	V = 3000
+ELSEIF ABL:24 == 6
+	V = 4800
+ELSEIF ABL:24 == 7
+	V = 7000
+ELSEIF ABL:24 == 8
+	V = 11000
+ELSEIF ABL:24 == 9
+	V = 15000
+ELSE
+	V = 21000
+ENDIF
+SIF V > 0
+	PRINTFORML %ABLNAME:24%LV{ABL:24} +{V}
+S += V
+
+
+;ABL:侍奉精神をみる
+IF ABL:7 == 0
+	V = 0
+ELSEIF ABL:7 == 1
+	V = 1200
+ELSEIF ABL:7 == 2
+	V = 1800
+ELSEIF ABL:7 == 3
+	V = 2500
+ELSEIF ABL:7 == 4
+	V = 3300
+ELSEIF ABL:7 == 5
+	V = 4200
+ELSEIF ABL:7 == 6
+	V = 6200
+ELSEIF ABL:7 == 7
+	V = 9000
+ELSEIF ABL:7 == 8
+	V = 13000
+ELSEIF ABL:7 == 9
+	V = 18000
+ELSE
+	V = 25000
+ENDIF
+SIF V > 0
+	PRINTFORML %ABLNAME:7%LV{ABL:7} +{V}
+S += V
+
+
+;ABL:露出癖をみる
+IF ABL:8 == 0
+	V = 0
+ELSEIF ABL:8 == 1
+	V = 800
+ELSEIF ABL:8 == 2
+	V = 1200
+ELSEIF ABL:8 == 3
+	V = 1700
+ELSEIF ABL:8 == 4
+	V = 2300
+ELSEIF ABL:8 == 5
+	V = 3000
+ELSEIF ABL:8 == 6
+	V = 4800
+ELSEIF ABL:8 == 7
+	V = 7000
+ELSEIF ABL:8 == 8
+	V = 11000
+ELSEIF ABL:8 == 9
+	V = 15000
+ELSE
+	V = 21000
+ENDIF
+SIF V > 0
+	PRINTFORML %ABLNAME:8%LV{ABL:8} +{V}
+S += V
+
+
+;ABL:受虐属性をみる
+IF ABL:9 == 0
+	V = 0
+ELSEIF ABL:9 == 1
+	V = 1000
+ELSEIF ABL:9 == 2
+	V = 1500
+ELSEIF ABL:9 == 3
+	V = 2100
+ELSEIF ABL:9 == 4
+	V = 2800
+ELSEIF ABL:9 == 5
+	V = 3600
+ELSEIF ABL:9 == 6
+	V = 5500
+ELSEIF ABL:9 == 7
+	V = 8000
+ELSEIF ABL:9 == 8
+	V = 12000
+ELSEIF ABL:9 == 9
+	V = 16000
+ELSE
+	V = 22000
+ENDIF
+SIF V > 0
+	PRINTFORML %ABLNAME:9%LV{ABL:9} +{V}
+S += V
+
+
+;ABL:嗜虐属性をみる
+IF ABL:10 == 0
+	V = 0
+ELSEIF ABL:10 == 1
+	V = 800
+ELSEIF ABL:10 == 2
+	V = 1200
+ELSEIF ABL:10 == 3
+	V = 1700
+ELSEIF ABL:10 == 4
+	V = 2300
+ELSEIF ABL:10 == 5
+	V = 3000
+ELSEIF ABL:10 == 6
+	V = 4800
+ELSEIF ABL:10 == 7
+	V = 7000
+ELSEIF ABL:10 == 8
+	V = 11000
+ELSEIF ABL:10 == 9
+	V = 15000
+ELSE
+	V = 21000
+ENDIF
+SIF V > 0
+	PRINTFORML %ABLNAME:10%LV{ABL:10} +{V}
+S += V
+
+
+;ABL:百合属性をみる
+IF ABL:11 == 0
+	V = 0
+ELSEIF ABL:11 == 1
+	V = 1000
+ELSEIF ABL:11 == 2
+	V = 1500
+ELSEIF ABL:11 == 3
+	V = 2100
+ELSEIF ABL:11 == 4
+	V = 2800
+ELSEIF ABL:11 == 5
+	V = 3600
+ELSEIF ABL:11 == 6
+	V = 5500
+ELSEIF ABL:11 == 7
+	V = 8000
+ELSEIF ABL:11 == 8
+	V = 12000
+ELSEIF ABL:11 == 9
+	V = 16000
+ELSE
+	V = 22000
+ENDIF
+SIF V > 0
+	PRINTFORML %ABLNAME:11%LV{ABL:11} +{V}
+S += V
+
+
+;ABL:料理技能をみる
+IF ABL:12 == 0
+	V = 0
+ELSEIF ABL:12 == 1
+	V = 600
+ELSEIF ABL:12 == 2
+	V = 1000
+ELSEIF ABL:12 == 3
+	V = 1500
+ELSEIF ABL:12 == 4
+	V = 2100
+ELSEIF ABL:12 == 5
+	V = 2800
+ELSEIF ABL:12 == 6
+	V = 4800
+ELSEIF ABL:12 == 7
+	V = 7000
+ELSEIF ABL:12 == 8
+	V = 11000
+ELSEIF ABL:12 == 9
+	V = 15000
+ELSE
+	V = 21000
+ENDIF
+SIF V > 0
+	PRINTFORML %ABLNAME:12%LV{ABL:12} +{V}
+S += V
+
+
+;ABL:摄影技能をみる
+IF ABL:13 == 0
+	V = 0
+ELSEIF ABL:13 == 1
+	V = 600
+ELSEIF ABL:13 == 2
+	V = 1000
+ELSEIF ABL:13 == 3
+	V = 1500
+ELSEIF ABL:13 == 4
+	V = 2100
+ELSEIF ABL:13 == 5
+	V = 2800
+ELSEIF ABL:13 == 6
+	V = 4800
+ELSEIF ABL:13 == 7
+	V = 7000
+ELSEIF ABL:13 == 8
+	V = 11000
+ELSEIF ABL:13 == 9
+	V = 15000
+ELSE
+	V = 21000
+ENDIF
+SIF V > 0
+	PRINTFORML %ABLNAME:13%LV{ABL:13} +{V}
+S += V
+
+
+;ABL:歌唱技能をみる
+IF ABL:14 == 0
+	V = 0
+ELSEIF ABL:14 == 1
+	V = 600
+ELSEIF ABL:14 == 2
+	V = 1000
+ELSEIF ABL:14 == 3
+	V = 1500
+ELSEIF ABL:14 == 4
+	V = 2100
+ELSEIF ABL:14 == 5
+	V = 2800
+ELSEIF ABL:14 == 6
+	V = 4800
+ELSEIF ABL:14 == 7
+	V = 7000
+ELSEIF ABL:14 == 8
+	V = 11000
+ELSEIF ABL:14 == 9
+	V = 15000
+ELSE
+	V = 21000
+ENDIF
+SIF V > 0
+	PRINTFORML %ABLNAME:14%LV{ABL:14} +{V}
+S += V
+
+
+;ABL:自慰成瘾をみる
+IF ABL:15 == 0
+	V = 0
+ELSEIF ABL:15 == 1
+	V = 1500
+ELSEIF ABL:15 == 2
+	V = 2200
+ELSEIF ABL:15 == 3
+	V = 3000
+ELSEIF ABL:15 == 4
+	V = 3900
+ELSEIF ABL:15 == 5
+	V = 4900
+ELSEIF ABL:15 == 6
+	V = 8000
+ELSEIF ABL:15 == 7
+	V = 11000
+ELSEIF ABL:15 == 8
+	V = 15000
+ELSEIF ABL:15 == 9
+	V = 20000
+ELSE
+	V = 30000
+ENDIF
+SIF V > 0
+	PRINTFORML %ABLNAME:15%LV{ABL:15} +{V}
+S += V
+
+
+;ABL:精液成瘾をみる
+IF ABL:16 == 0
+	V = 0
+ELSEIF ABL:16 == 1
+	V = 1500
+ELSEIF ABL:16 == 2
+	V = 2200
+ELSEIF ABL:16 == 3
+	V = 3000
+ELSEIF ABL:16 == 4
+	V = 3900
+ELSEIF ABL:16 == 5
+	V = 4900
+ELSEIF ABL:16 == 6
+	V = 8000
+ELSEIF ABL:15 == 7
+	V = 11000
+ELSEIF ABL:15 == 8
+	V = 15000
+ELSEIF ABL:15 == 9
+	V = 20000
+ELSE
+	V = 30000
+ENDIF
+SIF V > 0
+	PRINTFORML %ABLNAME:16%LV{ABL:16} +{V}
+S += V
+
+
+;ABL:百合成瘾をみる
+IF ABL:17 == 0
+	V = 0
+ELSEIF ABL:17 == 1
+	V = 1500
+ELSEIF ABL:17 == 2
+	V = 2200
+ELSEIF ABL:17 == 3
+	V = 3000
+ELSEIF ABL:17 == 4
+	V = 3900
+ELSEIF ABL:17 == 5
+	V = 4900
+ELSEIF ABL:17 == 6
+	V = 8000
+ELSEIF ABL:15 == 7
+	V = 11000
+ELSEIF ABL:15 == 8
+	V = 15000
+ELSEIF ABL:15 == 9
+	V = 20000
+ELSE
+	V = 30000
+ENDIF
+SIF V > 0
+	PRINTFORML %ABLNAME:17%LV{ABL:17} +{V}
+S += V
+
+
+;ABL:性成瘾をみる
+IF ABL:18 == 0
+	V = 0
+ELSEIF ABL:18 == 1
+	V = 1500
+ELSEIF ABL:18 == 2
+	V = 2200
+ELSEIF ABL:18 == 3
+	V = 3000
+ELSEIF ABL:18 == 4
+	V = 3900
+ELSEIF ABL:18 == 5
+	V = 4900
+ELSEIF ABL:18 == 6
+	V = 8000
+ELSEIF ABL:18 == 7
+	V = 11000
+ELSEIF ABL:18 == 8
+	V = 15000
+ELSEIF ABL:18 == 9
+	V = 20000
+ELSE
+	V = 30000
+ENDIF
+SIF V > 0
+	PRINTFORML %ABLNAME:18%LV{ABL:18} +{V}
+S += V
+
+
+;ABL:喷乳成瘾をみる
+IF ABL:19 == 0
+	V = 0
+ELSEIF ABL:19 == 1
+	V = 1500
+ELSEIF ABL:19 == 2
+	V = 2200
+ELSEIF ABL:19 == 3
+	V = 3000
+ELSEIF ABL:19 == 4
+	V = 3900
+ELSEIF ABL:19 == 5
+	V = 4900
+ELSEIF ABL:19 == 6
+	V = 8000
+ELSEIF ABL:19 == 7
+	V = 11000
+ELSEIF ABL:19 == 8
+	V = 15000
+ELSEIF ABL:19 == 9
+	V = 20000
+ELSE
+	V = 30000
+ENDIF
+SIF V > 0
+	PRINTFORML %ABLNAME:19%LV{ABL:19} +{V}
+S += V
+
+
+;ABL:同性倾向をみる
+IF ABL:20 == 0
+	V = 0
+ELSEIF ABL:20 == 1
+	V = 1000
+ELSEIF ABL:20 == 2
+	V = 1500
+ELSEIF ABL:20 == 3
+	V = 2100
+ELSEIF ABL:20 == 4
+	V = 2800
+ELSEIF ABL:20 == 5
+	V = 3600
+ELSEIF ABL:20 == 6
+	V = 5500
+ELSEIF ABL:1 == 7
+	V = 8000
+ELSEIF ABL:1 == 8
+	V = 12000
+ELSEIF ABL:1 == 9
+	V = 16000
+ELSE
+	V = 22000
+ENDIF
+SIF V > 0
+	PRINTFORML %ABLNAME:20%LV{ABL:20} +{V}
+S += V
+
+
+;ABL:男同成瘾をみる
+IF ABL:21 == 0
+	V = 0
+ELSEIF ABL:21 == 1
+	V = 1500
+ELSEIF ABL:21 == 2
+	V = 2200
+ELSEIF ABL:21 == 3
+	V = 3000
+ELSEIF ABL:21 == 4
+	V = 3900
+ELSEIF ABL:21 == 5
+	V = 4900
+ELSEIF ABL:21 == 6
+	V = 8000
+ELSEIF ABL:21 == 7
+	V = 11000
+ELSEIF ABL:21 == 8
+	V = 15000
+ELSEIF ABL:21 == 9
+	V = 20000
+ELSE
+	V = 30000
+ENDIF
+SIF V > 0
+	PRINTFORML %ABLNAME:21%LV{ABL:21} +{V}
+S += V
+
+
+
+V = 100
+;素質による拍卖額補正値計算
+;TALENT:处女をみる
+IF TALENT:0
+	C = 100
+	V += 100
+	PRINTFORML %TALENTNAME:0% ＋{C}％
+ENDIF
+;TALENT:再生处女をみる
+IF TALENT:1
+	C = 20
+	V += 20
+	PRINTFORML %TALENTNAME:1% ＋{C}％
+ENDIF
+;素質による増減
+;陷落素質
+;恋慕
+IF TALENT:3
+	C = 50
+	V -= 50
+	PRINTFORML %TALENTNAME:3% －{C}％
+ENDIF
+;淫乱
+IF TALENT:4
+	C = 30
+	V += 30
+	PRINTFORML %TALENTNAME:4% ＋{C}％
+ENDIF
+;服从
+IF TALENT:5
+	C = 50
+	V += 50
+	PRINTFORML %TALENTNAME:5% ＋{C}％
+ENDIF
+;相亲相爱
+IF TALENT:6
+	C = 80
+	V -= 80
+	PRINTFORML %TALENTNAME:6% －{C}％
+ENDIF
+;娼妇
+IF TALENT:7
+	C = 60
+	V += 60
+	PRINTFORML %TALENTNAME:7% ＋{C}％
+ENDIF
+;隶属
+IF TALENT:8
+	C = 100
+	V += 100
+	PRINTFORML %TALENTNAME:8% ＋{C}％
+ENDIF
+
+
+;其他素質
+;胆怯
+IF TALENT:10
+	C = 20
+	V -= 20
+	PRINTFORML %TALENTNAME:10% －{C}％
+ENDIF
+;反抗
+IF TALENT:11
+	C = 20
+	V += 20
+	PRINTFORML %TALENTNAME:11% ＋{C}％
+ENDIF
+;刚强
+IF TALENT:12
+	C = 40
+	V += 40
+	PRINTFORML %TALENTNAME:12% ＋{C}％
+ENDIF
+;直率
+IF TALENT:13
+	C = 20
+	V -= 20
+	PRINTFORML %TALENTNAME:13% －{C}％
+ENDIF
+;老实
+IF TALENT:14
+	C = 20
+	V -= 20
+	PRINTFORML %TALENTNAME:14% －{C}％
+ENDIF
+;高傲
+IF TALENT:15
+	C = 20
+	V += 20
+	PRINTFORML %TALENTNAME:15% ＋{C}％
+ENDIF
+;自大
+IF TALENT:16
+	C = 20
+	V += 20
+	PRINTFORML %TALENTNAME:16% ＋{C}％
+ENDIF
+;自卑
+IF TALENT:17
+	C = 20
+	V -= 20
+	PRINTFORML %TALENTNAME:17% －{C}％
+ENDIF
+;傲娇
+IF TALENT:18
+	C = 20
+	V += 20
+	PRINTFORML %TALENTNAME:18% ＋{C}％
+ENDIF
+;自制力
+IF TALENT:20
+	C = 20
+	V += 20
+	PRINTFORML %TALENTNAME:20% ＋{C}％
+ENDIF
+;无动于衷
+IF TALENT:21
+	C = 20
+	V -= 20
+	PRINTFORML %TALENTNAME:21% －{C}％
+ENDIF
+;缺乏感情
+IF TALENT:22
+	C = 20
+	V -= 20
+	PRINTFORML %TALENTNAME:22% －{C}％
+ENDIF
+;性好奇
+IF TALENT:23
+	C = 10
+	V += 10
+	PRINTFORML %TALENTNAME:23% ＋{C}％
+ENDIF
+;性保守
+IF TALENT:24
+	C = 10
+	V += 10
+	PRINTFORML %TALENTNAME:24% ＋{C}％
+ENDIF
+;难以越过的底线
+IF TALENT:27
+	C = 30
+	V += 30
+	PRINTFORML %TALENTNAME:27% ＋{C}％
+ENDIF
+;喜欢引人注目
+IF TALENT:28
+	C = 10
+	V += 10
+	PRINTFORML %TALENTNAME:28% ＋{C}％
+ENDIF
+;贞操重视
+IF TALENT:30
+	C = 20
+	V += 20
+	PRINTFORML %TALENTNAME:30% ＋{C}％
+ENDIF
+;贞操淡漠
+IF TALENT:31
+	C = 20
+	V -= 20
+	PRINTFORML %TALENTNAME:31% －{C}％
+ENDIF
+;性开放
+IF TALENT:33
+	C = 10
+	V += 10
+	PRINTFORML %TALENTNAME:33% ＋{C}％
+ENDIF
+;害羞
+IF TALENT:35
+	C = 10
+	V += 10
+	PRINTFORML %TALENTNAME:35% ＋{C}％
+ENDIF
+;不知羞耻
+IF TALENT:36
+	C = 10
+	V -= 10
+	PRINTFORML %TALENTNAME:36% －{C}％
+ENDIF
+;怕痛
+IF TALENT:40
+	C = 20
+	V -= 20
+	PRINTFORML %TALENTNAME:40% －{C}％
+ENDIF
+;耐痛
+IF TALENT:41
+	C = 20
+	V += 20
+	PRINTFORML %TALENTNAME:41% ＋{C}％
+ENDIF
+;容易湿
+IF TALENT:42
+	C = 10
+	V += 10
+	PRINTFORML %TALENTNAME:42% ＋{C}％
+ENDIF
+;不易湿
+IF TALENT:43
+	C = 10
+	V -= 10
+	PRINTFORML %TALENTNAME:43% －{C}％
+ENDIF
+;学得快
+IF TALENT:50
+	C = 10
+	V += 10
+	PRINTFORML %TALENTNAME:50% ＋{C}％
+ENDIF
+;学得慢
+IF TALENT:51
+	C = 10
+	V -= 10
+	PRINTFORML %TALENTNAME:51% －{C}％
+ENDIF
+;善用舌头
+IF TALENT:52
+	C = 30
+	V += 30
+	PRINTFORML %TALENTNAME:52% ＋{C}％
+ENDIF
+;药物抗性
+IF TALENT:56
+	C = 20
+	V -= 20
+	PRINTFORML %TALENTNAME:56% －{C}％
+ENDIF
+;漏尿癖
+IF TALENT:57
+	C = 10
+	V += 10
+	PRINTFORML %TALENTNAME:57% ＋{C}％
+ENDIF
+;容易自慰
+IF TALENT:60
+	C = 10
+	V += 10
+	PRINTFORML %TALENTNAME:60% ＋{C}％
+ENDIF
+;污臭钝感
+IF TALENT:61
+	C = 20
+	V -= 20
+	PRINTFORML %TALENTNAME:61% －{C}％
+ENDIF
+;污臭敏感
+IF TALENT:62
+	C = 20
+	V += 20
+	PRINTFORML %TALENTNAME:62% ＋{C}％
+ENDIF
+;自我奉献
+IF TALENT:63
+	C = 30
+	V += 30
+	PRINTFORML %TALENTNAME:63% ＋{C}％
+ENDIF
+;接受快感
+IF TALENT:70
+	C = 30
+	V -= 30
+	PRINTFORML %TALENTNAME:70% －{C}％
+ENDIF
+;否定快感
+IF TALENT:71
+	C = 30
+	V += 30
+	PRINTFORML %TALENTNAME:71% ＋{C}％
+ENDIF
+;容易高潮
+IF TALENT:73
+	C = 50
+	V -= 50
+	PRINTFORML %TALENTNAME:73% －{C}％
+ENDIF
+;自慰狂
+IF TALENT:74
+	C = 20
+	V += 20
+	PRINTFORML %TALENTNAME:74% ＋{C}％
+ENDIF
+;淫壶
+IF TALENT:75
+	C = 30
+	V += 30
+	PRINTFORML %TALENTNAME:75% ＋{C}％
+ENDIF
+;尻穴狂
+IF TALENT:76
+	C = 20
+	V += 20
+	PRINTFORML %TALENTNAME:76% ＋{C}％
+ENDIF
+;淫乳
+IF TALENT:77
+	C = 30
+	V += 30
+	PRINTFORML %TALENTNAME:77% ＋{C}％
+ENDIF
+;性爱狂
+IF TALENT:78
+	C = 30
+	V += 30
+	PRINTFORML %TALENTNAME:78% ＋{C}％
+ENDIF
+;性倒错
+IF TALENT:80
+	C = 10
+	V += 10
+	PRINTFORML %TALENTNAME:80% ＋{C}％
+ENDIF
+;讨厌男人
+IF TALENT:82
+	C = 10
+	V -= 10
+	PRINTFORML %TALENTNAME:82% －{C}％
+ENDIF
+;施虐狂
+IF TALENT:83
+	C = 30
+	V += 30
+	PRINTFORML %TALENTNAME:83% ＋{C}％
+ENDIF
+;受虐狂
+IF TALENT:84
+	C = 40
+	V += 40
+	PRINTFORML %TALENTNAME:84% ＋{C}％
+ENDIF
+;盲信
+IF TALENT:86
+	C = 30
+	V += 30
+	PRINTFORML %TALENTNAME:86% ＋{C}％
+ENDIF
+;小恶魔
+IF TALENT:87
+	C = 20
+	V += 20
+	PRINTFORML %TALENTNAME:87% ＋{C}％
+ENDIF
+;讨厌女人
+IF TALENT:88
+	C = 10
+	V -= 10
+	PRINTFORML %TALENTNAME:88% －{C}％
+ENDIF
+;妖狐
+IF TALENT:91
+	C = 20
+	V += 20
+	PRINTFORML %TALENTNAME:91% ＋{C}％
+ENDIF
+;魅力
+IF TALENT:92
+	C = 20
+	V += 20
+	PRINTFORML %TALENTNAME:92% ＋{C}％
+ENDIF
+;谜之魅力
+IF TALENT:94
+	C = 100
+	V += 100
+	PRINTFORML %TALENTNAME:94% ＋{C}％
+ENDIF
+;Ｃ钝感（感覚が4以上なら无效）
+IF TALENT:101 && ABL:3 < 4
+	C = 30
+	V -= 30
+	PRINTFORML %TALENTNAME:101% －{C}％
+ENDIF
+;Ｃ敏感（感覚が3未満なら无效）
+IF TALENT:102 && ABL:3 >= 3
+	C = 30
+	V += 30
+	PRINTFORML %TALENTNAME:102% ＋{C}％
+ENDIF
+;Ｖ钝感（感覚が4以上なら无效）
+IF TALENT:103 && ABL:4 < 4
+	C = 30
+	V -= 30
+	PRINTFORML %TALENTNAME:103% －{C}％
+ENDIF
+;Ｖ敏感（感覚が3未満なら无效）
+IF TALENT:104 && ABL:4 >= 3
+	C = 30
+	V += 30
+	PRINTFORML %TALENTNAME:104% ＋{C}％
+ENDIF
+;Ａ钝感（感覚が4以上なら无效）
+IF TALENT:105 && ABL:5 < 4
+	C = 30
+	V -= 30
+	PRINTFORML %TALENTNAME:105% －{C}％
+ENDIF
+;Ａ敏感（感覚が3未満なら无效）
+IF TALENT:106 && ABL:5 >= 3
+	C = 30
+	V += 30
+	PRINTFORML %TALENTNAME:106% ＋{C}％
+ENDIF
+;Ｂ钝感（感覚が4以上なら无效）
+IF TALENT:107 && ABL:6 < 4
+	C = 30
+	V -= 30
+	PRINTFORML %TALENTNAME:107% －{C}％
+ENDIF
+;Ｂ敏感（感覚が3未満なら无效）
+IF TALENT:108 && ABL:6 >= 3
+	C = 30
+	V += 30
+	PRINTFORML %TALENTNAME:108% ＋{C}％
+ENDIF
+;Ｗ钝感（感覚が4以上なら无效）
+IF TALENT:231 && ABL:22 < 4
+	C = 30
+	V -= 30
+	PRINTFORML %TALENTNAME:231% －{C}％
+ENDIF
+;Ｗ敏感（感覚が3未満なら无效）
+IF TALENT:230 && ABL:22 >= 3
+	C = 30
+	V += 30
+	PRINTFORML %TALENTNAME:230% ＋{C}％
+ENDIF
+;Ｔ钝感（感覚が4以上なら无效）
+IF TALENT:233 && ABL:23 < 4
+	C = 30
+	V -= 30
+	PRINTFORML %TALENTNAME:233% －{C}％
+ENDIF
+;Ｔ敏感（感覚が3未満なら无效）
+IF TALENT:232 && ABL:23 >= 3
+	C = 30
+	V += 30
+	PRINTFORML %TALENTNAME:232% ＋{C}％
+ENDIF
+;Ｅ钝感（感覚が4以上なら无效）
+IF TALENT:235 && ABL:24 < 4
+	C = 30
+	V -= 30
+	PRINTFORML %TALENTNAME:235% －{C}％
+ENDIF
+;Ｅ敏感（感覚が3未満なら无效）
+IF TALENT:234 && ABL:24 >= 3
+	C = 30
+	V += 30
+	PRINTFORML %TALENTNAME:234% ＋{C}％
+ENDIF
+;贫乳
+IF TALENT:109
+	C = 20
+	V -= 20
+	PRINTFORML %TALENTNAME:109% －{C}％
+ENDIF
+;绝壁
+IF TALENT:110
+	C = 10
+	V += 10
+	PRINTFORML %TALENTNAME:110% ＋{C}％
+ENDIF
+;巨乳
+IF TALENT:111
+	C = 20
+	V += 20
+	PRINTFORML %TALENTNAME:111% ＋{C}％
+ENDIF
+;爆乳
+IF TALENT:112
+	C = 10
+	V += 10
+	PRINTFORML %TALENTNAME:112% ＋{C}％
+ENDIF
+;恢复快
+IF TALENT:130
+	C = 20
+	V += 20
+	PRINTFORML %TALENTNAME:130% ＋{C}％
+ENDIF
+;恢复慢
+IF TALENT:131
+	C = 20
+	V -= 20
+	PRINTFORML %TALENTNAME:131% －{C}％
+ENDIF
+;吸血鬼
+IF TALENT:132
+	C = 30
+	V += 30
+	PRINTFORML %TALENTNAME:132% ＋{C}％
+ENDIF
+;双性
+IF TALENT:137
+	C = 5
+	V += 5
+	PRINTFORML %TALENTNAME:137% ＋{C}％
+ENDIF
+;扶她
+IF TALENT:139
+	C = 5
+	V += 5
+	PRINTFORML %TALENTNAME:139% ＋{C}％
+ENDIF
+;兽耳
+IF TALENT:143
+	C = 20
+	V += 20
+	PRINTFORML %TALENTNAME:143% ＋{C}％
+ENDIF
+;人气
+IF TALENT:145
+	C = 50
+	V += 50
+	PRINTFORML %TALENTNAME:145% ＋{C}％
+ENDIF
+;人外
+IF TALENT:147
+	C = 70
+	V += 70
+	PRINTFORML %TALENTNAME:147% ＋{C}％
+ENDIF
+;天使
+IF TALENT:166
+	C = 50
+	V += 50
+	PRINTFORML %TALENTNAME:166% ＋{C}％
+ENDIF
+;堕天使
+IF TALENT:167
+	C = 50
+	V += 50
+	PRINTFORML %TALENTNAME:167% ＋{C}％
+ENDIF
+;恶魔
+IF TALENT:168
+	C = 50
+	V += 50
+	PRINTFORML %TALENTNAME:168% ＋{C}％
+ENDIF
+;幽灵
+IF TALENT:183
+	C = 30
+	V += 30
+	PRINTFORML %TALENTNAME:183% ＋{C}％
+ENDIF
+;可怕的种族会减价格，无形体也有debuff
+;无头
+IF TALENT:237
+	C = 30
+	V -= 30
+	PRINTFORML %TALENTNAME:237% －{C}％
+ENDIF
+;僵尸
+IF TALENT:181
+	C = 30
+	V -= 30
+	PRINTFORML %TALENTNAME:181% －{C}％
+ENDIF
+;无形体
+IF TALENT:177
+	C = 30
+	V -= 30
+	PRINTFORML %TALENTNAME:177% －{C}％
+ENDIF
+;异形
+IF TALENT:178
+	C = 30
+	V -= 30
+	PRINTFORML %TALENTNAME:178% －{C}％
+ENDIF
+
+;多尾
+IF TALENT:210
+	C = 30
+	V += 30
+	PRINTFORML %TALENTNAME:210% ＋{C}％
+ENDIF
+;巨大体型
+IF TALENT:224
+	C = 60
+	V += 60
+	PRINTFORML %TALENTNAME:224% ＋{C}％
+ENDIF
+;母乳体质
+IF TALENT:149
+	C = 20
+	V += 20
+	PRINTFORML %TALENTNAME:149% ＋{C}％
+ENDIF
+
+;元助手
+IF ISASSI:TARGET == 1
+	C = 100
+	V -= 100
+	PRINTFORML 原助手 －{C}％
+ENDIF
+
+;補正値が0以下の場合は100にする
+SIF V <= 0
+	V = 1
+
+PRINTFORML 最终倍率 {V}％
+
+;補正値の適用
+S *= V
+S /= 100
+
+;崩溃,疯癫,怀孕は拍卖額をかなり低くする（顺从によって、80％まで回復）
+IF TALENT:9 || TALENT:141 || TALENT:153
+PRINTL 
+	IF TALENT:9
+		S *= ABL:0
+		TIMES S , 0.08
+		Z = ABL:0
+		Z *= 8
+		PRINTFORML %TALENTNAME:9% ×{Z}％
+	ELSEIF TALENT:141
+		S *= ABL:0
+		TIMES S , 0.08
+		Z = ABL:0
+		Z *= 8
+		PRINTFORML %TALENTNAME:141% ×{Z}％
+	ELSEIF TALENT:153
+		S *= ABL:0
+		TIMES S , 0.08
+		Z = ABL:0
+		Z *= 8
+		PRINTFORML %TALENTNAME:153% ×{Z}％
+	ENDIF
+PRINTL 
+ENDIF
+
+
+;烙印付きは拍卖額激減
+IF TALENT:烙印
+	TIMES S , 0.2
+	PRINTFORML %TALENTNAME:159% ×20％
+ENDIF
+
+
+;困难度処理
+;EASY
+IF FLAG:4 == 1
+	PRINTFORML 困难度:EASY ×120％
+	TIMES S , 1.20
+;NORMAL
+ELSEIF FLAG:4 == 2
+	TIMES S , 1.00
+;HARD
+ELSEIF FLAG:4 == 3
+	PRINTFORML 困难度:HARD ×80％
+	TIMES S , 0.80
+ENDIF
+
+;拍卖确认
+PRINTFORML %NAME:TARGET%大概能以${S}的价格出售
+PRINTL 确定将其拍卖吗？
+PRINTL [0] 是
+PRINTL [1] 否
+$INPUT_LOOPSALE
+INPUT
+IF RESULT == 0
+    IF CFLAG:2404 == 1
+        PRINTL
+        PRINTFORML 房间里的%CALLNAME%被带出来了
+        PRINTW
+        CFLAG:2404 = 0
+    ELSEIF CFLAG:2414 == 1
+        C = 0
+        REPEAT CHARANUM
+            SIF CFLAG:COUNT:(NO:TARGET+3000) == 1
+                C = COUNT
+        REND
+        PRINTL
+        PRINTFORML 在%CALLNAME:C%房间里的%CALLNAME%被带出来了
+        PRINTW
+        CFLAG:2414 = 0
+        CFLAG:C:(NO:TARGET+3000) = 0
+        CFLAG:C:2404 = 0
+    ENDIF
+	;拍卖時のイベント口上
+	TFLAG:13 = 18
+	CALL KOJO_MESSAGE_EVENT
+	;拍卖額
+	IF S > 0
+		PRINTFORMW %NAME:TARGET%以${S}的价格被卖出去了
+		MONEY += S
+	ELSEIF S == 0
+		PRINTFORMW %NAME:TARGET%被商家领走了
+		PRINTFORMW 在那之后好像被处理掉了
+	ENDIF
+
+	;拍卖後エピソード登录処理（eraQueenでは使わない）
+	;CALL SET_AFTERWARDS
+
+    PRINTFORML 要怎么处理%NAME:TARGET%个人房间里的家具？
+    PRINTL [0] 售卖
+    PRINTL [1] 丢弃
+    $INPUT_CHARA_ROOM
+    INPUT
+    IF RESULT == 0
+        PRINTW 决定打折出售家具……
+        M = 0
+        J = 0
+
+        ;电视
+        IF CFLAG:2405 == 1
+            J = 5000
+        ELSEIF CFLAG:2405 == 2
+            J = 25000
+        ELSEIF CFLAG:2405 == 3 || CFLAG:2405 == 4 || CFLAG:2405 == 5
+            J = 75000
+        ELSEIF CFLAG:2405 == 6 || CFLAG:2405 == 7 || CFLAG:2405 == 8
+            J = 160000
+        ELSEIF CFLAG:2405 == 9 || CFLAG:2405 == 10 || CFLAG:2405 == 11
+            J = 360000
+        ENDIF
+        M += J
+
+        ;书柜
+        IF CFLAG:2406 == 1
+            J = 3000
+        ELSEIF CFLAG:2406 == 2
+            J = 9000
+        ELSEIF CFLAG:2406 == 3 || CFLAG:2406 == 4 || CFLAG:2406 == 5
+            J = 22000
+        ELSEIF CFLAG:2406 == 6 || CFLAG:2406 == 7 || CFLAG:2406 == 8
+            J = 42000
+        ELSEIF CFLAG:2406 == 9 || CFLAG:2406 == 10 || CFLAG:2406 == 11
+            J = 72000
+        ENDIF
+        M += J
+
+         ;沙发
+        IF CFLAG:2407 == 1
+            J = 4000
+        ELSEIF CFLAG:2407 == 2
+            J = 11000
+        ELSEIF CFLAG:2407 == 3 || CFLAG:2407 == 4 || CFLAG:2407 == 5
+            J = 21000
+        ELSEIF CFLAG:2407 == 6 || CFLAG:2407 == 7 || CFLAG:2407 == 8
+            J = 46000
+        ELSEIF CFLAG:2407 == 9 || CFLAG:2407 == 10 || CFLAG:2407 == 11
+            J = 96000
+        ENDIF
+        M += J
+
+         ;衣柜
+        IF CFLAG:2408 == 1
+            J = 4000
+        ELSEIF CFLAG:2408 == 2
+            J = 12000
+        ELSEIF CFLAG:2408 == 3 || CFLAG:2408 == 4 || CFLAG:2408 == 5
+            J = 27000
+        ELSEIF CFLAG:2408 == 6 || CFLAG:2408 == 7 || CFLAG:2408 == 8
+            J = 87000
+        ELSEIF CFLAG:2408 == 9 || CFLAG:2408 == 10 || CFLAG:2408 == 11
+            J = 197000
+        ENDIF
+        M += J
+
+         ;展示柜
+        IF CFLAG:2409 == 1
+            J = 2000
+        ELSEIF CFLAG:2409 == 2
+            J = 6000
+        ELSEIF CFLAG:2409 == 3 || CFLAG:2409 == 4 || CFLAG:2409 == 5
+            J = 12000
+        ELSEIF CFLAG:2409 == 6 || CFLAG:2409 == 7 || CFLAG:2409 == 8
+            J = 22000
+        ELSEIF CFLAG:2409 == 9 || CFLAG:2409 == 10 || CFLAG:2409 == 11
+            J = 52000
+        ENDIF
+        M += J
+
+         ;床
+        IF CFLAG:2410 == 1
+            J = 8000
+        ELSEIF CFLAG:2410 == 2
+            J = 23000
+        ELSEIF CFLAG:2410 == 3 || CFLAG:2410 == 4 || CFLAG:2410 == 5
+            J = 53000
+        ELSEIF CFLAG:2410 == 6 || CFLAG:2410 == 7 || CFLAG:2410 == 8
+            J = 128000
+        ELSEIF CFLAG:2410 == 9 || CFLAG:2410 == 10 || CFLAG:2410 == 11
+            J = 278000
+        ENDIF
+        M += J
+
+         ;落地灯
+        IF CFLAG:2411 == 1
+            J = 3000
+        ELSEIF CFLAG:2411 == 2
+            J = 8000
+        ELSEIF CFLAG:2411 == 3 || CFLAG:2411 == 4 || CFLAG:2411 == 5
+            J = 18000
+        ELSEIF CFLAG:2411 == 6 || CFLAG:2411 == 7 || CFLAG:2411 == 8
+            J = 43000
+        ELSEIF CFLAG:2411 == 9 || CFLAG:2411 == 10 || CFLAG:2411 == 11
+            J = 93000
+        ENDIF
+        M += J
+
+        ;陷落售价减半
+        IF KANRAKU(TARGET)
+            TIMES M , 0.50
+        ELSE
+            TIMES M , 0.80
+        ENDIF
+
+        PRINTL
+
+        IF M == 0
+            PRINTFORMW %NAME:TARGET%个人房间里的家具没有人要
+        ELSE
+            PRINTFORMW %NAME:TARGET%个人房间里的家具卖出了${M}的价格
+            MONEY += M
+        ENDIF
+    ELSEIF RESULT == 1
+        PRINTFORMW %NAME:TARGET%个人房间里的家具被丢弃了
+    ELSE
+        GOTO INPUT_CHARA_ROOM
+    ENDIF
+	
+	;父か母を捜す 主人以外
+	LOCAL = 0
+	REPEAT CHARANUM
+		SIF COUNT != MASTER && (CFLAG:(2000+NO:COUNT) == 5 || CFLAG:(2000+NO:COUNT) == 6)
+			LOCAL = COUNT
+	REND
+	;居なかったら次に一番相性の高いヤツを探す　150以上ないと駄目　主人以外
+	IF LOCAL == 0 
+		REPEAT CHARANUM
+			SIF COUNT != MASTER && RELATION:COUNT:(NO:TARGET) >= 150 && RELATION:COUNT:(NO:TARGET) >= RELATION:LOCAL:(NO:TARGET)
+				LOCAL = COUNT
+		REND
+	ENDIF
+	IF LOCAL > 0 
+		PRINTL
+		IF (CFLAG:(2000+NO:LOCAL) == 5 || CFLAG:(2000+NO:LOCAL) == 6)
+			IF MALE(TARGET)
+				PRINT 儿子
+			ELSE
+				PRINT 女儿（？）
+			ENDIF
+		ENDIF
+		IF TALENT:病娇
+		    IF CFLAG:600 == 1 || CFLAG:600 == 2 || CFLAG:600 == 3 || CFLAG:600 == 4 || CFLAG:600 == 6 || CFLAG:600 == 11 || CFLAG:600 == 12
+			    PRINTFORM 得知%CALLNAME%的死亡后，
+			ELSEIF CFLAG:600 == 5 || CFLAG:600 == 10 || CFLAG:600 == 8
+			    PRINTFORM 得知%CALLNAME%的失踪后，
+			ELSEIF CFLAG:600 == 7
+			    PRINTFORM 得知%CALLNAME%行踪不明，生死未定后，
+			ELSEIF CFLAG:600 == 9
+			    PRINTFORM 得知%CALLNAME%的自残后，
+			ELSEIF CFLAG:600 == 13
+			    PRINTFORM 得知巧克力的真相后，
+			ELSE
+			    PRINTFORM 得知%CALLNAME%被拍卖后，
+			ENDIF
+		ELSEIF S > 0
+			PRINTFORM 得知%CALLNAME%被拍卖后，
+		ELSEIF S == 0
+			PRINTFORM 得知%CALLNAME%被商家处理掉后，
+		ENDIF
+		SIF CFLAG:(2000+NO:LOCAL) != 5 && CFLAG:(2000+NO:LOCAL) != 6
+			PRINTFORM 和%CALLNAME%关系很好的
+		IF CFLAG:600 == 13 && TALENT:病娇
+		    PRINTFORML %CALLNAME:LOCAL%一时害怕，一时又非常悲伤
+		    PRINTFORMW 每当看到巧克力，都会露出恍惚的神情…
+		ELSE
+		    PRINTFORMW %CALLNAME:LOCAL%受到了打击，好像感到非常沮丧…
+		ENDIF
+		SIF CFLAG:600 == 8 && TALENT:病娇
+		    PRINTW 毕竟，那样的真相怎么都无法说出口，只能选择隐瞒
+		SIF !TALENT:LOCAL:失意
+			PRINTFORMW %CALLNAME:LOCAL%陷入了｢失意｣状态
+		TALENT:LOCAL:失意 = 1
+		CFLAG:LOCAL:36 += 20
+	ENDIF
+	
+	;拍卖後、買い主からの手紙
+	;SIF S > 0
+	;	CALL LETTER
+	
+	
+	;对象が子供だった場合現在の子供の数フラグ－
+	SIF NO:TARGET >= 300
+		FLAG:33--
+	Z = TARGET
+	DELCHARA Z
+	TARGET = -1
+	ASSI = -1
+ELSEIF RESULT == 1
+	TARGET = TFLAG:403
+	ASSI = TFLAG:404
+	RETURN 0
+ELSE
+	GOTO INPUT_LOOPSALE
+ENDIF
+
+
+;ビデオの重複使用を処理するために、予め値段の加算を行っておく
+@PRICE_VIDEO
+
+P = 0
+
+REPEAT TFLAG:70
+	A = COUNT + 11
+	
+	;COM:爱抚を見る
+	IF FLAG:A == 0
+		P += 50
+	;COM:舔阴を見る
+	ELSEIF FLAG:A == 1
+		P += 50
+	;COM:口交を見る
+	ELSEIF FLAG:A == 2
+		P += 200
+	;COM:手指插入を見る
+	ELSEIF FLAG:A == 3
+		P += 150
+	;COM:舔肛を見る
+	ELSEIF FLAG:A == 4
+		P += 100
+	;COM:肛门爱抚を見る
+	ELSEIF FLAG:A == 5
+		P += 100
+	;COM:揉胸を見る
+	ELSEIF FLAG:A == 6
+		P += 120
+	;COM:玩弄乳头を見る
+	ELSEIF FLAG:A == 7
+		P += 250
+	;COM:胸爱抚を見る
+	ELSEIF FLAG:A == 8
+		P += 100
+	;COM:秘穴张开を見る
+	ELSEIF FLAG:A == 9
+		P += 300
+	;COM:胸自慰を見る
+	ELSEIF FLAG:A == 10
+		P += 400
+	;COM:自慰を見る
+	;自動的に公開自慰になる
+	ELSEIF FLAG:A == 11
+		P += 500
+	;COM:くるん爱抚を見る
+	ELSEIF FLAG:A == 12
+		P += 50
+	;COM:阴茎爱抚を見る
+	ELSEIF FLAG:A == 13
+		P += 50
+	;COM:アナニーを見る
+	;自動的に公開アナニーになる
+	ELSEIF FLAG:A == 14
+		P += 700
+	;抚摸翅膀
+	ELSEIF FLAG:A == 15
+		P += 300
+	;抚摸尾巴
+	ELSEIF FLAG:A == 16
+		P += 150
+	;抚摸兽耳
+	ELSEIF FLAG:A == 17
+		P += 150
+	;舔耳朵
+	ELSEIF FLAG:A == 18
+		P += 250
+	;COM:接吻を見る
+	ELSEIF FLAG:A == 20
+		P += 100
+	;COM:什么也不做を見る
+	ELSEIF FLAG:A == 21
+		P += 10
+	;COM:会话を見る
+	ELSEIF FLAG:A == 22
+		P += 50
+	;COM:礼物を見る
+	ELSEIF FLAG:A == 23
+		P += 10
+	;COM:身体接触を見る
+	ELSEIF FLAG:A == 24
+		P += 30
+	;COM:悠闲度过を見る
+	ELSEIF FLAG:A == 25
+		P += 10
+	;COM:家务を見る
+	ELSEIF FLAG:A == 26
+		P += 10
+	;COM:歌唱练习を見る
+	ELSEIF FLAG:A == 27
+		P += 50
+	;COM:痛骂を見る
+	ELSEIF FLAG:A == 28
+		P += 20
+	;COM:观看视频を見る
+	ELSEIF FLAG:A == 29
+		P += 20
+	;COM:暴力を振るうを見る
+	ELSEIF FLAG:A == 30
+		P += 20
+	;化形、变体型等
+	ELSEIF FLAG:A == 31
+		P += 100
+	ELSEIF FLAG:A == 32
+		P += 100
+	ELSEIF FLAG:A == 33
+		P += 100
+	ELSEIF FLAG:A == 34
+		P += 100
+	;COM:跳蛋を見る
+	ELSEIF FLAG:A == 40
+		P += 150
+	;COM:E按摩ャを見る
+	ELSEIF FLAG:A == 41
+		P += 200
+	;COM:阴蒂夹を見る
+	ELSEIF FLAG:A == 42
+		P += 150
+	;COM:飞机杯を見る
+	ELSEIF FLAG:A == 43
+		P += 100
+	;COM:自慰棒を見る
+	ELSEIF FLAG:A == 44
+		P += 200
+	;COM:肛塞を見る
+	ELSEIF FLAG:A == 45
+		P += 250
+	;COM:后庭拉珠を見る
+	ELSEIF FLAG:A == 46
+		P += 150
+	;COM:振动乳头夹を見る
+	ELSEIF FLAG:A == 47
+		P += 150
+	;COM:乳头跳蛋を見る
+	ELSEIF FLAG:A == 48
+		P += 150
+	;COM:挤奶器を見る
+	ELSEIF FLAG:A == 49
+		P += 250
+	;COM:导尿管を見る
+	ELSEIF FLAG:A == 50
+		P += 250
+	;COM:正常位を見る
+	ELSEIF FLAG:A == 60
+		P += 300
+	;COM:背後位を見る
+	ELSEIF FLAG:A == 61
+		P += 450
+	;COM:正常位肛交を見る
+	ELSEIF FLAG:A == 62
+		P += 250
+	;COM:后背位肛交を見る
+	ELSEIF FLAG:A == 63
+		P += 400
+	;COM:逆强奸を見る
+	ELSEIF FLAG:A == 64
+		P += 500
+	;COM:乳头奸を見る
+	ELSEIF FLAG:A == 65
+		P += 400
+	;COM:骑乘位を見る
+	ELSEIF FLAG:A == 66
+		P += 500
+	;COM:骑乘位肛交を見る
+	ELSEIF FLAG:A == 67
+		P += 500
+	;COM:对面座位を見る
+	ELSEIF FLAG:A == 68
+		P += 450
+	;COM:背面座位を見る
+	ELSEIF FLAG:A == 69
+		P += 500
+	;COM:对面座位肛交を見る
+	ELSEIF FLAG:A == 70
+		P += 450
+	;COM:背面座位肛交を見る
+	ELSEIF FLAG:A == 71
+		P += 500
+	;COM:错开内裤插入を見る
+	ELSEIF FLAG:A == 72
+		P += 500
+	;COM:错开内裤插入肛门を見る
+	ELSEIF FLAG:A == 73
+		P += 500
+	;COM:对面立位を見る
+	ELSEIF FLAG:A == 74
+		P += 400
+	;COM:对面立位肛を見る
+	ELSEIF FLAG:A == 75
+		P += 400
+	;COM:背面立位を見る
+	ELSEIF FLAG:A == 76
+		P += 500
+	;COM:背面立位肛を見る
+	ELSEIF FLAG:A == 77
+		P += 500
+	;COM:手交命令を見る
+	ELSEIF FLAG:A == 80
+		P += 300
+	;COM:口交命令を見る
+	ELSEIF FLAG:A == 81
+		P += 400
+	;COM:乳交を見る
+	ELSEIF FLAG:A == 82
+		P += 500
+	;COM:素股させるを見る
+	ELSEIF FLAG:A == 83
+		P += 350
+	;COM:泡泡浴を見る
+	ELSEIF FLAG:A == 84
+		P += 500
+	;COM:足交を見る
+	ELSEIF FLAG:A == 85
+		P += 350
+	;COM:舔足命令を見る
+	ELSEIF FLAG:A == 86
+		P += 350
+	;COM:縦乳交を見る
+	ELSEIF FLAG:A == 87
+		P += 500
+	;COM:乳夹口交を見る
+	ELSEIF FLAG:A == 88
+		P += 500
+	;COM:饮用母乳を見る
+	ELSEIF FLAG:A == 89
+		P += 250
+	;COM:髪コキを見る
+	ELSEIF FLAG:A == 90
+		P += 300
+	;COM:指チュパを見る
+	ELSEIF FLAG:A == 91
+		P += 300
+	;COM:腋扱きを見る
+	ELSEIF FLAG:A == 92
+		P += 350
+	;COM:乳を飲ませる　を見る
+	ELSEIF FLAG:A == 93
+		P += 300
+	;尾交
+	ELSEIF FLAG:A == 94
+		P += 350
+	;耳交
+	ELSEIF FLAG:A == 95
+		P += 300
+	;COM:打屁股を見る
+	ELSEIF FLAG:A == 100
+		P += 250
+	;COM:打胸部を見る
+	ELSEIF FLAG:A == 101
+		P += 300
+	;COM:鞭子を見る
+	ELSEIF FLAG:A == 102
+		P += 350
+	;COM:蜡烛を見る
+	ELSEIF FLAG:A == 103
+		P += 400
+	;COM:针を見る
+	ELSEIF FLAG:A == 104
+		P += 500
+	;COM:眼罩を見る
+	ELSEIF FLAG:A == 105
+		P += 150
+	;COM:绳子を見る
+	ELSEIF FLAG:A == 106
+		P += 200
+	;COM:口塞球を見る
+	ELSEIF FLAG:A == 107
+		P += 250
+	;COM:拷問を見る
+	ELSEIF FLAG:A == 108
+		P += 500
+	;COM:射精止めを見る
+	ELSEIF FLAG:A == 109
+		P += 200
+	;COM:家具にするを見る
+	ELSEIF FLAG:A == 110
+		P += 400
+	;COM:剃毛を見る
+	ELSEIF FLAG:A == 111
+		P += 400
+	;COM:首絞めを見る
+	ELSEIF FLAG:A == 112
+		P += 100
+	;COM:顔騎圧迫を見る
+	ELSEIF FLAG:A == 113
+		P += 300
+	;COM:金蹴りを見る
+	ELSEIF FLAG:A == 114
+		P += 200
+	;COM:電気アンマを見る
+	ELSEIF FLAG:A == 115
+		P += 250
+	;COM:強制舔阴を見る
+	ELSEIF FLAG:A == 120
+		P += 250
+	;COM:Ｗ素股を見る
+	ELSEIF FLAG:A == 510
+		P += 500
+	;COM:磨镜を見る
+	ELSEIF FLAG:A == 121
+		P += 350
+	;COM:使之侵犯助手を見る
+	ELSEIF FLAG:A == 122
+		P += 500
+	;COM:双枪口交を見る
+	ELSEIF FLAG:A == 511
+		P += 450
+	;COM:足交侍奉を見る
+	ELSEIF FLAG:A == 123
+		P += 350
+	;COM:Ｗ口交を見る
+	ELSEIF FLAG:A == 124
+		P += 450
+	;COM:Ｗ乳交を見る
+	ELSEIF FLAG:A == 125
+		P += 500
+	;COM:互相推搡胸部を見る
+	ELSEIF FLAG:A == 126
+		P += 200
+	;COM:阴茎相互摩擦を見る
+	ELSEIF FLAG:A == 127
+		P += 300
+	;COM:イマラチオを見る
+	ELSEIF FLAG:A == 140
+		P += 450
+	;COM:拳交を見る
+	ELSEIF FLAG:A == 141
+		P += 500
+	;COM:肛门拳交を見る
+	ELSEIF FLAG:A == 142
+		P += 500
+	;COM:两穴拳交を見る
+	ELSEIF FLAG:A == 143
+		P += 600
+	;COM:放尿を見る
+	ELSEIF FLAG:A == 144
+		P += 200
+	;COM:肛门侍奉強制を見る
+	ELSEIF FLAG:A == 145
+		P += 250
+	;COM:灌肠器＋塞头を見る
+	ELSEIF FLAG:A == 146
+		P += 350
+	;COM:空气灌肠を見る
+	ELSEIF FLAG:A == 147
+		P += 150
+	;COM:扩张气球を見る
+	ELSEIF FLAG:A == 148
+		P += 150
+	;COM:肛门电极を見る
+	ELSEIF FLAG:A == 149
+		P += 250
+	;COM:乳房电极を見る
+	ELSEIF FLAG:A == 150
+		P += 250
+	;COM:鳗鱼池を見る
+	ELSEIF FLAG:A == 151
+		P += 450
+	;COM:虫子池を見る
+	ELSEIF FLAG:A == 152
+		P += 450
+	;COM:尿道バルーンを見る
+	ELSEIF FLAG:A == 153
+		P += 250
+	;COM:肉便器を見る
+	ELSEIF FLAG:A == 154
+		P += 450
+	;COM:兽姦を見る
+	ELSEIF FLAG:A == 155
+		P += 500
+	;COM:烙印を見る
+	ELSEIF FLAG:A == 156
+		P += 500
+	;COM:饮尿を見る
+	ELSEIF FLAG:A == 157
+		P += 300
+	;尾巴插入
+	ELSEIF FLAG:A == 158
+		P += 300
+	;尾巴肛插入
+	ELSEIF FLAG:A == 159
+		P += 300
+	;COM:触手召喚を見る
+	ELSEIF FLAG:A == 160
+		P += 150
+	;COM:触手插入を見る
+	ELSEIF FLAG:A == 161
+		P += 350
+	;COM:触手插肛を見る
+	ELSEIF FLAG:A == 162
+		P += 350
+	;COM:触手揉阴を見る
+	ELSEIF FLAG:A == 163
+		P += 100
+	;COM:触手揉乳を見る
+	ELSEIF FLAG:A == 164
+		P += 150
+	;COM:触手挤奶を見る
+	ELSEIF FLAG:A == 165
+		P += 200
+	;COM:触手紧缚を見る
+	ELSEIF FLAG:A == 166
+		P += 300
+	;COM:触手灌肠を見る
+	ELSEIF FLAG:A == 167
+		P += 300
+	;COM:触手口辱を見る
+	ELSEIF FLAG:A == 168
+		P += 400
+	;COM:触手玩弄阴茎を見る
+	ELSEIF FLAG:A == 169
+		P += 100
+	;COM:触手尿道插入を見る
+	ELSEIF FLAG:A == 170
+		P += 300
+	;COM:润滑乳液を見る
+	ELSEIF FLAG:A == 180
+		P += 10
+	;COM:媚薬を見る
+	ELSEIF FLAG:A == 181
+		P += 100
+	;COM:利尿剂を見る
+	ELSEIF FLAG:A == 182
+		P += 100
+	;COM:摄像机を見る
+	ELSEIF FLAG:A == 183
+		P += 0
+	;COM:野外PLAYを見る
+	ELSEIF FLAG:A == 184
+		P += 250
+	;COM:侵犯助手を見る
+	ELSEIF FLAG:A == 185
+		P += 300
+	;COM:羞耻PLAYを見る
+	ELSEIF FLAG:A == 186
+		P += 250
+	;COM:浴室PLAYを見る
+	ELSEIF FLAG:A == 187
+		P += 200
+	;COM:淋浴を見る
+	ELSEIF FLAG:A == 188
+		P += 100
+	;COM:新妻PLAYを見る
+	ELSEIF FLAG:A == 189
+		P += 200
+	;COM:写真摄影を見る
+	ELSEIF FLAG:A == 190
+		P += 100
+	;COM:强精神药を見る
+	ELSEIF FLAG:A == 191
+		P += 50
+	;COM:避孕套精飲（奴隶）を見る
+	ELSEIF FLAG:A == 192
+		P += 200
+	;COM:避孕套精飲（助手）を見る
+	ELSEIF FLAG:A == 193
+		P += 200
+	;COM:含精接吻を見る
+	ELSEIF FLAG:A == 194
+		P += 300
+	;COM:水下PLAY
+	ELSEIF FLAG:A == 197
+		P += 200
+	;COM:当面手淫　を見る
+	ELSEIF FLAG:A == 200
+		P += 50
+	;COM:使之爱抚胸部を見る
+	ELSEIF FLAG:A == 201
+		P += 100
+	;COM:使之爱抚を見る
+	ELSEIF FLAG:A == 202
+		P += 100
+	;COM:痛骂を見る
+	ELSEIF FLAG:A == 203
+		P += 200
+	;COM:逆正常位を見る
+	ELSEIF FLAG:A == 205
+		P += 400
+	;COM:逆后背位を見る
+	ELSEIF FLAG:A == 206
+		P += 400
+	;COM:使之打屁股を見る
+	ELSEIF FLAG:A == 207
+		P += 200
+	;COM:鞭子打たせるを見る
+	ELSEIF FLAG:A == 208
+		P += 350
+	;COM:强制口交するを見る
+	ELSEIF FLAG:A == 209
+		P += 100
+	;COM:足を舔を見る
+	ELSEIF FLAG:A == 210
+		P += 250
+	;COM:阴蒂爱抚命令を見る
+	ELSEIF FLAG:A == 220
+		P += 200
+	;COM:阴茎爱抚命令を見る
+	ELSEIF FLAG:A == 221
+		P += 150
+	;COM:胸爱抚命令を見る
+	ELSEIF FLAG:A == 222
+		P += 250
+	;COM:指插入命令を見る
+	ELSEIF FLAG:A == 223
+		P += 250
+	;COM:肛门爱抚命令を見る
+	ELSEIF FLAG:A == 224
+		P += 250
+	;COM:插入命令を見る
+	ELSEIF FLAG:A == 225
+		P += 400
+	;COM:肛插入命令を見る
+	ELSEIF FLAG:A == 226
+		P += 400
+	;COM:触手乳腺攻を見る
+	ELSEIF FLAG:A == 300
+		P += 250
+	;COM:触手Ｇスポ責めを見る
+	ELSEIF FLAG:A == 301
+		P += 350
+	;COM:触手子宮責めを見る
+	ELSEIF FLAG:A == 302
+		P += 350
+	;COM:触手前立腺責めを見る
+	ELSEIF FLAG:A == 303
+		P += 350
+	;COM:触手ヴァギナ拡張を見る
+	ELSEIF FLAG:A == 304
+		P += 400
+	;COM:触手肛拡張を見る
+	ELSEIF FLAG:A == 305
+		P += 400
+	;COM:触手両穴拡張を見る
+	ELSEIF FLAG:A == 306
+		P += 400
+	;COM:触手产卵を見る
+	ELSEIF FLAG:A == 307
+		P += 400
+	;COM:触手肛産卵を見る
+	ELSEIF FLAG:A == 308
+		P += 400
+	;COM:輪姦を見る
+	ELSEIF FLAG:A == 321
+		P += 800
+	;COM:成為奴隸便器を見る
+	ELSEIF FLAG:A == 330
+		P += 300
+	;COM:二本刺し(3P)を見る
+	ELSEIF FLAG:A == 500
+		P += 600
+	;COM:６９式を見る
+	ELSEIF FLAG:A == 501
+		P += 400
+	;COM:岩清水を見る
+	ELSEIF FLAG:A == 502
+		P += 500
+	;COM:刺激Ｇ点を見る
+	ELSEIF FLAG:A == 503
+		P += 200
+	;COM:乱れ牡丹を見る
+	ELSEIF FLAG:A == 504
+		P += 600
+	;COM:骑乘位揉乳自慰を見る
+	ELSEIF FLAG:A == 505
+		P += 550
+	;COM:插入Ｇ点玩弄を見る
+	ELSEIF FLAG:A == 506
+		P += 500
+	;COM:插入子宫口玩弄を見る
+	ELSEIF FLAG:A == 507
+		P += 500
+	;COM:６９乳交を見る
+	ELSEIF FLAG:A == 508
+		P += 500
+	;COM:搾乳を見る
+	ELSEIF FLAG:A == 509
+		P += 500
+	;COM:二輪刺しを見る
+	ELSEIF FLAG:A == 512
+		P += 700
+	;COM:二輪刺し肛を見る
+	ELSEIF FLAG:A == 513
+		P += 700
+	;COM:駅弁を見る
+	ELSEIF FLAG:A == 514
+		P += 550
+	;COM:打屁股做爱を見る
+	ELSEIF FLAG:A == 515
+		P += 500
+	;COM:打屁股肛を見る
+	ELSEIF FLAG:A == 516
+		P += 500
+	;COM:首絞め做爱を見る
+	ELSEIF FLAG:A == 517
+		P += 500
+	;COM:首絞め肛を見る
+	ELSEIF FLAG:A == 518
+		P += 500
+	;COM:口交自慰を見る
+	ELSEIF FLAG:A == 530
+		P += 600
+	;COM:舔陰自慰を見る
+	ELSEIF FLAG:A == 531
+		P += 600
+	;COM:前立腺刺激を見る
+	ELSEIF FLAG:A == 590
+		P += 200
+	;COM:插入前立腺責め
+	ELSEIF FLAG:A == 591
+		P += 500
+	;COM:騎乗阴茎自慰
+	ELSEIF FLAG:A == 592
+		P += 600
+	;COM:插入中阴茎爱抚
+	ELSEIF FLAG:A == 593
+		P += 450
+	;COM:插入中胸爱抚
+	ELSEIF FLAG:A == 594
+		P += 450
+	;COM:三点攻
+	ELSEIF FLAG:A == 595
+		P += 600
+	;COM:自慰棒自慰を見る
+	ELSEIF FLAG:A == 991
+		P += 600
+	;COM:肛塞自慰を見る
+	ELSEIF FLAG:A == 992
+		P += 600
+	;COM:二穴自慰棒自慰を見る
+	ELSEIF FLAG:A == 993
+		P += 700
+	;COM:淋浴自慰を見る
+	ELSEIF FLAG:A == 994
+		P += 550
+	ENDIF
+REND
+
+;处女喪失シーンがあれば加算
+IF TFLAG:39 == 1
+	P += 5000
+	EXP:50 += 1
+	PRINTFORML 录像中记录了%CALLNAME:TARGET%处女丧失的场面
+	PRINTFORML %EXPNAME:50%＋１
+ELSEIF TFLAG:39 == 2 && TALENT:男性
+	P += 5000
+	EXP:50 += 1
+	PRINTFORML 录像中记录了%CALLNAME:TARGET%后庭处子丧失的场面
+	PRINTFORML %EXPNAME:50%＋１
+ENDIF
+
+O = 100
+;素質:处女を見る
+SIF TALENT:0
+	O += 20
+;素質:无动于衷を見る
+SIF TALENT:21
+	O -= 30
+;素質:缺乏感情を見る
+SIF TALENT:22
+	O -= 30
+;素質:害羞を見る
+SIF TALENT:35
+	O += 10
+;素質:矮小体系を見る
+SIF TALENT:100
+	O += 20
+;素質:绝壁を見る
+SIF TALENT:110
+	O -= 10
+;素質:巨乳を見る
+SIF TALENT:111
+	O += 20
+;素質:爆乳を見る
+SIF TALENT:112
+	O += 10
+;素質:兽耳を見る
+SIF TALENT:143
+	O += 10
+;素質:人气を見る
+SIF TALENT:145
+	O += 20
+;素質:谜之魅力を見る
+SIF TALENT:94
+	O += 30
+;素質:魅力を見る
+SIF TALENT:92
+	O += 20
+;翅膀
+SIF TALENT:羽翅 || TALENT:骨翅 || TALENT:蝠翼 || TALENT:虫翼
+	O += 30
+;尾巴
+SIF TALENT:兽尾 || TALENT:蛇尾 || TALENT:鱼尾
+	O += 20
+;多尾
+SIF TALENT:多尾
+	O += 20
+;角
+SIF TALENT:独角 || TALENT:双角
+	O += 10
+;无头
+SIF TALENT:无头
+	O -= 30
+;特殊体型
+SIF TALENT:小人体型 || TALENT:巨大体型
+	O += 30
+
+;-----------------------------------------------------------
+
+;奴隶の被摄经验を見る
+SIF EXP:TARGET:63 >= EXPLV:3
+	O += 10
+
+;摄影者を見る
+;主人
+IF FLAG:22 == 1
+	;摄影技能を見る
+	IF ABL:MASTER:13 >= 5
+		O += 100
+	ELSEIF ABL:MASTER:13 == 4
+		O += 50
+	ELSEIF ABL:MASTER:13 == 3
+		O += 20
+	ELSEIF ABL:MASTER:13 <= 1
+		O -= 20
+	ENDIF
+;助手
+ELSEIF FLAG:22 == 2
+	;摄影技能を見る
+	IF ABL:ASSI:13 >= 5
+		O += 100
+	ELSEIF ABL:ASSI:13 == 4
+		O += 50
+	ELSEIF ABL:ASSI:13 == 3
+		O += 20
+	ELSEIF ABL:ASSI:13 <= 1
+		O -= 20
+	ENDIF
+ENDIF
+
+;倍率処理
+SIF O < 0
+	O = 0
+
+P *= O
+P /= 100
+
+;困难度処理
+;EASY
+IF FLAG:4 == 1
+	TIMES P , 1.20
+;NORMAL
+ELSEIF FLAG:4 == 2
+	TIMES P , 1.00
+;HARD
+ELSEIF FLAG:4 == 3
+	TIMES P , 0.80
+ENDIF
+
+TFLAG:36 += P
+TFLAG:70 = 0
+
+
+@SELL_VIDEO
+;调教時に録画したビデオの拍卖
+;TODO 価格设定再考・状況による価格をプラスできるか(处女開通時など)
+
+
+;摄影中のまま拍卖まで来た場合はテープの数を減らす
+;テープの減数は摄影後処理のため、さらにビデオの値段および经验もここで処理をする
+IF TEQUIP:28
+	ITEM:43 -= 1
+	CALL PRICE_VIDEO
+ENDIF
+
+;録画してなければ終了
+SIF TFLAG:36 == 0
+	RETURN 0
+
+
+PRINTFORML 录制的录像带大概能卖出${TFLAG:36}左右的价格
+PRINTL 要怎么处理这盘录像带？
+PRINTL [0] - 出售
+PRINTL [1] - 保管
+DRAWLINE
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 0
+	PRINTFORML 将调教时的录像带出售，获得了${TFLAG:36}的收益
+	MONEY += TFLAG:36
+	TFLAG:36 = 0
+	;イベント口上呼び出し(ビデオ拍卖時）
+	TFLAG:13 = 19
+	CALL KOJO_MESSAGE_EVENT
+ELSEIF RESULT == 1
+	PRINTFORML 调教时的录像带被保管起来了
+	CFLAG:20 += 1
+	;イベント口上呼び出し(ビデオ保有時）23は朝飯で使用
+	TFLAG:13 = 24
+	CALL KOJO_MESSAGE_EVENT
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+DRAWLINE
+
+
+
+@PRICE_PICTURE
+A = 100
+B = 0
+C = 0
+
+;调教者のABL:摄影技能をみる
+IF ABL:PLAYER:13 == 0
+	B = 10
+ELSEIF ABL:PLAYER:13 == 1
+	B = 100
+ELSEIF ABL:PLAYER:13 == 2
+	B = 150
+ELSEIF ABL:PLAYER:13 == 3
+	B = 250
+ELSEIF ABL:PLAYER:13 == 4
+	B = 300
+ELSE
+	B = 500
+ENDIF
+
+;口系
+;口塞球装着、触手口辱
+IF TEQUIP:20 || TEQUIP:36
+	A += 20
+	C += 1
+ENDIF
+;Ａ系
+;肛塞装着、后庭拉珠装着、灌肠＋肛プラグ装着、バルーン装着、肛门电极装着
+IF TEQUIP:14 || TEQUIP:15 || TEQUIP:21 || TEQUIP:22 || TEQUIP:23
+	A += 10
+	C += 1
+ENDIF
+;Ｃ系
+;阴蒂夹装着、飞机杯装着
+IF TEQUIP:11 || TEQUIP:12
+	A += 10
+	C += 1
+ENDIF
+;Ｂ系
+;振动乳头夹装着、挤奶器、乳房电极装着
+IF TEQUIP:16 || TEQUIP:17 || TEQUIP:24
+	A += 15
+	C += 1
+ENDIF
+;Ｖ系
+;自慰棒装着
+IF TEQUIP:13
+	A += 15
+	C += 1
+ENDIF
+;尾巴插入
+IF TEQUIP:51 || TEQUIP:52
+	A += 20
+	C += 1
+ENDIF
+;尾巴双插入
+IF TEQUIP:51 && TEQUIP:52
+	A += 20
+	C += 1
+ENDIF
+;紧缚系
+;眼罩装着
+IF TEQUIP:18
+	A += 20
+	C += 1
+ENDIF
+;绳子で紧缚
+IF TEQUIP:19
+	A += 25
+	C += 1
+ENDIF
+;薬剤系
+;媚薬、利尿剂
+IF TEQUIP:26 || TEQUIP:27
+	A += 5
+	C += 1
+ENDIF
+;場所系
+;野外PLAY、羞耻PLAY中、浴室PLAY、水下PLAY
+IF TEQUIP:29 || TEQUIP:30 || TEQUIP:31 || TEQUIP:53
+	A += 20
+	C += 1
+ENDIF
+;状況系
+;淋浴、视频拍摄
+IF TEQUIP:32 || TEQUIP:28
+	A += 10
+	C += 1
+ENDIF
+;触手调教
+IF TEQUIP:25
+	A += 5
+	C += 1
+ENDIF
+;着衣系他
+;新妻PLAY中
+IF TEQUIP:33
+	A += 10
+	C += 1
+ENDIF
+;何も装着していない場合のボー茄子
+SIF C == 0
+	A += 50
+
+;精液の補正を设定するためCを重置
+C = 0
+;精液の汚れ(口、手、阴茎、ヴァギナ、肛の順)
+SIF STAIN:PLAYER:0 & 4
+	C += 1
+SIF STAIN:PLAYER:1 & 4
+	C += 1
+SIF STAIN:PLAYER:2 & 4
+	C += 1
+SIF STAIN:PLAYER:3 & 4
+	C += 1
+SIF STAIN:PLAYER:4 & 4
+	C += 1
+;精液の汚れがない場合のボー茄子
+SIF C == 0
+	A += 30
+
+
+;素質:无动于衷を見る
+SIF TALENT:21
+	A -= 30
+;素質:缺乏感情を見る
+SIF TALENT:22
+	A -= 30
+;素質:害羞を見る
+SIF TALENT:35
+	A += 10
+;素質:矮小体系を見る
+SIF TALENT:100
+	A += 20
+;素質:绝壁を見る
+SIF TALENT:110
+	A -= 10
+;素質:巨乳を見る
+SIF TALENT:111
+	A += 20
+;素質:爆乳を見る
+SIF TALENT:112
+	A += 10
+;素質:兽耳を見る
+SIF TALENT:143 || TALENT:尖耳
+	A += 10
+;素質:人气を見る
+SIF TALENT:145
+	A += 20
+;素質:谜之魅力を見る
+SIF TALENT:94
+	A += 30
+;素質:魅力を見る
+SIF TALENT:92
+	A += 20
+;翅膀
+SIF TALENT:羽翅 || TALENT:骨翅 || TALENT:蝠翼 || TALENT:虫翼
+	A += 30
+;尾巴
+SIF TALENT:兽尾 || TALENT:蛇尾 || TALENT:鱼尾
+	A += 20
+;多尾
+SIF TALENT:多尾
+	A += 20
+;角
+SIF TALENT:独角 || TALENT:双角
+	A += 10
+;无头
+SIF TALENT:无头
+	A -= 30
+;特殊体型
+SIF TALENT:小人体型 || TALENT:巨大体型
+	A += 30
+
+SIF A < 0
+	A = 0
+
+B *= A
+B /= 100
+
+;困难度処理
+;EASY
+IF FLAG:4 == 1
+	TIMES B , 1.20
+;NORMAL
+ELSEIF FLAG:4 == 2
+	TIMES B , 1.00
+;HARD
+ELSEIF FLAG:4 == 3
+	TIMES B , 0.80
+ENDIF
+
+TFLAG:37 += B
+
+
+@SELL_PICTURE
+SIF TFLAG:37 <= 0
+	RETURN 0
+
+PRINTFORML %NAME:TARGET%的写真以{TFLAG:37}的价格出售
+MONEY += TFLAG:37
+;フラグ重置。これで调教メニュー以外でも再利用できるように
+TFLAG:37 = 0
+WAIT
+
+
+@SELL_MILK
+O = TFLAG:35 * 100
+IF O > 0
+	IF EXP:54 <= EXPLV:0
+		O *= 1
+	ELSEIF EXP:54 <= EXPLV:1
+		O *= 2
+	ELSEIF EXP:54 <= EXPLV:2
+		O *= 3
+	ELSEIF EXP:54 <= EXPLV:3
+		O *= 4
+	ELSEIF EXP:54 <= EXPLV:4
+		O *= 5
+	ELSE
+		O *= 6
+	ENDIF
+
+;困难度処理
+;EASY
+IF FLAG:4 == 1
+	TIMES O , 1.20
+;NORMAL
+ELSEIF FLAG:4 == 2
+	TIMES O , 1.00
+;HARD
+ELSEIF FLAG:4 == 3
+	TIMES O , 0.80
+ENDIF
+
+	PRINTFORML 使用挤奶器从%CALLNAME:TARGET%身上挤出了母乳
+	PRINTFORML %CALLNAME:TARGET%的母乳以{O}的价格出售
+	MONEY += O
+	PRINTFORML 金钱增加了 {O}
+	WAIT
+ENDIF
+
+

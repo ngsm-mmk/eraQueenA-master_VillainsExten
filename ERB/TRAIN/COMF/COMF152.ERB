@@ -1,0 +1,103 @@
+﻿;-------------------------------------------------
+;虫子池
+;严厉な调教指令、レベル4
+;-------------------------------------------------
+@COM152
+PRINTL 虫子池
+STR:0 = 虫子池
+
+
+F = 1
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+IF F > 0
+	;消費体力、气力
+	LOSEBASE:0 += 600
+	LOSEBASE:1 += 900
+
+	SOURCE:7 = 500
+	SOURCE:8 = 5000
+	SOURCE:14 = 2000
+	SOURCE:15 = 1000
+	SOURCE:17 = 2500
+	SOURCE:18 = 2500
+ELSE
+	;消費体力、气力
+	LOSEBASE:0 += 50
+	LOSEBASE:1 += 100
+
+	SOURCE:7 = 100
+	SOURCE:14 = 100
+	SOURCE:15 = 20
+	SOURCE:17 = 50
+	SOURCE:18 = 50
+ENDIF
+
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+IF F > 0
+	;特に严厉な指令では、异常经验に応じて効果を減らす
+	IF EXP:50 < EXPLV:1
+		TIMES SOURCE:8 , 1.20
+		TIMES SOURCE:17 , 1.20
+		TIMES SOURCE:18 , 1.20
+	ELSEIF EXP:50 < EXPLV:2
+		TIMES SOURCE:8 , 0.90
+		TIMES SOURCE:17 , 0.90
+		TIMES SOURCE:18 , 0.90
+	ELSEIF EXP:50 < EXPLV:3
+		TIMES SOURCE:8 , 0.80
+		TIMES SOURCE:17 , 0.80
+		TIMES SOURCE:18 , 0.80
+	ELSEIF EXP:50 < EXPLV:4
+		TIMES SOURCE:8 , 0.70
+		TIMES SOURCE:17 , 0.70
+		TIMES SOURCE:18 , 0.70
+	ELSEIF EXP:50 < EXPLV:5
+		TIMES SOURCE:8 , 0.60
+		TIMES SOURCE:17 , 0.60
+		TIMES SOURCE:18 , 0.60
+	ELSE
+		TIMES SOURCE:8 , 0.50
+		TIMES SOURCE:17 , 0.50
+		TIMES SOURCE:18 , 0.50
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;粘液の汚れ
+STAIN:1 = 32
+STAIN:2 = 32
+STAIN:3 = 32
+STAIN:4 = 32
+STAIN:5 = 32
+STAIN:6 = 32
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;异常经验が5未満のとき、异常经验追加
+IF EXP:50 < 5 && F > 0
+	EXP:50 += 2
+	PRINTL 异常经验＋２
+ENDIF
+
+;依赖度ベクトル
+TFLAG:33 = 5
+
+;依赖度補正値(服从で1、隶属で2）
+IF TALENT:5 && ASSIPLAY == 0
+	TFLAG:30 += 1
+ELSEIF TALENT:8 && ASSIPLAY == 0
+	TFLAG:30 += 2
+ENDIF
+
+
+RETURN 1
+

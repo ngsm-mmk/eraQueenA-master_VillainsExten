@@ -1,0 +1,24 @@
+﻿;-------------------------------------------------
+;结束逆推
+;特殊指令
+;-------------------------------------------------
+@COM_ABLE400
+SIF !TEQUIP:60
+	RETURN 0
+ resetcolor
+ RETURN 1
+@COM400
+PRINTL 结束逆推
+STR:0 = 结束逆推
+
+IF BASE:PLAYER:0 >= 600
+	PRINTFORML  %PLAYER_NAME()%翻身压在了%CALLNAME%的身上，結束了逆推PLAY
+	TEQUIP:60 = 0
+	TEQUIP:PLAYER:60 = 0
+	逆推渴望 -= 100
+ELSE
+	PRINTFORML  全身无力的%PLAYER_NAME()%无法推开%CALLNAME%，只能面露无奈地任由对方继续为所欲为……
+ENDIF
+PRINTFORMW
+RETURN 1
+

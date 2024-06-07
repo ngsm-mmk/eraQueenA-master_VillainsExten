@@ -1,0 +1,1453 @@
+﻿;-------------------------------------------
+;イベント口上テ接吻ト
+;-------------------------------------------
+;朝口交
+@EVENT_MESSAGE_1
+;主人の竿の有無で分岐
+IF TALENT:MASTER:140 || TALENT:MASTER:139 || TALENT:MASTER:137
+	PRINTFORML 清晨，在%CALLNAME%的口交侍奉中醒来
+ELSE
+	PRINTFORML 清晨，在%CALLNAME%的口交侍奉中醒来
+ENDIF
+IF !RAND:3
+	PRINT 「嗯呣、嗯啾…嗯？…
+ELSEIF !RAND:2
+	PRINT 「嗯唔…啾～呣…啾噜…
+ELSE
+	PRINT 「呜呣…嗯…啾…
+ENDIF
+PRINTFORM 啊…
+IF CFLAG:601 == 13 && !RAND:3
+	PRINT Good Morning
+ELSEIF CFLAG:601 == 2
+	PRINT 早安
+ELSEIF CFLAG:600 == 1 || CFLAG:600 == 10
+	PRINT 早~上好～
+ELSE
+	PRINT 早上好
+ENDIF
+SELECTCASE CFLAG:600
+	CASE 1, 4, 10, 12, 13
+		PRINTFORM ♪
+	CASEELSE
+		PRINTFORM …
+ENDSELECT
+IF KANRAKU(TARGET) > 1
+	PRINTFORM %CSTR:3%
+ELSE
+	PRINTFORM %MASTERNAME%
+ENDIF
+SELECTCASE CFLAG:600
+	CASE 1, 4, 10, 12, 13
+		PRINTFORML ♪」
+	CASEELSE
+		PRINTFORML 」
+ENDSELECT
+;主人の竿の有無で分岐
+IF TALENT:MASTER:140 || TALENT:MASTER:139 || TALENT:MASTER:137
+	;孩童尺寸で無い
+	SIF TALENT:MASTER:114 == 0
+		PRINTFORML %CALLNAME%抬起沾满精液的脸问候道
+ELSE
+	PRINTFORML %CALLNAME%抬起沾满爱液的脸问候道
+ENDIF
+
+
+
+;朝乳交
+@EVENT_MESSAGE_2
+;贫乳の場合
+IF TALENT:109
+	PRINTFORML 早晨醒来时感觉下腹部有些异样
+	PRINTFORML 尽量不被注意到地把眼睛挣开一条缝，发现%CALLNAME%正把平坦的胸部按在自己的阴茎上摩擦揉搓
+	PRINTFORML 看起来是在做乳交的练习…
+;巨乳、爆乳の場合	
+ELSEIF TALENT:111 || TALENT:112
+	PRINTFORML 早晨醒来时感觉下腹部有异样的快感
+	IF TALENT:140
+	PRINTFORML 睁眼一看，发现%CALLNAME%正用壮观的胸膛夹住自己的阴茎揉搓摩擦
+	ELSE
+	PRINTFORML 睁眼一看，发现%CALLNAME%正用丰满的胸部夹住自己的阴茎揉搓摩擦
+	ENDIF
+;それ以外
+ELSE
+	PRINTFORML 早晨醒来时感觉下腹部有些异样
+	PRINTFORM 睁眼一看，发现%CALLNAME%正把胸部按在自己的阴茎上来回摩擦
+	;孩童尺寸で無い
+	IF TALENT:MASTER:114 == 0
+		PRINTFORML ，同时还用嘴细致地吮吸了分泌出来的精液……这下不起来都不行了
+	ELSE
+		PRINT ……这下不起来都不行了
+	ENDIF
+ENDIF
+
+
+
+;朝骑乘位
+@EVENT_MESSAGE_3
+PRINTFORML 早上一醒来就感觉腰部周围有些沉重
+IF TEQUIP:2 == 5
+	PRINTFORML 被贞操带夺走自由的%CALLNAME%正是那元凶，
+	PRINTFORM %CALLNAME%跨坐在%PLAYER_NAME()%身上哭泣着，为寻求解放徒劳地揉搓着下半身…
+ELSE
+	IF (TALENT:MASTER:140 || TALENT:MASTER:139 || TALENT:MASTER:137)
+		PRINTFORML 睁开双眼，发现%CALLNAME%正跨坐在自己身上娇喘…
+	ELSE
+		PRINTFORML 睁开眼睛，发现自己被摆成了仰面向上，只有阳具一柱擎天的姿势，
+		PRINTFORM 而罪魁祸首%CALLNAME%正背对着跨坐在自己身上娇喘
+		IF TALENT:140
+			PRINTL
+			PRINTFORML 虽然是男人，但%CALLNAME%比起插别人，似乎更喜欢被人捅屁股。
+		ELSE
+			PRINTL …
+		ENDIF
+	ENDIF
+ENDIF
+
+;调教後百合プ雷
+@EVENT_MESSAGE_4
+PRINTFORML %CALLNAME%和%CALLNAME:ASSI%在调教结束后互相安慰对方的身体
+IF TEQUIP:2 == 5
+	PRINTFORML 被贞操带夺走自由的%CALLNAME%对%CALLNAME:ASSI%吐出悲伤的叹息…
+ELSEIF (TALENT:137 || TALENT:139 || TALENT:140) && (TALENT:ASSI:137 || TALENT:ASSI:139 || TALENT:ASSI:140)
+	PRINTFORML %CALLNAME:ASSI%和%CALLNAME%69式交叠身体，不断舔弄着对方的肉棒…
+ELSE
+	PRINTFORML %CALLNAME:ASSI%和%CALLNAME%69式交叠身体，不断舔弄着对方的性器…
+ENDIF
+
+;调教後做爱
+@EVENT_MESSAGE_5
+IF TEQUIP:2 == 5
+	PRINTFORML 被贞操带夺走自由的%CALLNAME%因快感带来的热度痛苦地喘着气…
+	PRINTFORML %PLAYER_NAME()%望着那一幕满足地微笑着离开了房间…
+ELSE
+	PRINTFORML %PLAYER_NAME()%和%CALLNAME%无法抑制尚未冷却的兴奋，双双拥抱着躺到了床上…
+	IF ABL:0+ABL:4+ABL:7 >= 13
+		PRINTFORML %CALLNAME%一脸不舍地拉拽%PLAYER_NAME()%的袖子
+		PRINTFORML 无情地将那只手甩掉后离开了房间…
+	ENDIF
+ENDIF
+;强精神药の反動
+@EVENT_MESSAGE_6
+DRAWLINE
+PRINTFORMW …
+PRINTFORML %CALLNAME%甜蜜的悲鸣从房间里传了出来
+PRINTFORMW 看来强精神药的效果没了，%CALLNAME%再次沉溺于堕落的快乐
+
+;调教後搾乳
+@EVENT_MESSAGE_7
+PRINTFORML 调教结束后，一直到晚上%CALLNAME%膨胀的胸都没有缩回原样，甚至还泌出了乳汁
+IF ABL:0+ABL:8+ABL:9 >= 10
+	PRINTFORML 那些多余的母乳被%NAME:TARGET%用容器装盛后带过来了
+	PRINTFORML 好像是打算把乳汁分发给大家的样子…
+ENDIF
+
+;调教後自慰（贞操带でガード）
+@EVENT_MESSAGE_8
+IF TEQUIP:2 == 5
+	PRINTFORML %CALLNAME%的欲望熊熊燃烧，却无法尽情地安抚自己，只能颤抖着瘫软在床上…
+ENDIF
+
+;调教後夜這い
+@EVENT_MESSAGE_9
+PRINTFORML 一天结束，正要上床就寝的时候，%CALLNAME%突然造访了房间
+IF TEQUIP:2 == 5
+	PRINTFORML 大概是被快感所折磨，再也忍受不了了，%CALLNAME%哀求%PLAYER_NAME()%将贞操带卸除
+	PRINTFORML %PLAYER_NAME()%并没有答应%CALLNAME%的请求
+	PRINTFORML 但却一把将%CALLNAME%拉到床上，紧紧抱着入睡了…
+ELSE
+	;上：主人竿あり／下：主人が竿无
+	IF TALENT:MASTER:140 || TALENT:MASTER:139 || TALENT:MASTER:137
+		PRINTFORM %CALLNAME%将%PLAYER_NAME()%压倒在床上，主动引导%PLAYER_NAME()%的肉棒插进自己的
+		IF TALENT:男性 || (ABL:Ｖ感觉 < ABL:Ａ感觉)
+			PRINT 尻穴
+		ELSE
+			PRINT 小穴
+		ENDIF
+		PRINTL ，随即激烈地摆动起腰部
+		PRINTFORML 宛如饥肠辘辘的野兽一般贪婪地一次次索求以平息体内的饥渴
+		PRINTFORML 两人的身影重叠在一起，紧紧相拥，共同坠入无边的黑夜……
+	ELSE
+		PRINTFORML 大概是被身体的热量所折磨，再也忍受不了了，
+		PRINTFORML %CALLNAME%哀求%PLAYER_NAME()%像平时那样侵犯自己。
+		PRINTFORML %PLAYER_NAME()%刚一解开衣服，%CALLNAME%就性急地凑上来将%PLAYER_NAME()%扑倒，主动用
+		IF TALENT:男性 || (ABL:Ｖ感觉 < ABL:Ａ感觉)
+			PRINT 尻穴
+		ELSE
+			PRINT 小穴
+		ENDIF
+		PRINTL 吞进假阳具开始激烈地扭动腰肢
+		PRINTFORML 宛如饥肠辘辘的野兽一般贪婪地一次次索求以平息体内的饥渴
+		PRINTFORML 两人的身影重叠在一起，紧紧相拥，共同坠入无边的黑夜……
+	ENDIF
+ENDIF
+
+;黄色のキャンディ（怀孕時の産卵）を使用時のイベント口上
+@EVENT_MESSAGE_10
+IF TARGET == MASTER
+	PRINTFORMW 吞下黄色的糖果后，身体发生了巨大的变化
+	PRINTFORML 不一会儿，阴道口冒出了一枚可爱的蛋
+	PRINTFORMW 随即是大量的羊水被挤了出来
+ELSE
+	PRINTFORMW 吞下黄色的糖果后，%CALLNAME%的呼吸急促起来
+	PRINTFORML 捧着像孕妇一样大的肚子痛苦地打滚
+	PRINTFORML 从Ｍ字开脚的姿势看到了阴道口出现的可爱的蛋
+	PRINTFORMW 随即是大量的羊水被挤了出来
+	PRINTFORMW %CALLNAME%疼得几近失声，只能徒劳地痉挛颤抖…
+ENDIF
+
+;怀孕発覚時のイベント口上
+;怀孕对象をTARGETに格納し、父親はA（※固定番号）とする
+@EVENT_MESSAGE_11
+;崩溃してしまった場合
+IF TALENT:9 == 1
+;父親が主人で母親が恋慕か相亲相爱持ち
+ELSEIF (TALENT:3 || TALENT:6) && CFLAG:102 == 1
+	PRINTFORMW %CALLNAME%虽然感到困惑，但一想到怀上了%PLAYER_NAME()%的骨肉，神情不由柔和起来…
+;父親が奴隶か助手で母親が淫乱か娼妇持ち
+ELSEIF (TALENT:4 || TALENT:7) && (CFLAG:102 == 2 || CFLAG:102 == 3)
+	;父親との相性が120以上の場合
+	IF A > -1 && RELATION:TARGET:A >= 120
+		PRINTFORMW %CALLNAME%为自己怀上了%CALLNAME:(NO2(A))%的骨肉而绽放出笑容…
+	ELSE
+		PRINTFORMW %CALLNAME%脸色苍白，花了很久才接受自己怀孕了的事实…
+	ENDIF
+;服从か隶属持ち
+ELSEIF (TALENT:5 || TALENT:8)
+	PRINTFORMW %CALLNAME%仰视着%PLAYER_NAME()%不断说着谢罪的话…
+ELSE
+	PRINTFORMW %CALLNAME%向%PLAYER_NAME()%投来一个激动的目光，仿佛想要诉说什么
+	PRINTFORMW 不过，对于自己怀孕了的事实，%CALLNAME%接受得好像十分勉强…
+ENDIF
+
+;分娩時のイベント口上
+;怀孕对象をTARGETに格納し、父親はAとする
+@EVENT_MESSAGE_12
+;崩溃がついている場合
+IF TALENT:9
+	PRINTFORM 然而，%CALLNAME%并未对即将出生的孩子表现出任何兴趣…
+;恋慕か相亲相爱で、父親がマスターの場合
+ELSEIF (TALENT:3 || TALENT:6) && CFLAG:111 == NO:MASTER
+	PRINTFORMW %CALLNAME%一接过刚出生的婴儿，就温柔地抱着开始喂奶…
+;父親が奴隶か助手で母親が淫乱か娼妇持ち、父親との相性が120以上の場合
+ELSEIF (TALENT:4 || TALENT:7) && (CFLAG:102 == 2 || CFLAG:102 == 3) && A > -1 && RELATION:(NO:A) >= 120
+	PRINTFORMW %CALLNAME%一接过刚出生的婴儿，就温柔地抱着开始喂奶…
+;服从か隶属持ち
+ELSEIF (TALENT:5 || TALENT:8)
+	PRINTFORMW %CALLNAME%抚摸着平坦的肚子，为自己很快又能侍奉%PLAYER_NAME(1)%感到了由衷的喜悦…
+;それ以外
+ELSE
+	PRINTFORMW %CALLNAME%阴着一张脸，接过婴儿后沉默地开始喂奶…
+ENDIF
+
+;育児室でのイベント口上
+@EVENT_MESSAGE_13
+;まだ分娩前の場合
+;TARGET：分娩前か育儿中のキャラ
+;B：子供の登录番号
+IF TALENT:153
+	;相亲相爱で父親がMASTER
+	IF ((TALENT:6 || RELATION:TARGET:(NO:MASTER) >= 130) && CFLAG:111 == NO:MASTER)
+		PRINTFORM %CALLNAME%看见%PLAYER_NAME()%后，
+		PRINTFORMW 立即露出了一张精神的笑脸
+		PRINTFORMW %CALLNAME%马上要迎来分娩了，%PLAYER_NAME()%发自内心地为%CALLNAME%打气
+	;崩溃の場合
+	ELSEIF TALENT:9
+		PRINTFORMW %CALLNAME%即使看见了%PLAYER_NAME()%也没有任何特别的反应
+		PRINTFORMW 或许这就是惩罚吧，%PLAYER_NAME()%这么想着回家了…
+	;それ以外
+	ELSE
+		PRINTFORMW 看到%PLAYER_NAME()%的脸时，%CALLNAME%虽然有些困惑，还是转过头露出了笑容…
+	ENDIF
+;相亲相爱で父親がMASTERか、相亲相爱で子供の父で、母親がマスター
+ELSEIF ((KANRAKU(TARGET) == 1 || RELATION:TARGET:(NO:MASTER) >= 130) && CFLAG:111 == NO:MASTER) || ((KANRAKU(TARGET) == 1 || RELATION:TARGET:(NO:MASTER) >= 130) && CFLAG:B:(2000+NO:TARGET) == 5  && CFLAG:B:(2000+NO:MASTER) == 6)
+	IF !RAND:2
+		PRINTFORM 注意到%PLAYER_NAME()%走进房间，
+		PRINTFORMW %CALLNAME%满面笑容地出来迎接
+		PRINTFORMW 在那之后尽情享受了父母和子女一起入浴的温馨时光
+	ELSE
+		PRINTFORML %PLAYER_NAME()%走进房间，发现孩子好像已经睡着了，
+		PRINTFORMW %CALLNAME%将手指竖在嘴前，用唇语说着“不要发出声音”
+		PRINTFORML 和%CALLNAME%两人就这样静静地看着孩子的睡颜，
+		PRINTFORMW 随即自然而然的，两个人相视而笑了
+	ENDIF
+;それ以外
+ELSE
+	PRINTFORM 进入房间后，
+	PRINTFORMW %CALLNAME%有点困惑地出来迎接
+	PRINTFORMW 两人一边看着孩子，一边享受着久违的两个人之间的对话
+ENDIF
+
+;親離れ時のイベント口上
+@EVENT_MESSAGE_14
+
+
+;定食屋台時のイベント口上
+@EVENT_MESSAGE_15
+IF ABL:12 == 0
+	PRINTFORM 和%CALLNAME%一起经营的售餐棚里，
+	CALL LUNCH_NAME
+	IF F == 1
+		PRINTFORMW 得到食客们的初步肯定了
+	ELSE
+		PRINTFORMW 好像不太受好评
+	ENDIF
+ELSEIF ABL:12 < 4
+	PRINTFORM 和%CALLNAME%一起经营的售餐棚里，
+	CALL LUNCH_NAME
+	IF F == 1
+		PRINTFORMW 似乎颇受好评
+	ELSE
+		PRINTFORMW 至今没得到任何评价
+	ENDIF
+ELSE
+	IF F == 1
+		PRINTFORMW 与%CALLNAME%一起经营的售餐棚里推出的料理受到了众多客人的好评
+		PRINTFORM 其中%CALLNAME%的
+		CALL LUNCH_NAME
+		PRINTFORMW 大受赞誉，拥有了许多回头客
+	ELSE
+		PRINTFORMW 与%CALLNAME%一起经营的售餐棚里推出的料理比起以往好像卖得不是那么好
+	ENDIF
+ENDIF
+
+
+;娼館でバイト時のイベント口上
+@EVENT_MESSAGE_16
+;避妊具の有無：B、総プ雷数：C、做爱系：D、侍奉系：G、SM系：H、百合系：Iにプ雷数保管、報酬額：S
+;CFLAG:30～33には各プ雷ごとのプ雷数が多いものから順に格納されている。
+PRINTS CALLNAME:A
+	SIF Q
+		PRINT 等人
+	PRINTW 将用身体招待来到娼馆的各位顾客
+PRINTFORM 其中
+;SM系
+IF CFLAG:30 == H && !RAND:2
+	;受虐属性が高い
+	SIF ABL:9 >= ABL:10
+		PRINTFORML 充斥痛苦的喘息，引起众人嗜虐心的ＰＬＡＹ
+	;嗜虐属性が高い
+	SIF ABL:10 > ABL:9
+		PRINTFORML 激发人的被虐心，把痛苦转变为快乐的ＰＬＡＹ
+;侍奉系
+ELSEIF CFLAG:30 == G && !RAND:2
+	PRINTFORML 以陶醉的神情细致进行的侍奉
+;百合、ゲイ系
+ELSEIF CFLAG:30 == I && !RAND:2
+	IF !MALE(A)
+		PRINTFORM 对女人
+	ELSE
+		PRINTFORM 对男人
+	ENDIF
+	PRINTFORML 敏感的部位了若指掌的%CALLNAME%等人的ＰＬＡＹ
+;做爱系
+;ELSEIF CFLAG:30 == D
+ELSE
+    PRINTS CALLNAME:A
+    	SIF Q
+    		PRINT 等人
+    	PRINTW 每当腰部被撞击就晃动着淫靡的身子娇声高呼的模样
+ENDIF
+PRINTFORMW 应该会令客人们相当满足吧…
+
+;レンタル時のイベント口上
+@EVENT_MESSAGE_17
+;Bはレンタルの期間日数
+IF B == 1
+	PRINTFORMW 脸上带着微笑，丝毫看不出疲倦
+	PRINTFORM 看来
+ELSEIF B == 3
+	PRINTFORMW 脸上浮现出柔和的笑容
+	PRINTFORM 看来
+ELSEIF B == 5
+	PRINTFORMW 虽是在笑，脸上的疲倦却怎么都遮掩不了
+	PRINTFORM 不过，
+ELSEIF B == 10
+	PRINTFORMW 满脸倦容
+	PRINTFORM 不过，
+ENDIF
+PRINTFORMW %CALLNAME%很高兴自己对%PLAYER_NAME()%来说是有价值的…
+
+;拍卖時のイベント口上
+@EVENT_MESSAGE_18
+PRINTL
+PRINTL
+PRINTL
+PRINTL 　　　・
+PRINTL 　　　・
+PRINTL 　　　・
+PRINTL
+PRINTL
+PRINTW
+;ビデオ拍卖時のイベント口上
+@EVENT_MESSAGE_19
+
+;演唱会実行時のイベント口上
+@EVENT_MESSAGE_20
+;失敗時
+IF F == 0
+	PRINTFORML 也许是太过紧张，犯了好几次重复性错误
+	PRINTFORML 正因如此，这次演唱会的评价好像不太好…
+;成功時
+ELSE
+	;ユニット結成している場合
+	IF W >= 0
+		IF W == 200
+			PRINTFORM %CSTR:A:24%
+		ELSE
+			PRINTFORM %CALLNAME:A%＆%CALLNAME:B%
+		ENDIF
+		IF ABL:14 >= 4
+			PRINTFORM 演唱了压箱底的新单
+			CALL SONG_NAME_TOHO
+			PRINTFORML ，
+		ELSE
+			PRINTFORML 卖力表演，
+		ENDIF
+		IF S >= 150000
+			PRINTFORMW 本次表演大成功！
+			IF !RAND:3
+				PRINTFORML \@ MALE(A) ? 他们 # 她们 \@的精彩表扬受到了现场观众们的热烈反响，场上一篇欢声
+			ELSEIF !RAND:2
+				PRINTFORML \@ MALE(A) ? 他们 # 她们 \@在舞台上奔跑跳跃着，歌声也十分优美，完美地吸引来了超满员的观众
+			ELSE
+				PRINTFORML \@ MALE(A) ? 他们 # 她们 \@以压倒性的舞台表演俘获了全会场观众的心
+			ENDIF
+			IF !RAND:2
+				PRINTFORML 演唱会在狂热的气氛中拉下帷幕，%CALLNAME:A%兴奋地与%CALLNAME:B%拥抱，面上洋溢着充满了成就感的笑容…
+			ELSE
+				PRINTFORML 唱完了令人感动的最后一首歌，%CALLNAME:A%们一边欢闹一边朝座下的观众和%PLAYER_NAME()%高高地挥舞着手…
+			ENDIF
+		ELSEIF S >= 80000
+			PRINTFORMW 看起来是成功了
+			IF !RAND:2
+				PRINTFORML %CALLNAME:B%突然加进来的即兴发挥被%CALLNAME:A%想方设法巧妙解决了
+				PRINTFORMW 互相交换眼神后，一起合力把演唱会的气氛推向高潮…
+				PRINTFORML 演唱会结束后，%CALLNAME:A%支撑着解除紧绷神经后就浑身无力的朋友，
+				PRINTFORMW 共同沐浴在观众们热烈的掌声中…
+			ELSE
+				PRINTFORML %CALLNAME:A%由于过于紧张，中途忘记了歌词
+				PRINTFORMW 注意到这一点的%CALLNAME:B%自觉接上，继续唱出剩下的内容
+				PRINTFORML 有了%CALLNAME:B%的支持与配合，
+				PRINTFORMW %CALLNAME:A%重新稳定了情绪，也跟上%CALLNAME:B%的步调一起奏出合声…
+				PRINTFORML 演唱会结束，互相支撑着走下舞台的时候
+				PRINTFORMW %CALLNAME:A%和%CALLNAME:B%的心情依旧十分高涨，非常开心…
+			ENDIF
+		ELSE
+			PRINTFORMW 没有失败真是太好了
+			IF !RAND:2
+				PRINTFORML %CALLNAME:A%唱错的地方被%CALLNAME:B%很好地掩饰并接着唱了下去
+				PRINTFORML 虽然有些紧张，但在%CALLNAME:B%的支撑下走下舞台后
+				PRINTFORMW %CALLNAME:A%的脸上终于浮现出松了口气的表情…
+			ELSE
+				PRINTFORML %CALLNAME:A%由于过于紧张，中途忘记了歌词
+				PRINTFORMW 注意到这一点的%CALLNAME:B%若无其事地接着唱了下去
+				PRINTFORML 在%CALLNAME:B%的支持和配合下，
+				PRINTFORMW %CALLNAME:A%重新稳定了情绪，也跟上%CALLNAME:B%的步调一起奏出合声…
+				PRINTFORML 演唱会结束，两人相互支撑着走下舞台的时候
+				PRINTFORMW %CALLNAME:A%在%CALLNAME:B%耳边轻轻说了声谢谢…
+			ENDIF
+		ENDIF
+	ELSE
+		PRINTFORM %CALLNAME:A%
+		IF ABL:14 >= 4
+			PRINTFORM 发布了压箱底的新单
+			CALL SONG_NAME_TOHO
+			PRINTFORML ，
+		ELSE
+			PRINTFORML 卖力表演
+		ENDIF
+		IF S >= 150000
+			PRINTFORMW 本次表演大成功！
+			PRINTFORML %CALLNAME:A%充满魅力的歌声让会场聚集而来的观众们发出狂热的呼声
+			PRINTFORMW 演唱会结束后，%CALLNAME:A%挂着满是成就感的笑容送走了观众们，随后亲自来送%PLAYER_NAME()%离开…
+		ELSEIF S >= 80000
+			PRINTFORMW 看起来是场成功的演出
+			PRINTFORMW 是因为刚结束演唱会心情高涨吗？%CALLNAME:A%从刚才起就一直在哼着小曲…
+		ELSE
+			PRINTFORMW 表现还算是中规中矩
+			PRINTFORMW %CALLNAME:A%可能是太过紧张，刚走下舞台立刻露出松了口气的表情…
+		ENDIF
+	ENDIF
+ENDIF
+
+;乱交ライブ実行時のイベント口上
+@EVENT_MESSAGE_21
+PRINTFORML %CALLNAME%在观众们面前发布了新曲
+PRINTFORML 带着冶艳的笑容，%CALLNAME%以魅惑性感的舞姿扭动起身体…
+IF B >= 3
+	PRINTFORML 是被%CALLNAME%魅惑的歌声与姿态引诱了吗？
+	PRINTFORMW 兴奋起来的听众们一拥而上，将%CALLNAME%团团围住…
+ELSE
+	PRINTFORMW 不知是被按下了什么开关，听众们突然站起身来朝着%CALLNAME%蜂拥而上…
+ENDIF
+SIF TALENT:158 == 0
+	PRINTFORMW %CALLNAME%被过分热情的听众们多次侵犯了…
+SIF I >= 0
+	PRINTFORMW %CALLNAME:I%将这混乱的一切尽数拍摄了下来…
+
+;公衆便所プ雷実行時のイベント口上
+@EVENT_MESSAGE_22
+IF B == 1
+	PRINTFORML 走进小巷的话就会发现%CALLNAME%躲在适当的背阴处
+ELSEIF B == 2
+	PRINTFORML 走进公共厕所就会发现%CALLNAME%在单间的便器上
+ELSEIF B == 3
+	PRINTFORML 进入俱乐部的话会发现%CALLNAME%在舞台上
+ELSEIF B >= 4
+	PRINTFORML 进入人迹罕至的深山后会发现%CALLNAME%在石头上
+ENDIF
+PRINTFORML 仿佛不知廉耻般大开着双腿坐着，私密部位湿得一塌糊涂
+PRINTFORMW %CALLNAME%一只手举着标语牌，就这样在那里待机
+PRINTFORMW …
+PRINTFORM 总而言之，%CALLNAME%作为肉便器在
+IF B == 1
+	PRINTFORM 黑手党之间
+ELSEIF B == 2
+	PRINTFORM 流浪者之间
+ELSEIF B == 3
+	PRINTFORM 好奇的人们之间
+ELSEIF B == 4
+	PRINTFORM 住在山里的河童们间
+ELSEIF B == 5
+	PRINTFORM 妖精和妖怪们间
+ENDIF
+PRINTFORMW 大受好评的样子…
+
+;朝料理イベントの口上
+@EVENT_MESSAGE_23
+PRINTFORML 闻到了一股很香的味道…
+PRINTFORML %CALLNAME%好像为%PLAYER_NAME()%做了早餐
+IF ABL:12 == 0
+	PRINTFORML 早餐(？)又黑又焦，不像是能入口的样子
+	PRINTFORML %CALLNAME%尴尬地看向这边…
+ELSEIF ABL:12 == 1
+	PRINTFORML %CALLNAME%似乎为做这个拼尽了全力
+	PRINTFORML 现在正用期待的眼神看向这边…
+ELSEIF ABL:12 == 2
+	PRINTFORML %CALLNAME%似乎为做这个拼尽了全力
+	PRINTFORML 现在正用期待的眼神看向这边…
+ELSEIF ABL:12 == 3
+	PRINTFORML 诚实地说很好吃，%CALLNAME%的脸上立刻绽放出欣喜的笑容
+ELSEIF ABL:12 == 4
+	PRINTFORML 诚实地说很美味，%CALLNAME%的脸上立刻绽放出欣喜的笑容
+ELSEIF ABL:12 >= 5
+	PRINTFORML 一起床就能品尝到令味蕾炸开的最棒的料理，%PLAYER_NAME()%感觉自己被幸福包围了
+ENDIF
+
+;ビデオ保管
+@EVENT_MESSAGE_24
+
+;衣服变更
+@EVENT_MESSAGE_25
+;脱がしたときの口上
+IF  Y == 0
+	;陷落素質无
+	IF KANRAKU(TARGET) == 0
+		;下着を引っぺがす
+		;ただし贞操带をつけていた場合は取下方が良反応
+		IF A == 2
+			IF T:2 == 5
+				PRINTFORMW 看着手上躺着的贞操带钥匙，%CALLNAME%的脸上浮现出安心的神情…
+			ELSEIF (TALENT:反抗 || TALENT:刚强 || TALENT:高傲 || TALENT:自大) && ABL:顺从 < 3 && !TALENT:幼稚
+                PRINTFORM 双手紧捂着
+				CALL CLOTHES_NAME
+				PRINTFORML ，%CALLNAME%警惕地盯着%PLAYER_NAME()%
+				PRINTFORM 实在没办法，只能用电流枪麻痹后再脱掉
+				IF TALENT:男性 || TALENT:双性
+                	PRINT 他
+                ELSE
+                	PRINT 她
+                ENDIF
+				PRINT 的
+				CALL CLOTHES_NAME
+				PRINTFORMW …
+			ELSEIF (TALENT:害羞 || TALENT:胆怯) && TALENT:老实
+                PRINTFORM %CALLNAME%用手死死捂住
+				CALL CLOTHES_NAME
+				PRINTFORML ，夹紧双腿拼命反抗
+				PRINTFORM 然而在%PLAYER_NAME()%强硬的命令下，
+				PRINTFORMW %CALLNAME%只能满脸屈辱地低下头…
+			;自卑・不知羞耻・性倒错无の時に少々抵抗。
+			ELSEIF TALENT:17 == 0 && TALENT:36 == 0 && TALENT:80 == 0
+                PRINTFORM %CALLNAME%用手死死捂住
+				CALL CLOTHES_NAME
+				PRINTFORML ，满脸都是不情愿
+				PRINTFORM 然而在%PLAYER_NAME()%强硬的命令下，
+				PRINTFORM 最终
+				IF TALENT:男性 || TALENT:双性
+                	PRINT 他
+                ELSE
+                	PRINT 她
+                ENDIF
+				PRINTFORM 还是把
+				CALL CLOTHES_NAME
+				PRINTFORMW 脱了下来…
+			ELSE
+                PRINTFORM %CALLNAME%一副勉强的样子把
+				CALL CLOTHES_NAME
+				PRINTFORMW 脱了下来…
+			ENDIF
+		ENDIF
+	ENDIF
+;着せた時の口上
+ELSE
+	;陷落素質无
+	IF KANRAKU(TARGET) == 0
+		;女装：男性キャラ
+		IF (TALENT:137 || TALENT:140) && (T:3 == 1 || T:3 == 2 || T:2 == 4 || T:2 == 1 || T:2 == 6 || T:4 == 1 || T:4 == 6 || T:6 == 2 || T:6 == 3 || T:6 == 4 || T:6 == 6)
+			IF (TALENT:反抗 || TALENT:刚强 || TALENT:高傲 || TALENT:自大) && ABL:顺从 < 3 && !TALENT:幼稚
+				PRINTFORML 看着递过来的女装，%CALLNAME%神色不渝，满是戒备
+				PRINTFORM 实在没办法，只能用电流枪麻痹后再给%CALLNAME%强行套上
+				CALL CLOTHES_NAME
+				PRINTFORMW …
+			ELSEIF (TALENT:害羞 || TALENT:胆怯) && TALENT:老实
+				PRINTFORML 看着递过来的女装，%CALLNAME%满脸抗拒
+				PRINTFORM 然而在%PLAYER_NAME()%强硬的命令下，
+				PRINTFORMW %CALLNAME%只能低下头无言地将其穿上…
+			;自卑・不知羞耻・性倒错无の時に少々抵抗。
+			ELSEIF TALENT:17 == 0 && TALENT:36 == 0 && TALENT:80 == 0
+				PRINTFORML 紧盯着递过来的女装，%CALLNAME%拧着眉头，没有要接的意思
+				PRINTFORM 然而在%PLAYER_NAME()%强硬的命令下，
+				PRINTFORM %CALLNAME%还是乖乖把
+				CALL CLOTHES_NAME
+				PRINTFORMW 换上了…
+			ELSE
+				PRINTFORML 看着递过来的女装，%CALLNAME%拧着眉头满脸不情愿地把
+				CALL CLOTHES_NAME
+				PRINTFORMW 换上了…
+			ENDIF
+		ENDIF
+		;贞操带
+		IF T:2 == 5
+				PRINTFORML 被取下贞操带后，%CALLNAME%咬着唇像是想诉说什么一样看着%PLAYER_NAME()%
+				PRINTFORMW 然而%PLAYER_NAME()%无视了那个目光，握紧了手中的钥匙
+		ENDIF
+	ENDIF
+ENDIF
+
+;弁当
+@EVENT_MESSAGE_26
+;最初から弁当を食べる時
+IF K == 1
+	PRINTL 好吧…既然是难得的作品…
+	PRINTW 就心怀敬意地领受吧…
+	PRINTL      ･
+	PRINTL      ･
+	PRINTW      ･
+	PRINTFORM %CALLNAME:B%的料理
+	IF ABL:B:12 >= 5
+		PRINTL 是至高的绝品。
+		PRINTFORML 等回过神来时，%PLAYER_NAME()%的盘子已经空了。
+		PRINTFORMW 在一旁观看了%PLAYER_NAME()%用餐全程的%CALLNAME:B%心满意足地看向这边…
+	ELSEIF ABL:B:12 > 2
+		PRINTL 很美味。
+		PRINTFORMW 将料理一扫而空的%PLAYER_NAME()%满足地摸着肚子。
+	ELSEIF !RAND:2 || TALENT:B:44
+		PRINTFORML 即便恭维也算不上合%PLAYER_NAME()%的口味。
+		PRINTFORMW 但不管怎么说，%PLAYER_NAME()%还是把料理全部吃完了。
+	ELSE
+		PRINT 是无可无不可的水平，不太能做得出评价。
+		IF ABL:B:0 >= 3
+			PRINTL
+			PRINTFORMW %PLAYER_NAME()%与%CALLNAME:B%一边谈笑着一边用完了料理。
+		ELSE
+			PRINTW
+		ENDIF
+	ENDIF
+;売るのをやめて食べる時
+ELSEIF K == 2
+	PRINTFORML 果然还是想和%CALLNAME:B%一起品尝料理。
+	PRINTL      ･
+	PRINTL      ･
+	PRINTW      ･
+	PRINTFORM %CALLNAME:B%的料理
+	IF ABL:B:12 >= 8 && (TALENT:B:3 || TALENT:B:6) && !RAND:2
+		PRINTL 是绝无仅有举世无双的至尊绝品。
+		PRINTFORMW %PLAYER_NAME()%狼吞虎咽地把料理吃了个精光。
+		PRINTFORML 这副贪婪的姿态让%CALLNAME:B%吃了一惊
+		PRINTFORML 发现是因为喜欢自己的料理后，脸上才浮现出心满意足的笑容
+		PRINTFORMW 同时开心地询问要不要再来一份。
+	ELSEIF ABL:B:12 >= 5
+		PRINTL 是至高的绝品。
+		PRINTFORML 等回过神来时，%PLAYER_NAME()%的盘子已经空了。
+		PRINTFORMW 在一旁观看了%PLAYER_NAME()%用餐全程的%CALLNAME:B%心满意足地看向这边…
+	ELSEIF ABL:B:12 >= 3
+		PRINTL 很美味。
+		PRINTFORMW 将料理一扫而空的%PLAYER_NAME()%满足地摸着肚子。
+	ELSEIF !RAND:2 || TALENT:B:44
+		PRINTFORML 即便恭维也算不上合%PLAYER_NAME()%的口味。
+		PRINTFORMW 但不管怎么说，%PLAYER_NAME()%还是把料理全部吃完了。
+	ELSE
+		PRINT 是无可无不可的水平，不太能做得出评价。
+		IF ABL:B:0 >= 3
+			PRINTL
+			PRINTFORMW %PLAYER_NAME()%与%CALLNAME:B%一边谈笑着一边用完了料理。
+		ELSE
+			PRINTW
+		ENDIF
+	ENDIF
+;主人が弁当を作るとき
+ELSEIF K == 3
+	PRINTFORML 决定和%CALLNAME%一起用餐。
+	PRINTL      ･
+	PRINTL      ･
+	PRINTW      ･
+	PRINT 今天的料理
+	IF ABL:MASTER:12 >= 5 && (TALENT:TARGET:3 || TALENT:TARGET:6)
+		PRINTL 是得意的作品。
+		PRINTFORML %CALLNAME%把端上来的菜全部一扫而空。
+		PRINTFORML 大概是太好吃了吧，吃完后%CALLNAME%有些害羞滴请求再来一碗
+		SIF RAND:4 == 0
+			TFLAG:14 = 1
+	ELSEIF ABL:MASTER:12 >= 5
+		PRINTL 连自己都觉得是做的好的佳作。
+		PRINTFORML 乍一抬起头，发现%CALLNAME%面前的盘子已经空了。
+		PRINTFORMW 看起来像是很中意的样子，%CALLNAME%露出满足的笑容…
+	ELSEIF ABL:MASTER:12 >= 3
+		PRINTL 感觉还不错。
+		PRINTFORMW 进餐期间，%CALLNAME%的嘴角一直上扬着。
+	ELSEIF ABL:MASTER:12 < 1 && MARK:3 > 0
+		PRINTFORML 很遗憾的并不合%CALLNAME%的口味。
+		PRINTFORMW %PLAYER_NAME()%将%CALLNAME%剩下的料理吃掉了。
+	ELSE
+		PRINTL 乏善可陈。
+		PRINTFORMW %PLAYER_NAME()%和%CALLNAME%把料理平分了。
+	ENDIF
+;食後の運動(性的な意味で)直前
+ELSEIF K == 4
+	PRINTFORM 两个人欲火焚身地钻进床铺，在之后一共滚了
+	PRINTV S
+	PRINTL 次床单…
+;毒を盛られた
+ELSEIF K == 5
+	PRINTL      ･
+	PRINTL      ･
+	PRINTL      ･
+	PRINTW      !
+	PRINTW 身体的情况有点奇怪…
+	PRINTW 看来饭菜里被下毒了…
+;毒を見抜いたので弱みを握るイベント（相性のいい子に食べさせるver）
+ELSEIF K == 6
+	PRINTFORMW %PLAYER_NAME()%叫出%CALLNAME:C%提议一起吃饭。
+	PRINTFORML 什么都不知道的%CALLNAME:C%把手伸向了有毒的料理
+	PRINTFORMW 看到这一幕的%CALLNAME:TARGET%脸色发青，站出来拼命想要阻止%CALLNAME:C%的动作。
+	PRINTFORML 在至今还一无所知地露出惊讶表情的%CALLNAME:C%面前，%CALLNAME:TARGET%彻底输了。
+	PRINTFORMW 最终%CALLNAME:TARGET%坦白自己在料理里下了毒
+	PRINTFORML 之后，为了处理有毒的饭菜，%CALLNAME:TARGET%垂着脑袋端着托盘消失在厨房里…
+	WAIT
+	PRINTFORML 谁都不在的厨房中，%CALLNAME:TARGET%独自一人静静忍受着屈辱和恐惧…
+;毒を見抜いたので弱みを握るイベント（問い詰めるver）
+ELSEIF K == 7
+	PRINTFORMW 就此事追问了%CALLNAME:TARGET%
+	PRINTFORM 在%PLAYER_NAME()%
+	IF TALENT:MASTER:83
+		PRINT 严厉
+		M += 10
+	ENDIF
+	PRINTFORML 的审问下，%CALLNAME:TARGET%承认了自己的罪行
+	WAIT
+	PRINTL 
+	PRINTFORMW 目送着%PLAYER_NAME()%从房间中离开的背影
+	PRINTFORML %CALLNAME:TARGET%阴恻着脸，构思着接下来的报复计划
+	PRINTFORMW 此时的%CALLNAME:TARGET%非常让人恐怖…
+	IF TALENT:37 == 0
+		IF RAND:8 == 0
+			PRINTFORMW 成功掌握了%NAME:TARGET%的【弱点】
+			TALENT:37 = 1
+			TIMES M , 2.00
+		ENDIF
+	ENDIF
+;毒殺された
+ELSEIF K == 8
+	PRINTFORMW 被毒性耗光体力的%PLAYER_NAME()%
+	PRINTFORMW 哗啦一声仰面倒下了
+	IF FLAG:5 != 9
+		PRINTFORMW 明明一起度过了那么多时光
+		PRINTFORMW 到底为什么会发生这种事情
+	ELSE
+		PRINTFORMW 没人可以预见到这样的结局
+		PRINTFORMW 当初，为什么会想要调教%CALLNAME%呢？
+	ENDIF
+	PRINTFORMW …数不清的疑问在脑海中来回闪现
+	PRINTFORMW 但无论哪个都想不出解决的办法，
+	PRINTFORMW 就像是泡沫碎裂一样，
+	PRINTFORMW 或是像突然找不到信号的电视机，
+	PRINTFORMW 意识啪的一下中断掉了…
+	PRINTL
+	PRINTFORMW 逐渐变白的视野中。
+	PRINTFORMW 最后所见到的是――
+	IF TALENT:病娇 
+		PRINTFORMW 双目失神，浮现出令人毛骨悚然的冷笑的
+	ELSE
+		PRINTFORMW 满脸都是憎恶与不安的
+	ENDIF
+	PRINTFORMW 俯视着%PLAYER_NAME()%的%CALLNAME%的身姿…
+	PRINTL
+	PRINTFORMW 尽管突然有了几分罪恶感，意识却渐渐淡薄――
+	PRINTW ・・・・・・・・・
+	PRINTW ・・・・・・
+	PRINTW ・・・
+	IF TALENT:疯癫 || ((TALENT:施虐狂 || ABL:嗜虐属性 > 2) && RAND:2 == 0)
+		PRINTFORMW ――意识回笼的时候，%PLAYER_NAME()%坐在椅子上，双手被紧紧绑住了
+		PRINTFORML 环视四周，发现那里有着手持红色蜡烛的%CALLNAME:A%，
+		SIF TALENT:疯癫
+			PRINT 坏掉一般的
+		PRINTFORMW 阴森笑容浮现在其脸上，加之正居高临下俯视着的目光
+		PRINTFORML 终于开始感到恐惧的%PLAYER_NAME()%的脸不自然地扭曲了
+		PRINTFORMW %CALLNAME:A%眼中滚动着晦暗不明的情绪，将手伸向了%PLAYER_NAME()%穿着的衣服――
+		PRINTW ・・・・・・・・・
+		PRINTW ・・・・・・
+		PRINTW ・・・
+		PRINTFORMW ★★★%NAME:MASTER%的身心都被调教了★★★
+		PRINTW 　
+		PRINTW 　　　　　　　　―― Ending No.-3 (逆调教结局)
+	ELSE
+		PRINTFORMW ★★★%NAME:MASTER%消失了★★★
+		PRINTL 　
+		PRINTW 　　　　　　　　―― Ending No.-2 (毒杀结局)
+	ENDIF
+ENDIF
+
+
+;调教後夜這い受
+@EVENT_MESSAGE_27
+PRINTFORML 一天结束，正要上床就寝的时候，%CALLNAME%突然造访了房间
+IF TEQUIP:2 == 5
+	PRINTFORML 大概是被快感所折磨，再也忍受不了了，%CALLNAME%哀求%PLAYER_NAME()%将贞操带卸除
+	PRINTFORML 虽然%PLAYER_NAME()%并没有答应这个请求，但%CALLNAME%还是紧紧搂着%PLAYER_NAME()%入睡了…
+ELSE
+PRINTFORML 不由分说地把%PLAYER_NAME()%推倒在床上，贲张的阳具径直插入%PLAYER_NAME()%开始疯狂地抽插
+PRINTFORML 宛如饥肠辘辘的野兽一般贪婪地一次次索求%PLAYER_NAME()%的身体以平息体内的饥渴
+PRINTFORML 两人的身影重叠在一起，紧紧相拥，共同坠入无边的黑夜……
+ENDIF
+;购买道具
+@EVENT_MESSAGE_28
+PRINTL 
+
+;朝足交侍奉
+@EVENT_MESSAGE_30
+PRINTFORML 在股间的不协调感中悠悠醒转，
+PRINTFORML 发现%CALLNAME%正用双足夹着%PLAYER_NAME()%挺立的家伙不断摩擦。
+
+;モーニング接吻
+@EVENT_MESSAGE_31
+PRINTFORML 清晨，被%CALLNAME%的吻唤醒。
+SELECTCASE CFLAG:600
+	CASE 1, 4
+		PRINT 「…嗯唔…
+	CASE 10, 11
+		PRINT 「…哈啊…
+	CASEELSE
+		PRINT 「…呼呣…
+ENDSELECT
+IF CFLAG:601 == 13 && !RAND:3
+	PRINT Good Morning
+ELSEIF CFLAG:601 == 2
+	PRINT 早安
+ELSEIF CFLAG:600 == 1 || CFLAG:600 == 10
+	PRINT 早~上好～
+ELSE
+	PRINT 早上好
+ENDIF
+PRINTFORM …
+IF KANRAKU(TARGET) > 1
+	PRINTFORML %CSTR:3%」
+ELSE
+	PRINTFORML %MASTERNAME%」
+ENDIF
+PRINTFORML %CALLNAME%的脸上染着朱红色，微笑着向你问候
+
+
+;朝浴室
+@EVENT_MESSAGE_32
+PRINTFORML 听到了哗哗的水声…
+PRINTFORML 好像是%CALLNAME%特地为%PLAYER_NAME()%做好了早间入浴的准备
+PRINTFORML 索性与%CALLNAME%一同入浴了
+IF TALENT:3 || TALENT:6
+	;（肉体的か精神的に）小さい子だと逆に洗ってあげる
+	IF TALENT:100 || TALENT:142 || TALENT:150 || TALENT:151
+		PRINTFORML 作为奖励帮%CALLNAME%洗了头发，%CALLNAME%受宠若惊，十分高兴…
+	ELSE
+		PRINTFORM 在浴室里，%CALLNAME%
+		;自我奉献だと優しい
+		IF TALENT:63
+			PRINTFORML 手法温柔地帮%PLAYER_NAME()%洗了头发
+			PRINTFORML 不知为何，心情变得很愉快
+		;小恶魔だと悪戯してくる
+		ELSEIF TALENT:87
+			PRINTFORML 对%PLAYER_NAME()%做了恶作剧，理所当然受到了斥责
+			PRINTFORML 但%CALLNAME%显然并不当一回事，令人头疼
+		;技巧+侍奉精神が高いと上手い
+		ELSEIF ABL:2 + ABL:7 >= 7
+			PRINTFORML 手法娴熟地侍奉%PLAYER_NAME()%洗了澡，%PLAYER_NAME()%感到身心舒畅
+		;技巧が低いと微妙な心地
+		ELSE
+			PRINTFORML %CALLNAME%手法笨拙，下手没轻没重，弄痛了%PLAYER_NAME()%
+			PRINTFORML 为此%CALLNAME%一脸抱歉
+		ENDIF
+	ENDIF
+ELSEIF TALENT:4 || TALENT:7
+	PRINTFORML %CALLNAME%用满是泡沫的身躯作为工具擦洗%PLAYER_NAME()%的身体
+ELSEIF TALENT:5 || TALENT:8
+	PRINTFORML %CALLNAME%兢兢业业地为%PLAYER_NAME()%清洗了身体
+ENDIF
+
+;朝３Ｐ
+@EVENT_MESSAGE_33
+PRINTFORML 一睁开双眼，就看到%CALLNAME%和%CALLNAME:ASSI%赤裸着身体彼此和谐地交缠在一起
+PRINTFORM 注意到%PLAYER_NAME()%醒来后，
+;それぞれの変数にキャラ番号を代入。ただASSIやTARGETを代入すると登录番号なのでズレてしまう
+G = NO:ASSI
+H = NO:MASTER
+I = NO:TARGET
+;助手と调教对象の相性が相思相爱だと
+IF RELATION:ASSI:I >= 150 && RELATION:TARGET:G >= 150 && ABL:同性倾向 >=3 && ABL:ASSI:同性倾向 >=3
+	;両方とも主人と相生性邪恶い
+	IF RELATION:ASSI:H < 100 && RELATION:TARGET:H < 100
+		PRINTFORM 两人不情愿地
+	;助手が主人と相生性邪恶い
+	ELSEIF RELATION:ASSI:H < 100
+		PRINTFORM 与双眼闪闪发光的%CALLNAME%相反，%CALLNAME:ASSI%露出遗憾的表情
+	;调教对象が主人と相生性邪恶い
+	ELSEIF RELATION:TARGET:H < 100
+		PRINTFORM 与双眼闪闪发光的%CALLNAME:ASSI%相反，%CALLNAME%露出遗憾的表情
+	;どちらも主人と相生性邪恶くない
+	ELSE
+		PRINTFORM 两人心意相通地微笑着，
+	ENDIF
+;相性普通～やや良い程度だと、積極的な方が誘う
+;ほぼ陷落してる前提なので、積極素質を優先
+;積極素質：[淫乱√or直率or接受快感or性好奇or贞操淡漠or解放]
+;消極素質：[高傲、傲娇、自制力、无动于衷、贞操重视、害羞、否定快感]
+ELSEIF RELATION:ASSI:G >= 100 && RELATION:TARGET:I >= 100
+	;【両方積極的】
+	IF (TALENT:淫乱 || TALENT:娼妇 || TALENT:直率 || TALENT:性好奇 || TALENT:贞操淡漠 || TALENT:性开放 || TALENT:接受快感) && (TALENT:ASSI:淫乱 || TALENT:ASSI:娼妇 || TALENT:ASSI:直率 || TALENT:ASSI:性好奇 || TALENT:ASSI:贞操淡漠 || TALENT:ASSI:性开放 || TALENT:ASSI:接受快感)
+		PRINTFORM %CALLNAME%和%CALLNAME:ASSI%竞争似的一人一边拉住%PLAYER_NAME()%的胳膊
+	;片方が積極的
+	ELSEIF (TALENT:4 || TALENT:7 || TALENT:13 || TALENT:23 || TALENT:31 || TALENT:33 || TALENT:70) || (TALENT:ASSI:4 || TALENT:ASSI:7 || TALENT:ASSI:13 || TALENT:ASSI:23 || TALENT:ASSI:31 || TALENT:ASSI:33 || TALENT:ASSI:70)
+		;调教对象が積極的
+		IF TALENT:4 || TALENT:7 || TALENT:13 || TALENT:23 || TALENT:31 || TALENT:33 || TALENT:70
+			PRINTFORM %CALLNAME%
+		;助手が積極的
+		ELSE
+			PRINTFORM %CALLNAME:ASSI%
+		ENDIF
+	;両方消極的
+	ELSEIF (TALENT:15 || TALENT:18 || TALENT:20 || TALENT:21 || TALENT:30 || TALENT:35 || TALENT:71) && (TALENT:ASSI:15 || TALENT:ASSI:18 || TALENT:ASSI:20 || TALENT:ASSI:21 || TALENT:ASSI:30 || TALENT:ASSI:35 || TALENT:ASSI:71)
+		PRINTFORM %CALLNAME%和%CALLNAME:ASSI%似乎有些为难地面面相觑，但最终还是
+	;片方が消極的（もう片方も特に積極的な方ではない）
+	ELSEIF (TALENT:高傲 || TALENT:傲娇 || TALENT:自制力 || TALENT:无动于衷 || TALENT:贞操重视 || TALENT:害羞 || TALENT:否定快感) && (TALENT:ASSI:高傲 || TALENT:ASSI:傲娇 || TALENT:ASSI:自制力 || TALENT:ASSI:无动于衷 || TALENT:ASSI:贞操重视 || TALENT:ASSI:害羞 || TALENT:ASSI:否定快感)
+		;调教对象が消極的
+		IF TALENT:15 || TALENT:18 || TALENT:20 || TALENT:21 || TALENT:30 || TALENT:35 || TALENT:71
+			PRINTFORM 看到有些不知所措的%CALLNAME%，%CALLNAME:ASSI%伸出手
+		;助手が消極的
+		ELSE
+			PRINTFORM 看到有些不知所措的%CALLNAME:ASSI%，%CALLNAME%伸出手
+		ENDIF
+	;どちらも特に積極的でも消極的でもない
+	ELSE
+		PRINTFORM %CALLNAME%和%CALLNAME:ASSI%并未有什么反应，很自然地
+	ENDIF
+;互いの相性に格差があると、主人に好意を持っている方が誘う
+ELSEIF (RELATION:ASSI:G >= 100 && RELATION:TARGET:I < 100) || (RELATION:TARGET:G < 100 && RELATION:ASSI:I >= 100)
+	;助手が调教对象と主人を嫌っている
+	IF RELATION:ASSI:I < 100 && RELATION:ASSI:H < 100
+		PRINTFORM 毫不在乎一脸厌恶的%CALLNAME:ASSI%，%CALLNAME%伸出手
+	;助手が调教对象を嫌っていて、主人は嫌いではない
+	ELSEIF RELATION:ASSI:I < 100 && RELATION:ASSI:H >= 100
+		PRINTFORM 看着%CALLNAME:ASSI%瞬间焕发神采的脸，%CALLNAME%主动远离，并
+	;调教对象が助手と主人を嫌っている
+	ELSEIF RELATION:TARGET:H < 100 && RELATION:TARGET:G < 100
+		PRINTFORM 毫不在乎一脸厌恶的%CALLNAME%，%CALLNAME:ASSI%伸出手
+	;调教对象が助手を嫌っていて、主人は嫌いではない
+	ELSEIF RELATION:TARGET:G < 100 && RELATION:TARGET:H >= 100
+		PRINTFORM 看着%CALLNAME%瞬间焕发神采的脸，%CALLNAME:ASSI%主动远离，并
+	ENDIF
+;互いに相生性邪恶いと、気まずそう
+ELSE
+	PRINTFORM 两人迅速分开了，尴尬地
+ENDIF
+PRINTFORML 邀请%PLAYER_NAME()%加入其中
+PRINTFORML 三个人一起共赴乐园…
+
+;朝饮尿
+@EVENT_MESSAGE_34
+;主人の竿の有無
+IF TALENT:MASTER:140 || TALENT:MASTER:139 || TALENT:MASTER:137
+	PRINTFORML 清晨，在%CALLNAME%的口交侍奉中醒来
+	PRINTFORML 突然尿意上涌，索性就尿在了%CALLNAME%口中
+	;孩童尺寸で無い
+	IF TALENT:MASTER:114 == 0
+		PRINTFORM 没想到%CALLNAME%不但把精液全部吞下喉咙，连尿液也一并喝下去了…
+	ELSE
+		PRINTFORM 没想到%CALLNAME%毫不介意，甚至把%PLAYER_NAME()%的尿液喝得干干净净…
+	ENDIF
+ELSE
+	PRINTFORML 清晨，在%CALLNAME%的口交侍奉中醒来
+	PRINTFORML 突然尿意上涌，索性就尿在了%CALLNAME%口中
+	PRINTFORML 没想到%CALLNAME%毫不介意，把%PLAYER_NAME()%的晨尿喝得干干净净…
+ENDIF
+
+
+;夜酒宴
+@EVENT_MESSAGE_35
+PRINTFORML 一天结束，正要上床就寝的时候，%CALLNAME%突然造访了房间
+PRINTFORMW 变戏法一样从身后取出一瓶酒，说是想两个人一起开夜酒宴
+;醉酒つぶれて添い寝
+IF TFLAG:405 == 2
+	PRINTFORML 点头之后，与%CALLNAME%一番推杯换盏，快乐得忘记了时间
+	PRINTFORML 醉眼惺忪之余，看见了已然醉倒，歪在一旁的%CALLNAME%
+	PRINTFORML 干脆就这样一把搂过，紧紧抱着进入了梦乡……
+;いちゃいちゃ
+ELSEIF TFLAG:405 == 5 || TFLAG:405 == 8 || TFLAG:405 == 9
+	PRINTFORML 点头之后，与%CALLNAME%愉快地推杯换盏
+	PRINTFORML %CALLNAME%不胜酒力，烂醉之下湿润的目光如同一个危险的邀请
+	PRINTFORML 受到诱惑的%PLAYER_NAME()%就这样推倒了%CALLNAME%，两人火热的身躯双双重叠……
+;ほろ醉酒
+ELSE
+	PRINTFORML 点头之后，宴会一直持续到深夜，度过了一段愉快的时光……
+ENDIF
+
+;夜添い寝
+@EVENT_MESSAGE_36
+PRINTFORM 夜晚，正要上床就寝的时候，%CALLNAME%
+IF BASE:0 < 500
+	PRINTL 突然造访了房间
+ELSE
+	PRINTL 穿着睡衣造访了房间
+ENDIF
+IF BASE:0 < 500
+	PRINTFORML 经过连日的调教，%CALLNAME%的样子十分憔悴
+	PRINTFORML %PLAYER_NAME()%叹息了一声，将%CALLNAME%抱在怀里
+	PRINTFORML 两个人钻进同一个被窝，抵足而眠……
+ELSE
+	IF TALENT:反抗 || TALENT:高傲 || TALENT:自大
+		PRINTFORML 嘴上说着什么这是特别的奖励，钻进%PLAYER_NAME()%的被窝一起入睡了
+	ELSEIF TALENT:小人体型 || TALENT:幼儿／幼儿退行 || TALENT:幼稚
+		PRINTFORML 说是一个人睡觉很可怕，向%PLAYER_NAME()%投来寂寞的目光
+		PRINTFORML %PLAYER_NAME()%叹息了一声，将%CALLNAME%搂上床一起入睡了
+	ENDIF
+	IF TALENT:反抗 || TALENT:高傲 || TALENT:自大
+		PRINTFORML 平日里总是很强势的%CALLNAME%现在也一如既往强硬地钻进了%PLAYER_NAME()%的被窝
+		SIF TALENT:小人体型
+			PRINT 并用自己小小的身体
+		PRINTFORML 紧紧地抱着%PLAYER_NAME()%入睡了
+	ELSE
+		PRINTFORML %CALLNAME%表达了想要一起睡的愿望，%PLAYER_NAME()%点头同意了
+		PRINTFORML 惊喜之下，%CALLNAME%高兴地抱住了%PLAYER_NAME()%，两人一起入睡了
+	ENDIF
+ENDIF
+
+
+;夜Ｍプ雷
+@EVENT_MESSAGE_37
+PRINTFORML 一天结束，正要上床就寝的时候，%CALLNAME%突然造访了房间
+IF K:5 == 4
+	PRINTFORML 主动脱下裤子的%CALLNAME%四肢着地翘高屁股，请求着%PLAYER_NAME()%的凌虐
+	IF TALENT:MASTER:施虐狂 || ABL:MASTER:嗜虐属性 > 2
+		PRINTFORML 将手掌数次拍打在眼前不着寸缕的臀部上，直至两片臀瓣通红发肿
+		PRINTFORML %CALLNAME%扭动身躯呻吟着，好像全身心都得到了满足……
+	ELSE
+		PRINTFORML 带着疑惑将手掌数次拍打在眼前不着寸缕的臀部上，直至两片臀瓣通红发肿
+		PRINTFORML %CALLNAME%发出满足的喟叹……
+	ENDIF
+ELSEIF K:5 == 1
+	PRINTFORML 眼底闪耀着嗜虐光芒的%CALLNAME%吐露了想要凌虐%PLAYER_NAME()%的愿望
+	PRINTFORML 被%PLAYER_NAME()%无情拒绝，并逼迫至墙角后
+	PRINTFORML %CALLNAME%一副狼狈的样子，开始向%PLAYER_NAME()%献媚……
+ELSEIF K:5 == 2
+	PRINTFORML 恳切地央求%PLAYER_NAME()%施以鞭刑
+	IF TALENT:MASTER:施虐狂 || ABL:MASTER:嗜虐属性 > 2
+		PRINTFORML 如其所愿，高举着手臂将鞭子挥舞得劈啪作响
+		PRINTFORML 浑身上下遍布鞭痕的%CALLNAME%似乎从心底感到了满足……
+	ELSE
+		PRINTFORML 疑惑的%PLAYER_NAME()%踌躇着挥舞了几下鞭子
+		PRINTFORML 啪啪声中，%CALLNAME%的脸上交错着痛苦与欢愉
+		PRINTFORML 看起来好像是满足了……
+	ENDIF
+ELSE
+	PRINTFORML 以土下座的姿势请求着舔%PLAYER_NAME()%的脚
+	IF TALENT:MASTER:施虐狂 || ABL:MASTER:嗜虐属性 > 2
+		PRINTFORML 如其所愿坐了下来，把脚踩在%CALLNAME%的脸上
+		PRINTFORML 受宠若惊地捧起%PLAYER_NAME()%的脚，%CALLNAME%将脚趾一一含入嘴里仔细地舔舐
+		PRINTFORML 看起来%CALLNAME%似乎从心底感到了满足……
+	ELSE
+	    PRINTFORML 虽然感到疑惑，还是坐下来伸出了一只脚
+		PRINTFORML 那只脚被轻轻捧起，脚趾则被%CALLNAME%一一含入嘴里仔细舔舐……
+		PRINTFORML 现在的%CALLNAME%看起来好像很是满足……
+	ENDIF
+ENDIF
+
+;夜Ｓプ雷
+@EVENT_MESSAGE_38
+;K:5=1打屁股、=2鞭子打ち、=3足舐め
+;=4主人Ｍのとき、ご侍奉Ｓプ雷
+;現主人以外を訪れる
+PRINTFORML 一天结束，正要上床就寝的时候
+PRINTFORM %CALLNAME%突然造访了房间，
+IF K:5 == 4
+	PRINTFORML 说是想要狠狠打%PLAYER_NAME()%的屁股
+	IF TALENT:MASTER:受虐狂 || ABL:MASTER:受虐属性 > 2
+		PRINTFORML %PLAYER_NAME()%高兴地把裤子脱至膝弯，向%CALLNAME%的方向翘起臀部
+		PRINTFORML 见到如此听话的%PLAYER_NAME()%，%CALLNAME%脸上浮现出笑容，高高扬起了手……
+	ELSE
+		PRINTFORML 无奈之下只好依言趴下，让%CALLNAME%打了个尽兴……
+	ENDIF
+ELSEIF K:5 == 1
+	PRINTFORML 说是要好好惩罚一下%PLAYER_NAME()%
+	PRINTFORML %PLAYER_NAME()%脱下衣服趴在地上，背过去让%CALLNAME%打
+	PRINTFORML “啪”、“啪”…手掌拍打在屁股上的声音一次比一次响亮
+	PRINTFORML %CALLNAME%显然渐渐兴奋起来了……
+ELSEIF K:5 == 2
+	PRINTFORML 手里握着鞭子，一步步逼近过来
+	IF TALENT:MASTER:受虐狂 || ABL:MASTER:受虐属性 > 2
+		PRINTFORML %PLAYER_NAME()%脱下衣服趴在地上，等待着%CALLNAME%的凌虐
+		PRINTFORML %CALLNAME%的脸上浮现出满足的笑容，持续地挥舞着鞭子……
+	ELSE
+		PRINTFORML 无奈之下只好让%CALLNAME%打了个痛快……
+	ENDIF
+ELSE
+	PRINTFORML 蛮不讲理地踢倒了%PLAYER_NAME()%，把脚伸到%PLAYER_NAME()%嘴边
+	IF TALENT:MASTER:受虐狂 || ABL:MASTER:受虐属性 > 2
+		PRINTFORML %PLAYER_NAME()%用嘴把鞋袜脱下，手指伸到黏糊糊的胯下活动着，不时地亲吻面前的脚背
+		PRINTFORML %CALLNAME%满足地叹息着，把%PLAYER_NAME()%的头踩在脚下……
+	ELSE
+		PRINTFORML 无奈之下亲吻了%CALLNAME%的鞋面，抬起头时看到了鞋子主人满足的笑容……
+	ENDIF
+ENDIF
+
+;夜百合プ雷
+@EVENT_MESSAGE_39
+PRINTFORML 一天结束，正要上床就寝的时候，%CALLNAME%突然造访了房间
+IF TEQUIP:下身内衣 == 5
+	PRINTFORML 大概是被身体的热量所折磨，再也忍受不了了，%CALLNAME%哀求%PLAYER_NAME()%将贞操带卸除
+	PRINTFORML %PLAYER_NAME()%并没有答应%CALLNAME%的请求
+	PRINTFORML 但却一把将%CALLNAME%拉到床上，紧紧抱着入睡了…
+ELSE
+PRINTFORML 主动把衣服脱了个精光，随意地扔到脚下后
+PRINTFORML %CALLNAME%热情地缠上来，把火热的躯体贴到%PLAYER_NAME()%身上
+PRINTFORM 同时
+SIF E < 60
+	PRINT 轻轻地
+PRINTFORM 拉过%PLAYER_NAME()%的手引导至自己的下身，
+IF E < 60
+	PRINTFORML 隔着内裤揉搓起秘所的中心……
+ELSE
+	PRINTFORML 从衣服的缝隙探了进去……
+ENDIF
+PRINTFORML 互相慰藉的二人在激情之后身心满足，就这样相拥而眠……
+ENDIF
+
+
+;夜覗き見
+@EVENT_MESSAGE_40
+;サブターゲットが覗き見。前プ雷が何か TFLAG:405
+;1|自慰× 2|添い寝 3|受虐狂プ雷 4|施虐狂プ雷 5|百合プ雷 6|搾乳×
+;7|NTR× 8|夜這い 9|夜這い主人受
+;K:2 =1覗いた二人のうち主人が恋慕・畏怖对象 =2メインターゲット（現助手）が恋慕・畏怖对象
+IF TALENT:病娇
+	PRINTFORMW 这一切都被躲在暗处面色扭曲的%CALLNAME%尽收眼底
+ELSE
+	PRINTFORMW 这一切都被躲在暗处的%CALLNAME%尽收眼底
+ENDIF
+;主人が好き
+IF K:2 == 1 && RAND:2
+	PRINTFORM %CALLNAME%偷偷看着
+	IF TALENT:恋慕 || TALENT:相亲相爱
+		PRINT 与自己所恋慕的
+	ELSE
+		PRINT 与自己挚爱的
+	ENDIF
+	IF TALENT:病娇
+		IF TFLAG:405 == 2
+			PRINTFORML %PLAYER_NAME()%紧紧相拥而眠的%CALLNAME:ASSI%的身影，眼神逐渐冰冷
+			PRINTFORML 就那么瞪了一会儿后，%CALLNAME%嘟哝着难以听清的话朝自己的房间走去……
+		ELSE
+			PRINTFORML %PLAYER_NAME()%身体交缠的%CALLNAME:ASSI%，眼神逐渐冰冷
+			PRINTFORM 然而与心中的妒忌相悖，
+			IF TEQUIP:下身内衣 == 5
+				PRINTL 身体擅自兴奋，却被贞操带所阻挡
+				PRINTL 无奈之下，只好心酸又苦闷地度过了一夜
+			ELSE
+				PRINTL 身体擅自兴奋，不由遵从情欲自慰起来……
+			ENDIF
+		ENDIF
+	ELSE
+		;覗いたのが添い寝
+		IF TFLAG:405 == 2
+			PRINTFORML %PLAYER_NAME()%紧紧相拥而眠的%CALLNAME:ASSI%的身影，眼里满是寂寞
+			PRINTFORML 就像是夹着尾巴的小狗一样，%CALLNAME%垂着头啪嗒啪嗒地走向自己的房间……
+		ELSE
+			PRINTFORML %PLAYER_NAME()%身体交缠的%CALLNAME:ASSI%，眼中满是艳羡
+			IF TEQUIP:下身内衣 == 5
+				PRINTL 身体兴奋了起来，却被贞操带所阻挡
+				PRINTL 无奈之下，只好寂寞又苦闷地度过了一夜
+			ELSE
+				PRINTL 身体兴奋了起来，不由遵从情欲疯狂地自慰……
+			ENDIF
+		ENDIF
+	ENDIF
+ELSE
+	;覗いたのが添い寝
+	IF TFLAG:405 == 2
+		PRINTFORML 偷看过抱在一起相拥而眠的两人，有些寂寞的%CALLNAME%垂着头啪嗒啪嗒地走向自己的房间……
+	;覗いたのが受虐狂プ雷か施虐狂プ雷
+	ELSEIF TFLAG:405 == 3 || TFLAG:405 == 4
+		PRINTFORM 因为两人异常的玩法
+		;サブターゲットが受虐狂
+		IF TALENT:受虐狂
+			PRINT 被煽动起受虐欲望的
+		;サブターゲットが施虐狂
+		ELSEIF TALENT:施虐狂
+			PRINT 被煽动起施虐欲望的
+		;どちらでもない
+		ELSE
+			PRINT 不知不觉感到兴奋的
+		ENDIF
+		PRINTFORML %CALLNAME%
+		IF TEQUIP:下身内衣 == 5
+			PRINTL 由于贞操带的存在断绝了自慰的可能性，只能闷闷不乐地去睡觉了……
+		ELSE
+			PRINTL 气息紊乱地自慰起来……
+		ENDIF
+	;覗いたのが夜這い・百合プ雷・NTR
+	ELSE
+		PRINTFORM 被身体交缠的两人煽动起情欲的%CALLNAME%
+		IF TEQUIP:下身内衣 == 5
+			PRINTL 因为贞操带的存在断绝了自慰的可能性，只能欲求不满地去睡觉了……
+		ELSE
+			PRINTL 回到自己的房间疯狂自慰起来……
+		ENDIF
+	ENDIF
+ENDIF
+
+;夜睡眠中
+@EVENT_MESSAGE_41
+;陷落していたら、恋慕勝手に添い寝、淫乱勝手にご侍奉と自慰、服从足もとで寝る
+;陷落してなかったら回家
+PRINTFORML 丑时三刻……%CALLNAME%摸到了已经熟睡的%PLAYER_NAME()%身边
+IF TALENT:相亲相爱
+	PRINTFORM %CALLNAME%
+	IF TALENT:胆怯 || TALENT:老实 || TALENT:害羞
+		PRINT 瑟瑟缩缩地
+	ELSEIF TALENT:无动于衷 || TALENT:缺乏感情 || TALENT:乐观 || TALENT:喜欢引人注目
+		PRINT 毫不客气地
+	ENDIF
+	PRINTFORML 侵入房间后径直钻进了%PLAYER_NAME()%的被窝
+	IF TALENT:胆怯 || TALENT:老实 || TALENT:害羞
+		PRINTFORML 怕吵醒%PLAYER_NAME()%，%CALLNAME%只是轻轻地亲吻了所爱之人的额头
+	ELSEIF TALENT:无动于衷 || TALENT:缺乏感情 || TALENT:乐观 || TALENT:喜欢引人注目
+		PRINTFORML 像是在宣誓主权一样，%CALLNAME%“啾”地亲吻了%PLAYER_NAME()%的嘴唇
+	ELSE
+		PRINTFORM 满怀爱意地亲吻了%PLAYER_NAME()%的脸，
+	ENDIF
+	IF RAND:2 == 0
+		PRINTFORML 随即把脸靠在%PLAYER_NAME()%胸上高兴地阖上了双眼……
+	ELSE
+		PRINTFORML 随即高兴地抱着%PLAYER_NAME()%睡着了……
+	ENDIF
+ELSEIF TALENT:淫乱 || TALENT:娼妇
+	PRINTFORML 侵入房间后径直钻进了%PLAYER_NAME()%的被窝
+	PRINTFORM 将%PLAYER_NAME()%
+	IF (TALENT:MASTER:男性 || TALENT:MASTER:扶她 || TALENT:MASTER:双性)
+		IF TALENT:MASTER:孩童尺寸
+			PRINT 小巧可爱
+		ELSEIF TALENT:MASTER:短小
+			PRINT 恰好能被含在嘴里
+		ELSEIF TALENT:MASTER:巨根
+			PRINT 看起来很美味
+		ELSEIF TALENT:MASTER:尺寸傲人
+			PRINT 夸张得可怕
+		ENDIF
+		SIF TALENT:MASTER:包茎
+			PRINT 包茎
+		PRINTFORML 的肉棒掏出来狠狠地吸了一口
+	ELSE
+		SIF TALENT:MASTER:处女
+			PRINT 还没有接纳过任何男性
+		SIF TALENT:MASTER:白虎
+			PRINT 光裸无毛
+		PRINTFORML 的秘所舔出了噗滋噗滋的声音
+	ENDIF
+	PRINTFORML 然而，熟睡的%PLAYER_NAME()%完全没有因此醒来
+	PRINTFORML %CALLNAME%只能心急如焚地自慰来缓解身体的欲火……
+ELSEIF TALENT:服从 || TALENT:隶属
+	PRINTFORML %CALLNAME%在%PLAYER_NAME()%脚附近的地板上趴下，安心地睡着了……
+ELSE
+	PRINTFORML 靠近床铺，用手指抚摸了一下%PLAYER_NAME()%的脸
+	PRINTFORML 随即像是害怕%PLAYER_NAME()%惊醒一样狼狈地收回手，左右张望了一下
+	PRINTFORML 确认没有其他人看着，%PLAYER_NAME()%也并没有醒来后，%CALLNAME%安下了心
+	PRINTFORML 但很快就又意识到自己到底做了什么，不禁惊慌失措地离开了房间……
+ENDIF
+
+;夜自慰
+@EVENT_MESSAGE_44
+IF TEQUIP:下身内衣 == 5
+	PRINTFORML %CALLNAME%は无论自慰多少次都无法平息体内的欲火，浑身颤抖着瘫软在床上……
+ELSE
+	PRINTFORML 看样子%CALLNAME%一个人偷偷自慰了……
+	SIF ABL:顺从+ABL:露出癖+ABL:受虐属性 >= 10
+		PRINTFORM 事后%CALLNAME%向%PLAYER_NAME()%如实汇报了自己自慰的过程
+ENDIF
+
+;子供调教選択
+@EVENT_MESSAGE_45
+IF CFLAG:1 == 3
+	PRINTFORMW 决定把%CALLNAME%作为见习调教师开始培养…
+ELSE
+	PRINTFORMW 决定开始调教%CALLNAME%了…
+ENDIF
+
+;恋慕取得
+@EVENT_MESSAGE_46
+PRINTFORMW %CALLNAME%看向这边的眼神有些奇怪
+PRINTFORML 和%PLAYER_NAME()%一起相处似乎令%CALLNAME%心生喜悦
+
+;淫乱取得
+@EVENT_MESSAGE_47
+PRINTFORMW %CALLNAME%看向这边的眼神有些奇怪
+PRINTFORML 看起来%CALLNAME%已经沉溺在%PLAYER_NAME()%所施予的快乐中
+
+;服从取得
+@EVENT_MESSAGE_48
+PRINTFORMW %CALLNAME%看向这边的眼神有些奇怪
+PRINTFORML %CALLNAME%似乎十分顺服于%PLAYER_NAME()%
+
+;相亲相爱取得
+@EVENT_MESSAGE_49
+PRINTFORMW %CALLNAME%看向这边的眼神有些奇怪
+PRINTFORML %CALLNAME%似乎身心都很依赖%PLAYER_NAME()%的样子
+
+;娼妇取得
+@EVENT_MESSAGE_50
+PRINTFORMW %CALLNAME%看向这边的眼神有些奇怪
+PRINTFORML %CALLNAME%似乎身心都沉溺于%PLAYER_NAME()%所给予的快乐当中
+
+;隶属取得
+@EVENT_MESSAGE_51
+PRINTFORMW %CALLNAME%看向这边的眼神有些奇怪
+PRINTFORML %CALLNAME%似乎身心都臣服在%PLAYER_NAME()%的足下了
+
+;崩溃
+@EVENT_MESSAGE_52
+;相爱で相手が拍卖された
+IF TFLAG:13 == 1
+	PRINTL ・
+	PRINTL ・
+	PRINTW ・
+	PRINTFORMW ……和%CALLNAME:ASSI%关系很好的%CALLNAME%的样子有些不对劲……
+	PRINTFORMW %CALLNAME%在精神上似乎不能接受%CALLNAME:ASSI%被拍卖了的事实
+	PRINTL 
+;怀孕
+ELSEIF TFLAG:13 == 2
+	PRINTFORMW %CALLNAME%神色呆然
+	PRINTFORMW 就像是从里面坏掉了一样
+;调教
+ELSEIF TFLAG:13 == 3
+	PRINTFORMW %CALLNAME%的样子很不对劲
+	PRINTFORMW 由于激烈的调教带来的影响，%CALLNAME%的精神状态好像变得异常了
+;薬
+ELSEIF TFLAG:13 == 4
+	PRINTFORMW %CALLNAME%的样子很不对劲
+	PRINTFORMW 在药物的影响下，%CALLNAME%的精神状态好像变得异常了
+ENDIF
+
+;性爱狂取得
+@EVENT_MESSAGE_55
+PRINTFORMW %CALLNAME%看向这边的眼神有些奇怪
+PRINTFORM 调教结束后，
+;男奴隶と女主人の場合は　男奴隶のＣ感觉とＡ感觉、そして做爱系指令と逆做爱系指令の実行回数を比較する
+IF MALE(TARGET) && !MALE(MASTER) && ABL:Ｃ感觉 >= ABL:Ａ感觉 && ((CFLAG:416+CFLAG:417+CFLAG:422+CFLAG:423+CFLAG:424+CFLAG:425+CFLAG:360) > (CFLAG:336+CFLAG:337+CFLAG:338+CFLAG:339+CFLAG:341+CFLAG:342+CFLAG:343+CFLAG:344+CFLAG:345+CFLAG:346+CFLAG:347+CFLAG:348+CFLAG:349+CFLAG:350))
+	PRINTFORMW %CALLNAME%一边哀求着拥抱%PLAYER_NAME()%一边凑了过来
+ELSE
+	PRINTFORMW %CALLNAME%一边哀求%PLAYER_NAME()%拥抱自己一边凑了过来
+ENDIF
+
+
+;自慰狂取得
+@EVENT_MESSAGE_56
+PRINTFORMW %CALLNAME%看向这边的眼神有些奇怪
+PRINTFORM 调教结束后，
+PRINTFORM %CALLNAME%一边拼命玩弄自己的
+IF PENIS(TARGET)
+	PRINT 阴茎
+ELSE
+	PRINT 阴蒂
+ENDIF
+PRINTFORMW 一边朝%PLAYER_NAME()%投去勾人的视线
+
+;淫壶取得
+@EVENT_MESSAGE_57
+PRINTFORMW %CALLNAME%看向这边的眼神有些奇怪
+PRINTFORM 调教结束后，
+PRINTFORMW %CALLNAME%一边滋溜滋溜地抠挖自己的小穴一边朝%PLAYER_NAME()%投去勾人的视线
+
+;尻穴狂
+@EVENT_MESSAGE_58
+PRINTFORMW %CALLNAME%看向这边的眼神有些奇怪
+PRINTFORM 调教结束后，
+PRINTFORMW %CALLNAME%一边用手指抽插自己的肛门一边朝%PLAYER_NAME()%投去想要的视线
+
+;淫乳
+@EVENT_MESSAGE_59
+PRINTFORMW %CALLNAME%看向这边的眼神有些奇怪
+PRINTFORM 调教结束后，
+PRINTFORMW %CALLNAME%一边玩弄着自己的乳头一边朝%PLAYER_NAME()%投去勾人的视线
+
+
+;施虐狂取得
+@EVENT_MESSAGE_61
+PRINTFORMW %CALLNAME%看向这边的眼神有些奇怪
+PRINTFORMW %CALLNAME%好像觉醒了折磨他人的嗜好
+
+;受虐狂取得
+@EVENT_MESSAGE_62
+PRINTFORMW %CALLNAME%看向这边的眼神有些奇怪
+PRINTFORMW %CALLNAME%好像觉醒了被人凌虐的嗜好
+
+;漏尿癖取得
+@EVENT_MESSAGE_65
+PRINTFORM %CALLNAME%好像
+IF TALENT:幼稚
+	PRINTFORM 尿床
+ELSE
+	PRINTFORM 失禁
+ENDIF
+PRINTFORMW 了……
+
+;幼儿退行
+@EVENT_MESSAGE_66
+PRINTFORMW %CALLNAME%的样子有些不对劲……
+PRINTFORMW %CALLNAME%由于无法忍受严酷的调教，心智退化成小孩子了……
+
+;画师打工口上
+@EVENT_MESSAGE_67
+;避妊具の有無：B、総プ雷数：C、做爱系：D、侍奉系：G、SM系：H、百合系：Iにプ雷数保管、報酬額：S
+;CFLAG:30～33には各プ雷ごとのプ雷数が多いものから順に格納されている。
+PRINTS CALLNAME:A
+    SIF Q
+        PRINT 等人
+    PRINTW 接下工作，来到附近的大学担任画室学生们的人体模特
+IF TIME
+    PRINTFORMW 在禁忌的夜晚，这份工作染上了暧昧的色泽
+    PRINTS CALLNAME:A
+        SIF Q
+            PRINT 等人
+        PRINTL 一一褪下衣物，展示自己裸露的身体
+        PRINTW 随后摆出了一个又一个羞耻的动作
+        PRINTW 被那煽情的姿态所诱惑，学生们丢下画具一拥而上了
+        PRINTW 离天亮，还有很长的时间…
+ELSE
+    PRINTL 学生们环绕在侧，自身的样貌被描绘在雪白的纸上
+    PRINTS CALLNAME:A
+        SIF Q
+            PRINT 等人
+    PRINTW 细细品味着这种新奇又带点羞耻感的新鲜体验
+    PRINTW 有了这么敬业的模特，想必学生们一定能创作出优秀的作品
+ENDIF
+
+
+
+
+

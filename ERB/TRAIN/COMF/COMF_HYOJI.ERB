@@ -1,0 +1,984 @@
+﻿;-------------------------------------------------
+;女主人→男奴隶専用の调教指令の表示調整
+;-------------------------------------------------
+@COM52
+SELECTCOM = 62
+JUMP COM62
+RETURN 1
+
+@COM53
+SELECTCOM = 63
+JUMP COM63
+RETURN 1
+
+@COM54
+SELECTCOM = 67
+JUMP COM67
+RETURN 1
+
+@COM55
+SELECTCOM = 70
+JUMP COM70
+RETURN 1
+
+@COM56
+SELECTCOM = 71
+JUMP COM71
+RETURN 1
+
+@COM57
+SELECTCOM = 75
+JUMP COM75
+RETURN 1
+
+@COM58
+SELECTCOM = 77
+JUMP COM77
+RETURN 1
+
+@COM79
+SELECTCOM = 120
+JUMP COM120
+RETURN 1
+
+@COM99
+SELECTCOM = 123
+JUMP COM123
+RETURN 1
+
+@COM216
+SELECTCOM = 205
+JUMP COM205
+RETURN 1
+
+@COM217
+SELECTCOM = 206
+JUMP COM206
+RETURN 1
+
+@COM218
+SELECTCOM = 213
+JUMP COM213
+RETURN 1
+
+@COM219
+SELECTCOM = 214
+JUMP COM214
+RETURN 1
+
+
+
+@COM_ABLE52
+SIF COM_FILTER:52
+	RETURN 0
+IF FLAG:1501 == 1
+    resetcolor
+ELSE
+    resetcolor
+    setcolor 186,161,252
+ENDIF
+;逆肛正常位実行判定
+;女主人→男奴隶调教指令の表示調整中じゃないなら不可
+SIF TFLAG:54 != 1
+	RETURN 0
+;做爱系指令表示制限状態だとダメ
+SIF FLAG:84 & 8
+	RETURN 0
+;调教者が受だとだめ
+SIF TALENT:PLAYER:157
+	RETURN 0
+;调教对象が攻だと駄目
+SIF TALENT:158
+	RETURN 0
+;体型不合时不可
+SIF TALENT:巨大体型 && !TALENT:PLAYER:巨大体型
+	RETURN 0
+SIF TALENT:小人体型 && !TALENT:PLAYER:小人体型
+	RETURN 0
+;无形体不可
+SIF TALENT:无形体
+	RETURN 0
+SIF TALENT:马身
+	RETURN 0
+;Ａ扩张经验９以下で肛塞插入中はダメ
+SIF EXP:53 < 10 && TEQUIP:14
+	RETURN 0
+;Ａ扩张经验９以下で后庭拉珠使用中は不可
+SIF EXP:53 < 10 && TEQUIP:15
+	RETURN 0
+;Ａ扩张经验９以下で、肛门爱抚命令か肛插入命令中
+SIF EXP:53 < 10 && (TEQUIP:46 || TEQUIP:48)
+	RETURN 0
+;普通の灌肠使用中は不可
+SIF TEQUIP:21
+	RETURN 0
+;バルーン使用中は不可
+SIF TEQUIP:22
+	RETURN 0
+;電極使用中は不可
+SIF TEQUIP:23
+	RETURN 0
+;一定のＡ经验が必要
+SIF EXP:1 < EXPLV:3
+	RETURN 0
+;小人体型持ちは、双方が调教者と调教对象ならOK
+;それ以外の場合は主人が禁断的知识持ちじゃないとダメ
+SIF TALENT:142 && (TALENT:MASTER:144 == 0 && TALENT:PLAYER:142 == 0)
+	RETURN 0
+;调教者が男性、双性、扶她、もしくは捆绑式假阴茎がないとダメ
+SIF TALENT:PLAYER:137 == 0 && TALENT:PLAYER:139 == 0 && TALENT:PLAYER:140 == 0 && ITEM:PBAND == 0
+	RETURN 0
+;处女で、顺从4以下・百合属性or同性倾向4以下のASSIの場合正常位肛交はできない（施虐狂ならＯＫ）
+IF TALENT:0 && ASSIPLAY
+	SIF (ABL:ASSI:0 <= 4 || ABL:ASSI:11 <= 4 || ABL:ASSI:20 <= 4) && TALENT:ASSI:83 == 0
+		RETURN 0
+ENDIF
+;润滑不足で、顺从3以下・百合属性or同性倾向3以下のASSIの場合正常位肛交はできない（施虐狂ならＯＫ）
+IF PALAM:4 < PALAMLV:2 && ASSIPLAY
+	SIF (ABL:ASSI:0 <= 3 || ABL:ASSI:11 <= 3 || ABL:ASSI:20 <= 3) && TALENT:ASSI:83 == 0
+		RETURN 0
+ENDIF
+;着衣プ雷：手指灵巧をもっておらず、贞操带をつけている、布偶装を着ている、もしく水手裙、运动短裤ー以外の下身外衣を履いているとダメ
+SIF TALENT:PLAYER:58 == 0 && (TEQUIP:2 == 5 || (TEQUIP:4 > 1 &&  TEQUIP:4 < 6) || TEQUIP:6 == 7)
+		RETURN 0
+;触手调教中はダメ
+SIF TEQUIP:25
+	RETURN 0
+;浴室PLAY中は塑料地垫が無いとダメ
+IF TEQUIP:31
+SIF ITEM:20 == 0 && NOITEM == 0
+	RETURN 0
+ENDIF
+RETURN 1
+
+@COM_ABLE53
+SIF COM_FILTER:53
+	RETURN 0
+IF FLAG:1501 == 1
+    resetcolor
+ELSE
+    resetcolor
+    setcolor 186,161,252
+ENDIF
+;逆肛后背位実行判定
+;女主人→男奴隶调教指令の表示調整中じゃないなら不可
+SIF TFLAG:54 != 1
+	RETURN 0
+;做爱系指令表示制限状態だとダメ
+SIF FLAG:84 & 8
+	RETURN 0
+;调教者が受だとだめ
+SIF TALENT:PLAYER:157
+	RETURN 0
+;调教对象が攻だと駄目
+SIF TALENT:158
+	RETURN 0
+;体型不合时不可
+SIF TALENT:巨大体型 && !TALENT:PLAYER:巨大体型
+	RETURN 0
+SIF TALENT:小人体型 && !TALENT:PLAYER:小人体型
+	RETURN 0
+;无形体不可
+SIF TALENT:无形体
+	RETURN 0
+;Ａ扩张经验９以下で肛塞插入中はダメ
+SIF EXP:53 < 10 && TEQUIP:14
+	RETURN 0
+;Ａ扩张经验９以下で后庭拉珠使用中は不可
+SIF EXP:53 < 10 && TEQUIP:15
+	RETURN 0
+;Ａ扩张经验９以下で、肛门爱抚命令か肛插入命令中
+SIF EXP:53 < 10 && (TEQUIP:46 || TEQUIP:48)
+	RETURN 0
+;普通の灌肠使用中は不可
+SIF TEQUIP:21
+	RETURN 0
+;バルーン使用中は不可
+SIF TEQUIP:22
+	RETURN 0
+;電極使用中は不可
+SIF TEQUIP:23
+	RETURN 0
+;一定のＡ经验が必要
+SIF EXP:1 < EXPLV:3
+	RETURN 0
+;小人体型持ちは、双方が调教者と调教对象ならOK
+;それ以外の場合は主人が禁断的知识持ちじゃないとダメ
+SIF TALENT:142 && (TALENT:MASTER:144 == 0 && TALENT:PLAYER:142 == 0)
+	RETURN 0
+;调教者が男性、双性、扶她、もしくは捆绑式假阴茎がないとダメ
+SIF TALENT:PLAYER:137 == 0 && TALENT:PLAYER:139 == 0 && TALENT:PLAYER:140 == 0 && ITEM:PBAND == 0
+	RETURN 0
+;处女で、顺从4以下・百合属性or同性倾向4以下のASSIの場合后背位肛交はできない（施虐狂ならＯＫ）
+IF TALENT:0 && ASSIPLAY
+	SIF (ABL:ASSI:0 <= 4 || ABL:ASSI:11 <= 4 || ABL:ASSI:20 <= 4) && TALENT:ASSI:83 == 0
+		RETURN 0
+ENDIF
+;润滑不足で、顺从3以下・百合属性or同性倾向3以下のASSIの場合后背位肛交はできない（施虐狂ならＯＫ）
+IF PALAM:4 < PALAMLV:2 && ASSIPLAY
+	SIF (ABL:ASSI:0 <= 3 || ABL:ASSI:11 <= 3 || ABL:ASSI:20 <= 3) && TALENT:ASSI:83 == 0
+		RETURN 0
+ENDIF
+;贞操带をつけている、布偶装を着ている、もしく水手裙、运动短裤ー以外の下身外衣を履いているとダメ
+SIF TEQUIP:2 == 5 || (TEQUIP:4 > 1 &&  TEQUIP:4 < 6) || TEQUIP:6 == 7
+		RETURN 0
+;触手调教中はダメ
+SIF TEQUIP:25
+	RETURN 0
+;浴室PLAY中は塑料地垫が無いとダメ
+IF TEQUIP:31
+SIF ITEM:20 == 0 && NOITEM == 0
+	RETURN 0
+ENDIF
+RETURN 1
+
+
+@COM_ABLE54
+SIF COM_FILTER:54
+	RETURN 0
+IF FLAG:1501 == 1
+    resetcolor
+ELSE
+    resetcolor
+    setcolor 186,161,252
+ENDIF
+;逆肛骑乘位実行判定
+;女主人→男奴隶调教指令の表示調整中じゃないなら不可
+SIF TFLAG:54 != 1
+	RETURN 0
+;做爱系指令表示制限状態だとダメ
+SIF FLAG:84 & 8
+	RETURN 0
+;调教者が受だとだめ
+SIF TALENT:PLAYER:157
+	RETURN 0
+;调教对象が攻だと駄目
+SIF TALENT:158
+	RETURN 0
+;体型不合时不可
+SIF TALENT:巨大体型 && !TALENT:PLAYER:巨大体型
+	RETURN 0
+SIF TALENT:小人体型 && !TALENT:PLAYER:小人体型
+	RETURN 0
+;无形体不可
+SIF TALENT:无形体
+	RETURN 0
+SIF TALENT:马身
+	RETURN 0
+;Ａ扩张经验９以下で肛塞插入中はダメ
+SIF EXP:53 < 10 && TEQUIP:14
+	RETURN 0
+;Ａ扩张经验９以下で后庭拉珠使用中は不可
+SIF EXP:53 < 10 && TEQUIP:15
+	RETURN 0
+;Ａ扩张经验９以下で、肛门爱抚命令か肛插入命令中
+SIF EXP:53 < 10 && (TEQUIP:46 || TEQUIP:48)
+	RETURN 0
+;普通の灌肠使用中は不可
+SIF TEQUIP:21
+	RETURN 0
+;バルーン使用中は不可
+SIF TEQUIP:22
+	RETURN 0
+;電極使用中は不可
+SIF TEQUIP:23
+	RETURN 0
+;一定のＡ经验が必要
+SIF EXP:1 < EXPLV:3
+	RETURN 0
+;小人体型持ちは、双方が调教者と调教对象ならOK
+;それ以外の場合は主人が禁断的知识持ちじゃないとダメ
+SIF TALENT:142 && (TALENT:MASTER:144 == 0 && TALENT:PLAYER:142 == 0)
+	RETURN 0
+;调教对象より二段階以上矮小だと原則無理
+;调教者が禁断的知识持ちだとその限りではない
+SIF BUILD2(PLAYER, TARGET) < -1 && TALENT:PLAYER:144 == 0
+	RETURN 0
+;小人体型持ちは、双方が调教者と调教对象ならOK
+;それ以外の場合は主人が禁断的知识持ちじゃないとダメ
+SIF TALENT:142 && (TALENT:MASTER:144 == 0 && TALENT:PLAYER:142 == 0)
+	RETURN 0
+;调教者が男性、双性、扶她、もしくは捆绑式假阴茎がないとダメ
+SIF TALENT:PLAYER:137 == 0 && TALENT:PLAYER:139 == 0 && TALENT:PLAYER:140 == 0 && ITEM:PBAND == 0
+	RETURN 0
+;处女で、顺从4以下・百合属性or同性倾向4以下のASSIの場合正常位肛交はできない（施虐狂ならＯＫ）
+IF TALENT:0 && ASSIPLAY
+	SIF (ABL:ASSI:0 <= 4 || ABL:ASSI:11 <= 4 || ABL:ASSI:20 <= 4) && TALENT:ASSI:83 == 0
+		RETURN 0
+ENDIF
+;润滑不足で、顺从3以下・百合属性or同性倾向3以下のASSIの場合正常位肛交はできない（施虐狂ならＯＫ）
+IF PALAM:4 < PALAMLV:2 && ASSIPLAY
+	SIF (ABL:ASSI:0 <= 3 || ABL:ASSI:11 <= 3 || ABL:ASSI:20 <= 3) && TALENT:ASSI:83 == 0
+		RETURN 0
+ENDIF
+;贞操带をつけている、布偶装を着ている、もしく水手裙、运动短裤ー以外の下身外衣を履いているとダメ
+SIF TEQUIP:2 == 5 || (TEQUIP:4 > 1 &&  TEQUIP:4 < 6) || TEQUIP:6 == 7
+		RETURN 0
+;绳子使用中は不可
+SIF TEQUIP:19
+	RETURN 0
+;下身内衣をつけている、布偶装を着ている、もしく水手裙以外の下身外衣を履いているとダメ
+SIF TEQUIP:2 || TEQUIP:4 > 1 || TEQUIP:6 == 7
+	RETURN 0
+;触手调教中はダメ
+SIF TEQUIP:25
+	RETURN 0
+;浴室PLAY中は塑料地垫が無いとダメ
+IF TEQUIP:31
+SIF ITEM:20 == 0 && NOITEM == 0
+	RETURN 0
+ENDIF
+RETURN 1
+
+
+@COM_ABLE55
+SIF COM_FILTER:55
+	RETURN 0
+IF FLAG:1501 == 1
+    resetcolor
+ELSE
+    resetcolor
+    setcolor 186,161,252
+ENDIF
+;逆肛对面座位実行判定
+;女主人→男奴隶调教指令の表示調整中じゃないなら不可
+SIF TFLAG:54 != 1
+	RETURN 0
+;做爱系指令表示制限状態だとダメ
+SIF FLAG:84 & 8
+	RETURN 0
+;调教者が受だとだめ
+SIF TALENT:PLAYER:157
+	RETURN 0
+;调教对象が攻だと駄目
+SIF TALENT:158
+	RETURN 0
+;体型不合时不可
+SIF TALENT:巨大体型 && !TALENT:PLAYER:巨大体型
+	RETURN 0
+SIF TALENT:小人体型 && !TALENT:PLAYER:小人体型
+	RETURN 0
+;无形体不可
+SIF TALENT:无形体
+	RETURN 0
+SIF TALENT:马身
+	RETURN 0
+;Ａ扩张经验９以下で肛塞插入中はダメ
+SIF EXP:53 < 10 && TEQUIP:14
+	RETURN 0
+;Ａ扩张经验９以下で后庭拉珠使用中は不可
+SIF EXP:53 < 10 && TEQUIP:15
+	RETURN 0
+;Ａ扩张经验９以下で、肛门爱抚命令か肛插入命令中
+SIF EXP:53 < 10 && (TEQUIP:46 || TEQUIP:48)
+	RETURN 0
+;普通の灌肠使用中は不可
+SIF TEQUIP:21
+	RETURN 0
+;バルーン使用中は不可
+SIF TEQUIP:22
+	RETURN 0
+;電極使用中は不可
+SIF TEQUIP:23
+	RETURN 0
+;一定のＡ经验が必要
+SIF EXP:1 < EXPLV:3
+	RETURN 0
+;浴室PLAY中は塑料地垫が無いとダメ
+IF TEQUIP:31
+SIF ITEM:20 == 0 && NOITEM == 0
+	RETURN 0
+ENDIF
+;贞操带をつけている、布偶装を着ている、もしく水手裙、运动短裤ー以外の下身外衣を履いているとダメ
+SIF TEQUIP:2 == 5 || (TEQUIP:4 > 1 &&  TEQUIP:4 < 6) || TEQUIP:6 == 7
+	RETURN 0
+;触手调教中はダメ
+SIF TEQUIP:25
+	RETURN 0
+;小人体型持ちは、双方が调教者と调教对象ならOK
+;それ以外の場合は主人が禁断的知识持ちじゃないとダメ
+SIF TALENT:142 && (TALENT:MASTER:144 == 0 && TALENT:PLAYER:142 == 0)
+	RETURN 0
+;调教对象より二段階以上矮小だとは原則無理
+;调教者が禁断的知识持ちだとその限りではない
+SIF BUILD2(PLAYER, TARGET) < -1 && TALENT:PLAYER:144 == 0
+	RETURN 0
+;调教者が男性、双性、扶她、もしくは捆绑式假阴茎がないとダメ
+SIF TALENT:PLAYER:137 == 0 && TALENT:PLAYER:139 == 0 && TALENT:PLAYER:140 == 0 && ITEM:PBAND == 0
+	RETURN 0
+;处女で、顺从4以下・百合属性or同性倾向4以下のASSIの場合对面座位肛交はできない（施虐狂ならＯＫ）
+IF TALENT:0 && ASSIPLAY
+	SIF (ABL:ASSI:0 <= 4 || ABL:ASSI:11 <= 4 || ABL:ASSI:20 <= 4) && TALENT:ASSI:83 == 0
+		RETURN 0
+ENDIF
+;润滑不足で、顺从3以下・百合属性or同性倾向3以下のASSIの場合对面座位肛交はできない（施虐狂ならＯＫ）
+IF PALAM:4 < PALAMLV:2 && ASSIPLAY
+	SIF (ABL:ASSI:0 <= 3 || ABL:ASSI:11 <= 3 || ABL:ASSI:20 <= 3) && TALENT:ASSI:83 == 0
+		RETURN 0
+ENDIF
+RETURN 1
+
+@COM_ABLE56
+SIF COM_FILTER:56
+	RETURN 0
+IF FLAG:1501 == 1
+    resetcolor
+ELSE
+    resetcolor
+    setcolor 186,161,252
+ENDIF
+;逆肛背面座位実行判定
+;女主人→男奴隶调教指令の表示調整中じゃないなら不可
+SIF TFLAG:54 != 1
+	RETURN 0
+;做爱系指令表示制限状態だとダメ
+SIF FLAG:84 & 8
+	RETURN 0
+;调教者が受だとだめ
+SIF TALENT:PLAYER:157
+	RETURN 0
+;调教对象が攻だと駄目
+SIF TALENT:158
+	RETURN 0
+;体型不合时不可
+SIF TALENT:巨大体型 && !TALENT:PLAYER:巨大体型
+	RETURN 0
+SIF TALENT:小人体型 && !TALENT:PLAYER:小人体型
+	RETURN 0
+;无形体不可
+SIF TALENT:无形体
+	RETURN 0
+SIF TALENT:马身
+	RETURN 0
+;Ａ扩张经验９以下で肛塞插入中はダメ
+SIF EXP:53 < 10 && TEQUIP:14
+	RETURN 0
+;Ａ扩张经验９以下で后庭拉珠使用中は不可
+SIF EXP:53 < 10 && TEQUIP:15
+	RETURN 0
+;Ａ扩张经验９以下で、肛门爱抚命令か肛插入命令中
+SIF EXP:53 < 10 && (TEQUIP:46 || TEQUIP:48)
+	RETURN 0
+;普通の灌肠使用中は不可
+SIF TEQUIP:21
+	RETURN 0
+;バルーン使用中は不可
+SIF TEQUIP:22
+	RETURN 0
+;電極使用中は不可
+SIF TEQUIP:23
+	RETURN 0
+;一定のＡ经验が必要
+SIF EXP:1 < EXPLV:3
+	RETURN 0
+;浴室PLAY中は塑料地垫が無いとダメ
+IF TEQUIP:31
+SIF ITEM:20 == 0 && NOITEM == 0
+	RETURN 0
+ENDIF
+;贞操带をつけている、布偶装を着ている、もしく水手裙、运动短裤ー以外の下身外衣を履いているとダメ
+SIF TEQUIP:2 == 5 || (TEQUIP:4 > 1 &&  TEQUIP:4 < 6) || TEQUIP:6 == 7
+	RETURN 0
+;触手调教中はダメ
+SIF TEQUIP:25
+	RETURN 0
+;小人体型持ちは、双方が调教者と调教对象ならOK
+;それ以外の場合は主人が禁断的知识持ちじゃないとダメ
+SIF TALENT:142 && (TALENT:MASTER:144 == 0 && TALENT:PLAYER:142 == 0)
+	RETURN 0
+;调教对象より二段階以上矮小だとは原則無理
+;调教者が禁断的知识持ちだとその限りではない
+SIF BUILD2(PLAYER, TARGET) < -1 && TALENT:PLAYER:144 == 0
+	RETURN 0
+;调教者が男性、双性、扶她、もしくは捆绑式假阴茎がないとダメ
+SIF TALENT:PLAYER:137 == 0 && TALENT:PLAYER:139 == 0 && TALENT:PLAYER:140 == 0 && ITEM:PBAND == 0
+	RETURN 0
+;处女で、顺从4以下・百合属性or同性倾向4以下のASSIの場合背面座位肛交はできない（施虐狂ならＯＫ）
+IF TALENT:0 && ASSIPLAY
+	SIF (ABL:ASSI:0 <= 4 || ABL:ASSI:11 <= 4 || ABL:ASSI:20 <= 4) && TALENT:ASSI:83 == 0
+		RETURN 0
+ENDIF
+;润滑不足で、顺从3以下・百合属性or同性倾向3以下のASSIの場合背面座位肛交はできない（施虐狂ならＯＫ）
+IF PALAM:4 < PALAMLV:2 && ASSIPLAY
+	SIF (ABL:ASSI:0 <= 3 || ABL:ASSI:11 <= 3 || ABL:ASSI:20 <= 3) && TALENT:ASSI:83 == 0
+		RETURN 0
+ENDIF
+RETURN 1
+
+
+@COM_ABLE57
+SIF COM_FILTER:57
+	RETURN 0
+IF FLAG:1501 == 1
+    resetcolor
+ELSE
+    resetcolor
+    setcolor 186,161,252
+ENDIF
+;逆肛对面立位実行判定
+;女主人→男奴隶调教指令の表示調整中じゃないなら不可
+SIF TFLAG:54 != 1
+	RETURN 0
+;做爱系指令表示制限状態だとダメ
+SIF FLAG:84 & 8
+	RETURN 0
+;调教者が受だとだめ
+SIF TALENT:PLAYER:157
+	RETURN 0
+;调教对象が攻だと駄目
+SIF TALENT:158
+	RETURN 0
+;体型不合时不可
+SIF TALENT:巨大体型 && !TALENT:PLAYER:巨大体型
+	RETURN 0
+SIF TALENT:小人体型 && !TALENT:PLAYER:小人体型
+	RETURN 0
+;无形体不可
+SIF TALENT:无形体
+	RETURN 0
+SIF TALENT:马身
+	RETURN 0
+;Ａ扩张经验９以下で肛塞插入中はダメ
+SIF EXP:53 < 10 && TEQUIP:14
+	RETURN 0
+;Ａ扩张经验９以下で后庭拉珠使用中は不可
+SIF EXP:53 < 10 && TEQUIP:15
+	RETURN 0
+;Ａ扩张经验９以下で、肛门爱抚命令か肛插入命令中
+SIF EXP:53 < 10 && (TEQUIP:46 || TEQUIP:48)
+	RETURN 0
+;普通の灌肠使用中は不可
+SIF TEQUIP:21
+	RETURN 0
+;バルーン使用中は不可
+SIF TEQUIP:22
+	RETURN 0
+;電極使用中は不可
+SIF TEQUIP:23
+	RETURN 0
+;一定のＡ经验が必要
+SIF EXP:1 < EXPLV:3
+	RETURN 0
+;小人体型持ちは、双方が调教者と调教对象ならOK
+;それ以外の場合は主人が禁断的知识持ちじゃないとダメ
+SIF TALENT:142 && (TALENT:MASTER:144 == 0 && TALENT:PLAYER:142 == 0)
+	RETURN 0
+;体格差がある時も主人が禁断的知识持ちじゃないとだめ
+SIF (TALENT:MASTER:144 == 0 && TALENT:PLAYER:142 == 0) && ((TALENT:100 && TALENT:MASTER:113) || (TALENT:113 && TALENT:MASTER:100))
+	RETURN 0
+;调教者が男性、双性、扶她、もしくは捆绑式假阴茎がないとダメ
+SIF TALENT:PLAYER:137 == 0 && TALENT:PLAYER:139 == 0 && TALENT:PLAYER:140 == 0 && ITEM:PBAND == 0
+	RETURN 0
+;处女で、顺从4以下・百合属性or同性倾向4以下のASSIの場合正常位肛交はできない（施虐狂ならＯＫ）
+IF TALENT:0 && ASSIPLAY
+	SIF (ABL:ASSI:0 <= 4 || ABL:ASSI:11 <= 4 || ABL:ASSI:20 <= 4) && TALENT:ASSI:83 == 0
+		RETURN 0
+ENDIF
+;润滑不足で、顺从3以下・百合属性or同性倾向3以下のASSIの場合正常位肛交はできない（施虐狂ならＯＫ）
+IF PALAM:4 < PALAMLV:2 && ASSIPLAY
+	SIF (ABL:ASSI:0 <= 3 || ABL:ASSI:11 <= 3 || ABL:ASSI:20 <= 3) && TALENT:ASSI:83 == 0
+		RETURN 0
+ENDIF
+;贞操带をつけている、布偶装を着ている、もしく水手裙、运动短裤ー以外の下身外衣を履いているとダメ
+SIF TEQUIP:2 == 5 || (TEQUIP:4 > 1 &&  TEQUIP:4 < 6) || TEQUIP:6 == 7
+	RETURN 0
+;触手调教中はダメ
+SIF TEQUIP:25
+	RETURN 0
+RETURN 1
+
+@COM_ABLE58
+SIF COM_FILTER:58
+	RETURN 0
+IF FLAG:1501 == 1
+    resetcolor
+ELSE
+    resetcolor
+    setcolor 186,161,252
+ENDIF
+;逆肛背面立位実行判定
+;女主人→男奴隶调教指令の表示調整中じゃないなら不可
+SIF TFLAG:54 != 1
+	RETURN 0
+;做爱系指令表示制限状態だとダメ
+SIF FLAG:84 & 8
+	RETURN 0
+;调教者が受だとだめ
+SIF TALENT:PLAYER:157
+	RETURN 0
+;调教对象が攻だと駄目
+SIF TALENT:158
+	RETURN 0
+;体型不合时不可
+SIF TALENT:巨大体型 && !TALENT:PLAYER:巨大体型
+	RETURN 0
+SIF TALENT:小人体型 && !TALENT:PLAYER:小人体型
+	RETURN 0
+;无形体不可
+SIF TALENT:无形体
+	RETURN 0
+SIF TALENT:马身
+	RETURN 0
+;Ａ扩张经验９以下で肛塞插入中はダメ
+SIF EXP:53 < 10 && TEQUIP:14
+	RETURN 0
+;Ａ扩张经验９以下で后庭拉珠使用中は不可
+SIF EXP:53 < 10 && TEQUIP:15
+	RETURN 0
+;Ａ扩张经验９以下で、肛门爱抚命令か肛插入命令中
+SIF EXP:53 < 10 && (TEQUIP:46 || TEQUIP:48)
+	RETURN 0
+;普通の灌肠使用中は不可
+SIF TEQUIP:21
+	RETURN 0
+;バルーン使用中は不可
+SIF TEQUIP:22
+	RETURN 0
+;電極使用中は不可
+SIF TEQUIP:23
+	RETURN 0
+;一定のＡ经验が必要
+SIF EXP:1 < EXPLV:3
+	RETURN 0
+;小人体型持ちは、双方が调教者と调教对象ならOK
+;それ以外の場合は主人が禁断的知识持ちじゃないとダメ
+SIF TALENT:142 && (TALENT:MASTER:144 == 0 && TALENT:PLAYER:142 == 0)
+	RETURN 0
+;体格差がある時も主人が禁断的知识持ちじゃないとだめ
+SIF (TALENT:MASTER:144 == 0 && TALENT:PLAYER:142 == 0) && ((TALENT:100 && TALENT:MASTER:113) || (TALENT:113 && TALENT:MASTER:100))
+	RETURN 0
+;调教者が男性、双性、扶她、もしくは捆绑式假阴茎がないとダメ
+SIF TALENT:PLAYER:137 == 0 && TALENT:PLAYER:139 == 0 && TALENT:PLAYER:140 == 0 && ITEM:PBAND == 0
+	RETURN 0
+;处女で、顺从4以下・百合属性or同性倾向4以下のASSIの場合正常位肛交はできない（施虐狂ならＯＫ）
+IF TALENT:0 && ASSIPLAY
+	SIF (ABL:ASSI:0 <= 4 || ABL:ASSI:11 <= 4 || ABL:ASSI:20 <= 4) && TALENT:ASSI:83 == 0
+		RETURN 0
+ENDIF
+;润滑不足で、顺从3以下・百合属性or同性倾向3以下のASSIの場合正常位肛交はできない（施虐狂ならＯＫ）
+IF PALAM:4 < PALAMLV:2 && ASSIPLAY
+	SIF (ABL:ASSI:0 <= 3 || ABL:ASSI:11 <= 3 || ABL:ASSI:20 <= 3) && TALENT:ASSI:83 == 0
+		RETURN 0
+ENDIF
+;贞操带をつけている、布偶装を着ている、もしく水手裙、运动短裤ー以外の下身外衣を履いているとダメ
+SIF TEQUIP:2 == 5 || (TEQUIP:4 > 1 &&  TEQUIP:4 < 6) || TEQUIP:6 == 7
+	RETURN 0
+;触手调教中はダメ
+SIF TEQUIP:25
+	RETURN 0
+RETURN 1
+
+@COM_ABLE79
+SIF COM_FILTER:79
+	RETURN 0
+IF FLAG:1501 == 1
+    resetcolor
+ELSE
+    resetcolor
+    setcolor 252,210,161
+ENDIF
+;強制舔阴実行判定
+;女主人→男奴隶调教指令の表示調整中じゃないなら不可
+SIF TFLAG:54 != 1
+	RETURN 0
+;侍奉系指令表示制限状態だとダメ
+SIF FLAG:84 & 16
+	RETURN 0
+;体型不合时不可
+SIF TALENT:巨大体型 && !TALENT:PLAYER:巨大体型
+	RETURN 0
+SIF TALENT:小人体型 && !TALENT:PLAYER:小人体型
+	RETURN 0
+;无形体不可
+SIF TALENT:无形体
+	RETURN 0
+SIF TALENT:无头
+	RETURN 0
+;调教者が男性だとダメ
+SIF TALENT:PLAYER:140
+	RETURN 0
+;口塞球使用中は不可
+SIF TEQUIP:20
+	RETURN 0
+;触手调教中はダメ
+SIF TEQUIP:25
+	RETURN 0
+RETURN 1
+
+@COM_ABLE99
+SIF COM_FILTER:99
+	RETURN 0
+;足交実行判定
+;女主人→男奴隶调教指令の表示調整中じゃないなら不可
+SIF TFLAG:54 != 1
+	RETURN 0
+;爱抚系指令表示制限状態だとダメ
+SIF FLAG:84 & 1
+	RETURN 0
+;男性か双性か扶她じゃないとダメ
+SIF TALENT:137 == 0 && TALENT:139 == 0 && TALENT:140 == 0
+	RETURN 0
+;下身内衣をつけている、布偶装を着ている、もしく水手裙以外の下身外衣を履いているとダメ
+SIF TEQUIP:2 || TEQUIP:4 > 1 || TEQUIP:6 == 7
+	RETURN 0
+;触手调教中はダメ
+SIF TEQUIP:25
+	RETURN 0
+;飞机杯装着中はダメ
+SIF TEQUIP:12
+	RETURN 0
+;体型不合时不可
+SIF TALENT:巨大体型 && !TALENT:PLAYER:巨大体型
+	RETURN 0
+SIF TALENT:小人体型 && !TALENT:PLAYER:小人体型
+	RETURN 0
+;无形体不可
+SIF TALENT:无形体
+	RETURN 0
+SIF TALENT:马身
+	RETURN 0
+RETURN 1
+
+
+@COM_ABLE216
+SIF COM_FILTER:216
+	RETURN 0
+;正常位実行判定
+;女主人→男奴隶调教指令の表示調整中じゃないなら不可
+SIF TFLAG:54 != 1
+	RETURN 0
+;逆调教系指令表示制限状態だとダメ
+SIF FLAG:84 & 1024
+	RETURN 0
+;阴道系指令表示制限状態だとダメ
+SIF GETBIT(FLAG:95, 0)
+	RETURN 0
+;体型不合时不可
+SIF TALENT:巨大体型 && !TALENT:PLAYER:巨大体型
+	RETURN 0
+SIF TALENT:小人体型 && !TALENT:PLAYER:小人体型
+	RETURN 0
+;无形体不可
+SIF TALENT:无形体
+	RETURN 0
+SIF TALENT:马身
+	RETURN 0
+;男性、双性、扶她でないとダメ orペニバン
+SIF TALENT:137 == 0 && TALENT:139 == 0 && TALENT:140 == 0 && ITEM:PBAND == 0
+	RETURN 0
+;调教者が男性だと駄目
+SIF TALENT:PLAYER:140
+	RETURN 0
+;调教者が攻のときは駄目
+SIF TALENT:PLAYER:158
+	RETURN 0
+;调教对象が受のときは駄目
+SIF TALENT:157
+	RETURN 0
+;顺从が2以上ないとダメ
+SIF ABL:0 < 2
+	RETURN 0
+;侍奉精神が2以上ないとダメ
+SIF ABL:0 < 2
+	RETURN 0
+;触手调教中はダメ
+SIF TEQUIP:25
+	RETURN 0
+;下身内衣をつけている、布偶装を着ている、もしく水手裙以外の下身外衣を履いているとダメ
+SIF TEQUIP:2 || TEQUIP:4 > 1 || TEQUIP:6 == 7
+	RETURN 0
+;浴室PLAY中は塑料地垫が無いとダメ
+IF TEQUIP:31
+SIF ITEM:20 == 0 && NOITEM == 0
+	RETURN 0
+ENDIF
+;飞机杯使用中はダメ
+SIF TEQUIP:12
+	RETURN 0
+;新妻PLAY中はダメ
+SIF TEQUIP:33
+	RETURN 0
+;阴茎爱抚命令中だと駄目
+SIF TEQUIP:49
+	RETURN 0
+RETURN 1
+
+@COM_ABLE217
+SIF COM_FILTER:217
+	RETURN 0
+;后背位実行判定
+;女主人→男奴隶调教指令の表示調整中じゃないなら不可
+SIF TFLAG:54 != 1
+	RETURN 0
+;逆调教系指令表示制限状態だとダメ
+SIF FLAG:84 & 1024
+	RETURN 0
+;阴道系指令表示制限状態だとダメ
+SIF GETBIT(FLAG:95, 0)
+	RETURN 0
+;体型不合时不可
+SIF TALENT:巨大体型 && !TALENT:PLAYER:巨大体型
+	RETURN 0
+SIF TALENT:小人体型 && !TALENT:PLAYER:小人体型
+	RETURN 0
+;无形体不可
+SIF TALENT:无形体
+	RETURN 0
+;男性、双性、扶她でないとダメ　捆绑式假阴茎
+SIF TALENT:137 == 0 && TALENT:139 == 0 && TALENT:140 == 0 && ITEM:PBAND == 0
+	RETURN 0
+;调教者が男性だと駄目
+SIF TALENT:PLAYER:140
+	RETURN 0
+;调教者が攻のときは駄目
+SIF TALENT:PLAYER:158
+	RETURN 0
+;调教对象が受のときは駄目
+SIF TALENT:157
+	RETURN 0
+;顺从が2以上ないとダメ
+SIF ABL:0 < 2
+	RETURN 0
+;侍奉精神が2以上ないとダメ
+SIF ABL:0 < 2
+	RETURN 0
+;触手调教中はダメ
+SIF TEQUIP:25
+	RETURN 0
+;下身内衣をつけている、布偶装を着ている、もしく水手裙以外の下身外衣を履いているとダメ
+SIF TEQUIP:2 || TEQUIP:4 > 1 || TEQUIP:6 == 7
+	RETURN 0
+;浴室PLAY中は塑料地垫が無いとダメ
+IF TEQUIP:31
+SIF ITEM:20 == 0 && NOITEM == 0
+	RETURN 0
+ENDIF
+;飞机杯使用中はダメ
+SIF TEQUIP:12
+	RETURN 0
+;新妻PLAY中はダメ
+SIF TEQUIP:33
+	RETURN 0
+;阴茎爱抚命令中だと駄目
+SIF TEQUIP:49
+	RETURN 0
+RETURN 1
+
+
+@COM_ABLE218
+SIF COM_FILTER:218
+	RETURN 0
+;正常位肛交実行判定
+;女主人→男奴隶调教指令の表示調整中じゃないなら不可
+SIF TFLAG:54 != 1
+	RETURN 0
+;逆调教系指令表示制限状態だとダメ
+SIF FLAG:84 & 1024
+	RETURN 0
+;肛做爱系指令表示制限状態だとダメ
+SIF GETBIT(FLAG:95, 1)
+	RETURN 0
+;体型不合时不可
+SIF TALENT:巨大体型 && !TALENT:PLAYER:巨大体型
+	RETURN 0
+SIF TALENT:小人体型 && !TALENT:PLAYER:小人体型
+	RETURN 0
+;无形体不可
+SIF TALENT:无形体
+	RETURN 0
+SIF TALENT:马身
+	RETURN 0
+;男性、双性、扶她でないとダメ ペニバン
+SIF TALENT:137 == 0 && TALENT:139 == 0 && TALENT:140 == 0 && ITEM:PBAND == 0
+	RETURN 0
+;调教者が攻のときは駄目
+SIF TALENT:PLAYER:158
+	RETURN 0
+;调教对象が受のときは駄目
+SIF TALENT:157
+	RETURN 0
+;顺从が2以上ないとダメ
+SIF ABL:0 < 2
+	RETURN 0
+;侍奉精神が2以上ないとダメ
+SIF ABL:0 < 2
+	RETURN 0
+;触手调教中はダメ
+SIF TEQUIP:25
+	RETURN 0
+;下身内衣をつけている、布偶装を着ている、もしく水手裙以外の下身外衣を履いているとダメ
+SIF TEQUIP:2 || TEQUIP:4 > 1 || TEQUIP:6 == 7
+	RETURN 0
+;浴室PLAY中は塑料地垫が無いとダメ
+IF TEQUIP:31
+SIF ITEM:20 == 0 && NOITEM == 0
+	RETURN 0
+ENDIF
+;飞机杯使用中はダメ
+SIF TEQUIP:12
+	RETURN 0
+;新妻PLAY中はダメ
+SIF TEQUIP:33
+	RETURN 0
+;阴茎爱抚命令中だと駄目
+SIF TEQUIP:49
+	RETURN 0
+RETURN 1
+
+@COM_ABLE219
+SIF COM_FILTER:219
+	RETURN 0
+;后背位肛交実行判定
+;女主人→男奴隶调教指令の表示調整中じゃないなら不可
+SIF TFLAG:54 != 1
+	RETURN 0
+;逆调教系指令表示制限状態だとダメ
+SIF FLAG:84 & 1024
+	RETURN 0
+;肛做爱系指令表示制限状態だとダメ
+SIF GETBIT(FLAG:95, 1)
+	RETURN 0
+;体型不合时不可
+SIF TALENT:巨大体型 && !TALENT:PLAYER:巨大体型
+	RETURN 0
+SIF TALENT:小人体型 && !TALENT:PLAYER:小人体型
+	RETURN 0
+;无形体不可
+SIF TALENT:无形体
+	RETURN 0
+;男性、双性、扶她でないとダメ ペニバン
+SIF TALENT:137 == 0 && TALENT:139 == 0 && TALENT:140 == 0 && ITEM:PBAND == 0
+	RETURN 0
+;调教者が攻のときは駄目
+SIF TALENT:PLAYER:158
+	RETURN 0
+;调教对象が受のときは駄目
+SIF TALENT:157
+	RETURN 0
+;顺从が2以上ないとダメ
+SIF ABL:0 < 2
+	RETURN 0
+;侍奉精神が2以上ないとダメ
+SIF ABL:0 < 2
+	RETURN 0
+;触手调教中はダメ
+SIF TEQUIP:25
+	RETURN 0
+;下身内衣をつけている、布偶装を着ている、もしく水手裙以外の下身外衣を履いているとダメ
+SIF TEQUIP:2 || TEQUIP:4 > 1 || TEQUIP:6 == 7
+	RETURN 0
+;浴室PLAY中は塑料地垫が無いとダメ
+IF TEQUIP:31
+SIF ITEM:20 == 0 && NOITEM == 0
+	RETURN 0
+ENDIF
+;飞机杯使用中はダメ
+SIF TEQUIP:12
+	RETURN 0
+;新妻PLAY中はダメ
+SIF TEQUIP:33
+	RETURN 0
+;阴茎爱抚命令中だと駄目
+SIF TEQUIP:49
+	RETURN 0
+RETURN 1

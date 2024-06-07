@@ -1,0 +1,1374 @@
+﻿;-------------------------------------------------
+;苏和的口上
+;-------------------------------------------------
+;口上作者：
+;-------------------------------------------------
+;调教前和调教後的台詞
+;-------------------------------------------------
+;eraQueenA用口上模板
+;口上を書けた部分の「CFLAG:2XX = 1」や「CFLAG:2XX = 2」のコメントアウトは解除してください。
+;-------------------------------------------------
+;--------------------------------------------------
+;口上文件的存在判定
+;--------------------------------------------------
+@EVENTSHOP
+#PRI
+FLAG:291 = 1
+SIF FLAG:7 == 0
+	FLAG:7 = 1
+;--------------------------------------------------
+;EVENTTRAIN关系
+;调教開始時的台词 CFLAG 201～219を使用
+;--------------------------------------------------
+@EVENTTRAIN
+;オプションで口上をオフした時は駄目
+SIF FLAG:7 <= 0
+	RETURN 0
+SIF NO:TARGET != 191
+	RETURN 0
+@KOJO_EVENTTRAIN_K191
+;--------------------------------------------------
+;特定助手時に特殊助手口上を呼び出す(Y1を助手との関係设定(CFLAG:2000～2100)の値に置換）
+;--------------------------------------------------
+;IF ASSI > 0 && ASSIPLAY
+;	IF CFLAG:(NO:ASSI + 2000) == Y1
+;		CALL EVENTTRAIN_PY1
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;--------------------------------------------------
+;簡易助手口上の発動時に初调教時口上をスキップ（Y1を助手のキャラ性格番号にする）
+;複数人いる際には、SIF CFLAG:(NO:ASSI + 2000) == Y1 || CFLAG:(NO:ASSI + 2000) == Z1と追加していく
+;初调教時口上をスキップしない場合は使わなくてもいい
+;--------------------------------------------------
+;IF CFLAG:201 == 0 && ASSI > 0
+;	SIF CFLAG:(NO:ASSI + 2000) == Y1
+;		CFLAG:201 =1
+;ENDIF
+
+
+;-------------------------------------------------
+;调教開始時（一回のみの台詞） CFLAG201
+;-------------------------------------------------
+;■ 口上作者们请看这里，从这里开始写
+;■ 之后就请关注■符号后面的内容，按着这些情景分别写口上和地文就行了，非常感谢
+;■ 调教开始前显示的口上（一次性事件） CFLAG201
+;-------------------------------------------------
+DRAWLINE
+SIF CFLAG:201 == 6
+	RETURN 0
+
+;■ 初调教时显示的口上 子女的场合出现这样的台词会有些奇怪，所以这个前提另论
+
+; 人称变量一览:
+; %PLAYER_NAME()% 玩家姓名/自称
+; %CALLNAME:MASTER% 玩家姓氏
+; %CALLNAME% 奴隶姓名
+; %CSTR:0% 奴隶自称
+; %CSTR:1% 对玩家的代词 eg.你
+; %CSTR:2% 对玩家更加亲密的代词(后期) eg.您
+; %CSTR:3% 特殊称呼方式 eg.xx大人，主人之类
+; %CSTR:4% 奴隶姓氏
+; %CSTR:5% 奴隶名字
+
+IF CFLAG:201 == 0 && (NO:TARGET < 201 || NO:TARGET > 400)
+
+	
+	
+	; 从3段口上中随机抽取1段，第1段：
+	IF !RAND:3
+
+		; PRINTFORMW 「抱歉。」
+		; PRINTFORMW %CALLNAME%向着%PLAYER_NAME()%微微一笑，首先询问道，「请问%CSTR:2%是？」
+
+		; PRINTFORMW 「%CSTR:0%一醒来就在这里了，我想这应该不是什么副本游戏？」
+		; PRINTFORMW %CALLNAME%笑眯眯地望着你。
+
+		; IF !RAND:2
+		; 	PRINTFORMW 「那个…不来一起想想办法吗？」
+		; ELSE
+		; 	PRINTFORMW 「所以，两个人一起来想想办法吧？」
+		; ENDIF
+
+		; PRINTFORMW  锁着%CALLNAME%手足的铁链发出喀拉喀啦的声响。
+		; PRINTFORMW 「…好、好像有哪里不对？…还是说…%CSTR:0%有搞错什么吗？」
+		; PRINTFORMW 「…啊？从今天开始要对%CSTR:0%进行调教…%CSTR:1%在说什么啊」
+		; PRINTFORMW 「完全不能理解。别开玩笑了，快放%CSTR:0%回去」
+		; PRINTFORMW 「等等…%CSTR:1%要做、做什么？　住手――」
+	
+	; 从3段口上中随机抽取1段，第2段：
+	ELSEIF !RAND:2
+
+		; PRINTFORMW 「抱歉，请问%CSTR:2%是？」
+
+		;■ 没见过的女主人
+		IF CFLAG:700 == 0 && !MALE(MASTER)
+			; PRINTFORMW %CALLNAME%向着%PLAYER_NAME()%微微一笑，首先询问道。
+			; PRINTFORMW %PLAYER_NAME()%觉得%CALLNAME%的眼神里带着不善的意味。
+
+		;■ 没见过的男主人
+		ELSEIF CFLAG:700 == 0 && MALE(MASTER)
+			; PRINTFORMW %CALLNAME%向着%PLAYER_NAME()%微微一笑，首先询问道。
+			; PRINTFORMW %PLAYER_NAME()%觉得%CALLNAME%的眼神里带着不善的意味。
+		
+		;面識あり
+		ELSE
+			; PRINTFORMW 确认进来的人是%PLAYER_NAME()%之后，%CALLNAME%看起来有点吃惊。
+			; PRINTFORMW 「什、什么啊，\@ CFLAG:2000 == 3 ? 是%CSTR:2%啊 # 这不是%MASTERNAME%吗 \@…」
+			; PRINTFORMW 「喂，\@ CFLAG:2000 == 3 ? %CSTR:2% # %MASTERNAME% \@知道这里是哪里吗？」
+		ENDIF
+
+		; PRINTFORMW 「为什么%CSTR:0%…一醒来就在这里了？」
+		; PRINTFORMW 对自己当前的处境，%CALLNAME%还什么都不明白。
+		; PRINTFORMW 「那个…不来一起想想办法吗？」
+		; PRINTFORMW 锁着%CALLNAME%手足的铁链发出喀拉喀啦的声响。
+		; PRINTFORMW 「…好、好像有哪里不对吧？…还是说%CSTR:0%搞错了什么吗？」
+		; PRINTFORMW 「…啊？从今天开始要对%CSTR:0%进行调教…%CSTR:1%在说什么啊」
+		; PRINTFORMW 「这是什么意思？别开玩笑了，快放%CSTR:0%回去」
+		; PRINTFORMW 「等、等等，%CSTR:1%要做什么？　不要――」
+	
+	; 从3段口上中随机抽取1段，第3段：
+	ELSE
+
+		; PRINTFORMW 「抱歉，请问%CSTR:2%是？」
+
+		; PRINTFORMW 「为什么%CSTR:0%一醒来就在这里？还被锁了起来……恶作剧也要讲点底线吧！」
+		; PRINTFORMW 对自己当前的处境，%CALLNAME%还什么都不明白。
+		; PRINTFORMW 「所以说…不来一起想想办法吗？」
+		; PRINTFORMW 锁着%CALLNAME%手足的铁链发出喀拉喀啦的声响。
+		; PRINTFORMW 「…好、好像有哪里不对？…还是说%CSTR:0%搞错了什么吗？」
+		; PRINTFORMW 「…啊？从今天开始要对%CSTR:0%进行调教…%CSTR:1%在说什么，完全不能理解」
+		; PRINTFORMW 「别开那种不好笑的玩笑了，快放%CSTR:0%回去」
+		; PRINTFORMW 「等下，%CSTR:1%这是要做什么？　别过――」
+
+	ENDIF
+
+	PRINTL
+	PRINTFORMW 你与%NAME%的故事开始了。
+	; PRINTFORMW 之后会发生什么呢？
+	; PRINTFORMW ――对%NAME%的第一次调教开始了――
+	CFLAG:201 = 1
+	RETURN 0
+
+
+;恋慕陷落ルート
+ELSEIF (CFLAG:201 < 5 && TALENT:3) || (CFLAG:201 < 6 && TALENT:6)
+	IF CFLAG:201 < 5 && TALENT:恋慕
+		;PRINTFORMW 
+		;PRINTFORMW 
+		;CFLAG:201 = 5
+		RETURN 0
+	;相亲相爱
+	ELSEIF CFLAG:201 < 6 && TALENT:相亲相爱
+		;PRINTFORMW 
+		;PRINTFORMW 
+		;CFLAG:201 = 6
+		RETURN 0
+	ENDIF
+;淫乱陷落ルート
+ELSEIF (CFLAG:201 < 5 && TALENT:4) || (CFLAG:201 < 6 && TALENT:7)
+	IF CFLAG:201 < 5 && TALENT:淫乱
+		;PRINTFORMW 
+		;PRINTFORMW 
+		;CFLAG:201 = 5
+		RETURN 0
+	;娼妇
+	ELSEIF CFLAG:201 < 6 && TALENT:娼妇
+		;PRINTFORMW 
+		;PRINTFORMW 
+		;CFLAG:201 = 6
+		RETURN 0
+	ENDIF
+;服从陷落ルート
+ELSEIF (CFLAG:201 < 5 && TALENT:5) || (CFLAG:201 < 6 && TALENT:8)
+	IF CFLAG:201 < 5 && TALENT:服从
+		;PRINTFORMW 
+		;PRINTFORMW 
+		CFLAG:201 = 5
+		RETURN 0
+	ELSEIF CFLAG:201 < 6 && TALENT:隶属
+		;PRINTFORMW 
+		;PRINTFORMW 
+		MASTERNAME = %CALLNAME:MASTER%大人
+		;口調が敬語タイプになる
+		CFLAG:601 = 2
+		;CFLAG:201 = 6
+		RETURN 0
+	ENDIF
+;初めて屈服刻印Lv1になった
+ELSEIF CFLAG:201 < 2 && MARK:2 == 1
+	;PRINTFORMW 
+	;PRINTFORMW 
+	;CFLAG:201 = 2
+	RETURN 0
+;初めて屈服刻印Lv2になった
+ELSEIF CFLAG:201 < 3 && MARK:2 == 2
+	;PRINTFORMW 
+	;PRINTFORMW 
+	;CFLAG:201 = 3
+	RETURN 0
+;初めて屈服刻印Lv3になった
+ELSEIF CFLAG:201 < 4 && MARK:2 == 3
+	;PRINTFORMW 
+	;PRINTFORMW 
+	;CFLAG:201 = 4
+	RETURN 0
+ENDIF
+
+;-------------------------------------------------
+;簡易助手口上（Y1を助手との関係设定の値に置換)
+;-------------------------------------------------
+;助手の有無をチェック（いない場合は二回目以降へ飛ぶ）
+IF ASSI < 0 
+	CALL EVENTTRAIN_SECOND_K191
+;例:助手が调教对象の兄の場合（CFLAG:(NO:ASSI + 2000)を1に设定）
+;ELSEIF CFLAG:(NO:ASSI + 2000) == 1
+;	;初めて
+;	IF CFLAG:(NO:ASSI + 700) == 0
+;		PRINTFORMW 
+;		CFLAG:(NO:ASSI + 700) = 1
+	;二回目以降
+;	ELSEIF CFLAG:(NO:ASSI + 700) < 2 || FLAG:7 ==2
+;		PRINTFORMW 
+;		CFLAG:(NO:ASSI + 700) = 2
+;	ENDIF
+;Y1を助手との関係设定の値に置換
+;ELSEIF CFLAG:(NO:ASSI + 2000) == Y1
+;	;初めて
+;	IF CFLAG:(NO:ASSI + 700) == 0
+;		PRINTFORMW 
+;		CFLAG:(NO:ASSI + 700) = 1
+	;二回目以降
+;	ELSEIF CFLAG:(NO:ASSI + 700) < 2 || FLAG:7 ==2
+;		PRINTFORMW 
+;		CFLAG:(NO:ASSI + 700) = 2
+;	ENDIF
+;口上のある助手が居ない場合は、通常の二回目以降の口上へ飛ぶ
+ELSE
+	CALL EVENTTRAIN_SECOND_K191
+ENDIF
+
+;-------------------------------------------------
+;调教開始時（2回目以降、「一回だけ表示」に设定してなければ何度も显示台詞です）
+;何度も显示わけなので、何種類かの短い台詞を用意したほうがいいかもしれません。
+;毎回表示されたら面倒くさいかもしれないので、「一回だけ表示」に设定していれば、三分の一の確率で表示されることしました。
+;-------------------------------------------------
+@EVENTTRAIN_SECOND_K191
+
+;反抗刻印Lv3が消された場合、「一回だけ表示」用のフラグを解除。
+SIF MARK:反抗刻印 < 3 && CFLAG:202 == 4
+	CFLAG:202 = 0
+;反抗刻印Lv3（最初に反抗刻印Lv3をついた時のの場合）
+IF MARK:反抗刻印 == 3 && CFLAG:202 < 4
+	;PRINTFORML 
+	;PRINTFORMW 
+	;CFLAG:202 = 4
+;反抗刻印Lv3、屈服刻印 < 2、顺从 <= 2　（毎回表示の場合）
+ELSEIF MARK:反抗刻印 == 3 && MARK:屈服刻印 < 2 && ABL:顺从 <= 2 && (CFLAG:202 < 4 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	;随机で口上が変化する
+	;随机で口上が変化する　!RAND:2→二分の一の確率、!RAND:3→三分の一の確率…以下同類
+	;随机で三種類の台詞から選ぶ時は「IF !RAND:3 ～　ELSEIF !RAND:2 ～　ELSE」にすればＯＫ。
+	IF !RAND:2
+		;PRINTFORML 
+		;PRINTFORMW 
+	ELSE
+		;PRINTFORML 
+		;PRINTFORMW 
+	ENDIF
+	;CFLAG:202 = 4
+;屈服刻印Lv0
+;ELSEIF MARK:2 == 0 && (CFLAG:202 < 1 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+;	PRINTFORMW 
+;	CFLAG:202 = 1
+;屈服刻印Lv1以下
+ELSEIF MARK:2 <= 1 && (CFLAG:202 < 2 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	IF !RAND:2
+		;PRINTFORML 
+		;PRINTFORMW 
+	ELSE
+		;PRINTFORML 
+		;PRINTFORMW 
+	ENDIF
+	;CFLAG:202 = 2
+;屈服刻印Lv2
+ELSEIF MARK:2 == 2 && (CFLAG:202 < 3 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	IF !RAND:2
+		;PRINTFORML 
+		;PRINTFORMW 
+	ELSE
+		;PRINTFORML 
+		;PRINTFORMW 
+	ENDIF
+	;CFLAG:202 = 3
+;屈服刻印Lv3＋陷落素質无
+ELSEIF MARK:2 == 3 && !KANRAKU(TARGET) && (CFLAG:202 < 4 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	IF !RAND:2
+		;PRINTFORML 
+		;PRINTFORMW 
+	ELSE
+		;PRINTFORML 
+		;PRINTFORMW 
+	ENDIF
+	;CFLAG:202 = 4
+;恋慕陷落ルート
+ELSEIF (TALENT:3 || TALENT:6) && (CFLAG:202 < 6 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	;恋慕
+	IF TALENT:3 && (CFLAG:202 < 5 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+
+		IF !RAND:2
+			;PRINTFORML 
+			;PRINTFORMW 
+		ELSE
+			;PRINTFORML 
+			;PRINTFORMW 
+		ENDIF
+		;CFLAG:202 = 5
+	;相亲相爱
+	ELSEIF TALENT:6 && (CFLAG:202 < 6 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+			;PRINTFORML 
+			;PRINTFORMW
+		CFLAG:202 = 6
+	ENDIF
+;淫乱陷落ルート
+ELSEIF (TALENT:4 || TALENT:7) && (CFLAG:202 < 6 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	IF TALENT:淫乱 && (CFLAG:202 < 5 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+		IF !RAND:2
+			;PRINTFORML 
+			;PRINTFORMW 
+		ELSE
+			;PRINTFORML 
+			;PRINTFORMW 
+		ENDIF
+		;CFLAG:202 = 5
+	ELSEIF TALENT:娼妇 && (CFLAG:202 < 6 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+		IF !RAND:2
+			;PRINTFORML 
+			;PRINTFORMW 
+		ELSE
+			;PRINTFORML 
+			;PRINTFORMW 
+		ENDIF
+		;CFLAG:202 = 6
+	ENDIF
+;服从陷落ルート
+ELSEIF (TALENT:5 || TALENT:8) && (CFLAG:202 < 6 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	IF TALENT:服从 && (CFLAG:202 < 5 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+		IF !RAND:2
+			;PRINTFORML 
+			;PRINTFORMW 
+		ELSE
+			;PRINTFORML 
+			;PRINTFORMW 
+		ENDIF
+		;CFLAG:202 = 5
+	;隶属
+	ELSEIF TALENT:隶属 && (CFLAG:202 < 6 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+		IF !RAND:2
+			;PRINTFORML 
+			;PRINTFORMW 
+		ELSE
+			;PRINTFORML 
+			;PRINTFORMW 
+		ENDIF
+		;CFLAG:202 = 6
+	ENDIF
+ENDIF
+RETURN 0
+
+;-------------------------------------------------
+;EVENTEND関係
+;调教结束時のセリフ
+;-------------------------------------------------
+@EVENTEND
+SIF FLAG:7 <= 0
+	RETURN 0
+SIF NO:TARGET != 200
+	RETURN 0
+@KOJO_EVENTEND_K191
+;--------------------------------------------------
+;调教结束時のセリフ
+;--------------------------------------------------
+;调教をすぐやめたときは口上を不显示
+SIF PREVCOM == -1
+	RETURN 0
+DRAWLINE
+
+;最初に反抗刻印Lv3を取った時（一回だけ）
+IF MARK:3 == 3 && CFLAG:217 < 1
+	;PRINTFORML 
+	;PRINTFORMW 
+	;CFLAG:217 = 1
+;反抗刻印Lv3、屈服刻印 < 2、顺从 <= 2
+ELSEIF MARK:反抗刻印 == 3 && MARK:屈服刻印 < 2 && ABL:顺从 <= 2 && (CFLAG:217 < 1 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	;PRINTFORML 
+	;PRINTFORMW 
+	;CFLAG:217 = 1
+;屈服刻印Lv1以下
+ELSEIF MARK:2 <= 1 && (CFLAG:219 < 1 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	;PRINTFORML 
+	;PRINTFORMW 
+	;CFLAG:219 = 1
+;屈服刻印Lv2
+ELSEIF MARK:2 == 2 && (CFLAG:219 < 2 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	;PRINTFORML 
+	;PRINTFORMW 
+	;CFLAG:219 = 2
+;屈服刻印Lv3＋陷落素質无
+ELSEIF MARK:2 == 3 && !KANRAKU(TARGET) && (CFLAG:219 < 2 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	;PRINTFORML 
+	;PRINTFORMW 
+	;CFLAG:219 = 3
+;陷落済み＋体力500未満
+ELSEIF KANRAKU(TARGET) && BASE:0 < 500 && (CFLAG:218 < 1 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	;恋慕陷落ルート
+	IF (TALENT:3 || TALENT:6)
+		;PRINTFORML 
+		;PRINTFORMW 
+	;淫乱陷落ルート
+	ELSEIF (TALENT:4 || TALENT:7)
+		;PRINTFORML 
+		;PRINTFORMW 
+	;服从陷落ルート
+	ELSEIF (TALENT:5 || TALENT:8)
+		;PRINTFORML 
+		;PRINTFORMW 
+	ENDIF
+	;CFLAG:218 = 1
+;陷落済み
+ELSEIF KANRAKU(TARGET) && (CFLAG:219 < 4 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	;恋慕陷落ルート
+	IF (TALENT:3 || TALENT:6)
+		;PRINTFORML 
+		;PRINTFORMW 
+	;淫乱陷落ルート
+	ELSEIF (TALENT:4 || TALENT:7)
+		;PRINTFORML 
+		;PRINTFORMW 
+	;服从陷落ルート
+	ELSEIF (TALENT:5 || TALENT:8)
+		;PRINTFORML 
+		;PRINTFORMW 
+		
+	ENDIF
+	;CFLAG:219 = 4
+ENDIF
+DRAWLINE
+RETURN 0
+
+
+
+;
+;README EXAMPLE
+;
+;-------------------------------------------------
+;大らか･元気タイプ口上（性格タイプorキャラクターの名前を入れる、下にコンセプトなど一言あれば入れる）
+;-------------------------------------------------
+;补完作者：天轨·嘻乐年华
+;
+;関西弁は外人には無理だ…絶对言い回しがおかしいと思います。どうかご了承を。
+;erahetaAの色んなキャラの口上を参考させていただきました。
+;
+;
+;●元气类型的各陷落素质基本方向
+;未陷落→普通健全的男性（普通指什么啦www）
+;恋慕→喜欢以上、恋人未満
+;相亲相爱→完全迷恋状态（也可以说是完全的斯德哥尔摩）
+;淫乱→只要舒服做什么都可以
+;娼妇→万年发情期
+;服从→绝对不可以违抗主人的命令，这条约束已经刻入骨髓
+;隶属→抖M。沉溺在服从的快感里。多使用敬語。
+;-------------------------------------------------
+;调教前と调教後の台詞
+;-------------------------------------------------
+;eraQueenA用口上テンプレート
+;-------------------------------------------------
+;--------------------------------------------------
+;口上ファイルの存在判定（FLAG:1XXのXXを性格タイプ番号に置換。口上1なら101、12なら112、といった具合）
+;--------------------------------------------------
+@EVENTSHOP
+#PRI
+FLAG:101 = 1
+SIF FLAG:7 == 0
+	FLAG:7 = 1
+;--------------------------------------------------
+;EVENTTRAIN関係（1を性格タイプ番号に置換）
+;调教開始時のセリフ CFLAG 201～219を使用
+;--------------------------------------------------
+@EVENTTRAIN
+;オプションで口上をオフした時は駄目
+SIF FLAG:7 <= 0
+	RETURN 0
+;キャラ性格が1でないと駄目
+SIF CFLAG:600 != 1
+	RETURN 0
+
+@KOJO_EVENTTRAIN_K1
+;--------------------------------------------------
+;特定助手時に特殊助手口上を呼び出す(Y1を助手との関係设定(CFLAG:2000～2100)の値に置換）
+;--------------------------------------------------
+;IF ASSI > 0 && ASSIPLAY
+;	IF CFLAG:(NO:ASSI + 2000) == Y1
+;		CALL EVENTTRAIN_PY1
+;		RETURN 0
+;	ENDIF
+;ENDIF
+;--------------------------------------------------
+;簡易助手口上の発動時に初调教時口上をスキップ（Y1を助手のキャラ性格番号にする）
+;複数人いる際には、SIF CFLAG:(NO:ASSI + 2000) == Y1 || CFLAG:(NO:ASSI + 2000) == Z1と追加していく
+;初调教時口上をスキップしない場合は使わなくてもいい
+;--------------------------------------------------
+;IF CFLAG:201 == 0 && ASSI > 0
+;	SIF CFLAG:(NO:ASSI + 2000) == Y1
+;		CFLAG:201 =1
+;ENDIF
+;-------------------------------------------------
+;■ 口上作者们请看这里，从这里开始写
+;■ 之后就请关注■符号后面的内容，按着这些情景分别写口上和地文就行了，非常感谢
+;■ 调教开始前显示的口上（一次性事件） CFLAG201
+;-------------------------------------------------
+DRAWLINE
+SIF CFLAG:201 == 6
+	GOTO INPUT_ZHU
+;■ 初调教时显示的口上 子女的场合出现这样的台词会有些奇怪，所以这个前提另论
+IF CFLAG:201 == 0 && (NO:TARGET < 201 || NO:TARGET > 400)
+	PRINTFORMW 踏进调教的房间后，%CALLNAME%吓了一跳面向这里。
+	IF !RAND:3
+		;■ CFLAG:601～CFLAG:616用以控制语气、语癖、语调这样的东西，完全可以忽视，因为这个功能在该汉化版本已经删除
+		;■ 也即是说，看到诸如CFLAG:601 == 2这种的分歧不用特地再重写别的……
+		;■ 什么敬语关西腔标准语也是（。  不用一一填空（（（。
+		PRINTFORMW 「是谁！？」
+		;■ 没见过的女主人
+		IF CFLAG:700 == 0 && !MALE(MASTER)
+			PRINTFORMW 确认进来的人是女性后，%CALLNAME%看起来有些惊讶，姑且还是露出了个善意的微笑。
+			PRINTFORMW 「那个，请问…%CSTR:2%是谁啊？　这里又是哪里？」
+		;■ 没见过的男主人
+		ELSEIF CFLAG:700 == 0 && MALE(MASTER)
+			PRINTFORMW %CALLNAME%稍微警戒了起来。
+			PRINTFORMW 「%CSTR:1%是什么人？　这是哪儿？」
+		;■ 之前有见过面（可以的话，各种关系的都请考虑一下）
+		;■ 关系种类：
+		;   0:没什么特别的
+		;   1:兄	2:弟	3:姐	4:妹	5:父	6:母	7:儿子	8:女儿	9:亲属	10:同一人物
+        ;   11:前辈	   12:后辈	  13:上司	 4:部下	   15:老师    16:学生    17:师父    18:徒弟
+        ;   19:朋友    20:认识的人    21:青梅竹马    22:单相思对象    23:主人    24:仆从
+        ;   25:同事  　26:社团伙伴    27:同僚   　28:同学     29:恋人
+        ;(例→CFLAG:A:2001 == 1  →对角色A来说，1号角色是A的哥哥)
+        ;(所以下面的CFLAG:2000 == 3  →对该名奴隶来说，0号角色，也就是我们的主角，是TA的姐姐，以此类推)
+		ELSE
+			PRINTFORMW 确认进来的人是%PLAYER_NAME()%之后，%CALLNAME%看起来有点吃惊。
+			PRINTFORMW 「什、什么啊，\@ CFLAG:2000 == 3 ? 是%CSTR:2%啊 # 这不是%MASTERNAME%吗 \@…」
+			IF !RAND:2
+				PRINTFORMW 「呐，\@ CFLAG:2000 == 3 ? %CSTR:2% # %MASTERNAME% \@知道这里是哪里吗？」
+			ELSE
+				PRINTFORMW 「喂，\@ CFLAG:2000 == 3 ? %CSTR:2% # %MASTERNAME% \@知道这是哪儿吗？」
+			ENDIF
+		ENDIF
+		PRINTFORMW 「为什么%CSTR:0%一醒来就在这种地方啊？」
+		PRINTFORMW 对自身的处境，%CALLNAME%尚且一无所知。
+		IF !RAND:2
+			PRINTFORMW 「那个…不来一起想想办法吗？」
+		ELSE
+			PRINTFORMW 「所以，两个人一起来想想办法吧？」
+		ENDIF
+		PRINTFORMW  锁着%CALLNAME%手足的铁链发出喀拉喀啦的声响。
+		PRINTFORMW 「…好、好像有哪里不对？…还是说…%CSTR:0%有搞错什么吗？」
+		PRINTFORMW 「…啊？从今天开始要对%CSTR:0%进行调教…%CSTR:1%在说什么啊」
+		PRINTFORMW 「完全不能理解。别开玩笑了，快放%CSTR:0%回去」
+		PRINTFORMW 「等等…%CSTR:1%要做、做什么？　住手――」
+	ELSEIF !RAND:2
+		PRINTFORMW 「谁、是谁！？」
+		;面識无の女主人
+		IF CFLAG:700 == 0 && !MALE(MASTER)
+			PRINTFORMW 确认进来的人是女性之后，%CALLNAME%看起来有点吃惊。
+			PRINTFORMW 「那个…%CSTR:2%是谁啊？　这里是什么地方？」
+		;面識无の男主人（性転換後）
+		ELSEIF CFLAG:700 == 0 && MALE(MASTER)
+			PRINTFORMW %CALLNAME%有些警戒起来。
+			PRINTFORMW 「%CSTR:1%…是谁？　这里是什么地方？」
+		;面識あり
+		ELSE
+			PRINTFORMW 确认进来的人是%PLAYER_NAME()%之后，%CALLNAME%看起来有点吃惊。
+			PRINTFORMW 「什、什么啊，\@ CFLAG:2000 == 3 ? 是%CSTR:2%啊 # 这不是%MASTERNAME%吗 \@…」
+			PRINTFORMW 「喂，\@ CFLAG:2000 == 3 ? %CSTR:2% # %MASTERNAME% \@知道这里是哪里吗？」
+		ENDIF
+		PRINTFORMW 「为什么%CSTR:0%…一醒来就在这里了？」
+		PRINTFORMW 对自己当前的处境，%CALLNAME%还什么都不明白。
+		PRINTFORMW 「那个…不来一起想想办法吗？」
+		PRINTFORMW 锁着%CALLNAME%手足的铁链发出喀拉喀啦的声响。
+		PRINTFORMW 「…好、好像有哪里不对吧？…还是说%CSTR:0%搞错了什么吗？」
+		PRINTFORMW 「…啊？从今天开始要对%CSTR:0%进行调教…%CSTR:1%在说什么啊」
+		PRINTFORMW 「这是什么意思？别开玩笑了，快放%CSTR:0%回去」
+		PRINTFORMW 「等、等等，%CSTR:1%要做什么？　不要――」
+	ELSE
+		PRINTFORMW 「谁！？」
+		;面識无の女主人
+		IF CFLAG:700 == 0 && !MALE(MASTER)
+			PRINTFORMW 确认进来的人是女性之后，%CALLNAME%看起来有些吃惊。
+			PRINTFORMW 「那个…%CSTR:2%是谁啊？　这里是哪里呢？」
+		;面識无の男主人（性転換後）
+		ELSEIF CFLAG:700 == 0 && MALE(MASTER)
+			PRINTFORMW %CALLNAME%显得有些警戒。
+			PRINTFORMW 「…%CSTR:1%是谁？　这里是什么地方？」
+		;面識あり
+		ELSE
+			PRINTFORMW 确认进来的人是%PLAYER_NAME()%之后，%CALLNAME%看起来有点吃惊。
+			PRINTFORMW 「什、什么啊，\@ CFLAG:2000 == 3 ? 是%CSTR:2%啊 # 这不是%MASTERNAME%吗 \@…」
+			PRINTFORMW 「喂，\@ CFLAG:2000 == 3 ? %CSTR:2% # %MASTERNAME% \@知道这里是什么地方吗？」
+		ENDIF
+		PRINTFORMW 「为什么%CSTR:0%一醒来就在这里？还被锁了起来……恶作剧也要讲点底线吧！」
+		PRINTFORMW 对自己当前的处境，%CALLNAME%还什么都不明白。
+		PRINTFORMW 「所以说…不来一起想想办法吗？」
+		PRINTFORMW 锁着%CALLNAME%手足的铁链发出喀拉喀啦的声响。
+		PRINTFORMW 「…好、好像有哪里不对？…还是说%CSTR:0%搞错了什么吗？」
+		PRINTFORMW 「…啊？从今天开始要对%CSTR:0%进行调教…%CSTR:1%在说什么，完全不能理解」
+		PRINTFORMW 「别开那种不好笑的玩笑了，快放%CSTR:0%回去」
+		PRINTFORMW 「等下，%CSTR:1%这是要做什么？　别过――」
+	ENDIF
+	PRINTL
+	PRINTFORMW ――对%NAME%的第一次调教开始了――
+	CFLAG:201 = 1
+	RETURN 0
+;■ 初调教 儿子是奴隶的场合（注意，女儿无法调教只能直接当助手，但可以性转儿子）
+ELSEIF CFLAG:201 == 0 && (NO:TARGET >= 300 && NO:TARGET <= 400)
+	IF CFLAG:2000 == 5 || CFLAG:2000 == 6
+		IF !MALE(MASTER)
+			PRINTFORM 「啊…妈妈！
+		ELSE
+			PRINTFORM 「是…爸爸？
+		ENDIF
+		IF ASSI > 0 && (CFLAG:(NO:ASSI + 2000) == 5 || CFLAG:(NO:ASSI + 2000) == 6)
+			IF !MALE(MASTER) && MALE(ASSI)
+				PRINTFORM 爸爸也在～！
+			ELSEIF !MALE(MASTER) && !MALE(ASSI)
+				PRINTFORM 哎…另一个妈妈也在？
+			ELSEIF MALE(ASSI)
+				PRINTFORM 哎…另一个爸爸也在？
+			ELSE
+				PRINTFORM 和…妈妈？
+			ENDIF
+		ENDIF
+	ELSE
+		PRINTFORM 「那个…%CALLNAME:MASTER%大人？
+		IF ASSI > 0 && (CFLAG:(NO:ASSI + 2000) == 5 || CFLAG:(NO:ASSI + 2000) == 6)
+			IF MALE(ASSI) && CFLAG:ASSI:1 != 3
+				PRINTFORM 啊，爸爸也在～！
+			ELSEIF MALE(ASSI) && CFLAG:ASSI:1 == 3
+				PRINTFORM 然后是…唔，现在应该叫爸爸？爸爸也在这里…
+			;元々女性の見習いの場合
+			ELSEIF CFLAG:ASSI:1 == 3
+				PRINTFORM 啊…妈妈也在这里！
+			ELSE
+                PRINTFORM 然后是…妈妈…这么叫可以吗？
+			ENDIF
+		ENDIF
+	ENDIF
+	PRINTL
+	PRINT 　
+	IF !RAND:2
+		PRINTFORMW  诶，以后就不能从这里出去了…？为什么？　%CSTR:0%好想去外面玩啊…」
+	ELSE
+		PRINTFORMW  说起来，为什么不能从这里出去呢？　%CSTR:0%…好想到外面去玩…」
+	ENDIF
+	PRINTFORML 对这座宅邸的真面目一无所知的%CALLNAME%，
+	PRINTFORMW 完全没有察觉到%PLAYER_NAME()%的企图，仍旧天真而悠闲地发着牢骚
+	PRINTFORMW 「所以啊，为什么要把%CSTR:0%关在这里呢？这些铁疙瘩好沉，快帮把%CSTR:0%解开嘛！」
+	PRINTFORMW %CALLNAME%不满地撅着嘴，捆缚手足的铁链发出喀拉喀拉的响声。
+	PRINTFORMW 「诶…？要『调教』%CSTR:0%…？那是、什么意思？」
+	PRINTFORMW 「嘿嘿，不要突然摸%CSTR:0%嘛，好痒啊…」
+	PRINTFORMW %PLAYER_NAME()%将手伸进%CALLNAME%的衣服里抚摸起来，%CALLNAME%以为是嬉闹，发出咯咯的笑声。
+	PRINTFORMW 不过很快，%CALLNAME%就要笑不出来了。
+	CFLAG:201 = 1
+	RETURN 0
+;■ 角色获得 恋慕 素质后的第一次调教时显示的口上
+ELSEIF (CFLAG:201 < 5 && TALENT:3) || (CFLAG:201 < 6 && TALENT:6)
+	IF CFLAG:201 < 5 && TALENT:恋慕
+        PRINTFORMW 「啊……%MASTERNAME%！」
+        PRINTFORML 听到%PLAYER_NAME()%将门打开的声音，%CALLNAME%立刻双眼灼灼面带笑意地看过来，
+        PRINTFORMW 但很快又红着脸低下了头，强迫自己把嘴角抿直。
+        IF !RAND:2
+            PRINTFORMW \@ MALE(TARGET) ? 他 # 她 \@的举止十分可疑，此刻正双手不安地攥着床单，一副手足无措的模样。
+        ELSE
+            PRINTFORMW \@ MALE(TARGET) ? 他 # 她 \@的举止分外可疑，像是在逃避视线一样挠抓了一下头发，一副坐立不安的模样。
+        ENDIF
+        PRINTFORMW 「那个…%CSTR:0%……！」
+        IF !RAND:2
+            PRINTFORMW 视线撞到一起，%CALLNAME%的声音戛然而止，极不自然地移开了目光。
+        ELSE
+            PRINTFORMW 四目相对时，%CALLNAME%生生闭上嘴，僵硬地转移了视线。
+        ENDIF
+        IF !RAND:2
+            PRINTFORMW 仿佛直视%PLAYER_NAME()%的眼睛就说不了话了一样，怎么看都是在害羞。
+        ELSE
+            PRINTFORMW 总觉得，看起来十分的害羞。只能这样低着头坑坑巴巴地说话。
+        ENDIF
+        PRINTFORMW 「…那个，%CSTR:0%知道%CSTR:2%过来，只是为了做那种事」
+        PRINTFORMW 「%CSTR:0%不会再反抗了……但在那之前，能请听%CSTR:0%说几句吗……？」
+        IF !RAND:2	
+            PRINTFORMW 「…%CSTR:0%啊、最近变得好奇怪」
+        ELSE
+            PRINTFORMW 「…%CSTR:0%、最近好像有点奇怪」
+        ENDIF
+        PRINTFORMW 「和%CSTR:2%…像这样做这种事…也没有以前那么讨厌了……」
+        PRINTFORMW 「明明一开始是那么反感……但现在每一次，被%CSTR:2%抚摸的时候，胸口都像有火燃烧一样……」
+        PRINTFORMW 「不仅不想反抗，还渴求更多的亲密……不，不止如此……」
+        PRINTFORMW 「仅仅是看到%CSTR:2%的眼睛，就想拼命摆脱这铁链，紧紧抱住%CSTR:2%，不停亲吻%CSTR:2%」
+        PRINTFORMW 「%CSTR:0%想和%CSTR:2%聊更多的事情，奴隶也好主人也好，和这些都没有关系的话题！！」
+        PRINTFORMW %CALLNAME%猛地抬头，不安的目光紧紧地盯着%PLAYER_NAME()%。
+        PRINTFORMW 「就连看不到%CSTR:2%的时候，%CSTR:0%的脑子里想的也全都关于%CSTR:2%的事……」
+        PRINTFORMW 「那天%CSTR:0%做的饭菜%CSTR:2%好像吃得多了一点，是终于符合%CSTR:2%的口味了吗？」
+        PRINTFORMW 「触摸%CSTR:0%的时候，只要%CSTR:0%露出那样的反应，%CSTR:2%就会微笑，是%CSTR:0%稍微讨好到%CSTR:2%了吗？」
+        PRINTFORML 「%CSTR:2%每次离开得都那么干脆，但是不是，哪怕只有一点点也好，
+        PRINTFORMW   %CSTR:2%其实也想留下来和%CSTR:0%拥抱着入眠呢？」
+        PRINTFORMW 「…………」
+        PRINTFORMW 似乎是难以接受，%CALLNAME%一只手捂住自己的脸，再也说不下去了。
+        IF !RAND:2
+            PRINTFORMW 「说这种话，简直像是%CSTR:0%……对、对%CSTR:2%……」
+        ELSE
+            PRINTFORMW 「说这种话，简直像是%CSTR:0%……对%CSTR:2%……」
+        ENDIF
+        PRINTFORMW %CALLNAME%狠狠地抚了一把自己的脸，朝%PLAYER_NAME()%露出一个难堪的笑容……
+        PRINTFORMW 那是将自己全部的自尊都揉成一团，扔进了废纸篓里的表情。
+        PRINTFORML 「……对%CSTR:2%而言一定很可笑吧，区区一个调教好就准备卖掉的奴隶，
+        PRINTFORMW   被做了那么多过分的事后，居然还对主人产生了这种…这种……」
+        PRINTFORML 听着这些话，再也无法忍耐的%PLAYER_NAME()%大步上前将战栗的%CALLNAME%紧紧抱住，
+        PRINTFORMW 像两个濒死的人一样深深缠吻在一起。
+		CFLAG:201 = 5
+		RETURN 0
+	;■ 角色获得 相亲相爱 素质后的第一次调教时显示的口上
+	ELSEIF CFLAG:201 < 6 && TALENT:相亲相爱
+	    PRINTFORMW 思慕已久的两人一进门就忍不住相拥，这时，%CALLNAME%突然推开了%CSTR:2%。
+        IF !RAND:2
+            PRINTFORMW 「等等，%MASTERNAME%…在今天侍奉%CSTR:2%之前，%CSTR:0%有话想对%CSTR:2%说…」
+        ELSE
+            PRINTFORMW 「那个…虽然已经想%MASTERNAME%想得不得了了，但在那之前%CSTR:0%有些话想对%CSTR:2%说…」
+        ENDIF
+        PRINTFORMW 「唔…！不要笑啊！真是，%CSTR:0%可是很认真的…」
+        PRINTFORMW 抛出这个开场白后，%CALLNAME%有片刻的犹豫，随即像是下定了决心般继续说了下去，眼神变得严肃。
+        PRINTFORMW 「%CSTR:0%啊…最近越来越不妙了」
+        PRINTFORML 「一见到%CSTR:2%，整个人都无法自已地欢欣鼓舞，肌肤相触的话，身体立马开始发热」
+        PRINTFORMW 「这具身体，无时无刻都在期待着%MASTERNAME%的触碰……」
+        PRINTFORMW 「不，即使不用触碰，仅仅是现在离得这么近，%CSTR:0%的内心就像得到了最终的平静和满足一样」
+        PRINTFORMW 「这个人都在说些什么蠢话啊，吃东西吃坏了吧…%CSTR:2%现在多半是这么想的吧？」
+        PRINTFORMW 「没、没关系，其实%CSTR:0%自己也这么觉得…」
+        PRINTFORMW 「因为%CSTR:0%的脑子已经一团浆糊了啊，和%CSTR:2%无关的事，全部都无法思考了！！」
+        PRINTFORMW 就像狂热的信徒膜拜神祗，%CALLNAME%看向%PLAYER_NAME()%的眼神里流露出痴狂的爱意。
+        PRINTFORMW 「无论变成什么样，%CSTR:0%都已经…不想和%CSTR:2%分开了！」
+        PRINTFORML 「不管是亲吻%CSTR:2%靴下的尘土也好，还是为了%CSTR:2%去伤害谁也好，
+        PRINTFORMW   只要是%CSTR:2%的心愿，%CSTR:0%什么都会做的，所以…！」
+        PRINTFORMW %CALLNAME%主动跪在%PLAYER_NAME()%的面前，双臂紧紧环住%PLAYER_NAME()%的腰身，将头埋进%PLAYER_NAME()%的胸口呼吸着，虔诚地恳求道。
+        PRINTFORMW 「所以…拜托了，%MASTERNAME%，不要把%CSTR:0%…卖给别人」
+        PRINTFORMW 「如果成为%MASTERNAME%以外的人的奴隶，%CSTR:0%一定会死掉的…！」
+        PRINTFORMW 「让%CSTR:0%一直陪在%CSTR:2%的身边吧…永远，永远这样下去……」
+        PRINTFORMW 「…%CSTR:0%真的好爱，好爱%MASTERNAME%啊，%CSTR:0%从没有想过有一天，居然会爱一个人，爱到这种地步……」
+        IF TIME
+            PRINTFORMW 月光倾洒的调教室里，%PLAYER_NAME()%轻轻揉着%CALLNAME%的头发，像是母亲安慰婴孩一般，温柔地在%CALLNAME%的发顶烙下一吻。
+	    ELSE
+	        PRINTFORMW 回抱住%CALLNAME%，%PLAYER_NAME()%轻轻揉着%CALLNAME%的头发，像是母亲安慰婴孩一般温柔地在%CALLNAME%的发顶烙下一吻。
+	    ENDIF
+		CFLAG:201 = 6
+		RETURN 0
+	ENDIF
+;■ 角色获得 淫乱 素质后的第一次调教时显示的口上
+ELSEIF (CFLAG:201 < 5 && TALENT:4) || (CFLAG:201 < 6 && TALENT:7)
+	IF CFLAG:201 < 5 && TALENT:淫乱
+        PRINTFORMW 「啊、感觉等了好久呢」
+        PRINTFORML 「%CSTR:0%呀…已经不会再抵抗了哦？
+        PRINTFORMW 　在品尝到那种事是如何快乐之后，就没有想过抵抗了…」
+        PRINTFORMW %CALLNAME%的眼神热切而湿润，说着话的同时，一边用鲜红的舌头舔舐着上唇。
+        IF ABL:Ａ感觉 >= 3
+            PRINTFORMW 「已经…变成不被狠狠抽插玩弄屁眼，就不会满足的身体了…」
+        ELSE
+            PRINTFORMW 「已经…变成无法被普通的性行为满足的身体了…」
+        ENDIF
+        PRINTFORMW 「在那种疯狂极致的快感之下…头脑早就一片空白…」
+        SIF ABL:Ａ感觉 >= 3
+            PRINTFORMW 「家人？自由？理想？自尊？那种东西…与能填满屁眼空虚的大鸡巴相比，统统都无所谓了…所以……」
+        PRINTFORMW %CALLNAME%用炽热的视线紧紧盯着%PLAYER_NAME()%的下体，开始剧烈地喘息
+        PRINTFORMW 突然，\@ MALE(TARGET) ? 他 # 她 \@扑通一声跪在地上，像母狗一样摇着屁股快速爬了过来。
+        PRINTFORMW 「呐，%MASTERNAME%…也已经想要了吧？」
+        PRINTFORMW 「%CSTR:2%知道的，不是吗？被%CSTR:2%亲自调教出来的这根舌头，可是很好使的」
+        IF MALE(MASTER)
+            PRINTFORMW %CALLNAME%跪在%PLAYER_NAME()%面前，双臂攀附着%PLAYER_NAME()%的腰身，熟捻地用牙齿咬开%PLAYER_NAME()%的拉链。
+        ELSE
+            PRINTFORMW %CALLNAME%跪在%PLAYER_NAME()%面前，双臂攀附着%PLAYER_NAME()%的腰身，把头拱到了%PLAYER_NAME()%裙下。
+        ENDIF
+        PRINTFORMW	嘴里伸出长长的鲜艳红舌，%CALLNAME%一边用淫荡的眼神向上看着%PLAYER_NAME()%，一边贪婪地舔舐起%PLAYER_NAME()%被内裤包裹着的下体。
+        IF MALE(MASTER)
+            PRINTFORMW 「……已经，一分一秒都忍不住了！%MASTERNAME%，别再让%CSTR:0%久等了，快点，把又浓又臭的精液喂给%CSTR:0%吧…！」
+        ELSE
+            PRINTFORMW 「……已经，一分一秒都忍不住了！%MASTERNAME%，别再让%CSTR:0%久等了，快点，把香甜浓郁的蜜汁喂给%CSTR:0%吧…！」
+        ENDIF
+        PRINTFORMW %CALLNAME%用强硬不容拒绝的口吻，说出了连最低级的娼妇都不会讲的台词。
+		CFLAG:201 = 5
+		RETURN 0
+	;■ 角色获得 娼妇 素质后的第一次调教时显示的口上
+	ELSEIF CFLAG:201 < 6 && TALENT:娼妇
+		PRINTFORMW 进入房间的时候，%CALLNAME%正沉溺于自慰之中。
+		IF MALE(MASTER)
+            PRINTFORMW 「嗯啊…嗯…啊啊…%CSTR:3%、哈……怎么现在才到啊…」
+            PRINTFORML %CALLNAME%停下手上的动作，几乎是从床上跌下来，一边哈气一边爬到%PLAYER_NAME()%面前，
+            PRINTFORMW 像母狗一样抱住%PLAYER_NAME()%的大腿蹭着自己的下体。
+            PRINTFORMW 抬眼看向%PLAYER_NAME()%的目光里饱含着炽热的欲望，阴茎和后穴渗透出的淫水沾湿了%PLAYER_NAME()%的裤腿。
+            PRINTFORMW 「哈，哈……%CSTR:0%、最近、只要一停下来，脑子里就全是%CSTR:3%大鸡巴的形状，和浓稠醇厚的精液喷进喉咙里的感觉」
+            PRINTFORMW 「然后身体就燥热难耐，随便找一个角落就脱光衣服，开始不停地、嗯……自慰起来，但是远远不够啊！即使把精液射空也不够……」
+            PRINTFORMW 仅仅抱着%PLAYER_NAME()%的大腿磨蹭完全不够，%CALLNAME%欲求不满地发出哭腔。
+            PRINTFORMW 「别说是正常的性爱了，连正常的人生都无法回去了……%CSTR:0%、%CSTR:0%一定是坏掉了吧？」
+            PRINTFORMW 「哈哈……怎么办啊，无论是脑子还是身体，都已经被%MASTERNAME%调教得…像坏掉的肉便器一样」
+            PRINTFORMW %CALLNAME%混沌的目光里一瞬间闪过悲哀和绝望，但那仅存的最后一丝理性，也很快被淫乱的笑容所取代。
+            PRINTFORMW 「不，不行了…那种事已经怎么都好了，快…快像以前那样把%CSTR:0%玩得乱七八糟的吧…不然的话，%CSTR:0%就要被欲望烧死了…」
+            PRINTFORMW 如其所愿，将已彻底沦为快感俘虏的%CALLNAME%推倒在床上……
+            PRINTFORMW 「大鸡巴…大鸡巴，快，快给我……哈～❤……吃到了♪」
+            PRINTFORMW 像瘾君子渴望毒品一样，%CALLNAME%颤抖着将%PLAYER_NAME()%的阴茎掏出来，大口吞进喉咙深处，露出痴汉一样贪餮的笑容。
+        ELSE
+            PRINTFORMW 「嗯啊…嗯…啊啊…%CSTR:3%、怎么现在才到…」
+            PRINTFORMW %CALLNAME%停下手上的动作，过来抱住了%PLAYER_NAME()%，眼中满是炽热的欲望。
+            PRINTFORMW 「%CSTR:0%、一想到%CSTR:3%，身体就燥热难耐，开始不停地自慰起来，但是远远不够啊…」
+            PRINTFORMW 「别说是正常的性爱了，连正常的人生都无法回去了……%CSTR:0%、%CSTR:0%一定是坏掉了吧？」
+            PRINTFORMW 「哈哈……怎么办啊，无论是脑子还是身体，都已经被%MASTERNAME%调教得…像坏掉的肉便器一样」
+            PRINTFORMW %CALLNAME%混沌的目光里一瞬间闪过悲哀和绝望，但那仅存的最后一丝理性，也很快被淫乱的笑容所取代。
+            PRINTFORMW 「快…快像以前那样把%CSTR:0%玩得乱七八糟的吧…不然的话，一定会被欲火烧到只剩下灰烬…」
+            PRINTFORMW 如其所愿，将已彻底沦为快感俘虏的%CALLNAME%推倒在床上……
+        ENDIF
+		CFLAG:201 = 6
+		RETURN 0
+	ENDIF
+;■ 角色获得 服从 素质后的第一次调教时显示的口上
+ELSEIF (CFLAG:201 < 5 && TALENT:5) || (CFLAG:201 < 6 && TALENT:8)
+	IF CFLAG:201 < 5 && TALENT:服从
+        PRINTFORML 「已经不行了吧……」
+        PRINTFORMW %CALLNAME%眼神虚无地呢喃着。
+        PRINTFORMW 「最近…脑海里完全被%CSTR:2%的身影占据了…」
+        PRINTFORMW 「可怕的也好残酷的也好…总是考虑着在这间屋子里发生过的事…」
+        PRINTFORMW 「明明也有做过抵抗……即便如此…」
+        PRINTFORMW %CALLNAME%用双手抱紧自己的身躯蹲了下来。
+        PRINTFORMW 「还想要…被更多地做这种事，各种各样的都…回过神来，就总是在考虑这种东西……」
+        PRINTFORMW 「但是…比作坠入恋情的话…也有哪里不太对的样子…」
+        PRINTFORMW 「更多地使用%CSTR:0%吧…该说是这种心情吗…唔、%CSTR:0%自己也不太明白」
+        PRINTFORMW 「…真是…到底算什么啊…这种心情……」
+        PRINTFORMW 「哈哈…%CSTR:0%的脑子…一定是坏掉了吧」
+		PRINTFORMW 那双眼睛，除了%PLAYER_NAME()%以外已经什么都无法映出了…
+		CFLAG:201 = 5
+		RETURN 0
+	;■ 角色获得 隶属 素质后的第一次调教时显示的口上
+	ELSEIF CFLAG:201 < 6 && TALENT:隶属
+		IF !RAND:2
+			PRINTFORMW 「……劳您久等了，%CALLNAME:MASTER%大人」
+			PRINTFORMW %CALLNAME%以尊敬的语气称呼%PLAYER_NAME()%的名讳，深深地埋下头颅。
+	    ELSE
+			PRINTFORMW 「……久等了…不，劳您久等了，%CALLNAME:MASTER%大人」
+			PRINTFORMW %CALLNAME%改用尊敬的语气称呼%PLAYER_NAME()%的名讳，深深地埋下头颅。
+		ENDIF
+		PRINTFORMW 那双眼睛已经失去了光彩。
+		PRINTFORMW 「%CALLNAME:MASTER%大人，是您教会了%CSTR:0%解放自己身体的美好」
+		PRINTFORMW 「将男性的身份、人类的尊严和常识…将那些无趣的东西统统舍弃掉」
+		PRINTFORML 「仅仅为了主人，把身心与灵魂完全奉上…
+		PRINTFORMW   这种践踏自身存在所获得的喜悦与快乐，%CSTR:0%终于完全理解了」
+		PRINTFORMW 「啊啊，还请原谅之前的无礼。从今以后，%CSTR:0%会把一切都献给%CALLNAME:MASTER%大人」
+		PRINTFORMW 「此身……名为%NAME%的这个人，是您永远的奴隶……」
+		MASTERNAME = %CALLNAME:MASTER%大人
+		CSTR:2 = 您
+		CFLAG:201 = 6
+		RETURN 0
+	ENDIF
+;■ 角色获得 屈服刻印Lv1 后的第一次调教时显示的口上
+ELSEIF CFLAG:201 < 2 && MARK:2 == 1
+    PRINTFORMW 手足被枷锁束缚，抱着膝盖坐在阴暗墙角的%CALLNAME%，在看到%PLAYER_NAME()%进门的一瞬间，身体立刻变得僵硬。
+    PRINTFORMW 「唉……」
+    IF !RAND:2
+        IF !RAND:5
+            PRINTFORML 「……又是你…今天能早点结束吗？」
+        ELSEIF !RAND:4
+            PRINTFORML 「又来了吗…可以的话，希望能早点结束」
+        ELSEIF !RAND:3
+            PRINTFORML 「又来了吗…也好，快点结束吧」
+        ELSEIF !RAND:2
+            PRINTFORML 「又来了吗…可以的话，请早点结束」
+        ELSE
+            PRINTFORML 「又来了吗…能不能早点结束呢」
+        ENDIF
+        PRINTFORMW %CALLNAME%像是为这种行为感到心情复杂的样子…
+    ELSE
+        IF !RAND:2
+            PRINTFORML 「……又是你」
+        ELSE
+            PRINTFORML 「又来了吗…」
+        ENDIF
+        PRINTFORMW 「%CSTR:1%对%CSTR:0%做的这些事情…是不可原谅的！一定很快就会有人来救%CSTR:0%出去了…一定」
+        PRINTFORMW %CALLNAME%一遍又一遍喃喃自语着，仿佛只有这样才不会放弃掉最后一丝信念。
+    ENDIF
+	CFLAG:201 = 2
+	RETURN 0
+;■ 角色获得 屈服刻印Lv2 后的第一次调教时显示的口上
+ELSEIF CFLAG:201 < 3 && MARK:2 == 2
+    PRINTFORMW %CALLNAME%双眼无神地看向%PLAYER_NAME()%。
+    IF !RAND:2
+        PRINTFORMW 「一遍又一遍地来找%CSTR:0%做这种事…以为这样%CSTR:0%就会在某一天习惯吗？」
+    ELSE
+        PRINTFORMW 「…以为%CSTR:0%会很期待这种事吗？」
+    ENDIF
+	IF !RAND:3
+		PRINTFORMW 「那是不可能的吧。真是…」
+	ELSEIF !RAND:2
+		PRINTFORMW 「怎么可能啊。真是…」
+	ELSE
+		PRINTFORMW 「不可能的吧。到底在想些什么啊，真是…」
+	ENDIF
+	PRINTFORMW 虽然像这样否定着，但眼里的反抗之色已经比以前淡薄了。
+	PRINTFORMW 脚带足枷的%CALLNAME%，毫无反应地任由%PLAYER_NAME()%的靠近。
+	CFLAG:201 = 3
+	RETURN 0
+;■ 角色获得 屈服刻印Lv3 后的第一次调教时显示的口上
+ELSEIF CFLAG:201 < 4 && MARK:2 == 3
+    IF !RAND:2
+        PRINTFORM 「……够了，
+    ELSE
+        PRINTFORM 「……算了，
+    ENDIF
+    IF !RAND:2
+        PRINTFORML %CSTR:0%放弃了」
+    ELSE
+        PRINTFORML %CSTR:0%投降了」
+    ENDIF
+    PRINTFORMW 「想对%CSTR:0%做什么都随%CSTR:1%喜欢好了」
+    PRINTFORMW 「反正这种事，在被救援前不知还要持续多久，与其抗拒吃苦头，还不如舒舒服服地享受…」
+    PRINTFORMW %CALLNAME%看向%PLAYER_NAME()%眼神里，那曾一度炽烈的反抗光芒，已经悄然无息地死掉了。
+    PRINTFORMW 「嘴也好手脚也好性器也好，%CSTR:1%想怎么用就怎么用吧……『主·人』…」
+    PRINTFORMW 没有任何枷锁束缚的现在，%CALLNAME%平静地微笑着主动挺起了胸部，送进%PLAYER_NAME()%手里任由赏玩。
+	CFLAG:201 = 4
+	RETURN 0
+ENDIF
+
+$INPUT_ZHU
+;-------------------------------------------------
+;简易助手口上 也即该名角色担任助手时的口上（Y1控制助手的关系设定，X1控制性格类型）
+;并未启用，也许会有未知bug，作者们不用写这个的口上
+;-------------------------------------------------
+;助手の有無をチェック（いない場合は二回目以降へ飛ぶ）
+IF ASSI < 0 
+	CALL EVENTTRAIN_SECOND_K1
+;例:助手が调教对象の兄の場合（CFLAG:(NO:ASSI + 2000)を1に设定）
+;ELSEIF CFLAG:(NO:ASSI + 2000) == 1
+;	;初めて
+;	IF CFLAG:(NO:ASSI + 700) == 0
+;		PRINTFORMW 
+;		CFLAG:(NO:ASSI + 700) = 1
+	;二回目以降
+;	ELSEIF CFLAG:(NO:ASSI + 700) < 2 || FLAG:7 ==2
+;		PRINTFORMW 
+;		CFLAG:(NO:ASSI + 700) = 2
+;	ENDIF
+;Y1を助手との関係设定の値に置換
+;ELSEIF CFLAG:(NO:ASSI + 2000) == Y1
+;	;初めて
+;	IF CFLAG:(NO:ASSI + 700) == 0
+;		PRINTFORMW 
+;		CFLAG:(NO:ASSI + 700) = 1
+	;二回目以降
+;	ELSEIF CFLAG:(NO:ASSI + 700) < 2 || FLAG:7 ==2
+;		PRINTFORMW 
+;		CFLAG:(NO:ASSI + 700) = 2
+;	ENDIF
+;口上のある助手が居ない場合は、通常の二回目以降の口上へ飛ぶ
+ELSE
+	CALL EVENTTRAIN_SECOND_K1
+ENDIF
+
+;-------------------------------------------------
+;■ 调教开始时的口上（从第二次开始，如果没有设定[只显示一次]的话，每次都会出现）
+;■ 因为会频繁出现，最好是只有一两行的短台词
+;■ 每次都显示会很烦，所以设定为[只显示一次]的话，会以三分之一的概率出现
+;-------------------------------------------------
+@EVENTTRAIN_SECOND_K1
+;■ 反抗刻印Lv3消除后的场合
+SIF MARK:反抗刻印 < 3 && CFLAG:202 == 4
+	CFLAG:202 = 0
+;反抗刻印－屈服＝2以上、屈服（最初の場合）
+IF (MARK:反抗刻印 - MARK:屈服刻印) >= 2 && CFLAG:202 < 4
+    IF !RAND:2
+        PRINTFORML 「……居然敢对%CSTR:0%做出这种事…%CSTR:1%这只连人都不算的畜生！」
+    ELSE
+        PRINTFORML 「……居然敢对%CSTR:0%做出这种事…绝对不会原谅%CSTR:1%的…！」
+    ENDIF
+    IF !RAND:2
+	    PRINTFORMW %CALLNAME%投来怨恨的视线，咬牙切齿…
+	ELSE
+	    PRINTFORMW %CALLNAME%投来怨毒的视线，牙齿咯咯作响…
+	ENDIF
+	CFLAG:202 = 4
+;■ 反抗刻印－屈服＝2以上、顺从 <= 2　（设定为[每次都显示]的场合）
+ELSEIF (MARK:反抗刻印 - MARK:屈服刻印) >= 2 && ABL:顺从 <= 2 && (CFLAG:202 < 4 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	;随机で口上が変化する　!RAND:2→二分の一の確率、!RAND:3→三分の一の確率…以下同類
+	;随机で三種類の台詞から選ぶ時は｢IF !RAND:3 ～　ELSEIF !RAND:2 ～　ELSE｣にすればＯＫ。
+	IF !RAND:2
+        PRINTFORML 「杀了%CSTR:1%，杀了%CSTR:1%，%CSTR:0%要杀了%CSTR:1%…！」
+        IF !RAND:2
+     	    PRINTFORMW %CALLNAME%投来怨恨的视线，咬牙切齿…
+     	ELSE
+     	    PRINTFORMW %CALLNAME%投来怨毒的视线，牙齿咯咯作响…
+     	ENDIF
+     	PRINTFORMW 要是没有枷锁束缚，恐怕早就扑上来掐住%PLAYER_NAME()%的脖子了吧。
+	ELSE
+	    IF !RAND:3
+			PRINTFORML 「恶心的畜生，滚出%CSTR:0%的视线」
+			PRINTFORMW %CALLNAME%对正在接近的%PLAYER_NAME()%狠狠吐了口唾沫。
+	    ELSEIF !RAND:2
+			PRINTFORML 「…%CSTR:1%已经嚣张不了两天了，可悲的东西」
+	    ELSE
+            IF !RAND:2
+                PRINTFORML 「别以为每次都能随心所欲…」
+            ELSE
+                PRINTFORML 「别以为每次都能如愿以偿…」
+            ENDIF
+        ENDIF
+		PRINTFORMW %CALLNAME%的眼神像是恨不得把%PLAYER_NAME()%千刀万剐…
+	ENDIF
+	CFLAG:202 = 4
+;屈服刻印Lv0
+ELSEIF MARK:2 == 0 && (CFLAG:202 < 1 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	PRINTFORMW 「……%CSTR:1%啊，真的有意识到自己现在所做的事请是违法的吗？」
+	PRINTFORMW 「现在就停手，好吗？等救援%CSTR:0%的人来了，%CSTR:0%会给%CSTR:1%说几句好话的」
+	PRINTFORMW 「虽然作为被绑架的人说这种话很奇怪。但%CSTR:0%也不想让谁因为%CSTR:0%被判重刑啊」
+	PRINTFORML 事到如今还是没有意识到自己的立场，%CALLNAME%天真地试图晓之以情动之以理来说服%PLAYER_NAME()%。
+	PRINTFORMW ……但%PLAYER_NAME()%显然不可能回应%CALLNAME%他的期待。
+	PRINTFORMW 「……哈，看来是听不进去%CSTR:0%说的话啊」
+	CFLAG:202 = 1
+;■ 屈服刻印-反抗刻印1以下的场合
+ELSEIF (MARK:屈服刻印 - MARK:反抗刻印) <= 1 && (CFLAG:202 < 2 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2) && CFLAG:201 != 0
+	IF !RAND:2
+        PRINTFORML 「做这种事，%CSTR:1%难道很开心吗？」
+        PRINTFORMW %CALLNAME%对%PLAYER_NAME()%的调教已经感到厌烦
+	ELSE
+	    IF !RAND:2
+            PRINTFORML 「天天面对一个反抗%CSTR:1%的人……还不够烦的吗？」
+	    ELSE
+            PRINTFORM 「一遍遍地重复这种无聊的事……
+            IF !RAND:2
+                PRINTFORML 竟然还不满足吗？」
+            ELSE
+                PRINTFORML 竟然还没感到厌倦吗？」
+            ENDIF
+        ENDIF
+        PRINTFORMW 铁链喀拉喀拉地作响，%CALLNAME%已经面露不耐。
+	ENDIF
+	CFLAG:202 = 2
+;■ 屈服刻印-反抗刻印2的场合
+ELSEIF (MARK:屈服刻印 - MARK:反抗刻印) == 2 && (CFLAG:202 < 3 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	IF !RAND:2
+        PRINTFORMW 「…说真的，都开始讨厌感到习惯的自己了」
+        PRINTFORMW 「%CSTR:0%已经搞不懂了，随%CSTR:1%的便吧…！烦死了…」
+	ELSE
+		PRINTFORML 「唉……」
+		PRINTFORMW %CALLNAME%长叹一口气，像是已经习惯被人上下其手了。
+	ENDIF
+	CFLAG:202 = 3
+;■ 屈服刻印-反抗刻印 3＋未陷落的场合
+ELSEIF (MARK:屈服刻印 - MARK:反抗刻印) == 3 && !KANRAKU(TARGET) && (CFLAG:202 < 4 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	IF !RAND:2
+        PRINTFORMW 「还来啊…真是受够了」
+        PRINTFORMW 「到了这步田地，只要舒服怎么都无所谓了…随便%CSTR:1%吧」
+	ELSEIF MALE(TARGET)
+	    IF !RAND:2
+            PRINTFORML 「整天对一个硬邦邦的男人做这种事，到底有什么好玩的？」
+            PRINTFORMW %CALLNAME%自顾自地小声嘟囔着，困惑地检视着自己的身体。
+            PRINTFORMW 「啊，只是好奇而已啦！好奇！没有别的意思……」
+	    ELSE
+            PRINTFORML 「居然喜欢对男人做这种事，%CSTR:1%还真是个怪人」
+            PRINTFORMW 是不想面对吗，%CALLNAME%移开了目光。
+        ENDIF
+	ENDIF
+	CFLAG:202 = 4
+;■ 恋慕陷落的场合
+ELSEIF (TALENT:3 || TALENT:6) && (CFLAG:202 < 6 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	;恋慕
+	IF TALENT:3 && (CFLAG:202 < 5 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+		IF !RAND:3
+            PRINTFORML %PLAYER_NAME()%进入房间的时候，%CALLNAME%的眼睛一瞬间焕发出光彩。
+            PRINTFORMW 「哦哦，终于来了啊…不、那个，并没有在期待什么啦」
+            PRINTFORMW 铺好的干净被褥，一丝不苟的打扮，怎么看都是准备已久的样子。
+            PRINTFORML 「不是特意准备的啦，只是%CSTR:2%不在的话就感觉很闲而已…」
+            PRINTFORMW %CALLNAME%小声嘟囔着，眼神瞟向了别处。
+		ELSEIF !RAND:2
+            PRINTFORML 「啊，%CSTR:2%终于来了！」
+            PRINTFORMW %CALLNAME%坐在床沿上等待已久，露出灿烂的笑容向%PLAYER_NAME()%张开了双臂。
+            IF TALENT:高大体型 && TALENT:MASTER:矮小体型
+                IF !RAND:2
+                    PRINTFORMW 「来！快点过来，%MASTERNAME%，乖乖坐到\@ MALE(TARGET) ? 哥哥 # 姐姐 \@的大腿上～」
+                ELSE
+                    PRINTFORMW 「来！快点过来，%MASTERNAME%，乖乖到%CSTR:0%怀里来～」
+                ENDIF
+                PRINTFORMW 「……喂，不许笑！恋人之间偶尔做这种事也是很正常的吧」
+                PRINTFORML 看着像大型犬一样一边嘟囔一边不安地垂着耳朵的%CALLNAME%，%PLAYER_NAME()%难得纵容了\@ MALE(TARGET) ? 他 # 她 \@的胡闹。
+                PRINTFORMW \@ MALE(MASTER) ? 像小姑娘一样 # \@顺从坐进%CALLNAME%怀里后，%PLAYER_NAME()%含着笑意看向\@ MALE(TARGET) ? 他 # 她 \@。
+                PRINTFORML 「……嘿嘿，%CSTR:2%真的好可爱啊，%MASTERNAME%」
+                PRINTFORMW 像对待无上的珍宝一样，%CALLNAME%小心翼翼地将%PLAYER_NAME()%抱紧在怀里。
+            ENDIF
+            PRINTFORML 「……我爱%CSTR:2%，%MASTERNAME%，无时无刻…快点来和%CSTR:0%做快乐的事情吧？已经完全等不及了……」
+            PRINTFORMW 两人深深吻在一起，一同斜倒在床上……
+        ELSE
+            PRINTFORML 「说起来…%CSTR:2%打算把%CSTR:0%卖到哪里去呢…？」
+            IF MALE(TARGET)
+                PRINTFORMW %CALLNAME%的目光像是透过%PLAYER_NAME()%看往更深远的方向。
+            ELSE
+                PRINTFORMW %CALLNAME%的手指轻轻缠绕着%PLAYER_NAME()%的头发，目光像是透过%PLAYER_NAME()%看往更深远的方向。
+            ENDIF
+            PRINTFORML 「…哈哈，%CSTR:0%到底在说些什么啊…别担心，%CSTR:0%是%CSTR:2%的奴隶。
+            PRINTFORMW   无论%CSTR:2%想对%CSTR:0%做什么都没关系，%CSTR:0%已经做好觉悟了，所以……」
+            PRINTFORMW  %CALLNAME%露出了有些悲伤的笑容，无法对那样的%CALLNAME%置之不理，%PLAYER_NAME()%紧紧地抱住了\@ MALE(TARGET) ? 他 # 她 \@。
+            PRINTFORML 「……今天…粗暴一点地对待%CSTR:0%吧，%MASTERNAME%，
+            PRINTFORMW   直到把%CSTR:0%的脑袋都弄乱掉，再也想不起来这些事为止」
+		ENDIF
+		CFLAG:202 = 5
+	;■ 相亲相爱的场合
+	ELSEIF TALENT:6 && (CFLAG:202 < 6 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+		IF !RAND:4
+            PRINTFORMW 自从那个刻骨铭心的告白后，%CALLNAME%的某一部分就变成了野兽，一只仅渴求%PLAYER_NAME()%的野兽。
+            PRINTFORML 「%MASTERNAME%…今天想让%CSTR:0%怎么伺候%CSTR:2%呢？」
+            IF MALE(MASTER)
+                PRINTFORMW 擅自将手侵略进%PLAYER_NAME()%的衬衣底下，%CALLNAME%轻咬着%PLAYER_NAME()%的耳廓，熟捻又色情地爱抚%PLAYER_NAME()%的身体。
+                PRINTFORML 「是先命令%CSTR:0%从脚尖开始亲吻%CSTR:2%，再把精液灌进%CSTR:0%的喉咙？
+                PRINTFORMW   还是什么前戏都不用做，直接把阴茎捅进我的身体里？」
+            ELSE
+                PRINTFORMW 轻咬着%PLAYER_NAME()%的耳廓，%CALLNAME%熟捻又色情地爱抚%PLAYER_NAME()%的身体。
+            ENDIF
+            PRINTFORML 听见%PLAYER_NAME()%逐渐凌乱的呼吸，%CALLNAME%露出满意的表情。
+            PRINTFORMW 「%CSTR:0%就知道，别的家伙怎么可能让%CSTR:2%满足？只有%CSTR:0%才知道怎么做才让%CSTR:2%最舒服，不是吗？」
+		ELSEIF !RAND:3
+            PRINTFORMW 刚踏进房间，%CALLNAME%就拥抱过来将%PLAYER_NAME()%抵在墙上。也不顾门还敞开着，深深地吻住了%PLAYER_NAME()%的嘴唇。
+			IF !RAND:2
+                PRINTFORML 「磨磨蹭蹭的…下次可不许再让%CSTR:0%等这么久了，%MASTERNAME%」
+			ELSE
+                PRINTFORML 「终于想起%CSTR:0%来了吗？%MASTERNAME%，%CSTR:0%可是每分每秒都在不停地想%CSTR:2%啊」
+			ENDIF
+            PRINTFORMW %CALLNAME%把头深深埋进%PLAYER_NAME()%的锁骨，嗓音低哑。
+		ELSEIF !RAND:2
+			IF !RAND:2
+                PRINTFORML 「%MASTERNAME%实在是太磨蹭了～%CSTR:0%等得都要长毛了」
+			ELSE
+                PRINTFORML 「%MASTERNAME%好磨蹭啊。…%CSTR:0%可是一直都在等着哦」
+			ENDIF
+			PRINTFORMW 刚踏进房间，%CALLNAME%就抱了过来……
+		ELSE
+            PRINTFORMW 「…太好了，想起%CSTR:0%了吗？」
+            PRINTFORMW 「%CSTR:0%和往常一样头脑空白，只想和%MASTERNAME%紧紧相拥哦？」
+		ENDIF
+		CFLAG:202 = 6
+	ENDIF
+;■ 淫乱陷落的场合
+ELSEIF (TALENT:4 || TALENT:7) && (CFLAG:202 < 6 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	IF TALENT:淫乱 && (CFLAG:202 < 5 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+		;随机で口上が変化する（使わない場合はすべて同じにすればよい）
+		IF !RAND:2
+            PRINTFORML 「那么…今天要玩什么Play呢？」
+			PRINTFORMW %CALLNAME%的眼神满含期待。
+		ELSE
+            PRINTFORML 「啊啊，终于来了吗…快点来做吧♪」
+			PRINTFORMW %CALLNAME%的身体看起来已做好万全的准备了。
+		ENDIF
+		CFLAG:202 = 5
+	; ■ 娼妇的场合
+	ELSEIF TALENT:娼妇 && (CFLAG:202 < 6 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+		IF !RAND:3
+            PRINTFORMW 「哈啊…快点、快点来侵犯%CSTR:0%吧！身体已经热得受不了了…！」
+			PRINTFORMW 看来掺在饭里的药下过头了。
+		ELSEIF !RAND:2
+            PRINTFORML 「%CSTR:2%看，只是听到%CSTR:2%的脚步声，%CSTR:0%的这里就变成这种不堪入目的模样」
+            PRINTFORMW 「对这样淫乱的%CSTR:0%，不做点相应的处罚可不行吧，%CSTR:3%？」
+		ELSE
+			PRINTFORML %CALLNAME%呼吸急促，面色潮红，两眼却熠熠生辉。
+			PRINTFORMW 似乎只是看到%PLAYER_NAME()%就条件反射地发起情来…
+		ENDIF
+		CFLAG:202 = 6
+	ENDIF
+;■ 服从陷落的场合
+ELSEIF (TALENT:5 || TALENT:8) && (CFLAG:202 < 6 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	IF TALENT:服从 && (CFLAG:202 < 5 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+		IF !RAND:2
+			PRINTFORML 「%CSTR:3%……」
+			PRINTFORMW 只是看到%PLAYER_NAME()%的身姿，%CALLNAME%的眼中就闪烁起混杂了痛苦与快乐的期待之色。
+		ELSE
+            PRINTFORML 「%CSTR:3%，今天要做些什么呢？」
+            PRINTFORMW 「虽然体力有限，但%CSTR:0%会努力的…」
+		ENDIF
+		CFLAG:202 = 5
+	;■ 隶属的场合
+	ELSEIF TALENT:隶属 && (CFLAG:202 < 6 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+		IF !RAND:3
+			PRINTFORML 「%CSTR:3%…今天又要对%CSTR:0%做些什么呢？啊啊，真的好荣幸啊」
+			PRINTFORMW 「已经、完全等不及了…请务必好好地凌虐%CSTR:0%一番！」
+		ELSEIF !RAND:2
+			PRINTFORML 刚踏入房间，%CALLNAME%就像小狗一样靠过来在%PLAYER_NAME()%脚边摩擦着。
+			PRINTFORMW 「啊啊…%CSTR:3%…%MASTERNAME%…身为您的奴隶真的好幸福…」
+		ELSE
+			PRINTFORMW 把手伸出来的同时，%CALLNAME%虔诚下跪，亲吻着%PLAYER_NAME()%的指尖。
+			PRINTFORMW 随即\@ MALE(TARGET) ? 他 # 她 \@又匍匐在地，恭敬地吻了%PLAYER_NAME()%的脚背。
+			PRINTFORMW 一套动作行云流水，宛如在进行什么极为重要的仪式，而这也正是调教开始的讯号。
+		ENDIF
+		CFLAG:202 = 6
+	ENDIF
+ENDIF
+RETURN 0
+
+;-------------------------------------------------
+;EVENTEND関係（1を性格タイプ番号に置換）
+;调教结束時のセリフ
+;-------------------------------------------------
+@EVENTEND
+SIF FLAG:7 <= 0
+	RETURN 0
+;キャラ性格が1でないと駄目
+SIF CFLAG:600 != 1
+	RETURN 0
+@KOJO_EVENTEND_K1
+;--------------------------------------------------
+;特定助手時に特殊助手口上を呼び出す(Y1を助手との関係设定の値に置換）
+;（K1の1をこのキャラの性格タイプ番号に置換）
+;--------------------------------------------------
+;IF ASSI > 0 && ASSIPLAY
+;	SIF CFLAG:(NO:ASSI + 2000) == Y1
+;	CALL EVENTEND_PY1_K1
+;	RETURN 0
+;ENDIF
+;--------------------------------------------------
+;■ 调教结束时的口上
+;--------------------------------------------------
+;调教をすぐやめたときは口上を不显示
+SIF PREVCOM == -1
+	RETURN 0
+DRAWLINE
+;■ 第一次取得反抗刻印Lv3时 （只出现一次）
+IF MARK:3 == 3 && CFLAG:217 < 1
+    PRINTFORMW 「整天沉迷于这种事……%CSTR:1%这…无可救药的变态！大变态！！！」
+    PRINTFORMW 「快放%CSTR:0%出去啊！喂、%CSTR:1%到底听到没有！」
+	PRINTFORMW 无视在那儿一个劲叫嚣着的%CALLNAME%，%PLAYER_NAME()%头也不回地离开了房间。
+	CFLAG:217 = 1
+;■ 反抗刻印Lv3、屈服刻印 < 2、顺从 <= 2
+ELSEIF MARK:反抗刻印 == 3 && MARK:屈服刻印 < 2 && ABL:顺从 <= 2 && (CFLAG:217 < 1 || FLAG:7 == 2)
+    IF !RAND:2
+        PRINTFORML 「…变态！大变态！！！」
+    ELSE
+        IF !MALE(MASTER)
+            PRINTFORML 「…混帐！婊子！妓女！！！」
+        ELSE
+            PRINTFORML 「…混帐！人渣！臭虫！！！」
+        ENDIF
+    ENDIF
+    PRINTFORML 「快点放%CSTR:0%出去！%CSTR:1%聋了听不见吗！」
+	PRINTFORMW 无视在那儿一个劲叫嚣着的%CALLNAME%，%PLAYER_NAME()%头也不回地离开了房间。
+	CFLAG:217 = 1
+;■ 屈服-反抗 1以下
+ELSEIF (MARK:屈服刻印 - MARK:反抗刻印) <= 1 && (CFLAG:219 < 1 || FLAG:7 == 2)
+	IF !RAND:3
+        IF !RAND:2
+            PRINTFORMW 「%CSTR:1%已经没必要再来了。不如说最好永远都别来！」
+        ELSE
+            PRINTFORMW 「%CSTR:1%别再来了。不，是永远别再来了！」
+        ENDIF
+	ELSEIF (NO:TARGET >= 300 && NO:TARGET <= 400) || !RAND:2
+        IF !RAND:3
+            PRINTFORMW 「…%CSTR:0%发誓%CSTR:0%会从这里逃出去的」
+        ELSEIF !RAND:2
+            PRINTFORMW 「…绝对，会从这里逃出去的」
+        ELSE
+            PRINTFORMW 「…%CSTR:0%绝对要从这里逃出去」
+        ENDIF
+	ELSE
+		IF !RAND:2
+			PRINTFORMW 「已经够了吧。是时候放%CSTR:0%回去了吧？」
+		ELSE
+			PRINTFORMW 「应该够了吧。也差不多该让%CSTR:0%回去了吧？」
+		ENDIF
+	ENDIF
+	CFLAG:219 = 1
+;■ 屈服-反抗 = 2
+ELSEIF (MARK:屈服刻印 - MARK:反抗刻印) == 2 && (CFLAG:219 < 2 || FLAG:7 == 2)
+    IF !RAND:2
+        PRINTFORML 「这个噩梦…到底什么时候，才会停止…」
+    ELSE
+        PRINTFORML 「要怎么做，才能从这场噩梦中醒来…」
+    ENDIF
+	PRINTFORMW %CALLNAME%小声地喃喃自语…
+	CFLAG:219 = 2
+;■ 屈服-反抗 = 3  ＋陷落素質无
+ELSEIF (MARK:屈服刻印 - MARK:反抗刻印) == 3 && !KANRAKU(TARGET) && (CFLAG:219 < 2 || FLAG:7 == 2)
+	IF !RAND:2
+		PRINTFORML 「%MASTERNAME%……」
+	ELSE
+		IF !RAND:3
+			PRINTFORML 「…%CSTR:0%恐怕已经撑不下去了…」
+		ELSEIF !RAND:2
+			PRINTFORML 「…%CSTR:0%可能快要撑不下去了…」
+		ELSE
+			PRINTFORML 「…%CSTR:0%大概要撑不下去了…」
+		ENDIF
+	ENDIF
+	PRINTFORMW %CALLNAME%看着%PLAYER_NAME()%离去的背影喃喃自语…
+	CFLAG:219 = 3
+;■ 已陷落＋体力小于500
+ELSEIF KANRAKU(TARGET) && BASE:0 < 500 && (CFLAG:218 < 1 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	;■ 恋慕陷落
+	IF (TALENT:3 || TALENT:6)
+        IF !RAND:3
+			PRINTFORML 「这种快乐的事，以后都只和%CSTR:0%做怎么样…？」
+			PRINTFORMW %CALLNAME%依依不舍地搂住了%PLAYER_NAME()%的腰
+		ELSEIF !RAND:2
+			PRINTFORMW %CALLNAME%已经累的快要睡着，却依然眷恋地勾着%CSTR:2%的手指
+		ELSE
+			PRINTFORML 「唉…………可恶，看来最近锻炼得还不够……」
+			PRINTFORMW %CALLNAME%累的手指都抬不起来了，不甘地碎碎念着
+		ENDIF
+	;■ 淫乱陷落
+	ELSEIF (TALENT:4 || TALENT:7)
+		PRINTFORML 「哈啊…被好好地…疼爱了%UNICODE(0x2661) *1%」
+		PRINTFORMW %CALLNAME%满脸潮红，意犹未尽地舔舐唇角
+		PRINTFORMW 「还想做的话，随时恭迎哦%UNICODE(0x2661) *1%」
+	;■ 服从陷落
+	ELSEIF (TALENT:5 || TALENT:8)
+		IF !RAND:2
+			PRINTFORML 「%CSTR:3%……谢谢，%CSTR:3%的调教……」
+			PRINTFORMW %CALLNAME%艰难地爬起来，狗跪在地目送%PLAYER_NAME()%走远
+		ELSE
+			PRINTFORML 「呜呜，抱歉主人……狗狗下一次会更耐玩的」
+			PRINTFORMW %CALLNAME%不舍地用脑袋蹭着%PLAYER_NAME()%的腰
+		ENDIF
+	ENDIF
+	CFLAG:218 = 1
+;■ 已陷落＋体力大于500
+ELSEIF KANRAKU(TARGET) && (CFLAG:219 < 4 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+	;■ 恋慕陷落
+	IF (TALENT:3 || TALENT:6)
+	    IF !RAND:3	
+			IF !RAND:2
+				PRINTFORML 「可不要让%CSTR:0%等得太久啊…」
+			ELSE
+				PRINTFORML 「希望这次等待的时间可以短一些…」
+			ENDIF
+			PRINTFORMW %CALLNAME%眷恋地亲吻了%PLAYER_NAME()%的唇角
+		ELSEIF !RAND:2
+			PRINTFORML 「今天不要走，陪%CSTR:0%一起睡吧……好嘛？」
+			PRINTFORMW %CALLNAME%轻轻地蹭着%PLAYER_NAME()%的手背
+		ELSE
+			IF !RAND:2
+				PRINTFORML 「嘿嘿，今天是不是让%CSTR:2%做得很尽兴？」
+			ELSE
+				PRINTFORML 「呐，今天%CSTR:0%表现是不是很好啊~」
+			ENDIF
+			PRINTFORMW %CALLNAME%趴在床上傻傻地笑着，期待%CSTR:2%的夸奖
+		ENDIF
+	;■ 淫乱陷落
+	ELSEIF (TALENT:4 || TALENT:7)
+		PRINTFORML 「这样就结束…了？」
+		PRINTFORMW %CALLNAME%带着有些哀怨的神色，尤嫌不足地抚慰起自己的身体
+	;■ 服从陷落
+	ELSEIF (TALENT:5 || TALENT:8)
+		IF !RAND:2
+			PRINTFORML 「要走了吗……？狗狗，还想和主人再多玩会儿……」
+			PRINTFORMW %CALLNAME%恋恋不舍地轻轻咬着%PLAYER_NAME()%的裤脚
+		ELSE
+			PRINTFORML 「狗狗会乖乖等着主人回来的……」
+			PRINTFORMW %CALLNAME%依恋地把头放在%PLAYER_NAME()%的膝盖上
+		ENDIF
+	ENDIF
+	CFLAG:219 = 4
+ENDIF
+DRAWLINE
+RETURN 0

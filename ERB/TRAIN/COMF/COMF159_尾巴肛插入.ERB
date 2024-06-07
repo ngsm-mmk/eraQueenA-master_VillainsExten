@@ -1,0 +1,196 @@
+﻿;-------------------------------------------------
+;尾巴肛插入
+;-------------------------------------------------
+@COM159
+PRINTL 尾巴肛插入
+STR:0 = 尾巴肛插入
+
+
+;丝袜びりびりフラグ
+IF TEQUIP:1 == 5 || TEQUIP:1 == 6
+	TFLAG:55 = 1
+ENDIF
+
+TFLAG:161 = 1
+
+;着脱の処理
+IF TEQUIP:52 == 0
+	TEQUIP:52 = 1
+ELSE
+	TEQUIP:52 = 0
+ENDIF
+
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 60
+LOSEBASE:1 += 150
+
+SOURCE:2 = 250
+SOURCE:7 = 100
+SOURCE:13 = 50
+SOURCE:14 = 50
+SOURCE:17 = 50
+SOURCE:18 = 40
+
+IF TALENT:232
+    SOURCE:23 = 120
+ELSEIF TALENT:233
+    SOURCE:23 = 80
+ELSE
+    SOURCE:23 = 100
+ENDIF
+
+;特殊ソース処理
+;-------------------------------------------------
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 70
+
+;Aへの痛苦は先に処理しておく
+;EXP:Ａ经验をみる
+IF EXP:1 < EXPLV:1
+	TIMES SOURCE:7 , 3.00
+	TIMES SOURCE:18 , 3.00
+ELSEIF EXP:1 < EXPLV:2
+	TIMES SOURCE:7 , 1.20
+	TIMES SOURCE:18 , 2.00
+ELSEIF EXP:1 < EXPLV:3
+	TIMES SOURCE:7 , 0.80
+	TIMES SOURCE:18 , 1.50
+ELSEIF EXP:1 < EXPLV:4
+	TIMES SOURCE:7 , 0.60
+ELSEIF EXP:1 < EXPLV:5
+	TIMES SOURCE:7 , 0.40
+	TIMES SOURCE:18 , 0.80
+ELSEIF EXP:1 >= EXPLV:5
+	TIMES SOURCE:7 , 0.20
+	TIMES SOURCE:18 , 0.50
+ENDIF
+
+;PALAM:润滑をみる
+IF PALAM:4 < PALAMLV:1
+	TIMES SOURCE:7 , 1.20
+	TIMES SOURCE:18 , 2.00
+ELSEIF PALAM:4 < PALAMLV:2
+	TIMES SOURCE:7 , 1.00
+	TIMES SOURCE:18 , 1.50
+ELSEIF PALAM:4 < PALAMLV:3
+	TIMES SOURCE:7 , 0.60
+ELSEIF PALAM:4 < PALAMLV:4
+	TIMES SOURCE:7 , 0.30
+	TIMES SOURCE:18 , 0.80
+ELSEIF PALAM:4 >= PALAMLV:4
+	TIMES SOURCE:7 , 0.20
+	TIMES SOURCE:18 , 0.40
+ENDIF
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;A经验
+EXP:1 += 2
+PRINTL Ａ经验＋２
+
+;蔷薇经验とか加算
+CALL COM_EXP(1)
+
+;依赖度ベクトル
+TFLAG:33 = 1
+
+CALL KOJO_MESSAGE_COM
+
+RETURN 1
+
+;-------------------------------------------------
+;装着継続の処理
+;-------------------------------------------------
+@EQUIP_COM159
+
+IF TEQUIP:52
+	PRINTL ＜尾巴肛插入中＞
+	CALL EQUIP_MESSAGE_COM159
+ENDIF
+
+LOSEBASE:0 += 30
+LOSEBASE:1 += 80
+
+SOURCE:2 += 125
+SOURCE:7 += 100
+SOURCE:13 += 25
+SOURCE:17 += 25
+SOURCE:18 += 40
+
+IF TALENT:232
+    SOURCE:23 = 60
+ELSEIF TALENT:233
+    SOURCE:23 = 40
+ELSE
+    SOURCE:23 = 50
+ENDIF
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 35
+
+;Aへの痛苦は先に処理しておく
+;EXP:Ａ经验をみる
+A = 100
+B = 40
+IF EXP:1 < EXPLV:1
+	TIMES A , 3.00
+	TIMES B , 3.00
+ELSEIF EXP:1 < EXPLV:2
+	TIMES A , 1.20
+	TIMES B , 2.00
+ELSEIF EXP:1 < EXPLV:3
+	TIMES A , 0.80
+	TIMES B , 1.50
+ELSEIF EXP:1 < EXPLV:4
+	TIMES A , 0.60
+ELSEIF EXP:1 < EXPLV:5
+	TIMES A , 0.40
+	TIMES B , 0.80
+ELSEIF EXP:1 >= EXPLV:5
+	TIMES A , 0.20
+	TIMES B , 0.50
+ENDIF
+
+;PALAM:润滑をみる
+IF PALAM:4 < PALAMLV:1
+	TIMES A , 1.20
+	TIMES B , 2.00
+ELSEIF PALAM:4 < PALAMLV:2
+	TIMES A , 1.00
+	TIMES B , 1.50
+ELSEIF PALAM:4 < PALAMLV:3
+	TIMES A , 0.60
+ELSEIF PALAM:4 < PALAMLV:4
+	TIMES A , 0.30
+	TIMES B , 0.80
+ELSEIF PALAM:4 >= PALAMLV:4
+	TIMES A , 0.20
+	TIMES B , 0.40
+ENDIF
+SOURCE:7 += A
+SOURCE:18 += B
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+EXP:1 += 1
+PRINTL Ａ经验＋１
+RETURN 1
+;--------------------------------------------------
+;装着時メッセージ
+;--------------------------------------------------
+@EQUIP_MESSAGE_COM159
+SIF FLAG:6 == 0
+	RETURN 0
+PRINTL 
+PRINTFORM %CALLNAME:TARGET%的肛穴被自己的尾巴蹂躏着。
+WAIT

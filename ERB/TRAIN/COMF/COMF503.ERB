@@ -1,0 +1,108 @@
+﻿;-------------------------------------------------
+;Gスポット刺激
+;爱抚系派生指令
+;-------------------------------------------------
+@COM503
+PRINTL Ｇ点刺激
+STR:0 = Ｇ点刺激
+SELECTCOM = 503
+
+
+;V经验を伴う指令のフラグ(处女膜再生对応)
+TFLAG:19 = 1
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 50
+LOSEBASE:1 += 100
+
+SOURCE:1 = 180
+SOURCE:7 = 20
+SOURCE:10 = 50
+SOURCE:13 = 80
+SOURCE:17 = 100
+SOURCE:18 = 100
+
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 100
+
+;处女だった場合は、痛苦のソースと反抗のソースを追加する
+IF TALENT:0 == 1
+	SOURCE:7 += 2000
+	SOURCE:18 += 3000
+ENDIF
+
+;再生处女だった場合は、痛苦のソースと反抗のソースを追加する
+IF TALENT:1 == 1
+	SOURCE:7 += 500
+	SOURCE:18 += 1000
+ENDIF
+
+;Vへの痛苦は先に処理しておく
+;EXP:Ｖ经验をみる（处女の反感は別途処理済みなので省略）
+IF EXP:0 < EXPLV:1
+	TIMES SOURCE:7 , 2.50
+ELSEIF EXP:0 < EXPLV:2
+	TIMES SOURCE:7 , 0.80
+	TIMES SOURCE:18 , 1.20
+ELSEIF EXP:0 < EXPLV:3
+	TIMES SOURCE:7 , 0.40
+ELSEIF EXP:0 < EXPLV:4
+	TIMES SOURCE:7 , 0.10
+ELSEIF EXP:0 < EXPLV:5
+	TIMES SOURCE:7 , 0.00
+ELSEIF EXP:0 >= EXPLV:5
+	TIMES SOURCE:7 , 0.00
+ENDIF
+
+;PALAM:润滑をみる
+IF PALAM:4 < PALAMLV:1
+	TIMES SOURCE:7 , 1.20
+	TIMES SOURCE:18 , 1.50
+ELSEIF PALAM:4 < PALAMLV:2
+	TIMES SOURCE:7 , 0.70
+	TIMES SOURCE:18 , 1.20
+ELSEIF PALAM:4 < PALAMLV:3
+	TIMES SOURCE:7 , 0.40
+ELSEIF PALAM:4 < PALAMLV:4
+	TIMES SOURCE:7 , 0.10
+ELSEIF PALAM:4 >= PALAMLV:4
+	TIMES SOURCE:7 , 0.10
+ENDIF
+
+
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;膣内に破瓜の血の汚れを付加
+SIF TALENT:0 == 1 || TALENT:1 == 1
+	STAIN:6 |= 64
+;奴隶の膣内⇔调教者の指の汚れが移动
+	STAIN:6 |= STAIN:PLAYER:1
+	STAIN:PLAYER:1 |= STAIN:6
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;V经验
+EXP:0 += 1
+PRINTL Ｖ经验＋１
+
+;蔷薇经验とか加算
+CALL COM_EXP(3)
+
+
+
+;依赖度ベクトル
+TFLAG:33 = 1
+
+
+RETURN 1
+

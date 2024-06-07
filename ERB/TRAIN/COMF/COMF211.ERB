@@ -1,0 +1,499 @@
+﻿;-------------------------------------------------
+;逆强奸
+;做爱系指令、レベル1
+;-------------------------------------------------
+@COM211
+
+PRINTL 逆强奸
+
+;-------------------------------------------------
+;実行判定処理
+;-------------------------------------------------
+;助手调教で同性同士の場合、恋慕陷落は百合属性OR同性倾向が低い&服从7以上無いと無理、ほかの陷落は服从が5以上と無理
+IF ASSIPLAY && ASSI > -1 && ((MALE(ASSI) && MALE(TARGET)) || (!MALE(ASSI) && !MALE(TARGET)))
+	IF	KANRAKU(TARGET) == 1 && ((MALE(TARGET) && ABL:PLAYER:同性倾向 < 3 ) || (!MALE(TARGET) && ABL:PLAYER:百合属性 < 3) || ABL:PLAYER:顺从 < 7)
+		PRINTL 
+		PRINTFORML %CALLNAME:ASSI%想让%CALLNAME%强奸自己，%CALLNAME:ASSI%拒绝了
+		IF MALE(TARGET) && ABL:PLAYER:同性倾向 < 3 && ABL:PLAYER:顺从 < 7
+			PRINTFORMW （※%CALLNAME:ASSI%的<同性倾向>和<顺从>不足）
+		ELSEIF !MALE(TARGET) && ABL:PLAYER:百合属性 < 3 && ABL:PLAYER:顺从 < 7
+			PRINTFORMW （※%CALLNAME:ASSI%的<百合属性>和<顺从>不足）
+		ELSEIF MALE(TARGET) && ABL:PLAYER:同性倾向 < 3
+			PRINTFORMW （※%CALLNAME:ASSI%的<同性倾向>不足）
+		ELSEIF !MALE(TARGET) && ABL:PLAYER:百合属性 < 3
+			PRINTFORMW （※%CALLNAME:ASSI%的<百合属性>不足）
+		ELSE
+			PRINTFORMW （※%CALLNAME:ASSI%的<顺从>不足）
+		ENDIF
+		RETURN 0
+	ENDIF
+	IF	KANRAKU(TARGET) == 1 && ABL:PLAYER:顺从 < 5
+		PRINTL 
+		PRINTFORML %CALLNAME:ASSI%想让%CALLNAME%强奸自己，%CALLNAME:ASSI%摇头拒绝了
+		PRINTFORMW （※%CALLNAME:ASSI%的<顺从>不足）
+		RETURN 0
+	ENDIF
+ENDIF
+;助手调教中の場合、V经验少ないとと無理
+IF ASSIPLAY && EXP:PLAYER:0 < 10
+	PRINTL 
+	PRINTFORML %CALLNAME:ASSI%想让%CALLNAME%强奸自己，%CALLNAME:ASSI%摇头说不行
+	PRINTFORMW （※%CALLNAME:ASSI%的<V经验>不足）
+	RETURN 0
+ENDIF
+
+;主人调教時のおまけ実行判定
+IF !ASSIPLAY 
+	IF TFLAG:58 >= 2
+	ELSEIF EXP:PLAYER:0 >= 10 && TFLAG:58 >= 1
+	ELSE
+		IF !TEQUIP:60
+		PRINTL 
+		PRINTFORML %CALLNAME%思考着逆推的可能性，但现在好像还做不到
+		PRINTFORMW （※必须先执行前置指令）
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+
+
+A = 0
+S = 0
+
+;すべての命令に共通の要素を考慮
+;(顺从が高いと命令に従いやすいなど)
+CALL COM_ORDER
+
+;ABL:欲望
+IF ABL:1
+	SIF S
+		PRINT  + 
+	A += ABL:1 * 2
+	PRINTS ABLNAME:1
+	PRINTV 'LV,ABL:1,'(,ABL:1 * 2,')
+	S = 1
+ENDIF
+
+IF MARK:1
+	SIF S
+		PRINT  + 
+	A += MARK:1 * 2
+	PRINTS MARKNAME:1
+	PRINTV 'LV,MARK:1,'(,MARK:1 * 2,')
+	S = 1
+ENDIF
+
+;PALAM:情欲
+IF PALAM:6 < PALAMLV:1
+	L = 0
+ELSEIF PALAM:6 < PALAMLV:2
+	L = 1
+ELSEIF PALAM:6 < PALAMLV:3
+	L = 2
+ELSEIF PALAM:6 < PALAMLV:4
+	L = 3
+ELSEIF PALAM:6 < PALAMLV:5
+	L = 4
+ELSE
+	L = 5
+ENDIF
+IF L
+	SIF S
+		PRINT  + 
+	A += L * 2
+	PRINTS PALAMNAME:6
+	PRINTV 'LV,L,'(,L * 2,')
+	S = 1
+ENDIF
+
+;接受快感
+IF TALENT:70
+	SIF S
+		PRINT  + 
+	A += 2
+	PRINTS TALENTNAME:70
+	PRINTV '(,2,')
+	S = 1
+ENDIF
+;否定快感（淫乱、娼妇で无效）
+IF TALENT:71 && (TALENT:4 == 0 && TALENT:7 == 0)
+	PRINT  - 
+	A -= 2
+	PRINTS TALENTNAME:71
+	PRINTV '(,2,')
+	S = 1
+ENDIF
+;淫乱
+IF TALENT:4 && ASSIPLAY == 0
+	SIF S
+		PRINT  + 
+	A += 5
+	PRINTS TALENTNAME:4
+	PRINTV '(,5,')
+	S = 5
+ENDIF
+;娼妇
+IF TALENT:7 && ASSIPLAY == 0
+	SIF S
+		PRINT  + 
+	A += 10
+	PRINTS TALENTNAME:7
+	PRINTV '(,10,')
+	S = 10
+ENDIF
+
+;调教者が处女
+IF EXP:PLAYER:0 == 0
+	PRINT  - 
+	A -= 15
+	PRINTFORM %NAME:PLAYER%是处女
+	PRINTV '(,15,')
+	S = 1
+ENDIF
+
+;调教者が贞操重视
+IF TALENT:PLAYER:30
+	PRINT  - 
+	A -= 10
+	PRINTFORM %NAME:PLAYER%是贞操重视
+	PRINTV '(,10,')
+	S = 1
+ENDIF
+
+;调教者が贞操淡漠
+IF TALENT:PLAYER:31
+	PRINT  + 
+	A += 5
+	PRINTFORM %NAME:PLAYER%是贞操淡漠
+	PRINTV '(,5,')
+	S = 1
+ENDIF
+
+;调教者のABL:技巧
+IF ABL:PLAYER:2
+	SIF S
+		PRINT  + 
+	A += ABL:PLAYER:2 * 4
+	PRINTFORM %NAME:PLAYER%的
+	PRINTS ABLNAME:2
+	PRINTV 'LV,ABL:PLAYER:2,'(,ABL:PLAYER:2 * 4,')
+	S = 1
+ENDIF
+
+;合計を表示(15以上で実行)
+PRINT  = 
+PRINTV A
+
+V = 15
+SIF A < V
+	PRINT  < 
+SIF A == V
+	PRINT  = 
+SIF A > V
+	PRINT  > 
+PRINT 实行值
+PRINTV V
+;実行不可口上/実行判定操作
+IF A < V
+	CALL KOJO_DENIAL
+	WAIT
+	RETURN 0
+ELSE
+	PRINTL
+ENDIF
+
+;-------------------------------------------------
+;実行決定
+;-------------------------------------------------
+STR:0 = 逆强奸
+
+
+
+;丝袜びりびりフラグ
+IF TEQUIP:1 == 5 || TEQUIP:1 == 6
+	TFLAG:55 = 1
+ENDIF
+
+;调教者が处女かつ逆正常位実行だった場合の喪失フラグ
+IF TALENT:PLAYER:0 == 1
+	TIMES SOURCE:13 , 20.00
+	TIMES SOURCE:14 , 3.00
+	TALENT:PLAYER:0 = 0
+	;调教对象が男性の童贞の場合
+	IF TALENT:160 && TALENT:140
+		PRINTFORML ＜%CALLNAME%失去了童贞，%CALLNAME:PLAYER%失去了处女＞
+		;异常经验追加
+		EXP:50 += 2
+		PRINTFORML %EXPNAME:50%＋２
+	ELSE
+		PRINTFORML ＜%CALLNAME:PLAYER%失去了处女＞
+		;异常经验追加
+		EXP:50 += 1
+		PRINTFORML %EXPNAME:50%＋１
+	ENDIF
+	;へたくしょん用面識判定の更新
+	CFLAG:TARGET:(799 + NO:PLAYER) |= 32
+	;处女喪失相手の記録
+	CSTR:PLAYER:20 = %NAME%
+	SIF PLAYER == MASTER
+		TFLAG:165 = 1
+;调教对象が男性の童贞の場合
+ELSEIF TALENT:160 && TALENT:140
+	;异常经验追加
+	EXP:50 += 1
+	PRINTFORML %EXPNAME:50%＋１
+ENDIF
+
+;调教对象が童贞だった場合の喪失フラグ
+IF TALENT:160
+	TFLAG:160 = 1
+ENDIF
+;主人による做爱ならフラグを立てる
+IF ASSIPLAY == 0
+	TFLAG:162 = 1
+ENDIF
+
+;-------------------------------------------------
+;射精槽チェック
+;-------------------------------------------------
+B = 1500
+
+;ABL:调教者の技巧をみる
+IF ABL:PLAYER:2 == 0
+	TIMES B , 1.00
+ELSEIF ABL:PLAYER:2 == 1
+	TIMES B , 1.20
+ELSEIF ABL:PLAYER:2 == 2
+	TIMES B , 1.40
+ELSEIF ABL:PLAYER:2 == 3
+	TIMES B , 1.60
+ELSEIF ABL:PLAYER:2 == 4
+	TIMES B , 1.80
+ELSE
+	TIMES B , 2.00
+ENDIF
+
+;ABL:顺从をみる
+IF ABL:0 == 0
+	TIMES B , 0.80
+ELSEIF ABL:0 == 1
+	TIMES B , 0.90
+ELSEIF ABL:0 == 2
+	TIMES B , 1.00
+ELSEIF ABL:0 == 3
+	TIMES B , 1.10
+ELSEIF ABL:0 == 4
+	TIMES B , 1.20
+ELSE
+	TIMES B , 1.30
+ENDIF
+
+;ABL:欲望をみる
+IF ABL:1 == 0
+	TIMES B , 1.00
+ELSEIF ABL:1 == 1
+	TIMES B , 1.10
+ELSEIF ABL:1 == 2
+	TIMES B , 1.20
+ELSEIF ABL:1 == 3
+	TIMES B , 1.30
+ELSEIF ABL:1 == 4
+	TIMES B , 1.40
+ELSE
+	TIMES B , 1.50
+ENDIF
+
+;助手のABL:V感覚をみる
+IF ABL:PLAYER:4 == 0
+	TIMES B , 0.50
+ELSEIF ABL:PLAYER:4 == 1
+	TIMES B , 0.80
+ELSEIF ABL:PLAYER:4 == 2
+	TIMES B , 1.00
+ELSEIF ABL:PLAYER:4 == 3
+	TIMES B , 1.20
+ELSEIF ABL:PLAYER:4 == 4
+	TIMES B , 1.50
+ELSE
+	TIMES B , 2.00
+ENDIF
+
+;助手のEXP:Ｖ经验をみる
+IF EXP:PLAYER:0 < EXPLV:1
+	TIMES B , 0.20
+ELSEIF EXP:PLAYER:0 < EXPLV:2
+	TIMES B , 0.50
+ELSEIF EXP:PLAYER:0 < EXPLV:3
+	TIMES B , 0.80
+ELSEIF EXP:PLAYER:0 < EXPLV:4
+	TIMES B , 1.00
+ELSEIF EXP:PLAYER:0 < EXPLV:5
+	TIMES B , 1.20
+ELSE
+	TIMES B , 1.40
+ENDIF
+
+;ABL:Ｃ感觉をみる
+IF ABL:PLAYER:3 == 0
+	TIMES B , 1.00
+ELSEIF ABL:PLAYER:3 == 1
+	TIMES B , 1.50
+ELSEIF ABL:PLAYER:3 == 2
+	TIMES B , 2.00
+ELSEIF ABL:PLAYER:3 == 3
+	TIMES B , 2.50
+ELSEIF ABL:PLAYER:3 == 4
+	TIMES B , 3.50
+ELSE
+	TIMES B , 5.00
+ENDIF
+
+
+
+
+IF TALENT:PLAYER:137 || TALENT:PLAYER:139 || TALENT:PLAYER:140
+	;再装填処理中は射精槽は20分の1に
+	SIF CFLAG:PLAYER:9 > 0
+		B /= 20
+	BASE:PLAYER:2 += B
+ELSE
+	;ABL:调教者の嗜虐快乐经验をみる
+	IF EXP:PLAYER:32 < EXPLV:1
+		TIMES B , 1.00
+	ELSEIF EXP:PLAYER:32 < EXPLV:2
+		TIMES B , 1.20
+	ELSEIF EXP:PLAYER:32 < EXPLV:3
+		TIMES B , 1.40
+	ELSEIF EXP:PLAYER:32 < EXPLV:4
+		TIMES B , 1.60
+	ELSEIF EXP:PLAYER:32 < EXPLV:5
+		TIMES B , 1.80
+	ELSE
+		TIMES B , 2.00
+	ENDIF
+	;B = B*2
+	BASE:PLAYER:2 += B
+ENDIF
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:1 += 40
+LOSEBASE:1 += 220
+
+SOURCE:0 = 400
+SOURCE:5 = 500
+SOURCE:14 = 1000
+SOURCE:17 = 500
+SOURCE:18 = 500
+
+;上のほうで計算した汚れデータ
+SOURCE:15 = Y*10 + 60
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 700
+	
+;贞操重视持ちで恋慕、相亲相爱持ち以外には常に反抗のソースを追加する（做爱系のみ）
+SIF TALENT:30 && (TALENT:3 == 0 && TALENT:6 == 0)
+	SOURCE:18 += 1000
+
+;中毒による中毒充足のソースは先に処理しておく
+;性成瘾を見る
+IF ABL:18 == 1
+	TIMES SOURCE:9 , 0.00
+ELSEIF ABL:18 == 2
+	TIMES SOURCE:9 , 0.30
+ELSEIF ABL:18 == 3
+	TIMES SOURCE:9 , 0.60
+ELSEIF ABL:18 == 4
+	TIMES SOURCE:9 , 0.90
+ELSEIF ABL:18 == 5
+	TIMES SOURCE:9 , 1.20
+ELSEIF ABL:18 == 6
+	TIMES SOURCE:9 , 1.50
+ELSEIF ABL:18 == 7
+	TIMES SOURCE:9 , 1.80
+ELSEIF ABL:18 == 8
+	TIMES SOURCE:9 , 2.30
+ELSEIF ABL:18 == 9
+	TIMES SOURCE:9 , 3.00
+ELSEIF ABL:18 >= 10
+	TIMES SOURCE:9 , 5.00
+ENDIF
+
+;尺寸傲人持ちで、调教者が小人体型だった場合、逸脱ソース追加
+IF TALENT:PLAYER:142 && TALENT:114
+	SOURCE:17 += 500
+ENDIF
+
+
+;-------------------------------------------------
+;射精チェック
+;-------------------------------------------------
+CALL SAMEN_CHECK
+
+;射精時の処理
+IF E >= 1
+	;射精先タイプの设定
+	TFLAG:703 = 9
+	;射精先選択の可・不可
+	TFLAG:704 = 0
+	;汎用的な処理はこの関数で行う
+	;（射精槽の再計算や射精经验の上昇と共通部分の表示）
+	CALL SAMEN_SHOOT
+ENDIF
+
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;奴隶のＰ⇔调教者の膣内の汚れが移动
+STAIN:2 |= STAIN:PLAYER:6
+STAIN:PLAYER:6 |= STAIN:2
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;调教者のV经验
+EXP:PLAYER:0 += 1
+
+;调教者が小人体型で奴隶が尺寸傲人だった場合
+IF TALENT:PLAYER:142 && TALENT:117
+	IF EXP:PLAYER:52 == 0
+		EXP:50 += 1
+		PRINTL 异常经验＋１
+		EXP:PLAYER:50 += 1
+		PRINTFORML %CALLNAME:PLAYER%的异常经验＋１
+	ENDIF
+	EXP:PLAYER:52 += 1
+	PRINTFORML %CALLNAME:PLAYER%的Ｖ扩张经验＋１
+ENDIF
+
+
+
+;性交经验
+EXP:4 += 1
+EXP:PLAYER:4 += 1
+PRINTS EXPNAME:4
+PRINTL +1
+
+;蔷薇经验とか加算
+CALL COM_EXP(4)
+
+;依赖度ベクトル
+TFLAG:33 = 1
+
+;依赖度補正値(主人かつ恋慕、淫乱、服从で1。相亲相爱、娼妇、隶属で2）
+IF (TALENT:3 || TALENT:4 || TALENT:5) && ASSIPLAY == 0
+	TFLAG:30 += 1
+ELSEIF (TALENT:6 || TALENT:7 || TALENT:8) && ASSIPLAY == 0
+	TFLAG:30 += 2
+ENDIF
+
+;侍奉快乐フラグ
+TFLAG:100 = 1
+
+RETURN 1
+

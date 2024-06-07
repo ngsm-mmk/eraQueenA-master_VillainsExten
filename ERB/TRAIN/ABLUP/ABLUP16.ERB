@@ -1,0 +1,362 @@
+﻿;精液成瘾の可否
+@ISABLUP16
+;恋慕、相亲相爱、淫乱、娼妇はMAXLV10
+IF ABL:16 >= 10
+	RETURN 0
+ELSEIF ABL:16 >= 5 && TALENT:3 == 0 && TALENT:6 == 0 && TALENT:4 == 0 && TALENT:7 == 0
+	RETURN 0
+ENDIF
+
+CALL DECIDE_ABLUP16
+
+IF Z == 0
+	RETURN 0
+ELSE
+	RETURN 1
+ENDIF
+
+
+;精液成瘾
+@ABLUP16
+DRAWLINE
+;恋慕、相亲相爱、淫乱、娼妇はMAXLV10
+IF ABL:16 >= 10
+	PRINTW 已达MAX
+	RETURN 0
+ELSEIF ABL:16 >= 5 && TALENT:3 == 0 && TALENT:6 == 0 && TALENT:4 == 0 && TALENT:7 == 0
+	PRINTW 已达MAX
+	RETURN 0
+ENDIF
+
+CALL DECIDE_ABLUP16
+
+;ＬＶ２から３に上げるときは异常经验必要（素質：[污臭钝感][容易上瘾]なら無視できる）
+IF ABL:16 == 2 && TALENT:61 == 0 && TALENT:72 == 0
+	PRINTS EXPNAME:50
+	PRINTL 取得后才能继续升级
+;ＬＶ３から４に上げるときは异常经验2以上必要（素質：[污臭钝感][容易上瘾]なら無視できる）
+ELSEIF ABL:16 == 3 && TALENT:61 == 0 && TALENT:72 == 0
+	PRINTS EXPNAME:50
+	PRINTL 2以上才能继续升级
+;ＬＶ４から５に上げるときは异常经验3以上必要（素質：[污臭钝感][容易上瘾]なら無視できる）
+ELSEIF ABL:16 == 4 && TALENT:61 == 0 && TALENT:72 == 0
+	PRINTS EXPNAME:50
+	PRINTL 3以上才能继续升级
+;ＬＶ８から９に上げるときは异常经验7以上必要（素質：[污臭钝感][容易上瘾]なら無視できる）
+ELSEIF ABL:16 == 8 && TALENT:61 == 0 && TALENT:72 == 0
+	PRINTS EXPNAME:50
+	PRINTL 7以上才能继续升级
+ENDIF
+
+IF (ABL:16 + 1) > 5 && (TALENT:淫乱 || TALENT:娼妇)
+ELSE
+	;侍奉精神が必要
+	PRINTS ABLNAME:7
+	PRINT LV
+	PRINTV ABL:16 + 1
+	PRINTL 以上才能继续升级
+ENDIF
+
+PRINT [0] - 
+PRINTS PALAMNAME:6
+PRINT 之珠×
+PRINTV A
+PRINT 、
+PRINTS PALAMNAME:7
+PRINT 之珠×
+PRINTV B
+PRINT 、
+PRINTS EXPNAME:20
+PRINTV C
+PRINT 以上
+PRINT ……
+
+IF I == 0
+	PRINT ＯＫ
+ELSE
+	SIF I & 1
+		PRINT 珠子不足 
+	SIF I & 2
+		PRINT 经验不足 
+	SIF I & 4
+		PRINT 能力不足 
+ENDIF
+PRINTL 
+
+
+PRINT [1] - 
+PRINTS PALAMNAME:6
+PRINT 之珠×
+PRINTV A*3
+PRINT 、
+PRINTS PALAMNAME:7
+PRINT 之珠×
+PRINTV B*3
+PRINT 、
+PRINTS EXPNAME:20
+PRINTV C/2
+PRINT 以上
+PRINT ……
+
+IF J == 0
+	PRINT ＯＫ
+ELSE
+	SIF J & 1
+		PRINT 珠子不足 
+	SIF J & 2
+		PRINT 经验不足 
+	SIF J & 4
+		PRINT 能力不足 
+ENDIF
+PRINTL 
+
+;精饮绝顶经验でＬＶを上げる
+IF EXP:24 >= 1
+	PRINTFORM [2] - %PALAMNAME:6%之珠×{D}、%PALAMNAME:7%之珠×{E}、%EXPNAME:20%{C}、%EXPNAME:24%{G}以上……
+	IF K == 0
+		PRINT ＯＫ
+	ELSE
+		SIF K & 1
+			PRINT 珠子不足
+		SIF K & 2
+			PRINT 经验不足
+		SIF K & 4
+			PRINT 能力不足
+	ENDIF
+	PRINTL 
+ENDIF
+
+PRINTL [100] - 放弃
+
+INPUT
+IF (RESULT < 0 || RESULT > 2) && RESULT != 100
+	RESTART
+ELSEIF I != 0 && RESULT == 0
+	PRINTL 尚未满足条件
+	RESTART
+ELSEIF J != 0 && RESULT == 1
+	PRINTL 尚未满足条件
+	RESTART
+ELSEIF K != 0 && RESULT == 2
+	PRINTL 尚未满足条件
+	RESTART
+ELSEIF RESULT == 100
+	RETURN 0
+ENDIF
+
+ABL:16 += 1
+
+IF RESULT == 0
+	JUEL:6 -= A
+	JUEL:7 -= B
+ELSEIF RESULT == 1
+	JUEL:6 -= A*3
+	JUEL:7 -= B*3
+ELSEIF RESULT == 2
+	JUEL:6 -= D
+	JUEL:7 -= E
+ENDIF
+
+PRINTS ABLNAME:16
+PRINT 的等级升到了
+PRINTV ABL:16
+PRINTW ！
+
+;精液成瘾LVUP判定
+@DECIDE_ABLUP16
+;条件別にＯＫかダメかを記録する
+;精饮绝顶经验の処理用にKを追加
+I = 0
+J = 0
+K = 0
+;能力アップ可能なら1にする
+Z = 0
+
+;精饮绝顶经验を利用してのレベルアップに必要なカウントを以下に设定
+	;D = 情欲之珠
+	;E = 屈服之珠
+	;精液经验は従来通りのCを参照
+	;G = 精饮绝顶经验の回数
+
+IF ABL:16 == 0
+	A = 3000
+	B = 10000
+	C = 10
+ELSEIF ABL:16 == 1
+	A = 8000
+	B = 25000
+	C = 25
+ELSEIF ABL:16 == 2
+	A = 15000
+	B = 50000
+	C = 40
+ELSEIF ABL:16 == 3
+	A = 30000
+	B = 100000
+	C = 80
+	D = 10000
+	E = 25000
+	G = 50
+ELSEIF ABL:16 == 4
+	A = 55000
+	B = 300000
+	C = 200
+	D = 30000
+	E = 75000
+	G = 100
+ELSEIF ABL:16 == 5
+	A = 60000
+	B = 350000
+	C = 250
+	D = 35000
+	E = 85000
+	G = 120
+ELSEIF ABL:16 == 6
+	A = 65000
+	B = 400000
+	C = 300
+	D = 40000
+	E = 100000
+	G = 150
+ELSEIF ABL:16 == 7
+	A = 70000
+	B = 450000
+	C = 350
+	D = 45000
+	E = 120000
+	G = 180
+ELSEIF ABL:16 == 8
+	A = 75000
+	B = 500000
+	C = 400
+	D = 50000
+	E = 120000
+	G = 200
+ELSEIF ABL:16 == 9
+	A = 90000
+	B = 650000
+	C = 500
+	D = 65000
+	E = 150000
+	G = 250
+ENDIF
+
+;难以越过的底线
+IF TALENT:27 && (TALENT:3 == 0 && TALENT:4 == 0 && TALENT:5 == 0 && TALENT:6 == 0 && TALENT:7 == 0 && TALENT:8 == 0)
+	TIMES A , 2.00
+	TIMES B , 2.00
+	TIMES C , 2.00
+ENDIF
+;メシマズ
+IF TALENT:44
+	TIMES A , 0.90
+	TIMES B , 0.90
+ENDIF
+;擅长料理
+IF TALENT:59
+	TIMES A , 1.10
+	TIMES B , 1.10
+ENDIF
+;容易上瘾
+IF TALENT:72
+	TIMES A , 0.50
+	TIMES B , 0.50
+	TIMES C , 0.50
+	TIMES D , 0.50
+ENDIF
+
+;ＬＶ２から３に上げるときは异常经验必要（素質：[污臭钝感][容易上瘾]なら無視できる）
+IF ABL:16 == 2 && TALENT:61 == 0 && TALENT:72 == 0
+	IF EXP:50 == 0
+		;异常经验が不足
+		I |= 2
+		J |= 2
+		K |= 2
+	ENDIF
+;ＬＶ３から４に上げるときは异常经验2以上必要（素質：[污臭钝感][容易上瘾]なら無視できる）
+ELSEIF ABL:16 == 3 && TALENT:61 == 0 && TALENT:72 == 0
+	IF EXP:50 < 2
+		;异常经验が不足
+		I |= 2
+		J |= 2
+		K |= 2
+	ENDIF
+;ＬＶ４から５に上げるときは异常经验3以上必要（素質：[污臭钝感][容易上瘾]なら無視できる）
+ELSEIF ABL:16 == 4 && TALENT:61 == 0 && TALENT:72 == 0
+	IF EXP:50 < 3
+		;异常经验が不足
+		I |= 2
+		J |= 2
+		K |= 2
+	ENDIF
+;ＬＶ８から９に上げるときは异常经验7以上必要（素質：[污臭钝感][容易上瘾]なら無視できる）
+ELSEIF ABL:16 == 8 && TALENT:61 == 0 && TALENT:72 == 0
+	IF EXP:50 < 7
+		;异常经验が不足
+		I |= 2
+		J |= 2
+		K |= 2
+	ENDIF
+ENDIF
+
+IF (ABL:16 + 1) > 5 && (TALENT:淫乱 || TALENT:娼妇)
+ELSE
+	;侍奉精神が必要
+	IF ABL:7 < ABL:16 + 1
+		I |= 4
+		J |= 4
+		K |= 4
+	ENDIF
+ENDIF
+
+;情欲之珠で上げる
+SIF JUEL:6 < A
+	I |= 1
+;屈服之珠で上げる
+SIF JUEL:7 < B
+	I |= 1
+;精液经验が必要
+SIF EXP:20 < C
+	I |= 2
+
+IF I == 0
+	Z = 1
+ENDIF
+
+
+;情欲之珠で上げる
+SIF JUEL:6 < A*3
+	J |= 1
+;屈服之珠で上げる
+SIF JUEL:7 < B*3
+	J |= 1
+;精液经验が必要
+SIF EXP:20 < C/2
+	J |= 2
+
+IF J == 0
+	Z = 1
+ENDIF
+
+;精饮绝顶经验でLVを上げる場合
+;情欲之珠で上げる
+SIF JUEL:6 < D
+	K |= 1
+;屈服之珠で上げる
+SIF JUEL:7 < E
+	K |= 1
+;精液经验が必要
+SIF EXP:20 < C
+	K |= 2
+;精饮绝顶经验が必要
+SIF EXP:24 < G
+	K |= 2
+SIF EXP:24 == 0
+	K |= 2
+
+IF K == 0
+	Z = 1
+ENDIF
+
+
+

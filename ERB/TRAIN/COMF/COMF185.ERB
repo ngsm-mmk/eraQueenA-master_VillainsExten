@@ -1,0 +1,570 @@
+﻿;-------------------------------------------------
+;侵犯助手
+;特殊指令
+;-------------------------------------------------
+@COM185
+;男性のときは肛插入、女人の時は選択制(插入個所判定フラグTFLAG:705使用)
+IF TALENT:ASSI:140
+	TFLAG:705 = 1
+ELSE
+	PRINTL [0] 侵犯小穴
+	PRINTL [1] 侵犯肛门
+	$INPUT_LOOP
+	INPUT
+	IF RESULT == 0
+		;插入個所が違う場合挿れっぱ无フラグを消す
+		SIF TFLAG:60 && TFLAG:705 == 1
+			TFLAG:60 = 0
+		TFLAG:705 = 0
+	ELSEIF RESULT == 1
+		;插入個所が違う場合挿れっぱ无フラグを消す
+		SIF TFLAG:60 && TFLAG:705 == 0
+			TFLAG:60 = 0
+		TFLAG:705 = 1
+	ELSE
+		GOTO INPUT_LOOP
+	ENDIF
+ENDIF
+
+PRINTL 侵犯助手
+
+;-------------------------------------------------
+;実行判定処理
+;-------------------------------------------------
+A = 0
+S = 0
+
+;すべての命令に共通の要素を考慮
+;(顺从が高いと命令に従いやすいなど)
+CALL COM_ORDER
+
+;ABL:欲望
+IF ABL:1
+	SIF S
+		PRINT  + 
+	A += ABL:1 * 2
+	PRINTS ABLNAME:1
+	PRINTV 'LV,ABL:1,'(,ABL:1 * 2,')
+	S = 1
+ENDIF
+
+IF MARK:1
+	SIF S
+		PRINT  + 
+	A += MARK:1 * 2
+	PRINTS MARKNAME:1
+	PRINTV 'LV,MARK:1,'(,MARK:1 * 2,')
+	S = 1
+ENDIF
+
+;PALAM:情欲
+IF PALAM:6 < PALAMLV:1
+	L = 0
+ELSEIF PALAM:6 < PALAMLV:2
+	L = 1
+ELSEIF PALAM:6 < PALAMLV:3
+	L = 2
+ELSEIF PALAM:6 < PALAMLV:4
+	L = 3
+ELSEIF PALAM:6 < PALAMLV:5
+	L = 4
+ELSE
+	L = 5
+ENDIF
+IF L
+	SIF S
+		PRINT  + 
+	A += L * 2
+	PRINTS PALAMNAME:6
+	PRINTV 'LV,L,'(,L * 2,')
+	S = 1
+ENDIF
+
+;助手のABL:露出癖
+IF ABL:ASSI:8
+	SIF S
+		PRINT  + 
+	A += ABL:ASSI:8 * 2
+	PRINT 助手的露出癖
+	PRINTV 'LV,ABL:ASSI:8,'(,ABL:ASSI:8 * 2,')
+	S = 1
+ENDIF
+
+;助手が恋慕
+IF TALENT:ASSI:3 && ASSIPLAY == 0
+	SIF S
+		PRINT  + 
+	A += 10
+	PRINT 助手是恋慕
+	PRINTV '(,10,')
+	S = 1
+ENDIF
+
+;助手が相亲相爱
+IF TALENT:ASSI:6 && ASSIPLAY == 0
+	SIF S
+		PRINT  + 
+	A += 25
+	PRINT 助手是相亲相爱
+	PRINTV '(,25,')
+	S = 1
+ENDIF
+
+;肛插入の場合は后庭处子、ヴァギナ插入の場合は处女
+IF TALENT:ASSI:161 && TFLAG:705
+	PRINT  - 
+	A -= 5
+	PRINT 助手是后庭处子
+	PRINTV '(,5,')
+	S = 1
+ELSEIF (TALENT:ASSI:0 || TALENT:ASSI:1) && TFLAG:705 == 0
+	PRINT  - 
+	A -= 15
+	PRINT 助手是处女
+	PRINTV '(,15,')
+	S = 1
+ENDIF
+
+;合計を表示(40以上で実行)
+PRINT  = 
+PRINTV A
+
+V = 40
+SIF A < V
+	PRINT  < 
+SIF A == V
+	PRINT  = 
+SIF A > V
+	PRINT  > 
+PRINT 实行值
+PRINTV V
+
+WAIT
+
+;実行できない
+SIF A < V
+	RETURN 0
+
+
+;-------------------------------------------------
+;実行決定
+;-------------------------------------------------
+STR:0 = 侵犯助手
+
+
+;调教者が童贞だった場合の喪失フラグ
+IF TALENT:PLAYER:160
+	TFLAG:160 = 2
+ENDIF
+
+;助手が后庭处子かつ男だった場合の喪失
+IF TALENT:ASSI:161 && TALENT:ASSI:140
+	PRINTFORMW %CALLNAME:ASSI%失去了后庭处子
+	TALENT:ASSI:161 = 0
+	;へたくしょん用面識判定の更新
+	CFLAG:MASTER:(799 + NO:ASSI) |= 64
+	;后庭处子喪失相手の記録
+	CSTR:ASSI:22 = %NAME:MASTER%
+ENDIF
+;-------------------------------------------------
+;射精槽チェック(主人)
+;-------------------------------------------------
+B = 1500
+
+;调教者のABL:技巧をみる
+IF ABL:PLAYER:2 == 0
+	TIMES B , 1.00
+ELSEIF ABL:PLAYER:2 == 1
+	TIMES B , 1.20
+ELSEIF ABL:PLAYER:2 == 2
+	TIMES B , 1.40
+ELSEIF ABL:PLAYER:2 == 3
+	TIMES B , 1.60
+ELSEIF ABL:PLAYER:2 == 4
+	TIMES B , 1.80
+ELSE
+	TIMES B , 2.00
+ENDIF
+
+;助手のABL:顺从をみる
+IF ABL:ASSI:0 == 0
+	TIMES B , 0.80
+ELSEIF ABL:ASSI:0 == 1
+	TIMES B , 0.90
+ELSEIF ABL:ASSI:0 == 2
+	TIMES B , 1.00
+ELSEIF ABL:ASSI:0 == 3
+	TIMES B , 1.10
+ELSEIF ABL:ASSI:0 == 4
+	TIMES B , 1.20
+ELSE
+	TIMES B , 1.30
+ENDIF
+
+;助手のABL:欲望をみる
+IF ABL:ASSI:1 == 0
+	TIMES B , 1.00
+ELSEIF ABL:ASSI:1 == 1
+	TIMES B , 1.10
+ELSEIF ABL:ASSI:1 == 2
+	TIMES B , 1.20
+ELSEIF ABL:ASSI:1 == 3
+	TIMES B , 1.30
+ELSEIF ABL:ASSI:1 == 4
+	TIMES B , 1.40
+ELSE
+	TIMES B , 1.50
+ENDIF
+
+;助手のPALAM:润滑をみる
+IF PALAM:ASSI:4 < PALAMLV:1
+	TIMES B , 0.60
+ELSEIF PALAM:ASSI:4 < PALAMLV:2
+	TIMES B , 0.80
+ELSEIF PALAM:ASSI:4 < PALAMLV:3
+	TIMES B , 1.00
+ELSEIF PALAM:ASSI:4 < PALAMLV:4
+	TIMES B , 1.20
+ELSEIF PALAM:ASSI:4 >= PALAMLV:4
+	TIMES B , 1.40
+ENDIF
+
+;プ雷ヤーのABL:Ｃ感觉をみる
+IF ABL:PLAYER:3 == 0
+	TIMES B , 1.00
+ELSEIF ABL:PLAYER:3 == 1
+	TIMES B , 1.50
+ELSEIF ABL:PLAYER:3 == 2
+	TIMES B , 2.00
+ELSEIF ABL:PLAYER:3 == 3
+	TIMES B , 2.50
+ELSEIF ABL:PLAYER:3 == 4
+	TIMES B , 3.50
+ELSE
+	TIMES B , 5.00
+ENDIF
+
+;EXP:Ｖ经验をみる
+;处女だと増える
+SIF EXP:ASSI:0 < EXPLV:1 && TFLAG:705 == 0
+	TIMES B , 1.50
+;EXP:Ａ经验をみる
+;后庭处子だと増える
+SIF EXP:ASSI:1 < EXPLV:1 && TFLAG:705
+	TIMES B , 1.50
+
+
+
+
+IF TALENT:PLAYER:137 || TALENT:PLAYER:139 || TALENT:PLAYER:140
+	;再装填処理中は射精槽は20分の1に
+	SIF CFLAG:PLAYER:9 > 0
+		B /= 20
+	BASE:PLAYER:2 += B
+ELSE
+	B = B/6
+	BASE:PLAYER:2 += B
+ENDIF
+;-------------------------------------------------
+;射精槽チェック（助手）
+;-------------------------------------------------
+B = 2000
+
+;ABL:技巧をみる
+IF ABL:PLAYER:2 == 0
+	TIMES B , 1.00
+ELSEIF ABL:PLAYER:2 == 1
+	TIMES B , 1.20
+ELSEIF ABL:PLAYER:2 == 2
+	TIMES B , 1.40
+ELSEIF ABL:PLAYER:2 == 3
+	TIMES B , 1.60
+ELSEIF ABL:PLAYER:2 == 4
+	TIMES B , 1.80
+ELSE
+	TIMES B , 2.00
+ENDIF
+
+;ABL:欲望をみる
+IF ABL:PLAYER:1 == 0
+	TIMES B , 1.00
+ELSEIF ABL:PLAYER:1 == 1
+	TIMES B , 1.10
+ELSEIF ABL:PLAYER:1 == 2
+	TIMES B , 1.20
+ELSEIF ABL:PLAYER:1 == 3
+	TIMES B , 1.30
+ELSEIF ABL:PLAYER:1 == 4
+	TIMES B , 1.40
+ELSE
+	TIMES B , 1.50
+ENDIF
+
+;助手のABL:VorA感覚をみる
+IF TFLAG:705
+	IF ABL:ASSI:5 == 0
+		TIMES B , 0.50
+	ELSEIF ABL:ASSI:5 == 1
+		TIMES B , 0.80
+	ELSEIF ABL:ASSI:5 == 2
+		TIMES B , 1.00
+	ELSEIF ABL:ASSI:5 == 3
+		TIMES B , 1.20
+	ELSEIF ABL:ASSI:5 == 4
+		TIMES B , 1.50
+	ELSE
+		TIMES B , 2.00
+	ENDIF
+ELSE
+	IF ABL:ASSI:4 == 0
+		TIMES B , 0.50
+	ELSEIF ABL:ASSI:4 == 1
+		TIMES B , 0.80
+	ELSEIF ABL:ASSI:4 == 2
+		TIMES B , 1.00
+	ELSEIF ABL:ASSI:4 == 3
+		TIMES B , 1.20
+	ELSEIF ABL:ASSI:4 == 4
+		TIMES B , 1.50
+	ELSE
+		TIMES B , 2.00
+	ENDIF
+ENDIF
+
+;助手のEXP:ＶorA经验をみる
+IF TFLAG:705
+	IF EXP:ASSI:0 < EXPLV:1
+		TIMES B , 0.20
+	ELSEIF EXP:ASSI:0 < EXPLV:2
+		TIMES B , 0.50
+	ELSEIF EXP:ASSI:0 < EXPLV:3
+		TIMES B , 0.80
+	ELSEIF EXP:ASSI:0 < EXPLV:4
+		TIMES B , 1.00
+	ELSEIF EXP:ASSI:0 < EXPLV:5
+		TIMES B , 1.20
+	ELSE
+		TIMES B , 1.40
+	ENDIF
+ELSE
+	IF EXP:ASSI:0 < EXPLV:1
+		TIMES B , 0.20
+	ELSEIF EXP:ASSI:0 < EXPLV:2
+		TIMES B , 0.50
+	ELSEIF EXP:ASSI:0 < EXPLV:3
+		TIMES B , 0.80
+	ELSEIF EXP:ASSI:0 < EXPLV:4
+		TIMES B , 1.00
+	ELSEIF EXP:ASSI:0 < EXPLV:5
+		TIMES B , 1.20
+	ELSE
+		TIMES B , 1.40
+	ENDIF
+ENDIF
+
+
+
+
+IF TALENT:ASSI:137 || TALENT:ASSI:139 || TALENT:ASSI:140
+	;再装填処理中は射精槽は20分の1に
+	SIF CFLAG:ASSI:9 > 0
+		B /= 20
+	SIF CFLAG:ASSI:9 > 0
+	BASE:ASSI:2 += B
+ELSE
+	B = B/6
+	BASE:PLAYER:2 += B
+ENDIF
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 0
+LOSEBASE:1 += 250
+
+SOURCE:4 = 200
+SOURCE:11 = 100
+SOURCE:14 = 1500
+SOURCE:17 = 700
+SOURCE:18 = 700
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 700
+
+;助手が处女喪失をした場合、屈服と逸脱を増加
+IF TALENT:ASSI:0 == 1
+	TIMES SOURCE:17 , 20.00
+	TIMES SOURCE:14 , 3.00
+ENDIF
+
+;助手と奴隶の相性によって、全体のソースが変化
+T = NO:TARGET
+A = NO:ASSI
+SOURCE:4 *= RELATION:A
+SOURCE:11 *= RELATION:A
+SOURCE:14 *= RELATION:A
+SOURCE:16 *= RELATION:A
+SOURCE:17 *= RELATION:A
+SOURCE:18 *= RELATION:A
+SOURCE:4 /= 100
+SOURCE:11 /= 100
+SOURCE:14 /= 100
+SOURCE:16 /= 100
+SOURCE:17 /= 100
+SOURCE:18 /= 100
+
+;-------------------------------------------------
+;射精チェック（主人）
+;-------------------------------------------------
+CALL SAMEN_CHECK
+
+;肛插入の場合
+IF TFLAG:705
+	IF E >= 1
+		;射精先タイプの设定
+		TFLAG:703 = 2
+		;射精先選択の可・不可
+		TFLAG:704 = 0
+		;汎用的な処理はこの関数で行う
+		;（射精槽の再計算や射精经验の上昇と共通部分の表示）
+		CALL SAMEN_SHOOT
+	ENDIF
+;ヴァギナ插入の場合
+ELSE
+	IF E >= 1
+		;射精先タイプの设定
+		TFLAG:703 = 1
+		;射精先選択の可・不可
+		TFLAG:704 = 0
+		;汎用的な処理はこの関数で行う
+		;（射精槽の再計算や射精经验の上昇と共通部分の表示）
+		CALL SAMEN_SHOOT
+	ENDIF
+ENDIF
+;侵犯助手で射精したフラグ
+SIF E == 2
+	TFLAG:7 = 2
+SIF E == 1
+	TFLAG:7 = 1
+
+;-------------------------------------------------
+;射精チェック（助手）
+;-------------------------------------------------
+CALL SAMEN_CHECK_A
+
+;射精時の処理
+IF E >= 1
+	;射精先タイプの设定
+	TFLAG:703 = 6
+	;射精先選択の可・不可
+	TFLAG:704 = 0
+	;汎用的な処理はこの関数で行う
+	;（射精槽の再計算や射精经验の上昇と共通部分の表示）
+	DEBUGPRINTFORML 射精确认（助手） TFLAG:703=={TFLAG:703}
+	CALL SAMEN_SHOOT
+ENDIF
+
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;射精に関係なく行われる処理はここから
+IF TFLAG:705
+	;奴隶のＰ⇔助手のＡの汚れが移动
+	STAIN:2 |= STAIN:ASSI:4
+	STAIN:ASSI:4 |= STAIN:2
+ELSE
+	;奴隶のＰ⇔调教者のＶの汚れが移动
+	STAIN:2 |= STAIN:ASSI:3
+	STAIN:ASSI:3 |= STAIN:2
+ENDIF
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;助手が处女の場合、助手と奴隶に异常经验付加。ただし一度きり
+A = NO:ASSI
+IF TALENT:ASSI:0 == 1 && TFLAG:705 == 0
+	PRINTL ＜助手失去处女＞
+	TALENT:ASSI:0 = 0
+	EXP:ASSI:50 += 1
+	IF (CFLAG:99 & 2) == 0
+		IF RELATION:A > 100
+			EXP:50 += 2
+			PRINTFORML %EXPNAME:50%＋２
+		ELSE
+			EXP:50 += 1
+			PRINTFORML %EXPNAME:50%＋１
+		ENDIF
+		CFLAG:99 |= 2
+	ENDIF
+	;へたくしょん用面識判定の更新
+	CFLAG:MASTER:(799 + NO:ASSI) |= 32
+	;处女喪失相手の記録
+	CSTR:ASSI:20 = %NAME:MASTER%
+ENDIF
+
+;助手のＶorA经验
+IF TFLAG:705
+	EXP:ASSI:1 += 1
+ELSE
+	EXP:ASSI:0 += 1
+ENDIF
+
+;助手が小人体型で调教者が尺寸傲人だった場合
+IF TALENT:ASSI:142 && TALENT:PLAYER:117
+	IF TFLAG:705
+		IF EXP:ASSI:53 == 0
+			EXP:ASSI:50 += 1
+			PRINTFORML %CALLNAME:ASSI%的异常经验＋１
+		ENDIF
+		EXP:ASSI:53 += 1
+		PRINTFORML %CALLNAME:ASSI%的Ａ扩张经验＋１
+	ELSE
+		IF EXP:ASSI:52 == 0
+			EXP:ASSI:50 += 1
+			PRINTFORML %CALLNAME:ASSI%的异常经验＋１
+		ENDIF
+		EXP:ASSI:52 += 1
+		PRINTFORML %CALLNAME:ASSI%的Ｖ扩张经验＋１
+	ENDIF
+ENDIF
+
+;性交经验
+EXP:ASSI:4 += 1
+EXP:MASTER:4 += 1
+PRINTS EXPNAME:4
+PRINTL +1
+
+;百合经验
+A = 10
+B = NO:MASTER + 1199
+IF (TALENT:ASSI:137 == 0 && TALENT:ASSI:140 == 0) && (TALENT:MASTER:137 == 0 && TALENT:MASTER:140 == 0)
+	PRINTFORML %EXPNAME:40%+{A}
+	EXP:ASSI:40 += A
+ELSEIF (TALENT:MASTER:137 || TALENT:MASTER:140) && (TALENT:ASSI:137 || TALENT:ASSI:140)
+	PRINTFORML %EXPNAME:41%+{A}
+	EXP:ASSI:41 += A
+ENDIF
+;调教者を記録
+CFLAG:ASSI:B += A
+
+;依赖度ベクトル
+TFLAG:33 = 5
+
+T = NO:TARGET
+A = NO:ASSI
+;依赖度補正値(助手との相性100↑かつ淫乱で1、娼妇で2）
+IF TALENT:4 && RELATION:A > 100
+	TFLAG:30 += 1
+ELSEIF TALENT:7 && RELATION:A > 100
+	TFLAG:30 += 2
+ENDIF
+
+
+RETURN 1
+

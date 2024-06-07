@@ -1,0 +1,634 @@
+﻿;オプション设定処理
+;FLAG:1502 手機與電腦模式的切換
+;FLAG:1503 角色立繪開關
+;FLAG:1504 一次性事件开关（1为？？？君商店开场白）
+;FLAG:1505 口上扩展
+;FLAG:1506 自定角色
+;FLAG:1507 問候語
+;FLAG:1510 孕期
+@OPTION
+CALL KAIGYO
+DRAWLINE
+PRINTL 请选择设定项目
+DRAWLINE
+PRINTL [  0] - 文本设定
+SIF PENIS(MASTER) || (ASSI > 0 && PENIS(ASSI))
+	PRINTL [  1] - 射精位置设定
+PRINTL [  2] - 初期着衣设定
+;----------------------------------
+;称号機能拡張
+IF FLAG:2 & 2
+	PRINT [  3] - 称号设定：
+	PRINT 〈当前为
+	SIF (FLAG:2 & 4) == 0
+		PRINT 不
+	PRINTL 显示〉
+ENDIF	
+;----------------------------------
+PRINTL [  4] - 视点／一人称／主角姓名的再设定
+;PRINTL [  5] - 状态显示设定
+PRINT [  5] - 主菜单模式切换：
+IF FLAG:1502
+	PRINTL 〈当前为适合手机〉
+ELSE
+	PRINTL 〈当前为适合电脑〉
+ENDIF
+PRINT [  6] - 孕期设置（已怀孕则更改无效）：
+IF FLAG:1510 == 2
+	PRINTL 〈极短：10几天〉
+ELSEIF FLAG:1510 == 1
+	PRINTL 〈减半：30几天〉
+ELSE
+	PRINTL 〈预设：60几天〉
+ENDIF
+PRINT [  7] - 怀孕探测器：
+IF FLAG:34
+	PRINTL ON
+ELSE
+	PRINTL OFF
+ENDIF
+PRINT [  8] - 爱心贴士：
+IF FLAG:97 == 1
+	PRINTL 〈原始的爱心贴士〉
+ELSEIF FLAG:97 == 2
+	PRINTL 〈超级可爱的Y酱的爱心贴士〉
+ELSE
+	PRINTL 〈关闭爱心贴士〉
+ENDIF
+PRINT [  9] - 角色立绘：
+IF FLAG:1503
+	PRINTL OFF
+ELSE
+	PRINTL ON
+ENDIF
+PRINT [ 10] - 口上扩展：
+IF FLAG:1505
+	PRINTL OFF
+ELSE
+	PRINTL ON
+ENDIF
+PRINT [ 11] - 自订角色161～170号：
+IF FLAG:1506
+	PRINTL ON
+ELSE
+	PRINTL OFF
+ENDIF
+PRINT [ 12] - 称号功能：
+IF FLAG:2 & 2
+	PRINTL ON
+ELSE
+	PRINTL OFF
+ENDIF
+PRINT [ 13] - 着衣PLAY扩展：
+IF FLAG:2 & 8
+	PRINTL ON
+ELSE
+	PRINTL OFF
+ENDIF
+PRINT [ 14] - 主画面问候语功能：
+IF FLAG:1507
+	PRINTL ON
+ELSE
+	PRINTL OFF
+ENDIF
+PRINT [ 15] - 调教触发嫉妒与关系恶化：
+IF 嫉妒開關 == 1
+	PRINTL 不会触发
+ELSEIF 嫉妒開關 == 2
+	PRINTL 触发机率为默认的一半
+ELSE
+	PRINTL 触发（默认）
+ENDIF
+PRINTL [ 16] - 指令过滤
+PRINT [ 17] - 逆推可能：
+IF 逆推開關 == 0
+	PRINTL 不会触发（默认）
+ELSEIF 逆推開關 == 1
+	PRINTL 容易触发
+ELSE
+	PRINTL 较难触发
+ENDIF
+DRAWLINE
+PRINTL [100] - 返回
+$INPUT_LOOP
+INPUT
+IF RESULT == 0
+	CALL TEXT_SETTING
+ELSEIF RESULT == 1 && (PENIS(MASTER) || (ASSI > 0 && PENIS(ASSI)))
+	CALL SAMENPLACE_SETTING
+ELSEIF RESULT == 2
+	CALL CLOTHES_SETTING
+;----------------------------------
+;称号機能拡張
+ELSEIF RESULT == 3 && (FLAG:2 & 2)
+	CALL CHARATITLE_SETTING
+;----------------------------------
+ELSEIF RESULT == 4
+	CALL SITEN_SETTING
+;ELSEIF RESULT == 5
+;	CALL STATUS_SETTING
+ELSEIF RESULT == 5
+	IF FLAG:1502
+		FLAG:1502 = 0
+	ELSE
+		FLAG:1502 = 1
+	ENDIF
+	RESTART
+ELSEIF RESULT == 6
+	IF FLAG:1510 == 1
+		FLAG:1510 = 2
+	ELSEIF FLAG:1510 == 2
+		FLAG:1510 = 0
+	ELSEIF FLAG:1510 == 0
+		FLAG:1510 = 1
+	ENDIF
+	RESTART
+ELSEIF RESULT == 7
+	IF FLAG:34
+		FLAG:34 = 0
+	ELSE
+		FLAG:34 = 1
+	ENDIF
+	RESTART
+ELSEIF RESULT == 8
+	IF FLAG:97 == 1
+		FLAG:97 = 2
+		CALL TIPS_1
+	ELSEIF FLAG:97 == 2
+		FLAG:97 = 0	
+	ELSEIF FLAG:97 == 0
+		FLAG:97 = 1
+		CALL TIPS
+	ENDIF
+	RESTART
+ELSEIF RESULT == 9
+	IF FLAG:1503
+		FLAG:1503 = 0
+	ELSE
+		FLAG:1503 = 1
+	ENDIF
+	RESTART
+ELSEIF RESULT == 10
+	IF FLAG:1505
+		FLAG:1505 = 0
+	ELSE
+		FLAG:1505 = 1
+	ENDIF
+	RESTART
+ELSEIF RESULT == 11
+	IF FLAG:1506
+		FLAG:1506 = 0
+	ELSE
+		FLAG:1506 = 1
+	ENDIF
+	RESTART
+ELSEIF RESULT == 12
+;	CALL ADD_ON_SETTING
+IF FLAG:2 & 2
+	 FLAG:2 -= 2
+ELSE
+	FLAG:2 |= 2
+ENDIF
+ELSEIF RESULT == 13
+IF FLAG:2 & 8
+	 FLAG:2 -= 8
+ELSE
+	 FLAG:2 |= 8
+ENDIF
+ELSEIF RESULT == 14
+	IF FLAG:1507
+		FLAG:1507 = 0
+	ELSE
+		FLAG:1507 = 1
+	ENDIF
+	RESTART
+ELSEIF RESULT == 15
+	IF 嫉妒開關 == 1
+		嫉妒開關 = 2
+	ELSEIF 嫉妒開關 == 2
+		嫉妒開關 = 0
+	ELSE
+		嫉妒開關 = 1
+	ENDIF
+	RESTART
+ELSEIF RESULT == 16
+	CALL CONFIG_COM_FILTER
+	RESTART
+ELSEIF RESULT == 17
+	IF 逆推開關 == 1
+		逆推開關 = 2
+	ELSEIF 逆推開關 == 2
+		逆推開關 = 0
+	ELSE
+		逆推開關 = 1
+	ENDIF
+	RESTART
+ELSEIF RESULT == 100
+	RETURN 0
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+RESTART
+;テ接吻ト関連
+@TEXT_SETTING
+CALL KAIGYO
+PRINTL 请设定文本
+PRINT 现在的设定：
+IF FLAG:6 == 1 && FLAG:7 == 2
+	PRINT 【口上文本（时常显示）＋情景文本】
+ELSEIF FLAG:6 == 1 && FLAG:7 == 1
+	PRINT 【口上文本（只显示一次）＋情景文本】
+ELSEIF FLAG:6 == 1 && FLAG:7 == -1
+	PRINT 【只有情景文本】
+ELSEIF FLAG:6 == 0 && FLAG:7 == -1
+	PRINT 【不显示文本】
+ENDIF
+IF FLAG:10 == 1
+	PRINTL 【通用喘息ＯＮ】
+ELSE
+	PRINTL 【通用喘息ＯＦＦ】
+ENDIF
+PRINTL 　
+SIF FLAG:6 != 1 || FLAG:7 != 2
+	PRINTL [  0] - 口上文本（时常显示）＋情景文本
+SIF FLAG:6 != 1 || FLAG:7 != 1
+	PRINTL [  1] - 口上文本（只显示一次）＋情景文本
+SIF FLAG:6 != 1 || FLAG:7 > 0
+	PRINTL [  2] - 只有情景文本
+SIF FLAG:6 != 0 || FLAG:7 > 0
+	PRINTL [  3] - 不显示文本
+SIF FLAG:10 != 1
+	PRINTL [  4] - 通用喘息ＯＮ
+SIF FLAG:10 != 0
+	PRINTL [  5] - 通用喘息ＯＦＦ
+PRINTL [100] - 返回
+$INPUT_LOOP
+INPUT
+IF RESULT == 100
+	RETURN 0
+ELSEIF RESULT == 0
+	PRINTW 【口上文本（时常显示）＋情景文本】设定好了
+	FLAG:6 = 1
+	FLAG:7 = 2
+ELSEIF RESULT == 1
+	PRINTW 【口上文本（只显示一次）＋情景文本】设定好了
+	FLAG:6 = 1
+	FLAG:7 = 1
+ELSEIF RESULT == 2
+	PRINTW 【只有情景文本】设定好了
+	FLAG:6 = 1
+	FLAG:7 = -1
+ELSEIF RESULT == 3
+	PRINTW 【不显示文本】设定好了
+	FLAG:6 = 0
+	FLAG:7 = -1
+ELSEIF RESULT == 4
+	PRINTW 【通用喘息】已设定为显示
+	FLAG:10 = 1
+ELSEIF RESULT == 5
+	PRINTW 【通用喘息】已设定为不显示
+	FLAG:10 = 0
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+
+;射精位置设定
+@SAMENPLACE_SETTING
+CALL KAIGYO
+PRINTL 请选择射精时自动瞄准的射精位置
+PRINT 现在自动瞄准的射精位置是：
+CALL CHECK_SAMEN_PLACE
+PRINTL 
+PRINTL [0] 「发」
+PRINTL [1] 「脸」
+PRINTL [2] 「胸」
+PRINTL [3] 「腹」
+PRINTL [4] 「腋」
+PRINTL [5] 「腿」
+PRINTL [6] 「股间」
+PRINTL [7] 「屁股」
+PRINTL [8] 「直接射精」or「射在避孕套里」
+PRINTL [9] 「每次都选择」
+$INPUT_LOOP
+INPUT
+IF RESULT == 0
+	PRINTW ―固定在头发上射精―
+	FLAG:99 = 0
+ELSEIF RESULT == 1
+	PRINTW ―固定在脸上射精―
+	FLAG:99 = 1
+ELSEIF RESULT == 2
+	PRINTW ―固定在胸部射精―
+	FLAG:99 = 2
+ELSEIF RESULT == 3
+	PRINTW ―固定在腹部射精―
+	FLAG:99 = 3
+ELSEIF RESULT == 4
+	PRINTW ―固定在腋下射精―
+	FLAG:99 = 4
+ELSEIF RESULT == 5
+	PRINTW ―固定在大腿射精―
+	FLAG:99 = 5
+ELSEIF RESULT == 6
+	PRINTW ―固定在股间射精―
+	FLAG:99 = 6
+ELSEIF RESULT == 7
+	PRINTW ―固定在屁股射精―
+	FLAG:99 = 7
+ELSEIF RESULT == 8
+	PRINTW ―每次都直接射精―
+	FLAG:99 = 8
+ELSEIF RESULT == 9
+	PRINTW ―每次射精都选择位置―
+	FLAG:99 = 9
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+
+
+@CHECK_SAMEN_PLACE
+IF FLAG:99 == 0
+	PRINT 发
+ELSEIF FLAG:99 == 1
+	PRINT 脸
+ELSEIF FLAG:99 == 2
+	PRINT 胸
+ELSEIF FLAG:99 == 3
+	PRINT 腹
+ELSEIF FLAG:99 == 4
+	PRINT 腋
+ELSEIF FLAG:99 == 5
+	PRINT 腿
+ELSEIF FLAG:99 == 6
+	PRINT 股间
+ELSEIF FLAG:99 == 7
+	PRINT 屁股
+ELSEIF FLAG:99 == 8
+	PRINT 直接射精
+ELSEIF FLAG:99 == 9
+	PRINT 每次都选择
+ENDIF
+
+
+;初期着衣设定
+@CLOTHES_SETTING
+CALL KAIGYO
+Z = 0
+PRINTL 请设定初期的衣着状态
+PRINT 现在的设定：【
+SELECTCASE FLAG:1
+	CASE 0
+		PRINT 全穿
+	CASE 1
+		PRINT 半脱
+	CASE 2
+		PRINT 只穿内衣
+	CASE 3
+		PRINT 全裸
+	CASE 4
+		PRINT 上回结束时的状态
+	CASE 5
+		PRINT 半裸(上)
+	CASE 6
+		PRINT 半裸(下)
+ENDSELECT
+PRINTL 】
+PRINTL 　
+PRINTL [0] - 全穿
+PRINTL [1] - 半脱
+PRINTL [2] - 只穿内衣
+PRINTL [3] - 全裸
+PRINTL [4] - 半裸(上)
+PRINTL [5] - 半裸(下)
+PRINTL [9] - 上回结束时
+$INPUT_LOOP
+INPUT
+IF RESULT == 0
+	PRINTW 初期衣着设定为全穿
+	FLAG:1 = 0
+ELSEIF RESULT == 1
+	PRINTW 初期衣着设定为半脱
+	FLAG:1 = 1
+ELSEIF RESULT == 2
+	PRINTW 初期衣着设定为只穿内衣
+	FLAG:1 = 2
+ELSEIF RESULT == 3
+	PRINTW 初期衣着设定为全裸
+	FLAG:1 = 3
+ELSEIF RESULT == 4
+	PRINTW 初期衣着设定为半裸(上)
+	FLAG:1 = 5
+ELSEIF RESULT == 5
+	PRINTW 初期衣着设定为半裸(下)
+	FLAG:1 = 6
+ELSEIF RESULT == 9
+	PRINTW 初期衣着设定为上回结束时的状态
+	FLAG:1 = 4
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+
+@STATUS_SETTING
+CALL KAIGYO
+PRINTL 请设定状态的显示方式
+PRINT 现在的设定：
+IF (FLAG:26 & 3) == 0
+	PRINTL 【状态/日程显示】
+ELSEIF (FLAG:26 & 3) == 1
+	PRINTL 【日程显示】
+ELSEIF (FLAG:26 & 3) == 2
+	PRINTL 【状态显示】
+ELSEIF (FLAG:26 & 3) == 3
+	PRINTL 【不显示】
+ENDIF
+PRINTL 　
+PRINTL [  0] - 状态/日程显示
+PRINTL [  1] - 日程显示
+PRINTL [  2] - 状态显示
+PRINTL [  3] - 不显示
+PRINTL [100] - 返回
+$INPUT_LOOP
+INPUT
+IF RESULT == 100
+	RETURN 0
+ELSEIF RESULT == 0
+	PRINTL 【状态/日程显示】设定好了
+	SIF FLAG:26 & 1
+		FLAG:26 -= 1
+	SIF FLAG:26 & 2
+		FLAG:26 -= 2
+ELSEIF RESULT == 1
+	PRINTL 【日程显示】设定好了
+	FLAG:26 |= 1
+	SIF FLAG:26 & 2
+		FLAG:26 -= 2
+ELSEIF RESULT == 2
+	PRINTL 【状态显示】设定好了
+	FLAG:26 |= 2
+	SIF FLAG:26 & 1
+		FLAG:26 -= 1
+ELSEIF RESULT == 3
+	PRINTL 【不显示】设定好了
+		FLAG:26 |= 3
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+
+
+@SITEN_SETTING
+CALL KAIGYO
+$INPUT_ZRGXG
+DRAWLINE
+PRINTL 请设定主角的视角、第一人称、姓名和简介
+DRAWLINE
+PRINT 现在的视角设定：
+IF FLAG:3 == 0
+	PRINTL 【３人称视角】
+ELSEIF FLAG:3 == 1
+	PRINTL 【１人称视角】
+ENDIF
+PRINTFORML 现在的第一人称：【%CSTR:MASTER:0%】
+PRINTFORML 现在的姓名：【%NAME:MASTER%】
+PRINTFORML 现在的称谓：【%CALLNAME:MASTER%】
+PRINTL 现在的简介：
+PRINTFORML  %CSTR:MASTER:91%
+PRINTFORML  %CSTR:MASTER:92%
+PRINTFORML  %CSTR:MASTER:93%
+PRINTFORML  %CSTR:MASTER:94%
+PRINTFORML  %CSTR:MASTER:95%
+PRINTFORML  %CSTR:MASTER:96%
+DRAWLINE
+PRINTL
+PRINTL [  0] - 视角变更
+PRINTL [  1] - 输入第一人称
+PRINTL [  2] - 输入姓名和称谓
+PRINTL [  3] - 更改简介
+PRINTL [100] - 返回
+$INPUT_LOOP_SITEN
+INPUT
+PRINTL 
+IF RESULT == 100
+	RETURN 0
+ELSEIF RESULT == 0
+	IF FLAG:3 == 0
+		FLAG:3 = 1
+		PRINTW 【１人称视角】设定好了
+	ELSEIF FLAG:3 == 1
+		FLAG:3 = 0
+		PRINTW 【3人称视角】设定好了
+	ENDIF
+	RESTART
+ELSEIF RESULT == 1
+	PRINTL ★★请输入主角的第一人称★★
+	INPUTS
+	CSTR:MASTER:0 = %RESULTS%
+	PRINTFORML 主角的一人称被设定为【%CSTR:MASTER:0%】
+	RESTART
+ELSEIF RESULT == 2
+	PRINTL ★★请输入主角的姓氏★★
+	INPUTS
+	CSTR:MASTER:4 = %RESULTS%
+	PRINTFORML 主角的姓氏被设定为【%CSTR:MASTER:4%】
+	PRINTL 
+	PRINTL ★★请输入主角的名字★★
+	INPUTS
+	CSTR:MASTER:5 = %RESULTS%
+	PRINTFORML 主角的名字被设定为【%CSTR:MASTER:5%】
+	PRINTL
+	PRINTL ★★请选择主角姓名的表现方式★★
+	PRINTL
+    PRINTFORML [0] %CSTR:MASTER:4%%CSTR:MASTER:5%（东洋系）
+    PRINTFORML [1] %CSTR:MASTER:5%・%CSTR:MASTER:4%（西洋系）
+    INPUT
+    SIF RESULT == 0
+        NAME:MASTER = %CSTR:MASTER:4%%CSTR:MASTER:5%
+    SIF RESULT == 1
+        NAME:MASTER = %CSTR:MASTER:5%・%CSTR:MASTER:4%
+    PRINTFORML 主角姓名的表现方式被设定为【%NAME:MASTER%】
+	PRINTL 
+	PRINTL 主角在文中该如何称呼呢？
+	PRINTL
+	PRINTFORML 　[0] %CSTR:MASTER:4%
+	PRINTFORML 　[1] %CSTR:MASTER:5%
+	PRINTFORML 　[2] %NAME:MASTER%
+	INPUT
+	SIF RESULT == 0
+		CALLNAME:MASTER = %CSTR:MASTER:4%
+	SIF RESULT == 1
+	    CALLNAME:MASTER = %CSTR:MASTER:5%
+	SIF RESULT == 2
+	    CALLNAME:MASTER = %NAME:MASTER%
+	PRINTFORMW 主角在文中被称为【%CALLNAME:MASTER%】
+	RESTART
+ELSEIF RESULT == 3
+    $INPUT_NYH
+	PRINTL 要更改哪一行？
+	PRINTL
+	PRINTFORML [0] %CSTR:MASTER:91%
+    PRINTFORML [1] %CSTR:MASTER:92%
+    PRINTFORML [2] %CSTR:MASTER:93%
+    PRINTFORML [3] %CSTR:MASTER:94%
+    PRINTFORML [4] %CSTR:MASTER:95%
+    PRINTFORML [5] %CSTR:MASTER:96%
+    PRINTL
+    PRINTL [6] 还原初始简介
+    PRINTL [7] 返回
+    $INPUT_JIANJIE
+    INPUT
+    IF RESULT == 0
+        PRINTL 请输入更改内容
+        INPUTS
+        CSTR:MASTER:91 = %RESULTS%
+        GOTO INPUT_NYH
+    ELSEIF RESULT == 1
+        PRINTL 请输入更改内容
+        INPUTS
+        CSTR:MASTER:92 = %RESULTS%
+        GOTO INPUT_NYH
+    ELSEIF RESULT == 2
+        PRINTL 请输入更改内容
+        INPUTS
+        CSTR:MASTER:93 = %RESULTS%
+        GOTO INPUT_NYH
+    ELSEIF RESULT == 3
+        PRINTL 请输入更改内容
+        INPUTS
+        CSTR:MASTER:94 = %RESULTS%
+        GOTO INPUT_NYH
+    ELSEIF RESULT == 4
+        PRINTL 请输入更改内容
+        INPUTS
+        CSTR:MASTER:95 = %RESULTS%
+        GOTO INPUT_NYH
+    ELSEIF RESULT == 5
+        PRINTL 请输入更改内容
+        INPUTS
+        CSTR:MASTER:96 = %RESULTS%
+        GOTO INPUT_NYH
+    ELSEIF RESULT == 6
+        LOADGLOBAL
+        IF !GLOBAL:0
+            CSTR:MASTER:91 =
+            CSTR:MASTER:92 = 主人公。
+            CSTR:MASTER:93 =
+            CSTR:MASTER:94 = 看起来很平凡，但拥有远比常人要高的欲望。
+            CSTR:MASTER:95 = 迫于生计成为了调教师。
+            CSTR:MASTER:96 =
+        ELSEIF GLOBAL:0 == 1
+            CSTR:MASTER:91 =
+            CSTR:MASTER:92 = 神（大概）。
+            CSTR:MASTER:93 =
+            CSTR:MASTER:94 = 曾为了救在意的人类无数次重置世界耗尽神力。
+            CSTR:MASTER:95 = 至于神的真实目的…目前尚无人知。
+            CSTR:MASTER:96 =
+        ENDIF
+        GOTO INPUT_NYH
+    ELSEIF RESULT == 7
+        GOTO INPUT_ZRGXG
+    ELSE
+        GOTO INPUT_JIANJIE
+    ENDIF
+ELSE
+	GOTO INPUT_LOOP_SITEN
+ENDIF
+

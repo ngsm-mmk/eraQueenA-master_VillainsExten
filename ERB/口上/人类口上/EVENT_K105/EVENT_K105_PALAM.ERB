@@ -1,0 +1,768 @@
+﻿;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG関係
+;パラメータ変化などをトリガーにした口上　CFLAG 221～260を使用
+;-------------------------------------------------
+;口上を書けた部分の「CFLAG:2XX = 1」や「CFLAG:2XX = 2」のコメントアウトは解除してください。
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG_A
+;调教者の射精をトリガーにした口上
+;-------------------------------------------------
+@KOJO_MESSAGE_PALAMCNG_A_K5
+;助手が调教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;口塞球着用か触手口辱中、崩溃中は地の文を表示して口上をスキップする
+IF (TEQUIP:20 && SELECTCOM != 107) || (TEQUIP:36 && SELECTCOM != 168) || TALENT:崩溃
+	CALL PALAM_MESSAGE_A
+	RETURN 0
+ENDIF
+
+;-------------------------------------------------
+;调教者の射精時のテ接吻ト
+;-------------------------------------------------
+;-------------------------------------------------
+;射精箇所变更時のテ接吻ト　有効時はここで関数終了
+;-------------------------------------------------
+IF CFLAG:106
+	CALL PALAM_MESSAGE_A
+	;髪
+	IF CFLAG:106 == 1
+		;屈服刻印Lv3
+		IF MARK:2 == 3 && (CFLAG:221 < 2 || FLAG:7 == 2)
+			;PRINTFORMW 
+			;CFLAG:221 = 2
+		;それ以外
+		ELSEIF CFLAG:221 < 1 || FLAG:7 == 2
+			;PRINTFORMW 
+			;CFLAG:221 = 1
+		ENDIF
+	;顔
+	ELSEIF CFLAG:106 == 2
+		;屈服刻印Lv3
+		IF MARK:2 == 3 && (CFLAG:222 < 2 || FLAG:7 == 2)
+			;PRINTFORMW 
+			;CFLAG:222 = 2
+		;それ以外
+		ELSEIF CFLAG:222 < 1 || FLAG:7 == 2
+			;PRINTFORMW 
+			;CFLAG:222 = 1
+		ENDIF
+	;胸
+	ELSEIF CFLAG:106 == 3
+		;屈服刻印Lv3
+		IF MARK:2 == 3 && (CFLAG:223 < 2 || FLAG:7 == 2)
+			;PRINTFORMW 
+			;CFLAG:223 = 2
+		;それ以外
+		ELSEIF CFLAG:223 < 1 || FLAG:7 == 2
+			;PRINTFORMW 
+			;CFLAG:223 = 1
+		ENDIF
+	;腹
+	ELSEIF CFLAG:106 == 4
+		;屈服刻印Lv3
+		IF MARK:2 == 3 && (CFLAG:224 < 2 || FLAG:7 == 2)
+			;PRINTFORMW 
+			;CFLAG:224 = 2
+		;それ以外
+		ELSEIF CFLAG:224 < 1 || FLAG:7 == 2
+			;PRINTFORMW 
+			;CFLAG:224 = 1
+		ENDIF
+	;腋
+	ELSEIF CFLAG:106 == 5
+		;屈服刻印Lv3
+		IF MARK:2 == 3 && (CFLAG:225 < 2 || FLAG:7 == 2)
+			;PRINTFORMW 
+			;CFLAG:225 = 2
+		;それ以外
+		ELSEIF CFLAG:225 < 1 || FLAG:7 == 2
+			;PRINTFORMW 
+			;CFLAG:225 = 1
+		ENDIF
+	;太腿
+	ELSEIF CFLAG:106 == 6
+		;屈服刻印Lv3
+		IF MARK:2 == 3 && (CFLAG:226 < 2 || FLAG:7 == 2)
+			;PRINTFORMW 
+			;CFLAG:226 = 2
+		;それ以外
+		ELSEIF CFLAG:226 < 1 || FLAG:7 == 2
+			;PRINTFORMW 
+			;CFLAG:226 = 1
+		ENDIF
+	;割れ目
+	ELSEIF CFLAG:106 == 7
+		;屈服刻印Lv3
+		IF MARK:2 == 3 && (CFLAG:227 < 2 || FLAG:7 == 2)
+			;PRINTFORMW 
+			;CFLAG:227 = 2
+		;それ以外
+		ELSEIF CFLAG:227 < 1 || FLAG:7 == 2
+			;PRINTFORMW 
+			;CFLAG:227 = 1
+		ENDIF
+	;尻
+	ELSEIF CFLAG:106 == 8
+		;屈服刻印Lv3
+		IF MARK:2 == 3 && (CFLAG:228 < 2 || FLAG:7 == 2)
+			;PRINTFORMW 
+			;CFLAG:228 = 2
+		;それ以外
+		ELSEIF CFLAG:228 < 1 || FLAG:7 == 2
+			;PRINTFORMW 
+			;CFLAG:228 = 1
+		ENDIF
+	;足
+	ELSEIF CFLAG:106 == 10
+		;屈服刻印Lv3
+		IF MARK:2 == 3 && (CFLAG:228 < 2 || FLAG:7 == 2)
+			;PRINTFORMW 
+			;CFLAG:228 = 2
+		;それ以外
+		ELSEIF CFLAG:228 < 1 || FLAG:7 == 2
+			;PRINTFORMW 
+			;CFLAG:228 = 1
+		ENDIF
+	;ゴム
+	ELSEIF CFLAG:106 == 9
+		;做爱で射精かつ、后庭以外を実行時
+		IF TFLAG:2 > 0 && SELECTCOM != 62 && SELECTCOM != 63 && SELECTCOM != 67 && SELECTCOM != 70 && SELECTCOM != 71 && SELECTCOM != 73 && SELECTCOM != 75 && SELECTCOM != 77
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && (CFLAG:229 < 2 || FLAG:7 == 2)
+				;PRINTFORMW 
+				;CFLAG:229 = 2
+			;それ以外
+			ELSEIF CFLAG:229 < 1 || FLAG:7 == 2
+				;PRINTFORMW 
+				;CFLAG:229 = 1
+			ENDIF
+		ELSE
+			;屈服刻印Lv3
+			IF MARK:2 == 3 && (CFLAG:230 < 2 || FLAG:7 == 2)
+				;PRINTFORMW 
+				;CFLAG:230 = 2
+			;それ以外
+			ELSEIF CFLAG:230 < 1 || FLAG:7 == 2
+				;PRINTFORMW 
+				;CFLAG:230 = 1
+			ENDIF
+		ENDIF
+	ENDIF
+	RETURN 0
+ENDIF
+
+;-------------------------------------------------
+;手、口以外で射精
+;对応指令は接吻、素股、足交侍奉、肛強制侍奉、Ｗ素股
+;-------------------------------------------------
+IF TFLAG:9 == 1
+	CALL PALAM_MESSAGE_A
+	;屈服刻印Lv3
+	IF MARK:2 == 3 && (CFLAG:231 < 2 || FLAG:7 == 2)
+		;PRINTFORMW 
+		;CFLAG:231 = 2
+	;それ以外
+	ELSEIF CFLAG:231 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:231 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;侵犯助手で射精
+;-------------------------------------------------
+IF TFLAG:7 > 0
+	CALL PALAM_MESSAGE_A
+	;屈服刻印Lv3
+	IF MARK:2 == 3 && (CFLAG:232 < 2 || FLAG:7 == 2)
+		;PRINTFORMW 
+		;CFLAG:232 = 2
+	;それ以外
+	ELSEIF CFLAG:232 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:232 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;口で射精
+;-------------------------------------------------
+IF TFLAG:0 > 0
+	CALL PALAM_MESSAGE_A
+	;屈服刻印Lv3
+	IF MARK:2 == 3 && (CFLAG:233 < 2 || FLAG:7 == 2)
+		;PRINTFORMW 
+		;CFLAG:233 = 2
+	;それ以外
+	ELSEIF CFLAG:233 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:233 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;手で射精
+;-------------------------------------------------
+IF TFLAG:1 > 0
+	CALL PALAM_MESSAGE_A
+	;屈服刻印Lv3
+	IF MARK:2 == 3 && (CFLAG:234 < 2 || FLAG:7 == 2)
+		;PRINTFORMW 
+		;CFLAG:234 = 2
+	;それ以外
+	ELSEIF CFLAG:234 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:234 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;胸で射精
+;-------------------------------------------------
+IF TFLAG:34 > 0
+	CALL PALAM_MESSAGE_A
+	;屈服刻印Lv3
+	IF MARK:2 == 3 && (CFLAG:235 < 2 || FLAG:7 == 2)
+		;PRINTFORMW 
+		;CFLAG:235 = 2
+	;それ以外
+	ELSEIF CFLAG:235 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:235 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;足で射精
+;-------------------------------------------------
+IF TFLAG:16 > 0
+	CALL PALAM_MESSAGE_A
+	;屈服刻印Lv3
+	IF MARK:2 == 3 && (CFLAG:236 < 2 || FLAG:7 == 2)
+		;PRINTFORMW 
+		;CFLAG:236 = 2
+	;それ以外
+	ELSEIF CFLAG:236 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:236 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;做爱で射精
+;-------------------------------------------------
+IF TFLAG:2 > 0
+	CALL PALAM_MESSAGE_A
+	;肛做爱系
+	IF SELECTCOM == 62 || SELECTCOM == 63 || SELECTCOM == 67 || SELECTCOM == 70 || SELECTCOM == 71 || SELECTCOM == 73 || SELECTCOM == 75 || SELECTCOM == 77
+		;屈服刻印Lv3
+		IF MARK:2 == 3 && (CFLAG:237 < 2 || FLAG:7 == 2)
+			;PRINTFORMW 
+			;CFLAG:237 = 2
+		;それ以外
+		ELSEIF CFLAG:237 < 1 || FLAG:7 == 2
+			;PRINTFORMW 
+			;CFLAG:237 = 1
+		ENDIF
+	;做爱系
+	ELSE
+		;屈服刻印Lv3
+		IF MARK:2 == 3 && (CFLAG:238 < 2 || FLAG:7 == 2)
+			;PRINTFORMW 
+			;CFLAG:238 = 2
+		;それ以外
+		ELSEIF CFLAG:238 < 1 || FLAG:7 == 2
+			;PRINTFORMW 
+			;CFLAG:238 = 1
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;逆做爱で射精させた
+;-------------------------------------------------
+IF SEXPLAY(TARGET) >= 3 && TFLAG:10 > 0
+	CALL PALAM_MESSAGE_A
+	;屈服刻印Lv3
+	IF MARK:2 == 3 && (CFLAG:239 < 2 || FLAG:7 == 2)
+		;PRINTFORMW 
+		;CFLAG:239 = 2
+	;それ以外
+	ELSEIF CFLAG:239 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:239 = 1
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;逆做爱で射精させた　非施虐狂限定の台詞　汎用版
+;-------------------------------------------------
+IF SEXPLAY(TARGET) >= 3 && TFLAG:10 > 0 && !TALENT:施虐狂 && ABL:受虐属性 > ABL:嗜虐属性 && !RAND:3
+	;屈服刻印Lv3
+	IF MARK:2 == 3 && (CFLAG:239 < 2 || FLAG:7 == 2)
+		;淫乱陷落
+		IF KANRAKU(TARGET) == 2
+			PRINTFORML 「哈啊…满满地中出了…好棒…」
+		;恋慕、服从限定、性保守か贞操重视持ち　肛プ雷ではない
+		ELSEIF SEXPLAY(TARGET) == 3 && (KANRAKU(TARGET) == 1 || KANRAKU(TARGET) == 3) && (TALENT:性保守 || TALENT:贞操重视) && !TALENT:PLAYER:怀孕
+			IF !RAND:2
+				PRINTFORM 「哈、啊…射了好多在里面…
+			ELSE
+				PRINTFORM 「哈、啊…全部射在里面了…
+			ENDIF
+			IF !RAND:2
+				PRINTFORML 不要紧吗…」
+			ELSE
+				PRINTFORML 没关系吗…」
+			ENDIF
+		ENDIF
+		CFLAG:239 = 2
+	;それ以外
+	ELSEIF CFLAG:239 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:239 = 1
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;调教者の空射精 CFLAG:255
+;-------------------------------------------------
+;调教者空射精
+IF TFLAG:164
+	CALL PALAM_MESSAGE_A
+	;屈服刻印Lv3
+	;IF MARK:2 == 3 && (CFLAG:255 < 2 || FLAG:7 == 2)
+	;	
+	;	CFLAG:255 = 2
+	;それ以外
+	;ELSEIF CFLAG:255 < 1 || FLAG:7 == 2
+	;	
+	;	CFLAG:255 = 1
+	;ENDIF
+	;TFLAG:164 = 0
+ENDIF
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG_E
+;触手の射精をトリガーにした口上
+;-------------------------------------------------
+@KOJO_MESSAGE_PALAMCNG_E_K5
+;助手が调教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;口塞球着用か触手口辱中、崩溃中は地の文を表示して口上をスキップする
+IF (TEQUIP:20 && SELECTCOM != 107) || (TEQUIP:36 && SELECTCOM != 168) || TALENT:崩溃
+	CALL PALAM_MESSAGE_E
+	RETURN 0
+ENDIF
+;-------------------------------------------------
+;触手の射精時のテ接吻ト
+;-------------------------------------------------
+;-------------------------------------------------
+;触手が射精
+;-------------------------------------------------
+IF TFLAG:15 >0
+	CALL PALAM_MESSAGE_E
+	;屈服刻印Lv3
+	IF MARK:2 == 3 && (CFLAG:240 < 2 || FLAG:7 == 2)
+		;PRINTFORMW 
+		;CFLAG:240 = 2
+	;それ以外
+	ELSEIF CFLAG:240 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:240 = 1
+	ENDIF
+ENDIF
+
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG_B関係
+;奴隶の绝顶をトリガーにした口上
+;-------------------------------------------------
+@KOJO_MESSAGE_PALAMCNG_B_K5
+;助手が调教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;口塞球着用か触手口辱中、崩溃中は地の文を表示して口上をスキップする
+IF (TEQUIP:20 && SELECTCOM != 107) || (TEQUIP:36 && SELECTCOM != 168) || TALENT:崩溃
+	CALL PALAM_MESSAGE_B
+	RETURN 0
+ENDIF
+;-------------------------------------------------
+;奴隶の绝顶時のテ接吻ト
+;-------------------------------------------------
+;-------------------------------------------------
+;初めてC绝顶
+;-------------------------------------------------
+IF NOWEX:0 > 0 && CFLAG:241 == 0
+	IF TALENT:孩童尺寸
+		IF EXP:绝顶经验 == 0
+			PRINTFORML %CALLNAME%初次射精，对这种陌生的感觉十分困惑
+		ELSE
+			PRINTFORML %CALLNAME%因为第一次在人前射精，羞得面红耳赤
+		ENDIF
+	ELSE
+		IF !RAND:2
+			PRINTFORML 「嗯、啊……嗯…！　唔……这、这只是生理现象…罢了……」
+		ELSE
+			PRINTFORML 「哈啊……嗯…！　唔……这不过是生、生理现象而已……」
+		ENDIF
+		IF TALENT:男性 && !TEQUIP:禁止射精
+			PRINTFORML 尽管嘴上这么说，%CALLNAME%还是因为第一次在人前射精羞得面红耳赤
+		ELSE
+			PRINTFORML 尽管嘴上这么说，%CALLNAME%还是因为第一次在人前高潮羞得面红耳赤
+		ENDIF
+	ENDIF
+	CFLAG:241 = 1
+;-------------------------------------------------
+;初めてV绝顶
+;-------------------------------------------------
+ELSEIF NOWEX:1 > 0 && CFLAG:242 == 0
+	CFLAG:242 = 1
+
+;-------------------------------------------------
+;初めてA绝顶
+;-------------------------------------------------
+ELSEIF NOWEX:2 > 0 && CFLAG:243 == 0
+	IF !RAND:2
+		PRINTFORML 「呜…唔啊啊啊…讨、讨厌…咿…啊啊啊啊啊啊—！」
+	ELSE
+		PRINTFORML 「呜…唔啊啊啊…不、不要…咿…啊啊啊啊啊啊—！」
+	ENDIF
+	PRINTFORMW %CALLNAME%因后穴的快感紧绷着身体迎来了高潮
+	PRINTFORML 「怎、怎么会……这不可能……%CSTR:0%竟然……呜…！」
+	PRINTFORML %CALLNAME%无法接受自己仅仅因后面就去了的事实，神情呆然地楞在那里
+	CFLAG:243 = 1
+;-------------------------------------------------
+;初めてB绝顶
+;-------------------------------------------------
+ELSEIF NOWEX:3 > 0 && CFLAG:244 == 0 && MALE(TARGET)
+	PRINTFORML 「呜、啊啊啊！　啊……啊…不、不可能……！」
+	PRINTFORML 如同女人一般被玩弄着胸部高潮，%CALLNAME%彻底僵住了…
+	CFLAG:244 = 1
+;-------------------------------------------------
+;禁止射精解除で射精
+;-------------------------------------------------
+;禁止射精解除で射精
+ELSEIF SELECTCOM == 109 && TEQUIP:37 == 0 && TFLAG:10 > 0
+	CALL PALAM_MESSAGE_A
+;-------------------------------------------------
+;射精
+;-------------------------------------------------
+;射精している
+ELSEIF TFLAG:10 > 0 && TFLAG:29 < 4 && !RAND:4
+	CALL PALAM_MESSAGE_B
+	;屈服刻印Lv3
+	IF MARK:2 == 3 && (CFLAG:246 < 2 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+		IF !RAND:4
+			PRINTFORML 「唔、唔…啊……」
+		ELSEIF !RAND:3
+			IF !RAND:2
+				PRINTFORML 「啊、不行了…要、要出来了……啊啊！！」
+			ELSE
+				PRINTFORML 「不、不行了…要、要去……啊啊啊！！」
+			ENDIF
+		ELSEIF !RAND:2
+			PRINTFORML 「啊、呜…出、出来了——！！」
+		ELSE
+			IF !RAND:2
+				PRINTFORML 「……啊……射、出来了……」
+			ELSE
+				PRINTFORML 「……啊……出…来了…哈…啊……」
+			ENDIF
+		ENDIF
+		CFLAG:246 = 2
+	;それ以外
+	ELSEIF CFLAG:246 < 1 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2
+		IF !RAND:4
+			PRINTFORML 「唔、唔…啊……」
+		ELSEIF !RAND:3
+			IF !RAND:2
+				PRINTFORML 「啊、啊啊！…可、恶……」
+			ELSE
+				PRINTFORML 「啊、啊啊！…呜……」
+			ENDIF
+		ELSEIF !RAND:2
+			PRINTFORML 「嗯…嗯、啊啊！…呜……」
+		ELSE
+			PRINTFORML 「已经…要…唔……！」
+		ENDIF
+		CFLAG:246 = 1
+	ENDIF
+;-------------------------------------------------
+;空射精
+;-------------------------------------------------
+;空射精している
+ELSEIF NOWEX:40
+	CALL PALAM_MESSAGE_A2
+	;孩童尺寸
+	IF TALENT:114
+		;PRINTFORMW 
+	ELSE
+		;PRINTFORMW
+	ENDIF
+;-------------------------------------------------
+;绝顶
+;-------------------------------------------------
+ELSEIF TFLAG:29 > 0
+	CALL PALAM_MESSAGE_B
+	;屈服刻印Lv3
+	IF MARK:2 == 3
+		;すごく強い绝顶
+		IF TFLAG:29 >= 5
+			;PRINTFORMW 
+		ELSEIF CFLAG:245 < 2 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2
+			;PRINTFORMW 
+			;CFLAG:245 = 2
+		ENDIF
+	;それ以外
+	ELSEIF CFLAG:245 < 1 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2
+		IF TFLAG:29 >= 5
+			;PRINTFORMW 
+		ELSE
+			;PRINTFORMW 
+			;CFLAG:245 = 1
+		ENDIF
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;喷乳
+;-------------------------------------------------
+;喷乳している
+IF TFLAG:11 > 0
+	;屈服刻印Lv3
+	IF MARK:2 == 3 && (CFLAG:247 < 2 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+		;PRINTFORMW 
+		;CFLAG:247 = 2
+	;それ以外
+	ELSEIF CFLAG:247 < 1 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:247 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;放尿
+;-------------------------------------------------
+;放尿している
+IF TFLAG:29 > 0 && (TEQUIP:27 || TALENT:57)
+	;屈服刻印Lv3
+	IF MARK:2 == 3 && (CFLAG:248 < 2 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2)
+		;PRINTFORMW 
+		;CFLAG:248 = 2
+	;それ以外
+	ELSEIF CFLAG:248 < 1 || (FLAG:7 == 1 && !RAND:3) || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:248 = 1
+	ENDIF
+ENDIF
+
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG_C関係
+;调教後の変化をトリガーにした口上
+;-------------------------------------------------
+@KOJO_MESSAGE_PALAMCNG_C_K5
+;助手が调教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;口塞球着用か触手口辱中、崩溃中は地の文を表示して口上をスキップする
+IF (TEQUIP:20 && SELECTCOM != 107) || (TEQUIP:36 && SELECTCOM != 168) || TALENT:崩溃
+	CALL PALAM_MESSAGE_C
+	RETURN 0
+ENDIF
+;-------------------------------------------------
+;调教後のテ接吻ト
+;-------------------------------------------------
+;-------------------------------------------------
+;处女喪失(处女のみ)
+;-------------------------------------------------
+IF TFLAG:3 > 0
+	CALL PALAM_MESSAGE_C
+	;屈服刻印Lv3
+	IF MARK:2 == 3
+		;PRINTFORMW 
+	;それ以外
+	ELSE
+		;PRINTFORMW 
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;童贞喪失
+;-------------------------------------------------
+IF TFLAG:160 == 1
+	CALL PALAM_MESSAGE_C
+	;恋慕ルートの台詞(主人による童贞喪失のみ)
+	IF TFLAG:162 && (TALENT:3 || TALENT:6)
+		;逆强奸の場合
+		IF SELECTCOM == 211 || SELECTCOM == 212
+			;PRINTFORMW 
+		;逆强奸ではない場合
+		ELSE
+			;PRINTFORMW 
+			;主人处女喪失フラグがある場合
+			IF TFLAG:165
+				;PRINTFORMW 
+			ENDIF
+		ENDIF
+	ELSE
+		;屈服刻印Lv3
+		IF MARK:2 == 3
+		;それ以外　主人による童贞喪失のみ
+		ELSEIF TFLAG:162
+			;PRINTFORMW 
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;后庭处子喪失
+;-------------------------------------------------
+IF TFLAG:161 == 1
+	CALL PALAM_MESSAGE_C
+	;屈服刻印Lv3
+	IF MARK:2 == 3
+		;PRINTFORMW 
+	;それ以外
+	ELSE
+		;PRINTFORMW 
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_PALAMCNG_D関係
+;パラメータ変化をトリガーにした口上
+;-------------------------------------------------
+@KOJO_MESSAGE_PALAMCNG_D_K5
+;助手が调教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;口塞球着用か触手口辱中、崩溃中は地の文を表示して口上をスキップする
+IF (TEQUIP:20 && SELECTCOM != 107) || (TEQUIP:36 && SELECTCOM != 168) || TALENT:崩溃
+	CALL PALAM_MESSAGE_D
+	RETURN 0
+ENDIF
+;-------------------------------------------------
+;パラメータ変化時のテ接吻ト
+;-------------------------------------------------
+;-------------------------------------------------
+;初めて润滑がLV3超えた
+;-------------------------------------------------
+P = PALAM:4 + UP:4
+IF P > PALAMLV:3 && CFLAG:245 == 0
+	CALL PALAM_MESSAGE_D
+	;润滑乳液を使った場合
+	IF SELECTCOM == 180
+		;PRINTFORMW 
+	;それ以外
+	ELSE
+		;PRINTFORMW 
+	ENDIF
+	;CFLAG:245 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めて情欲がLV2超えた
+;-------------------------------------------------
+P = PALAM:6 + UP:6
+IF P > PALAMLV:2 && CFLAG:246 == 0
+	CALL PALAM_MESSAGE_D
+	;媚薬を使った場合
+	IF SELECTCOM == 181
+		;PRINTFORMW 
+	;それ以外
+	ELSE
+		;PRINTFORMW 
+	ENDIF
+	;CFLAG:246 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めて屈服がLV3超えた
+;-------------------------------------------------
+P = PALAM:7 + UP:7
+IF P > PALAMLV:3 && CFLAG:247 == 0
+	CALL PALAM_MESSAGE_D
+	;PRINTFORMW 
+	;CFLAG:247 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めて恭顺がLV3超えた
+;-------------------------------------------------
+P = PALAM:5 + UP:5
+IF P > PALAMLV:3 && CFLAG:248 == 0
+	CALL PALAM_MESSAGE_D
+	;PRINTFORMW 
+	;CFLAG:248 = 1
+ENDIF
+
+;-------------------------------------------------
+;初めて恐怖がLV3超えた
+;-------------------------------------------------
+P = PALAM:11 + UP:11
+IF P > PALAMLV:3 && CFLAG:249 == 0
+	CALL PALAM_MESSAGE_D
+	;PRINTFORMW 
+	;CFLAG:249 = 1
+ENDIF
+
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_MARKCNG関係
+;刻印変動をトリガーにした口上
+;刻印変動後に口上を発動します
+;-------------------------------------------------
+@KOJO_MESSAGE_MARKCNG_K5
+;助手が调教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0 
+;口塞球着用か触手口辱中、崩溃中は地の文を表示して口上をスキップする
+IF (TEQUIP:20 && SELECTCOM != 107) || (TEQUIP:36 && SELECTCOM != 168) || TALENT:崩溃
+	CALL MARK_MESSAGE
+	RETURN 0
+ENDIF
+IF TFLAG:22 != 3 && TFLAG:23 != 3 && TFLAG:24 != 13 && TFLAG:24 != 23 && TFLAG:24 != 33 && TFLAG:21 != 3
+	CALL MARK_MESSAGE
+	RETURN 0
+ENDIF
+;-------------------------------------------------
+;痛苦刻印Lv3
+;-------------------------------------------------
+CALL MARK_MESSAGE_A
+IF TFLAG:22 == 3
+	;PRINTFORMW 
+ENDIF
+
+;-------------------------------------------------
+;快乐刻印Lv3
+;-------------------------------------------------
+CALL MARK_MESSAGE_P
+IF TFLAG:23 == 3
+	;PRINTFORMW 
+ENDIF
+
+;-------------------------------------------------
+;屈服刻印Lv3
+;-------------------------------------------------
+CALL MARK_MESSAGE_S
+IF TFLAG:24 == 13 || TFLAG:24 == 23 || TFLAG:24 == 33
+	;快乐による屈服
+	IF TFLAG:24 == 13
+		;PRINTFORMW 
+	;恐怖と痛苦による屈服
+	ELSEIF TFLAG:24 == 23
+		;PRINTFORMW 
+	;屈服と恭顺による屈服
+	ELSEIF TFLAG:24 == 33
+		;PRINTFORMW 
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;反抗刻印Lv3
+;-------------------------------------------------
+CALL MARK_MESSAGE_R
+IF TFLAG:21 == 3
+	;PRINTFORMW 
+ENDIF

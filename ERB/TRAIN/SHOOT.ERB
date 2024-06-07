@@ -1,0 +1,945 @@
+﻿;射精関係の処理
+
+;TFLAG:703　～　默认射精先设定一時変数
+;1=膣内射精、2=肛射精、3=手交関係、4=口交・乳交、5=手と口以外（素股など）、
+;6=助手射精、7=舔阴、9=逆强奸
+;TFLAG:704　～　射精箇所選択可能か否か
+;0=不可、1=可
+
+;---------------------------------------------------------
+;eraheta用变更
+;---------------------------------------------------------
+;射精関連処理が色々おかしかったので色々と手を加えた(変えすぎて变更点が上げられない…)
+
+;基本的に指令内の射精処理は调教者側です
+;奴隶用はTRACHECKで行われてますが、膣射だけはここで制御してるので注意
+;PLAYER以外が射精するような指令の場合も注意が必要（3Pを参考にして下さい）
+
+;---------------------------------------------------------
+;射精処理関数
+;---------------------------------------------------------
+@CHECK_CFLAG106
+IF CFLAG:T:106 == 1
+	IF TEQUIP:7
+		STAIN:15 |= 4
+	ENDIF
+ELSEIF CFLAG:T:106 == 2
+	IF TEQUIP:8
+		STAIN:16 |= 4
+	ENDIF
+ELSEIF CFLAG:T:106 >= 3 && CFLAG:T:106 <= 5
+	IF TEQUIP:5
+		STAIN:14 |= 4
+	ELSEIF TEQUIP:5
+		STAIN:13 |= 4
+	ELSEIF TEQUIP:3
+		STAIN:11 |= 4
+	ENDIF
+ELSEIF CFLAG:T:106 == 10
+	IF TEQUIP:9
+		STAIN:17 |= 4
+	ELSEIF TEQUIP:1
+		STAIN:9 |= 4
+	ELSE
+		STAIN:7 |= 4
+	ENDIF
+ENDIF
+
+IF CFLAG:T:106 == 0
+	CALL COMMAND_CHECK
+ELSEIF CFLAG:T:106 <= 2
+	CALL SAMEN_SHOOT_OLD_FINGER
+ELSEIF CFLAG:T:106 <= 5
+	CALL SAMEN_SHOOT_OLD_ORAL
+ELSEIF CFLAG:T:106 <= 8
+	CALL SAMEN_SHOOT_OLD_SEX3
+ELSEIF CFLAG:T:106 == 9
+	CALL IN_VAGINA_CHECK
+ELSEIF CFLAG:T:106 == 10
+	CALL SAMEN_SHOOT_OLD_ORAL
+ENDIF
+
+@COMMAND_CHECK
+;就这样射精時の処理の分岐
+;指令による処理ターゲットの确认と分岐
+IF TFLAG:703 == 1
+	;膣内射精
+	CALL SAMEN_SHOOT_OLD_SEX
+	CALL IN_VAGINA_CHECK
+ELSEIF TFLAG:703 == 2
+	;肛射精
+	CALL SAMEN_SHOOT_OLD_SEX2
+	CALL IN_VAGINA_CHECK
+ELSEIF TFLAG:703 == 3
+	;手交命令
+	CALL SAMEN_SHOOT_OLD_FINGER
+ELSEIF TFLAG:703 == 4
+	;口交・乳交
+	CALL SAMEN_SHOOT_OLD_ORAL
+ELSEIF TFLAG:703 == 5
+	;手と口以外（素股など）
+	CALL SAMEN_SHOOT_OLD_SUMATA
+ELSEIF TFLAG:703 == 6
+	;助手射精
+	CALL SAMEN_SHOOT_OLD_ASSISTANT
+ELSEIF TFLAG:703 == 7
+	;強制舔阴
+	CALL SAMEN_SHOOT_OLD_PUSSY
+ELSEIF TFLAG:703 == 9
+	;逆强奸
+	CALL SAMEN_SHOOT_OLD_RAPED
+ENDIF
+
+;---------------------------------------------------------
+;射精するかのチェック
+;---------------------------------------------------------
+@SAMEN_CHECK
+;汎用的な関数なので、将来的にはすべての调教指令の射精チェックをここでやることも可能
+S = BASE:PLAYER:2
+EJAC = MAXBASE:PLAYER:2
+;绝伦・尺寸傲人のとき
+SIF TALENT:PLAYER:117 || TALENT:PLAYER:152
+	TIMES S ,1.10
+
+;射精限界が来ている場合は、射精槽は強制的に0にする
+IF CFLAG:PLAYER:11 == 0
+	S = 0
+	BASE:PLAYER:2 = 0
+ENDIF
+
+IF  S > EJAC * 2
+	E = 2
+ELSEIF S > EJAC
+	E = 1
+ELSE
+	E = 0
+ENDIF
+
+@SAMEN_CHECK_M
+;调教者と对象が異なる場合（主人）
+S = BASE:MASTER:2
+EJAC = MAXBASE:MASTER:2
+;绝伦・尺寸傲人のとき
+SIF TALENT:MASTER:117 || TALENT:MASTER:152
+	TIMES S ,1.10
+;射精限界が来ている場合は、射精槽は強制的に0にする
+IF CFLAG:MASTER:11 == 0
+	S = 0
+	BASE:MASTER:2 = 0
+ENDIF
+
+IF  S > EJAC * 2
+	E = 2
+ELSEIF S > EJAC
+	E = 1
+ELSE
+	E = 0
+ENDIF
+
+@SAMEN_CHECK_A
+;调教者と对象が異なる場合（助手）
+S = BASE:ASSI:2
+EJAC = MAXBASE:ASSI:2
+;绝伦・尺寸傲人のとき
+SIF TALENT:ASSI:117 || TALENT:ASSI:152
+	TIMES S ,1.10
+;射精限界が来ている場合は、射精槽は強制的に0にする
+IF CFLAG:ASSI:11 == 0
+	S = 0
+	BASE:ASSI:2 = 0
+ENDIF
+
+IF  S > EJAC * 2
+	E = 2
+	;助手射精フラグ
+	TFLAG:6 = 2
+ELSEIF S > EJAC
+	E = 1
+	;助手射精フラグ
+	TFLAG:6 = 1
+ELSE
+	E = 0
+ENDIF
+
+;---------------------------------------------------------
+;射精場所選択
+;---------------------------------------------------------
+@SAMEN_SHOOT
+;ぶっかけ選択
+;[0] 髪 手脚区分
+;[1] 顔	手脚区分
+;[2] 胸	口交・乳交区分
+;[3] 腹	口交・乳交区分
+;[4] 腋 口交・乳交2区分
+;[5] 腿 做爱2区分
+;[6] 割れ目 做爱2区分
+;[7] 足　口交・乳交区分
+;[8] ゴム射・中田氏
+
+;各指令中で射精の判定に使われる変数Eを使用する。
+;これまでの射精の処理をここに持たせ、各指令内で使わないようにする。
+;よってここでEを初期化し、各COMFに処理を返す（E == 0ならば各指令内で射精の処理は行われない）
+
+;射精した人物の设定
+DEBUGPRINTFORML 射精角色设定
+IF TFLAG:6
+DEBUGPRINTFORML P = ASSI
+	P = ASSI
+ELSE
+DEBUGPRINTFORML P = PLAYER
+	P = PLAYER
+ENDIF
+
+;射精する对象の设定
+DEBUGPRINTFORML 射精对象设定 SELECTCOM=={SELECTCOM} TFLAG:703=={TFLAG:703}
+IF SELECTCOM == 215 && P == ASSI
+DEBUGPRINTFORML T = MASTER
+	T = MASTER
+ELSEIF (SELECTCOM == 185 && P != ASSI) || SELECTCOM == 215
+DEBUGPRINTFORML T = ASSI
+	T = ASSI
+ELSE
+DEBUGPRINTFORML T = TARGET
+	T = TARGET
+ENDIF
+
+;まずぶっかけ場所判別フラグを初期化
+CFLAG:T:106 = 0
+;---------------------------------------------------------
+;追加部分、射精箇所選択機能をOFFにした際に避孕套を含めた通常の射精処理を行う
+;また、状況的に射精箇所の選択を行えないであろう指令の場合もここで通常処理に飛ばす
+;---------------------------------------------------------
+$INPUT_LOOP
+
+;竿の有無で分岐
+IF TALENT:P:140 || TALENT:P:139 || TALENT:P:137
+	;子供は射精できない
+	IF TALENT:P:114 || TALENT:P:机器人 || TALENT:P:人偶
+		CALL KARA_SHOOT_CHECK
+		RETURN 0
+	ELSEIF FLAG:99 == 8 || TFLAG:704 == 0
+		;避孕套装备中
+		IF TEQUIP:P:35 == 1
+			CFLAG:T:106 = 9
+		;通常射精
+		ELSE
+			CALL COMMAND_CHECK
+			RETURN 0
+		ENDIF
+	ELSEIF FLAG:99 < 8
+		IF FLAG:99 == 0
+			CFLAG:T:106 = 1
+		ELSEIF FLAG:99 == 1
+			CFLAG:T:106 = 2
+		ELSEIF FLAG:99 == 2
+			CFLAG:T:106 = 3
+		ELSEIF FLAG:99 == 3
+			CFLAG:T:106 = 4
+		ELSEIF FLAG:99 == 4
+			CFLAG:T:106 = 5
+		ELSEIF FLAG:99 == 5
+			CFLAG:T:106 = 6
+		ELSEIF FLAG:99 == 6
+			CFLAG:T:106 = 7
+		ELSEIF FLAG:99 == 7
+			CFLAG:T:106 = 8
+		ELSEIF FLAG:99 == 8
+			;避孕套付きの場合
+			IF TEQUIP:P:35 == 1
+				CFLAG:T:106 = 9
+			ELSE
+				CALL COMMAND_CHECK
+				RETURN 0
+			ENDIF
+		ENDIF
+	ELSE
+		PRINTFORMW %CALLNAME:P%的阴茎已膨胀至极限，到达了射精的临界点……
+		PRINTFORMW 　
+		PRINTFORMW 要在%CALLNAME:T%的哪里射精？
+		PRINTL [0] 「发」
+		PRINTL [1] 「脸」
+		PRINTL [2] 「胸」
+		PRINTL [3] 「腹」
+		PRINTL [4] 「腋」
+		PRINTL [5] 「腿」
+		PRINTL [6] 「股间」
+		PRINTL [7] 「屁股」
+		PRINTL [8] 「足」
+		IF TEQUIP:P:35
+			PRINTL [9] 「射在避孕套里」
+		ELSE
+			PRINTL [9] 「直接射精」
+		ENDIF
+
+		INPUT
+		IF RESULT == 0
+			CFLAG:T:106 = 1
+		ELSEIF RESULT == 1
+			CFLAG:T:106 = 2
+		ELSEIF RESULT == 2
+			CFLAG:T:106 = 3
+		ELSEIF RESULT == 3
+			CFLAG:T:106 = 4
+		ELSEIF RESULT == 4
+			CFLAG:T:106 = 5
+		ELSEIF RESULT == 5
+			CFLAG:T:106 = 6
+		ELSEIF RESULT == 6
+			CFLAG:T:106 = 7
+		ELSEIF RESULT == 7
+			CFLAG:T:106 = 8
+		ELSEIF RESULT == 8
+			CFLAG:T:106 = 10
+		ELSEIF RESULT == 9
+			;避孕套付きの場合
+			IF TEQUIP:P:35 == 1
+				CFLAG:T:106 = 9
+			ELSE
+				CALL COMMAND_CHECK
+				RETURN 0
+			ENDIF
+		ELSE
+			GOTO INPUT_LOOP
+		ENDIF
+	ENDIF
+
+ELSE
+;女の場合の绝顶は子供の「空射精」と同じ処理でいい。
+	CALL KARA_SHOOT_CHECK
+	RETURN 0
+ENDIF
+
+
+
+CALL CHECK_CFLAG106
+
+@KARA_SHOOT_CHECK
+;指令による処理ターゲットの确认と分岐
+TFLAG:164 = 0
+IF TFLAG:703 == 1
+	;膣内射精
+	TFLAG:164 = 1
+ELSEIF TFLAG:703 == 2
+	;肛射精
+	TFLAG:164 = 2
+ELSEIF TFLAG:703 == 3
+	;手交命令
+	TFLAG:164 = 3
+ELSEIF TFLAG:703 == 4
+	;口交・乳交
+	TFLAG:164 = 4
+ELSEIF TFLAG:703 == 5
+	;手と口以外（素股など）
+	TFLAG:164 = 5
+ELSEIF TFLAG:703 == 6
+	;助手射精
+	TFLAG:164 = 6
+ELSEIF TFLAG:703 == 7
+	;強制舔阴
+	TFLAG:164 = 7
+ELSEIF TFLAG:703 == 9
+	;逆强奸
+	TFLAG:164 = 8
+ELSEIF TFLAG:703 == 10
+	;女主人が插入される系
+	TFLAG:164 = 10
+ELSEIF TFLAG:703 == 11
+	;女主人が插入される系（肛）
+	TFLAG:164 = 11
+ELSEIF TFLAG:703 == 12
+	;自慰
+	TFLAG:164 = 12
+ENDIF
+;子供の場合射精できない
+CALL SAMEN_SHOOT_KARA
+
+@IN_VAGINA_CHECK
+;@IN_VAGINA_CHECK
+;プ雷や及び助手の各指令での中田氏チェック
+;各指令への影響を小さくするのが目的（関数を呼ぶ、もしくはオミットするだけで良い）
+;TFLAG:2（中田氏）とTEQUIP:35（避孕套）を条件に膣射を増やす処理を持つ
+
+;指令ごとの分岐
+;まず避孕套で分岐
+IF TEQUIP:P:35 == 1
+	CFLAG:T:106 = 9
+	IF NO:P == 0
+		PRINTFORM %CALLNAME:MASTER%
+	ELSE
+		PRINTFORM %CALLNAME:P%
+	ENDIF
+	PRINTL 　避孕套内射精
+	CALL SAMEN_SHOOT_CONDOM
+;Ａ系中出しがあってもいいと思う
+ELSEIF TFLAG:703 == 2 || (TFLAG:703 == 6 && TFLAG:705 == 1)
+		SIF P == MASTER
+		A = 101
+		SIF P == ASSI
+		A = 103
+	IF TFLAG:2 == 2 || TFLAG:7 == 2
+		IF NO:P == 0
+			PRINTFORM %CALLNAME:MASTER%
+		ELSE
+			PRINTFORM %CALLNAME:P%
+		ENDIF
+		PRINTL 　肠内大量射精
+		PRINTFORML %CALLNAME:T%的肛射经验+２
+		EXP:T:8 += 2
+		;Omega
+		SIF TALENT:T:164
+		CFLAG:T:A += 2
+	ELSEIF TFLAG:2 == 1 || TFLAG:7 == 1
+		IF NO:P == 0
+			PRINTFORM %CALLNAME:MASTER%
+		ELSE
+			PRINTFORM %CALLNAME:P%
+		ENDIF
+		PRINTL 　肠内射精
+		PRINTFORML %CALLNAME:T%的肛射经验+１
+		EXP:T:8 += 1
+		;Omega
+		SIF TALENT:T:164
+		CFLAG:T:A += 1
+	ENDIF
+;避孕套をしてないかつＶ系なら中出し
+ELSEIF TFLAG:703 == 1 || (TFLAG:703 == 6 && TFLAG:705 == 0)
+	SIF P == MASTER
+		A = 101
+	SIF P == ASSI
+		A = 103
+	IF TFLAG:2 == 2 || TFLAG:6 == 2 || TFLAG:7 == 2
+		IF NO:P == 0
+			PRINTFORM %CALLNAME:MASTER%
+		ELSE
+			PRINTFORM %CALLNAME:P%
+		ENDIF
+		PRINTL 　阴道内大量射精
+		TFLAG:38 = 2
+		IF CFLAG:T:108
+			PRINTL <避孕结界>
+		ELSE
+			PRINTFORML %CALLNAME:T%的内射经验+２
+			EXP:T:5 += 2
+			CFLAG:T:A += 2
+			;怀孕していないのであれば中田氏時の恐怖判定等
+			SIF TALENT:T:153 == 0 && T == TARGET
+				CALL SAMEN_SHOOT_SOURCE
+		ENDIF
+	ELSEIF TFLAG:2 == 1 || TFLAG:7 == 1
+		IF NO:P == 0
+			PRINTFORM %CALLNAME:MASTER%
+		ELSE
+			PRINTFORM %CALLNAME:P%
+		ENDIF
+		PRINTL 　阴道内射精
+		TFLAG:38 = 1
+		IF CFLAG:T:108
+			PRINTL <避孕结界>
+		ELSE
+			PRINTFORML %CALLNAME:T%的内射经验+１
+			EXP:T:5 += 1
+			CFLAG:T:A += 1
+			;怀孕していないのであれば中田氏時の恐怖判定等
+			SIF TALENT:T:153 == 0 && T == TARGET
+				CALL SAMEN_SHOOT_SOURCE
+		ENDIF
+	ENDIF
+ENDIF
+
+@IN_VAGINA_CHECK_T
+;奴隶の各指令での中田氏チェック
+;各指令への影響を小さくするのが目的（関数を呼ぶ、もしくはオミットするだけで良い）
+
+;奴隶攻系指令の場合
+IF SELECTCOM == 122 || SELECTCOM == 205 || SELECTCOM == 206 || SELECTCOM == 211 || SELECTCOM == 212 || SELECTCOM == 213 || SELECTCOM == 214
+	;射精した人物の设定
+	P = TARGET
+	;射精する对象の设定
+	IF SELECTCOM == 122
+		T = ASSI
+	ELSE
+		T = PLAYER
+	ENDIF
+	;Ｖ系フラグ
+	V = 0
+	SIF (SELECTCOM == 122 && TFLAG:705 == 0) || SELECTCOM == 205 || SELECTCOM == 206 || SELECTCOM == 211
+		V = 1
+	;Ａ系フラグ
+	U = 0
+	SIF (SELECTCOM == 122 && TFLAG:705 == 1) || SELECTCOM == 212 || SELECTCOM == 213 || SELECTCOM == 214
+		U = 1
+
+	;まず避孕套で分岐
+	IF TEQUIP:P:35 == 1
+		PRINTFORML %CALLNAME:P%　避孕套内射精
+		CALL SAMEN_SHOOT_CALC
+	;避孕套をしてないかつＡ系なら肛射
+	ELSEIF U
+		IF E == 2
+			SOURCE:液体 += 5000
+			PRINTFORML %CALLNAME:P%　肠内大量射精
+			PRINTFORML %CALLNAME:T%的肛射经验+２
+			EXP:T:8 += 2
+		ELSEIF E == 1
+			SOURCE:液体 += 2000
+			PRINTFORML %CALLNAME:P%　肠内射精
+			PRINTFORML %CALLNAME:T%的肛射经验+１
+			EXP:T:8 += 1
+		ENDIF
+	;避孕套をしてないかつＶ系なら中出し
+	ELSEIF V
+		IF E == 2
+			SOURCE:液体 += 5000
+			PRINTFORML %CALLNAME:P%　阴道内大量射精
+			IF CFLAG:T:108
+				PRINTL <避孕结界>
+			ELSE
+				PRINTFORML %CALLNAME:T%的内射经验+２
+				EXP:T:5 += 2
+				CFLAG:T:104 += 2
+			ENDIF
+		ELSEIF E == 1
+		SOURCE:液体 += 2000
+			PRINTFORML %CALLNAME:P%　阴道内射精
+			IF CFLAG:T:108
+				PRINTL <避孕结界>
+			ELSE
+				PRINTFORML %CALLNAME:T%的内射经验+１
+				EXP:T:5 += 1
+				CFLAG:T:104 += 1
+			ENDIF
+		ENDIF
+	ENDIF
+ENDIF
+
+
+;---------------------------------------------------------
+;各射精タイプごとの処理関数
+;---------------------------------------------------------
+;今後はCOMF内では処理せず、必要に応じてここから呼び出す。
+;汚れ移动等の処理は各COMF内でやってくれるので移动の必要无
+
+@SAMEN_SHOOT_CONDOM
+;ゴム射精の処理
+;ほとんど他の射精と一緒だが、TFLAGを立てず（膣射阻止）、精液经验も増やさない
+;避孕套関連のフラグもできるだけここで扱う。
+
+CALL SAMEN_SHOOT_CALC
+
+;避孕套が脱げる
+TEQUIP:P:35 = 0
+
+SIF P == MASTER
+	S = 4
+SIF P == ASSI
+	S = 2
+SIF P == TARGET
+	S = 1
+;避孕套に精液溜まる(誰の精液かビットで格納)
+CFLAG:107 |= S
+
+;避孕套自動装着処理
+IF FLAG:98 & S && ITEM:45 <= 0
+	PRINTL <因为没有多余的避孕套，解除了自动穿戴>
+	FLAG:98 = 0
+ELSEIF FLAG:98 & S
+		ITEM:45 -= 1
+		TEQUIP:P:35 = 1
+ENDIF
+
+;反感が多少減少
+SOURCE:18 -= 500
+
+
+@SAMEN_SHOOT_OLD_SEX
+;これまでCOMF内で使用されていた做爱射精の処理
+
+CALL SAMEN_SHOOT_CALC
+
+SIF T != TARGET
+	RETURN 0
+
+;大量射精
+IF E == 2
+	EXP:20 += 1
+	PRINTL 精液经验＋１
+
+	;做爱で射精フラグ
+	TFLAG:2 = 2
+;通常の射精
+ELSEIF E == 1
+	;做爱で射精フラグ
+	TFLAG:2 = 1
+ENDIF
+
+@SAMEN_SHOOT_OLD_SEX2
+;これまでCOMF内で使用されていた做爱射精の処理を改造。
+;肛做爱系指令に使用する。
+
+CALL SAMEN_SHOOT_CALC
+
+SIF T != TARGET 
+	RETURN 0
+
+;大量射精
+IF E == 2
+	EXP:20 += 2
+	PRINTL 精液经验＋２
+	;做爱で射精フラグ
+	TFLAG:2 = 2
+ELSEIF E == 1
+	IF SELECTCOM == 67
+		EXP:20 += 1
+		PRINTL 精液经验＋１
+	ENDIF
+	;做爱で射精フラグ
+	TFLAG:2 = 1
+ENDIF
+
+@SAMEN_SHOOT_OLD_SEX3
+;これまでCOMF内で使用されていた做爱射精の処理を改造。
+;太もも、割れ目、尻に使用する。
+;精液经验は増えるが做爱射精のフラグは立てない（立てると中田氏口上が出たり内射经验が増えてしまう）
+
+CALL SAMEN_SHOOT_CALC
+
+SIF T != TARGET 
+	RETURN 0
+
+;大量射精
+IF E == 2
+	IF SELECTCOM == 67
+		EXP:20 += 2
+		PRINTL 精液经验＋２
+	ELSE
+		EXP:20 += 1
+		PRINTL 精液经验＋１
+	ENDIF
+ELSEIF E == 1
+	IF SELECTCOM == 67
+		EXP:20 += 1
+		PRINTL 精液经验＋１
+	ENDIF
+ENDIF
+
+;着衣だと汚れ追加
+IF E > 0
+	IF TEQUIP:6
+		STAIN:14 |= 4
+	ELSEIF TEQUIP:4
+		STAIN:12 |= 4
+	ELSEIF TEQUIP:2
+		STAIN:10 |= 4
+	ENDIF
+ENDIF
+
+@SAMEN_SHOOT_OLD_FINGER
+;これまでCOMF内で使用されていた手脚射精の処理
+
+CALL SAMEN_SHOOT_CALC
+
+SIF T != TARGET 
+	RETURN 0
+
+;大量射精
+IF E == 2
+	EXP:20 += 3
+	PRINTL 精液经验＋３
+	;手で射精させたフラグ
+	TFLAG:1 = 2
+;通常の射精
+ELSEIF E == 1
+	EXP:20 += 1
+	PRINTL 精液经验＋１
+	;手で射精させたフラグ
+	TFLAG:1 = 1
+ENDIF
+
+;着衣だと汚れ追加
+IF E > 0
+	IF TEQUIP:0 == 1
+		STAIN:8 |= 4
+	ENDIF
+ENDIF
+
+@SAMEN_SHOOT_OLD_ORAL
+;これまでCOMF内で使用されていた口交・乳交射精の処理
+
+CALL SAMEN_SHOOT_CALC
+
+SIF T != TARGET 
+	RETURN 0
+
+;大量射精
+IF E == 2
+	EXP:20 += 9
+	PRINTL 精液经验＋９
+	;口で射精させたフラグ
+	TFLAG:0 = 2
+;通常の射精
+ELSEIF E == 1
+	EXP:20 += 3
+	PRINTL 精液经验＋３
+	;口で射精させたフラグ
+	TFLAG:0 = 1
+ENDIF
+
+@SAMEN_SHOOT_OLD_SUMATA
+;これまでCOMF内で使用されていた手と口以外（素股など）射精の処理
+
+CALL SAMEN_SHOOT_CALC
+
+SIF T != TARGET 
+	RETURN 0
+
+;大量射精
+IF E == 2
+	EXP:20 += 2
+	PRINTL 精液经验＋２
+	IF SELECTCOM == 85
+		;足で射精させたフラグ
+		TFLAG:16 = 1
+		;踏まれて射精した回数
+		CFLAG:PLAYER:28 += 1
+	ELSE
+		;手と口以外（素股など）で射精させたフラグ
+		TFLAG:9 = 1
+	ENDIF
+;通常の射精
+ELSEIF E == 1
+	EXP:20 += 1
+	PRINTL 精液经验＋１
+	IF SELECTCOM == 85
+		;足で射精させたフラグ
+		TFLAG:16 = 1
+		;踏まれて射精した回数
+		CFLAG:PLAYER:28 += 1
+	ELSEIF SELECTCOM == 82 || SELECTCOM == 87 || SELECTCOM == 125 || SELECTCOM == 508
+		;胸で射精
+		TFLAG:34 = 1
+	ELSE
+		;手と口以外（素股など）で射精させたフラグ
+		TFLAG:9 = 1
+	ENDIF
+ENDIF
+
+@SAMEN_SHOOT_OLD_ASSISTANT
+;これまでCOMF内で使用されていた助手の射精の処理
+
+CALL SAMEN_SHOOT_CALC
+
+;大量射精
+IF E == 2
+	EXP:20 += 1
+	PRINTL 精液经验＋１
+;通常の射精
+ELSEIF E == 1
+
+ENDIF
+
+@SAMEN_SHOOT_OLD_PUSSY
+;これまでCOMF内で使用されていた強制舔阴時の射精の処理
+
+CALL SAMEN_SHOOT_CALC
+
+SIF T != TARGET 
+	RETURN 0
+
+;大量射精
+IF E == 2
+	EXP:20 += 4
+	PRINTL 精液经验＋４
+	;舔阴で射精させたフラグ
+	TFLAG:5 = 2
+;通常の射精
+ELSEIF E == 1
+	EXP:20 += 1
+	PRINTL 精液经验＋１
+	;舔阴で射精させたフラグ
+	TFLAG:5 = 1
+ENDIF
+
+@SAMEN_SHOOT_OLD_RAPED
+;これまでCOMF内で使用されていた逆强奸で射精の時の処理
+
+CALL SAMEN_SHOOT_CALC
+
+IF E == 2
+	EXP:20 += 1
+	PRINTL 精液经验＋１
+	;逆强奸で射精させたフラグ
+	TFLAG:12 = 2
+;通常の射精
+ELSEIF E == 1
+	;逆强奸で射精させたフラグ
+	TFLAG:12 = 1
+ENDIF
+
+@SAMEN_SHOOT_CALC
+;射精時の共通処理
+;精液汚れの设定
+STAIN:P:2 |= 4
+
+;大量射精
+IF E == 2
+	SOURCE:液体 += 5000
+	IF NO:P == 0
+		PRINTFORM %CALLNAME:MASTER%
+	ELSE
+		PRINTFORM %CALLNAME:P%
+	ENDIF
+	PRINTL 　大量射精
+
+	EXP:P:3 += 2
+	BASE:P:2 -= EJAC*2
+	SIF BASE:P:2 >= EJAC
+		BASE:P:2 = EJAC-1
+;通常の射精
+ELSEIF E == 1
+	SOURCE:液体 += 5000
+	IF NO:P == 0
+		PRINTFORM %CALLNAME:MASTER%
+	ELSE
+		PRINTFORM %CALLNAME:P%
+	ENDIF
+	PRINTL 　射精
+
+	EXP:P:3 += 1
+	BASE:P:2 -= EJAC
+	SIF BASE:P:2 >= EJAC
+		BASE:P:2 = EJAC-1
+ENDIF
+
+;射精時に中毒充足のソースを追加
+;通常射精時
+SIF E == 1
+	A = 200
+;大量射精時
+SIF E == 2
+	A = 500
+
+IF E > 0
+	;精液成瘾を見る
+	IF ABL:16 == 1
+		TIMES A , 0.00
+	ELSEIF ABL:16 == 2
+		TIMES A , 0.30
+	ELSEIF ABL:16 == 3
+		TIMES A , 0.60
+	ELSEIF ABL:16 == 4
+		TIMES A , 0.90
+	ELSEIF ABL:16 == 5
+		TIMES A , 1.20
+	ELSEIF ABL:16 == 6
+		TIMES A , 1.50
+	ELSEIF ABL:16 == 7
+		TIMES A , 1.80
+	ELSEIF ABL:16 == 8
+		TIMES A , 2.30
+	ELSEIF ABL:16 == 9
+		TIMES A , 3.00
+	ELSEIF ABL:16 == 10
+		TIMES A , 5.00
+	ENDIF
+ENDIF
+
+;ゴム射フラグがあったら中毒充足しない
+SIF CFLAG:T:106 != 9
+	SOURCE:9 += A
+
+;射精後は再装填の时间を設ける
+;通常射精時
+SIF E == 1
+	CFLAG:P:9 = 3
+;大量射精時
+SIF E == 2
+	CFLAG:P:9 = 5
+CFLAG:P:11 -= 1
+
+@SAMEN_SHOOT_KARA
+
+;竿の有無で分岐
+IF TALENT:P:140 || TALENT:P:139 || TALENT:P:137
+	;空射精
+	;強空射精
+	IF E == 2
+		IF NO:P == 0
+			PRINTFORM %CALLNAME:MASTER%
+		ELSE
+			PRINTFORM %CALLNAME:P%
+		ENDIF
+		PRINTL 　強空射精
+
+		EXP:P:3 += 2
+		BASE:P:2 -= EJAC*2
+		SIF BASE:P:2 >= EJAC
+			BASE:P:2 = EJAC-1
+	;空射精
+	ELSEIF E == 1
+		IF NO:P == 0
+			PRINTFORM %CALLNAME:MASTER%
+		ELSE
+			PRINTFORM %CALLNAME:P%
+		ENDIF
+		PRINTL 　空射精
+
+		EXP:P:3 += 1
+		BASE:P:2 -= EJAC
+		SIF BASE:P:2 >= EJAC
+			BASE:P:2 = EJAC-1
+	ENDIF
+ELSE
+	;強空绝顶
+	IF E == 2
+		IF NO:P == 0
+			PRINTFORM %CALLNAME:MASTER%
+		ELSE
+			PRINTFORM %CALLNAME:P%
+		ENDIF
+		PRINTL 　強绝顶
+		EXP:P:2 += 2
+		BASE:P:2 -= EJAC*2
+		SIF BASE:P:2 >= EJAC
+			BASE:P:2 = EJAC-1
+	;空绝顶
+	ELSEIF E == 1
+		IF NO:P == 0
+			PRINTFORM %CALLNAME:MASTER%
+		ELSE
+			PRINTFORM %CALLNAME:P%
+		ENDIF
+		PRINTL 　绝顶
+		EXP:P:2 += 1
+		BASE:P:2 -= EJAC
+		SIF BASE:P:2 >= EJAC
+			BASE:P:2 = EJAC-1
+	ENDIF
+ENDIF
+
+
+;射精後は再装填の时间を設ける
+;通常射精時
+SIF E == 1
+	CFLAG:P:9 = 3
+;大量射精時
+SIF E == 2
+	CFLAG:P:9 = 5
+CFLAG:P:11 -= 1
+
+@SAMEN_SHOOT_SOURCE
+;-------------------------------------------------
+;ソースの計算
+;-------------------------------------------------
+;恋慕、相亲相爱持ちは达成感のソースが増加する
+IF TALENT:3 || TALENT:6
+	SOURCE:6 += 1500
+ELSE
+	SOURCE:8 += 1500
+	SOURCE:18 += 500
+ENDIF
+
+;陷落素質が無い場合は反抗増加
+SIF TALENT:3 == 0 && TALENT:4 == 0 && TALENT:5 == 0 && TALENT:6 == 0 && TALENT:7 == 0 && TALENT:8 == 0
+	SOURCE:18 += 1000
+
+

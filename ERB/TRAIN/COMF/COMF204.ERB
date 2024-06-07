@@ -1,0 +1,80 @@
+﻿;-------------------------------------------------
+;索要礼物
+;恋慕は礼物指令下位、淫乱・服从はなんかプ雷、それ以外は拒否
+;-------------------------------------------------
+@COM204
+PRINTL 索要礼物
+STR:0 = 索要礼物
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;陷落済み
+IF TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8
+	;恋慕、相亲相爱
+	IF TALENT:3 || TALENT:6
+		;消費体力、气力
+		LOSEBASE:0 += 10
+		LOSEBASE:1 += 20
+
+		SOURCE:9 = 60
+		SOURCE:12 = 250
+		SOURCE:17 = 50
+	;淫乱、娼妇
+	ELSEIF TALENT:4 || TALENT:7
+		;消費体力、气力
+		LOSEBASE:0 += 30
+		LOSEBASE:1 += 75
+
+		SOURCE:4 = 60
+		SOURCE:5 = 250
+		SOURCE:9 = 50
+		SOURCE:11 = 200
+		SOURCE:17 = 80
+	;服从、隶属
+	ELSEIF TALENT:5 || TALENT:8
+		;消費体力、气力
+		LOSEBASE:0 += 50
+		LOSEBASE:1 += 75
+
+		SOURCE:4 = 60
+		SOURCE:5 = 250
+		SOURCE:8 = 50
+		SOURCE:9 = 200
+		SOURCE:13 = 80
+		SOURCE:14 = 200
+		SOURCE:17 = 80
+		SOURCE:18 = 80
+	ENDIF
+ELSE
+	;消費体力、气力
+	LOSEBASE:0 += 10
+	LOSEBASE:1 += 30
+	
+	SOURCE:8 = 60
+	SOURCE:16 = 250
+	SOURCE:18 = 50
+ENDIF
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;爱情经验
+IF (TALENT:3 == 1 || TALENT:6 == 1) && ASSIPLAY == 0
+	PRINTS EXPNAME:23
+	PRINTL +1
+	EXP:23 += 1
+ENDIF
+
+;依赖度ベクトル
+TFLAG:33 = 0
+
+;依赖度補正値(恋慕で1、相亲相爱で2）
+IF TALENT:3
+	TFLAG:30 += 1
+ELSEIF TALENT:6
+	TFLAG:30 += 2
+ENDIF
+
+RETURN 1
+

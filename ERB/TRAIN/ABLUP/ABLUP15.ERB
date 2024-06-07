@@ -1,0 +1,430 @@
+﻿;自慰成瘾の可否
+@ISABLUP15
+;恋慕、相亲相爱、淫乱、娼妇はMAXLV7
+IF ABL:自慰成瘾 >= 7
+	RETURN 0
+ELSEIF ABL:自慰成瘾 >= 5 && TALENT:恋慕 == 0 && TALENT:相亲相爱 == 0 && TALENT:淫乱 == 0 && TALENT:娼妇 == 0
+	RETURN 0
+ELSEIF !EXP:自慰经验
+	RETURN 0
+ENDIF
+
+CALL DECIDE_ABLUP15
+
+IF Z == 0
+	RETURN 0
+ELSE
+	RETURN 1
+ENDIF
+
+
+;自慰成瘾
+@ABLUP15
+DRAWLINE
+;恋慕、相亲相爱、淫乱、娼妇はMAXLV7
+IF ABL:自慰成瘾 >= 7
+	PRINTW 已达MAX
+	RETURN 0
+ELSEIF ABL:自慰成瘾 >= 5 && TALENT:恋慕 == 0 && TALENT:相亲相爱 == 0 && TALENT:淫乱 == 0 && TALENT:娼妇 == 0
+	PRINTW 已达MAX
+	RETURN 0
+ENDIF
+
+CALL DECIDE_ABLUP15
+
+;ＬＶ２から３に上げるときは异常经验必要（素質：[容易上瘾][自慰狂]なら無視できる）
+IF ABL:自慰成瘾 == 2 && TALENT:容易上瘾 == 0 && TALENT:自慰狂 == 0
+	PRINTS EXPNAME:50
+	PRINT 取得后才能继续升级
+;ＬＶ３から４に上げるときは异常经验2以上必要（素質：[容易上瘾][自慰狂]なら無視できる）
+ELSEIF ABL:自慰成瘾 == 3 && TALENT:容易上瘾 == 0 && TALENT:自慰狂 == 0
+	PRINTS EXPNAME:50
+	PRINT 2以上才能继续升级
+;ＬＶ４から５に上げるときは异常经验3以上必要（素質：[容易上瘾][自慰狂]なら無視できる）
+ELSEIF ABL:自慰成瘾 == 4 && TALENT:容易上瘾 == 0 && TALENT:自慰狂 == 0
+	PRINTS EXPNAME:50
+	PRINT 3以上才能继续升级
+;ＬＶ８から９に上げるときは异常经验7以上必要（素質：[容易上瘾][自慰狂]なら無視できる）
+ELSEIF ABL:自慰成瘾 == 8 && TALENT:容易上瘾 == 0 && TALENT:自慰狂 == 0
+	PRINTS EXPNAME:50
+	PRINT 7以上才能继续升级
+ENDIF
+
+;露出癖が必要
+PRINTS ABLNAME:8
+PRINTFORM {ABL:自慰成瘾+1}以上才能继续升级
+
+;Ｃ感觉が必要
+PRINTS ABLNAME:3
+PRINTFORML {ABL:自慰成瘾+1}以上才能继续升级
+
+PRINT [0] - 
+PRINTS PALAMNAME:6
+PRINT 之珠×
+PRINTV A
+PRINT 、
+PRINTS PALAMNAME:0
+PRINT 之珠×
+PRINTV B
+PRINT 、
+PRINTS PALAMNAME:9
+PRINT 之珠×
+PRINTV C
+PRINT 、
+PRINTS EXPNAME:10
+PRINTV D
+PRINT 以上
+PRINT ……
+
+IF I == 0
+	PRINT ＯＫ
+ELSE
+	SIF I & 1
+		PRINT 珠子不足 
+	SIF I & 2
+		PRINT 经验不足 
+	SIF I & 4
+		PRINT 能力不足 
+ENDIF
+PRINTL 
+
+PRINT [1] - 
+PRINTS PALAMNAME:6
+PRINT 之珠×
+PRINTV A
+PRINT 、
+PRINTS PALAMNAME:0
+PRINT 之珠×
+PRINTV B
+PRINT 、
+PRINTS PALAMNAME:9
+PRINT 之珠×
+PRINTV C
+PRINT 、
+PRINTS EXPNAME:11
+PRINTV E
+PRINT 以上
+PRINT ……
+
+IF J == 0
+	PRINT ＯＫ
+ELSE
+	SIF J & 1
+		PRINT 珠子不足 
+	SIF J & 2
+		PRINT 经验不足 
+	SIF J & 4
+		PRINT 能力不足 
+ENDIF
+PRINTL 
+
+;露出癖が必要
+PRINTS ABLNAME:8
+PRINTFORM {ABL:自慰成瘾+1}以上才能继续升级
+
+;A感覚が必要
+PRINTS ABLNAME:5
+PRINTFORML {ABL:自慰成瘾+1}以上才能继续升级
+
+PRINT [2] - 
+PRINTS PALAMNAME:6
+PRINT 之珠×
+PRINTV A
+PRINT 、
+PRINTS PALAMNAME:2
+PRINT 之珠×
+PRINTV B
+PRINT 、
+PRINTS PALAMNAME:9
+PRINT 之珠×
+PRINTV C
+PRINT 、
+PRINTS EXPNAME:10
+PRINTV D
+PRINT 以上
+PRINT ……
+
+IF K == 0
+	PRINT ＯＫ
+ELSE
+	SIF K & 1
+		PRINT 珠子不足 
+	SIF K & 2
+		PRINT 经验不足 
+	SIF K & 4
+		PRINT 能力不足 
+ENDIF
+PRINTL 
+
+PRINT [3] - 
+PRINTS PALAMNAME:6
+PRINT 之珠×
+PRINTV A
+PRINT 、
+PRINTS PALAMNAME:2
+PRINT 之珠×
+PRINTV B
+PRINT 、
+PRINTS PALAMNAME:9
+PRINT 之珠×
+PRINTV C
+PRINT 、
+PRINTS EXPNAME:11
+PRINTV E
+PRINT 以上
+PRINT ……
+
+IF L == 0
+	PRINT ＯＫ
+ELSE
+	SIF L & 1
+		PRINT 珠子不足 
+	SIF L & 2
+		PRINT 经验不足 
+	SIF L & 4
+		PRINT 能力不足 
+ENDIF
+PRINTL 
+
+PRINTL [100] - 放弃
+
+
+INPUT
+IF (RESULT < 0 || RESULT > 3) && RESULT != 100
+	RESTART
+ELSEIF I != 0 && RESULT == 0
+	PRINTL 尚未满足条件
+	RESTART
+ELSEIF J != 0 && RESULT == 1
+	PRINTL 尚未满足条件
+	RESTART
+ELSEIF K != 0 && RESULT == 2
+	PRINTL 尚未满足条件
+	RESTART
+ELSEIF L != 0 && RESULT == 3
+	PRINTL 尚未满足条件
+	RESTART
+ELSEIF RESULT == 100
+	RETURN 0
+ENDIF
+
+ABL:自慰成瘾 += 1
+
+IF RESULT == 0 || RESULT == 1
+	JUEL:6 -= A
+	JUEL:0 -= B
+	JUEL:9 -= C
+ELSEIF RESULT == 2 || RESULT == 3
+	JUEL:6 -= A
+	JUEL:2 -= B
+	JUEL:9 -= C
+ENDIF
+
+PRINTS ABLNAME:15
+PRINT 的等级升到了
+PRINTV ABL:自慰成瘾
+PRINTW ！
+
+
+;自慰成瘾LVUP判定
+@DECIDE_ABLUP15
+;条件別にＯＫかダメかを記録する
+I = 0
+J = 0
+K = 0
+L = 0
+;能力アップ可能なら1にする
+Z = 0
+
+IF ABL:自慰成瘾 == 0
+	A = 3000
+	B = 10000
+	C = 1000
+	D = 100
+	E = 20
+ELSEIF ABL:自慰成瘾 == 1
+	A = 6000
+	B = 25000
+	C = 3000
+	D = 250
+	E = 40
+ELSEIF ABL:自慰成瘾 == 2
+	A = 12000
+	B = 50000
+	C = 6000
+	D = 500
+	E = 60
+ELSEIF ABL:自慰成瘾 == 3
+	A = 20000
+	B = 100000
+	C = 15000
+	D = 1000
+	E = 100
+ELSEIF ABL:自慰成瘾 == 4
+	A = 40000
+	B = 300000
+	C = 40000
+	D = 2000
+	E = 160
+ELSEIF ABL:自慰成瘾 == 5
+	A = 45000
+	B = 350000
+	C = 45000
+	D = 2500
+	E = 200
+ELSEIF ABL:自慰成瘾 == 6
+	A = 50000
+	B = 400000
+	C = 50000
+	D = 3000
+	E = 250
+ELSEIF ABL:自慰成瘾 == 7
+	A = 55000
+	B = 450000
+	C = 55000
+	D = 3000
+	E = 300
+ELSEIF ABL:自慰成瘾 == 8
+	A = 60000
+	B = 500000
+	C = 60000
+	D = 3500
+	E = 350
+ELSEIF ABL:自慰成瘾 == 9
+	A = 70000
+	B = 600000
+	C = 70000
+	D = 5000
+	E = 500
+ENDIF
+
+;难以越过的底线
+IF TALENT:难以越过的底线 && (TALENT:恋慕 == 0 && TALENT:淫乱 == 0 && TALENT:服从 == 0 && TALENT:相亲相爱 == 0 && TALENT:娼妇 == 0 && TALENT:隶属 == 0)
+	TIMES A , 2.00
+	TIMES B , 2.00
+	TIMES C , 2.00
+	TIMES D , 2.00
+	TIMES E , 2.00
+ENDIF
+;容易上瘾
+IF TALENT:容易上瘾
+	TIMES A , 0.50
+	TIMES B , 0.50
+	TIMES C , 0.50
+	TIMES D , 0.50
+ENDIF
+;喜欢身体接触
+IF TALENT:喜欢身体接触
+	TIMES A , 1.50
+	TIMES B , 1.50
+	TIMES C , 1.50
+ENDIF
+
+;ＬＶ２から３に上げるときは异常经验必要（素質：[容易上瘾][自慰狂]なら無視できる）
+IF ABL:自慰成瘾 == 2 && TALENT:容易上瘾 == 0 && TALENT:自慰狂 == 0
+	IF EXP:异常经验 == 0
+		;异常经验が不足
+		I |= 2
+		J |= 2
+		K |= 2
+		L |= 2
+	ENDIF
+;ＬＶ３から４に上げるときは异常经验2以上必要（素質：[容易上瘾][自慰狂]なら無視できる）
+ELSEIF ABL:自慰成瘾 == 3 && TALENT:容易上瘾 == 0 && TALENT:自慰狂 == 0
+	IF EXP:异常经验 < 2
+		;异常经验が不足
+		I |= 2
+		J |= 2
+		K |= 2
+		L |= 2
+	ENDIF
+;ＬＶ４から５に上げるときは异常经验3以上必要（素質：[容易上瘾][自慰狂]なら無視できる）
+ELSEIF ABL:自慰成瘾 == 4 && TALENT:容易上瘾 == 0 && TALENT:自慰狂 == 0
+	IF EXP:异常经验 < 3
+		;异常经验が不足
+		I |= 2
+		J |= 2
+		K |= 2
+		L |= 2
+	ENDIF
+;ＬＶ８から９に上げるときは异常经验7以上必要（素質：[容易上瘾][自慰狂]なら無視できる）
+ELSEIF ABL:自慰成瘾 == 8 && TALENT:容易上瘾 == 0 && TALENT:自慰狂 == 0
+	IF EXP:异常经验 < 7
+		;异常经验が不足
+		I |= 2
+		J |= 2
+		K |= 2
+		L |= 2
+	ENDIF
+ENDIF
+
+;露出癖が必要
+IF ABL:露出癖 < ABL:自慰成瘾 + 1
+	I |= 4
+	J |= 4
+	K |= 4
+	L |= 4
+ENDIF
+
+;Ｃ感觉が必要
+IF ABL:Ｃ感觉 < ABL:自慰成瘾 + 1
+	I |= 4
+	J |= 4
+ENDIF
+;A感覚が必要
+IF ABL:Ａ感觉 < ABL:自慰成瘾 + 1
+	K |= 4
+	L |= 4
+ENDIF
+;情欲之珠で上げる
+IF JUEL:6 < A
+	I |= 1
+	J |= 1
+	K |= 1
+	L |= 1
+ENDIF
+;快Ｃ之珠で上げる
+IF JUEL:0 < B
+	I |= 1
+	J |= 1
+ENDIF
+;快A之珠で上げる
+IF JUEL:2 < B
+	K |= 1
+	L |= 1	
+ENDIF
+;耻情之珠で上げる
+IF JUEL:9 < C
+	I |= 1
+	J |= 1
+	K |= 1
+	L |= 1
+ENDIF
+;自慰经验が必要
+IF EXP:自慰经验 < D
+	I |= 2
+	K |= 2
+ENDIF
+;调教自慰经验が必要
+IF EXP:调教自慰经验 < E
+	J |= 2
+	L |= 2
+ENDIF
+IF I == 0
+	Z = 1
+ENDIF
+
+IF J == 0
+	Z = 1
+ENDIF
+
+IF K == 0 
+	Z = 1
+
+ENDIF
+IF L == 0
+	Z = 1
+ENDIF
+
+RETURN 1
+

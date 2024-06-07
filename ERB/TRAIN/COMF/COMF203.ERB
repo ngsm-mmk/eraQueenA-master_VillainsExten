@@ -1,0 +1,330 @@
+﻿;-------------------------------------------------
+;痛骂
+;
+;-------------------------------------------------
+@COM203
+PRINTL 令其辱骂
+;-------------------------------------------------
+;実行判定処理
+;-------------------------------------------------
+A = 0
+S = 0
+
+;すべての命令に共通の要素を考慮
+;(顺从が高いと命令に従いやすいなど)
+CALL COM_ORDER
+
+;ABL:欲望
+IF ABL:1
+	SIF S
+		PRINT  + 
+	A += ABL:1 * 1
+	PRINTS ABLNAME:1
+	PRINTV 'LV,ABL:1,'(,ABL:1 * 1,')
+	S = 1
+ENDIF
+;ABL:嗜虐属性
+IF ABL:10
+	SIF S
+		PRINT  + 
+	A += ABL:10 * 1
+	PRINTS ABLNAME:10
+	PRINTV 'LV,ABL:10,'(,ABL:10 * 4,')
+	S = 1
+ENDIF
+;ABL:侍奉精神
+IF ABL:7
+	SIF S
+		PRINT  + 
+	A += ABL:7 * 4
+	PRINTS ABLNAME:7
+	PRINTV 'LV,ABL:7,'(,ABL:7 * 2,')
+	S = 1
+ENDIF
+;快乐刻印
+IF MARK:1
+	SIF S
+		PRINT  + 
+	A += MARK:1 * 1
+	PRINTS MARKNAME:1
+	PRINTV 'LV,MARK:1,'(,MARK:1 * 1,')
+	S = 1
+ENDIF
+;PALAM:情欲
+;PALAM:情欲
+IF PALAM:6 < PALAMLV:1
+	L = 0
+ELSEIF PALAM:6 < PALAMLV:2
+	L = 1
+ELSEIF PALAM:6 < PALAMLV:3
+	L = 2
+ELSEIF PALAM:6 < PALAMLV:4
+	L = 3
+ELSEIF PALAM:6 < PALAMLV:5
+	L = 4
+ELSE
+	L = 5
+ENDIF
+IF L
+	SIF S
+		PRINT  + 
+	A += L * 1
+	PRINTS PALAMNAME:6
+	PRINTV 'LV,L,'(,L * 1,')
+	S = 1
+ENDIF
+;直率
+IF TALENT:13
+	PRINT  - 
+	A += 3
+	PRINTS TALENTNAME:13
+	PRINTV '(,1,')
+	S = 1
+ENDIF
+;害羞
+IF TALENT:35
+	PRINT  - 
+	A -= 3
+	PRINTS TALENTNAME:35
+	PRINTV '(,1,')
+	S = 1
+ENDIF
+;自大
+IF TALENT:16
+	PRINT  - 
+	A += 3
+	PRINTS TALENTNAME:16
+	PRINTV '(,1,')
+	S = 1
+ENDIF
+;傲娇
+IF TALENT:18
+	PRINT  - 
+	A += 3
+	PRINTS TALENTNAME:18
+	PRINTV '(,1,')
+	S = 1
+ENDIF
+;施虐狂
+IF TALENT:83
+	PRINT  - 
+	A += 5
+	PRINTS TALENTNAME:83
+	PRINTV '(,1,')
+	S = 1
+ENDIF
+;小恶魔
+IF TALENT:87
+	PRINT  - 
+	A += 3
+	PRINTS TALENTNAME:87
+	PRINTV '(,1,')
+	S = 1
+ENDIF
+;合計を表示(28以上で実行)
+PRINT  = 
+PRINTV A
+
+V = 28
+SIF A < V
+	PRINT  < 
+SIF A == V
+	PRINT  = 
+SIF A > V
+	PRINT  > 
+PRINT 实行值
+PRINTV V
+;実行不可口上/実行判定操作
+IF A < V
+	CALL KOJO_DENIAL
+	WAIT
+	RETURN 0
+ELSE
+	PRINTL
+ENDIF
+;-------------------------------------------------
+;実行決定
+;-------------------------------------------------
+STR:0 = 令其辱骂
+
+
+;実行者が奴隶であるフラグ
+TFLAG:28 = 1
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 15
+LOSEBASE:1 += 150
+
+SOURCE:5 = 100
+SOURCE:6 = 50
+SOURCE:9 = 500
+SOURCE:14 = 50
+SOURCE:17 = 400
+SOURCE:18 = 500
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;嗜虐属性及び施虐狂の処理は先にしておく
+;嗜虐属性を見る
+IF ABL:	10 == 0
+	TIMES SOURCE:14 , 0.80
+	SOURCE:10 += 0
+	SOURCE:11 += 0
+ELSEIF ABL:10 == 1
+	TIMES SOURCE:14 , 1.00
+	SOURCE:10 += 20
+	SOURCE:11 += 30
+ELSEIF ABL:10 == 2
+	TIMES SOURCE:14 , 1.20
+	SOURCE:10 += 40
+	SOURCE:11 += 70
+ELSEIF ABL:10 == 3
+	TIMES SOURCE:14 , 1.40
+	SOURCE:10 += 70
+	SOURCE:11 += 120
+ELSEIF ABL:10 == 4
+	TIMES SOURCE:14 , 1.50
+	SOURCE:10 += 110
+	SOURCE:11 += 180
+ELSEIF ABL:10 == 5
+	TIMES SOURCE:14 , 1.70
+	SOURCE:10 += 150
+	SOURCE:11 += 250
+ELSEIF ABL:10 == 6
+	TIMES SOURCE:14 , 1.90
+	SOURCE:10 += 200
+	SOURCE:11 += 300
+ELSEIF ABL:10 == 7
+	TIMES SOURCE:14 , 2.10
+	SOURCE:10 += 250
+	SOURCE:11 += 350
+ELSEIF ABL:10 == 8
+	TIMES SOURCE:14 , 2.30
+	SOURCE:10 += 300
+	SOURCE:11 += 400
+ELSEIF ABL:10 == 9
+	TIMES SOURCE:14 , 2.50
+	SOURCE:10 += 350
+	SOURCE:11 += 450
+ELSEIF ABL:10 >= 10
+	TIMES SOURCE:14 , 3.00
+	SOURCE:10 += 500
+	SOURCE:11 += 500
+ENDIF
+
+;施虐狂を見る
+IF TALENT:83 == 1
+	TIMES SOURCE:5 , 2.50
+	TIMES SOURCE:10 , 1.20
+	TIMES SOURCE:11 , 1.20
+ENDIF
+
+;TALENT:直率をみる
+IF TALENT:13 == 1
+	TIMES SOURCE:14 , 0.75
+	TIMES SOURCE:17 , 0.75
+	TIMES SOURCE:18 , 0.75
+ENDIF
+
+;TALENT:高傲をみる
+IF TALENT:15 == 1
+	TIMES SOURCE:6 , 1.50
+ENDIF
+
+;TALENT:傲娇をみる
+IF TALENT:18 == 1
+	TIMES SOURCE:6 , 0.80
+	TIMES SOURCE:9 , 0.80
+	TIMES SOURCE:16 , 1.80
+ENDIF
+
+;TALENT:胆怯をみる
+IF TALENT:10 == 1
+	TIMES SOURCE:16 , 1.50
+	TIMES SOURCE:6 , 0.75
+ENDIF
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;蔷薇经验とか加算
+CALL COM_EXP(1)
+
+
+;嗜虐属性に応じて嗜虐快乐经验
+E = 1
+L = 0
+IF ABL:10 == 0
+	E += 0
+	L += 0
+ELSEIF ABL:10 == 1
+	E += 1
+	L += 1
+ELSEIF ABL:10 == 2
+	E += 3
+	L += 2
+ELSEIF ABL:10 == 3
+	E += 5
+	L += 3
+ELSEIF ABL:10 == 4
+	E += 7
+	L += 4
+ELSEIF ABL:10 >= 5
+	E += 9
+	L += 5
+ENDIF
+;调教者の受虐属性で嗜虐快乐经验
+IF ABL:PLAYER:9 == 0
+	E += 0
+	L += 0
+ELSEIF ABL:PLAYER:9 == 1
+	E += 1
+	L += 1
+ELSEIF ABL:PLAYER:9 == 2
+	E += 2
+	L += 3
+ELSEIF ABL:PLAYER:9 == 3
+	E += 3
+	L += 5
+ELSEIF ABL:PLAYER:9 == 4
+	E += 4
+	L += 7
+ELSEIF ABL:PLAYER:9 >= 5
+	E += 5
+	L += 9
+ENDIF
+PRINT 嗜虐快乐经验+
+PRINTVL E
+EXP:32 += E
+TFLAG:28 = E
+IF L > 0
+	PRINTFORM %CALLNAME:PLAYER%的
+	PRINT 痛苦快乐经验+
+	PRINTVL L
+	EXP:PLAYER:30 += L
+	TFLAG:27 = L
+ENDIF
+
+;爱情经验(減少）
+IF (TALENT:3 == 1 || TALENT:6 == 1) && ASSIPLAY == 0 && EXP:23 > 0
+	PRINTS EXPNAME:23
+	PRINTL -1
+	EXP:23 -= 1
+ENDIF
+
+;依赖度ベクトル
+TFLAG:33 = 5
+
+;依赖度補正値(服从で1、隶属で2）
+IF TALENT:5 && ASSIPLAY == 0
+	TFLAG:30 += 1
+ELSEIF TALENT:8 && ASSIPLAY == 0
+	TFLAG:30 += 2
+ENDIF
+
+
+RETURN 1
+
+

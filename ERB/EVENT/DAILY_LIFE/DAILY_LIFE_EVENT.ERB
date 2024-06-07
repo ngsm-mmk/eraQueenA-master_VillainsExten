@@ -1,0 +1,5971 @@
+﻿;日常イベント本文
+;
+;※イベント对象キャラはAに入っている。其他出場キャラは場合によりBまたはCに入れる
+;　B、Cの初期値は-1。特定素質持ちキャラの呼び出し、特定キャラの出現判定の際は一旦初期値に戻すこと
+;　日常登場フラグを立てる処理がされるのはMASTER/A/B/Cだけなので注意
+;
+;※汎用日常イベント内では未陷落キャラは部屋から出さないことにする
+;　出したいときは個別日常イベント使用を推奨
+;
+;※出場確率は恋慕＞淫乱・服从＞未陷落・反抗３＞共犯者
+;　イベントが増えたら確率変えてもいい
+;CFLAG:140 约会フラグ
+;CFLAG:141 罠にかけたフラグ
+;CFLAG:142 アドバイスフラグ
+;CFLAG:143　奴隶逃走の回数
+;やりたいこと
+;●下位陷落/上位陷落の差
+;●主人の素質により分岐
+;●子供の分岐
+;139事件作者：失格菌
+;-------------------------------------------------
+;日常イベントに登場できるキャラがいない場合、手持無沙汰な主人
+;-------------------------------------------------
+@DAILY_LIFE_RETURN
+;随机１：のんびり
+IF !RAND:3
+		IF !TIME
+			PRINT 直到日暮黄昏，
+		ELSE
+			PRINT 直到就寝为止，
+		ENDIF
+	PRINTFORMW 悠闲地度过了这段时间…
+;随机２：見回りでなにか発見
+ELSEIF !RAND:2
+	PRINTFORMW 实在是闲得无聊，干脆在屋里转悠起来
+	PRINT 不久后，找到了
+		IF !RAND:6
+			PRINT 撕碎了的手带
+		ELSEIF !RAND:5
+			PRINT 断链的吊坠
+		ELSEIF !RAND:4
+			PRINT 字迹已不能辨认的笔记本的一页
+		ELSEIF !RAND:3
+			PRINT 蓝色的硬币
+		ELSEIF !RAND:2
+			PRINT 红色的硬币
+		ELSE
+			PRINT 黄色的硬币
+		ENDIF
+	PRINTW *1
+;捨てる確率5分の1　どっちにしろ影響ないけどね
+	IF RAND:5 == 0
+		PRINTW 感觉是没什么价值的玩意儿，直接扔进了垃圾箱
+	ELSE
+		PRINTW ……也是有人把这种东西当宝贝的啦
+		PRINTW 以防万一就收进库房保管起来吧
+	ENDIF
+	PRINTFORMW 结果还是很无聊……
+
+;随机３：夢を見る
+ELSE
+	PRINTFORMW 看书的时候不小心睡着了……
+	PRINTFORML 
+	PRINTFORMW ……
+		IF !RAND:4
+		PRINTFORMW 做了个被什么人追逐着的梦，醒来时出了一身的汗
+		ELSEIF !RAND:3
+		PRINTFORMW 梦见在空中自由翱翔，因此心情很是不错
+		ELSEIF !RAND:2
+		PRINTFORMW 感觉身上压了什么东西，是鬼的把戏吗？
+		PRINTFORMW ……睁开眼睛，原来是刚才读的书压到了胸口
+		ELSE
+		PRINTFORMW 梦里化身为不可名状的生物
+		PRINTFORMW 意识清醒后总觉得浑身都不舒服……
+		PRINTFORMW 把手紧握再张开，手上的感觉渐渐回来，心情才终归平静
+		ENDIF
+ENDIF
+
+;-------------------------------------------------
+;休憩中
+;-------------------------------------------------
+@DAILY_LIFE_睡眠
+;昼の日光浴
+IF !TIME && TALENT:A:日光浴 && !TALENT:A:污臭敏感 
+	;未陷落
+	IF !KANRAKU(A) && CFLAG:A:1 != 3
+		PRINTFORML 路过的时候，偷看了一眼%CALLNAME:A%的房间
+		SIF CFLAG:A:7021
+		PRINTFORM 一絲不掛的
+		PRINTFORM %CALLNAME:A%正盖着毯子睡觉，阳光透过一旁的窗户洒落在
+		IF TALENT:A:男性 || TALENT:A:双性
+		    PRINT 他
+		ELSE
+		    PRINT 她
+		ENDIF
+		PRINTFORMW 身上
+	ELSEIF TALENT:A:兽耳
+		PRINTFORM 路过的时候，在院子里看到了
+		PRINTFORML 沐浴在阳光下的%CALLNAME:A%
+		PRINTFORMW 披着毛毯熟睡的%CALLNAME:A%像猫一般蜷缩着身子
+	ELSE
+		PRINTFORM 路过的时候，看到了
+		PRINTFORML 在阳光下打盹的%CALLNAME:A%
+		PRINTFORMW 胸脯随呼吸起伏着，正盖着一层薄毯睡在吊床上
+	ENDIF
+;兽耳
+ELSEIF TALENT:A:兽耳 && !RAND:2
+	PRINTFORML 路过的时候，偷看了一眼%CALLNAME:A%的房间
+	SIF CFLAG:A:7021
+	PRINTFORM 一絲不掛
+	PRINTFORMW 在床上蜷缩着身子的%CALLNAME:A%就像是没有安全感的兽类
+;其他
+ELSE
+	PRINTFORML 路过的时候，偷看了一眼%CALLNAME:A%的房间
+	PRINTFORM 里面
+	SIF CFLAG:A:7021
+	PRINTFORM 一絲不掛
+	PRINTFORMW 的人好像已经睡着了，安静地闭着眼
+ENDIF
+;反抗刻印３か失意
+IF MARK:A:反抗刻印 >= 3 || TALENT:A:失意 || TALENT:A:嫉妒
+	IF TALENT:A:胆怯 || TALENT:A:悲观
+		PRINTFORMW 总觉得……%CALLNAME:A%的表情很是悲伤…
+	ELSEIF !RAND:2
+		PRINTFORMW 总觉得……%CALLNAME:A%的表情莫名可怕…
+	ELSE
+		PRINTFORMW 总觉得……%CALLNAME:A%的表情非常僵硬…
+	ENDIF
+;陷落済み
+ELSEIF KANRAKU(A)
+	;自大or小恶魔
+	IF (TALENT:A:自大 || TALENT:A:小恶魔) && !RAND:3
+		PRINTFORML 嘴角翘起，一副盘算着什么的模样
+		PRINTFORMW ……到底做了怎样一个梦啊…
+	;谜之魅力or魅惑
+	ELSEIF (TALENT:A:谜之魅力 || TALENT:A:魅惑) && !RAND:3
+		PRINTFORMW 鬼使神差的，感觉自己好像被这张睡容迷住了…
+	;幼稚または孩童尺寸/幼儿退行
+	ELSEIF (TALENT:A:幼稚 || TALENT:A:幼儿／幼儿退行) && RAND:2
+		PRINTFORMW 想了想，走过去帮%CALLNAME:A%重新披上了踢掉的毛毯
+	ELSEIF (TALENT:A:白肤 || TALENT:A:美人 || TALENT:A:魅力) && !RAND:3
+		PRINTFORMW 明明只是在睡觉，却仍散发着惑人的魅力…
+	ELSEIF !RAND:3 && !TALENT:A:嫉妒
+		PRINTFORMW 脸上的表情十分安详…
+	ELSEIF !RAND:2
+		PRINTFORML 睡容安详，嘴角带笑
+		PRINTFORMW 到底做了什么样的梦呢？
+	ELSEIF !RAND:2
+		PRINTFORML 「……%MASTERNAME:A%……」
+		PRINTFORMW 含糊地呢喃着%PLAYER_NAME()%的名字…
+	ELSE
+		SELECTCASE KANRAKU(A)
+			;恋慕ルート
+			CASE 1
+				IF TALENT:A:嫉妒
+					PRINTFORM 「…从%MASTERNAME:A%的身边…滚开…
+					IF TALENT:A:刚强
+						PRINTFORMW 不准…再接近半步……」
+					ELSEIF TALENT:A:高傲
+						PRINTFORMW 谁允许你…接近的…」
+					ELSE
+						PRINTFORMW 不可以…再接近了……」
+					ENDIF
+				ELSEIF !RAND:3
+					IF TALENT:A:老实
+						PRINTFORMW 「抱歉…已经吃不下了……」
+					ELSEIF TALENT:A:幼稚
+						PRINTW 「不行了…吃不下了啦……」
+					ELSEIF TALENT:A:和风
+						PRINTW 「再吃会积食的…请不要再劝了……」
+					ELSEIF TALENT:A:直率
+						PRINTW 「不行…吃不下了……」
+					ELSEIF TALENT:A:自大 || TALENT:A:反抗
+						PRINTW 「够了…已经吃饱了……」
+					ELSE
+						PRINTFORMW 「都说了……已经够饱了……」
+					ENDIF
+				ELSEIF !RAND:2
+					IF CFLAG:A:600 == 2 || CFLAG:A:600 == 3 || CFLAG:A:600 == 7 || CFLAG:A:600 == 10 ||  CFLAG:A:600 == 11
+					;演唱会で丁寧に喋りそうなキャラ
+						PRINTL 「……接下来将为大家献上最后一曲……
+						PRINT 　请务必用心倾听……
+					ELSEIF CFLAG:A:600 == 6
+						PRINT 「……那么，接下来就是最后一曲了……望各位欣赏……
+					ELSE
+						PRINT 「……接下来是这次的最后一首曲子……还请大家用心聆听……
+					ENDIF
+					W = RAND:25
+					CALL SONG_NAME_TOHO
+					PRINTW ……」
+				ELSE
+					PRINTFORM 「……%MASTERNAME:A%的
+					SELECTCASE RAND:4
+						CASE 1
+							PRINTW excalibur……」
+						CASE 2
+							PRINTW 牛奶……」
+						CASEELSE
+							IF CFLAG:A:600 == 10 || CFLAG:A:600 == 11
+								PRINT 胸部…
+							ELSE
+								PRINT 胸…
+							ENDIF
+							IF TALENT:MASTER:巨乳 || TALENT:MASTER:爆乳 
+								PRINTW 变小了……」
+							ELSE
+								IF CFLAG:A:600 == 12 || CFLAG:A:600 == 13
+									PRINTW 鼓起来了……」
+								ELSEIF CFLAG:A:600 == 10 || CFLAG:A:600 == 11
+									PRINTW 变得好胀……」
+								ELSE
+									PRINTW 变大了……」
+								ENDIF
+							ENDIF
+					ENDSELECT
+				ENDIF
+			;淫乱ルート
+			CASE 2
+				IF !RAND:3
+					PRINTFORMW 「……%MASTERNAME:A%……不要停……」
+				ELSEIF !RAND:2
+					IF CFLAG:A:600 == 2
+						PRINTFORMW 「快要…去了……」
+					ELSEIF CFLAG:A:600 == 1
+						PRINTFORMW 「唔啊…射出来了……」
+					ELSE
+						IF TALENT:A:和风
+							PRINTFORMW 「要…要去了……」
+						ELSE
+							PRINTFORMW 「丢…丢了……」
+						ENDIF
+					ENDIF
+				ELSE
+					IF CFLAG:A:600 == 10 || CFLAG:A:600 == 11
+						PRINTFORMW 「…不会吧…讨厌…再长一根什么的……」
+					ELSE
+						PRINTFORMW 「…骗人…居然又了长一根……」
+					ENDIF
+				ENDIF
+			;服从ルート
+			CASE 3
+				$TALK_ITEM_X
+				IF !RAND:3
+					PRINTFORMW 「……%CSTR:A:3%……请原谅……」
+				ELSEIF !RAND:2
+					I = 0
+					REPEAT 16
+						SIF ITEM:COUNT && COUNT != 9
+							I += 1
+					REND
+					SIF I == 0
+						GOTO TALK_ITEM_X
+					$TALK_ITEM
+					I = RAND:16
+					IF I == 9 && ITEM:25
+						PRINTW 「……触手…说话了……！」
+					ELSEIF ITEM:I
+						PRINTFORMW 「……%ITEMNAME:I%…说话了……？」
+					ELSE
+						GOTO TALK_ITEM
+					ENDIF
+				ELSE
+					IF CFLAG:A:600 == 2 || CFLAG:A:600 == 3 || CFLAG:A:600 == 7
+					;稳重、温和、腹黑
+						IF TALENT:A:幼稚
+							PRINTFORMW 「……肚子……好饿啊……」
+						ELSE
+							PRINTW 「……什么都可以……给点吃的吧……」
+						ENDIF
+					ELSEIF CFLAG:A:600 == 10 || CFLAG:A:600 == 11
+					;任性、纯真
+						PRINTW 「……呜呜……好饿啊……」
+					ELSE
+						IF CFLAG:A:600 == 1 || CFLAG:A:600 == 6
+							PRINTW 「……可恶……饿死了……」
+						ELSE
+							PRINTW 「……好想……吃点什么啊……」
+						ENDIF
+					ENDIF
+				ENDIF
+		ENDSELECT
+		PRINTW 好像有说着什么梦话……
+	ENDIF
+;屈服刻印３
+ELSEIF MARK:A:屈服刻印 >= 3
+	;自大or小恶魔
+	IF (TALENT:A:自大 || TALENT:A:小恶魔) && !RAND:7
+		PRINTFORML 嘴角翘起，一副盘算着什么的模样
+		PRINTFORMW ……到底做了怎样一个梦啊…
+	;谜之魅力or魅惑
+	ELSEIF (TALENT:A:谜之魅力 || TALENT:A:魅惑) && !RAND:6
+		PRINTFORMW 鬼使神差的，感觉自己好像被这张睡容迷住了…
+	;幼稚または孩童尺寸/幼儿退行
+	ELSEIF (TALENT:A:幼稚 || TALENT:A:幼儿／幼儿退行) && RAND:5
+		PRINTFORMW 想了想，走过去帮%CALLNAME:A%重新披上了踢掉的毛毯
+	ELSEIF !RAND:4
+		PRINTFORMW 明明只是在睡觉，却仍散发着惑人的魅力…
+	ELSEIF !RAND:3
+		PRINTFORMW 睡得很沉的样子…
+	ELSEIF !RAND:2
+		PRINTFORMW 随着呼吸上下起伏的胸脯十分色情…
+	ELSE
+		PRINTFORML 一副不知世事的样子沉睡着
+		PRINTFORMW 看起来像是被累坏了…
+	ENDIF
+;それ以下
+ELSE
+	IF !RAND:3
+		PRINTFORMW 感觉还没有习惯这里的生活…
+	ELSEIF !RAND:2
+		PRINTFORML 突然间翻了个身，面向了这边
+		PRINTFORMW 吓了一跳，还以为要醒过来了…
+	ELSE
+		PRINTFORML 一副不知世事的样子沉睡着
+		PRINTFORMW 看起来像是被累坏了…
+	ENDIF
+ENDIF
+;体力・气力を２０％回復
+BASE:A:体力 += MAXBASE:A:体力 / 10 * 2
+BASE:A:气力 += MAXBASE:A:气力 / 10 * 2
+
+;-------------------------------------------------
+;部屋にいる
+;-------------------------------------------------
+@DAILY_LIFE_0
+VARSET LOCAL
+PRINTFORM 偷看%CALLNAME:A%的房间，发现
+	SIF CFLAG:A:7021
+	PRINTFORM 一絲不掛的
+	PRINTFORM %CALLNAME:A%
+;失意
+IF TALENT:A:失意
+	PRINTFORMW 什么也没做，呆呆地坐在床上…
+;反抗３
+ELSEIF MARK:A:反抗刻印 >= 3 || TALENT:A:嫉妒
+	PRINTFORMW 焦躁不安地房间里走来走去…
+;陷落、三分の一
+ELSEIF KANRAKU(A) && (CSTR:A:11 != "" || CSTR:A:12 != "" || CSTR:A:13 != "") && !RAND:3
+	PRINTW 在看书打发时间
+	PRINT 那本书的标题是
+	IF CSTR:A:12 != ""
+		PRINTFORML 『%CSTR:A:12%的世界』
+	ELSEIF CSTR:A:13 != ""
+		PRINTFORML 『%CSTR:A:13%的世界』
+	ELSE
+		PRINTFORML 『%CSTR:A:11%的世界』
+	ENDIF
+	PRINTW ……原来如此。
+ELSEIF TALENT:A:恋慕 || TALENT:A:相亲相爱
+	IF !RAND:4
+		PRINTFORMW 正在喝茶
+		IF CFLAG:A:600 == 3 || CFLAG:A:600 == 7
+			PRINTFORMW 「…嗯？是%MASTERNAME:A%啊。坐下来一起品茶吧？」
+		ELSEIF CFLAG:A:600 == 6
+			PRINTFORMW 「…嗯？是%MASTERNAME:A%啊。过来。陪我一起喝吧。」
+		ELSEIF CFLAG:A:600 == 2
+			IF TALENT:绅士 || TALENT:美人
+				PRINTFORMW 「…%MASTERNAME:A%…请坐下来喝一杯茶吧？」
+			ELSE
+				PRINTFORMW 「…%MASTERNAME:A%！坐下来喝一杯茶，如何？」
+			ENDIF
+		ELSEIF CFLAG:A:600 == 9 || CFLAG:A:600 == 12
+			PRINTFORMW 「…哦？这不是%MASTERNAME:A%嘛。要一起喝杯茶吗？」
+		ELSEIF TALENT:A:幼稚 && (TALENT:小恶魔 || TALENT:高傲 || CFLAG:A:600 == 10)
+			PRINTFORMW 「…%MASTERNAME:A%，%MASTERNAME:A%！一起来玩喝茶的游戏吧？可以吗？」
+		ELSEIF CFLAG:A:600 == 11
+			PRINTFORMW 「…%MASTERNAME:A%！来得正好，一起喝茶吧？」
+		ELSEIF CFLAG:A:600 == 8
+			PRINTFORMW 「…要喝茶吗？」
+		ELSE
+			PRINTFORMW 「…%MASTERNAME:A%，陪我喝茶吧？」
+		ENDIF
+		PRINTFORMW 时间在两人的谈话间过去…
+	ELSEIF !RAND:3 && TALENT:A:相亲相爱 && !(TALENT:A:幼稚 || TALENT:A:幼儿／幼儿退行) && !TALENT:A:不擅料理
+		PRINTFORMW 正读着书
+		PRINTFORML 注意到动静后，%CALLNAME:A%把书放下，笑盈盈地做着邀请的动作
+		PRINTFORMW 同时还准备下喝的东西
+		PRINTFORMW …尝了一口，味道非常不错
+		PRINTFORML 一边回应着%CALLNAME:A%的关心，一边看了一眼%CALLNAME:A%之前看的书的标题
+		IF !RAND:4
+			PRINTFORMW 上面写着「这样就百战百胜了！约会达人」
+		ELSEIF !RAND:3
+			PRINTFORMW 上面写着「抓住意中人心的100种方法」
+		ELSEIF !RAND:2
+			PRINTFORMW 上面写着「表面礼节与心理准备」
+		ELSE
+			PRINTFORMW 上面写着「俘虏TA的方式＆行动」
+		ENDIF
+		PRINTFORML 看起来，%CALLNAME:A%正为了%PLAYER_NAME()%不断做着各种各样的努力
+	ELSEIF !RAND:2
+		PRINTFORML 正在看书
+		PRINTFORMW 注意到%PLAYER_NAME()%来了后
+		PRINTFORMW %CALLNAME:A%以一起说说话为理由邀请%PLAYER_NAME()%进入房间
+		PRINTFORMW 接下来的时间就在与%CALLNAME:A%的谈话间愉快地度过了…
+	ELSE
+		PRINTFORMW 正悠闲地享受个人时间
+		PRINTFORML 「%MASTERNAME:A%！」
+		PRINTFORMW 注意到这边动静的%CALLNAME:A%欣喜地呼唤了%PLAYER_NAME()%的名字
+		PRINTFORMW 两人一起度过了平静的时光…
+	ENDIF
+;淫乱陷落
+ELSEIF TALENT:A:淫乱 || TALENT:A:娼妇
+	;何かしら道具は持っているか？
+	FOR LOCAL, 0, 28
+		SIF LOCAL == 25
+			CONTINUE
+		SIF ITEM:LOCAL
+			LOCAL:1++
+	NEXT
+	IF LOCAL:1
+		$REPLAY
+		LOCAL:2 = RAND:28
+		SIF !ITEM:(LOCAL:2) || LOCAL:2 == 25
+			GOTO REPLAY
+	ENDIF
+	;道具ありかつ確率二分の一
+	IF LOCAL:1 && !RAND:2
+		PRINTFORML 正在为%ITEMNAME:(LOCAL:2)%做保养工作
+		PRINTFORMW 看样子十分中意这个，举止间极为细致
+	;露出癖４以上
+	ELSEIF ABL:A:露出癖 >= 4 && FLAG:1 != 3
+		PRINTFORML 恬不知耻地享受着全裸的生活
+		PRINTFORMW 至少先把衣服穿好吧…
+	ELSE
+		PRINTFORML 好像很无聊的样子，一动不动地坐在那儿
+		PRINTFORML 但在看到%PLAYER_NAME()%后嗖的一下站了起来
+		;和风
+		IF TALENT:和风
+			PRINTFORM 「何时进行下一次调教？
+			IF TALENT:傲娇 || TALENT:A:害羞 || TALENT:A:贞操重视 || TALENT:胆怯
+				PRINTFORML …并、并非是在催促的意思…」
+			ELSE
+				PRINTFORML 已经等了很久了」
+			ENDIF
+		;高傲、蛮不讲理
+		ELSEIF CFLAG:A:600 == 6 || CFLAG:A:600 == 9
+			PRINTFORM 「喂，下次调教是什么时候？
+			IF TALENT:傲娇 || TALENT:A:贞操重视
+				PRINTFORML …话说在前面，这可不是在催你」
+			ELSE
+				PRINTFORML 实在是等得不耐烦了」
+			ENDIF
+		;稳重、认真
+		ELSEIF CFLAG:A:600 == 2 || CFLAG:A:600 == 3
+			IF TALENT:A:害羞 || TALENT:A:胆怯 || TALENT:A:绅士 || TALENT:A:美人
+				PRINTFORM 「…请问，下次调教是什么时间呢？
+			ELSE
+				PRINTFORM 「下次调教的时间是？
+			ENDIF
+			IF TALENT:傲娇 || TALENT:A:害羞 || TALENT:A:贞操重视 || TALENT:胆怯
+				PRINTFORML …只是确认一下，并不是想要的意思」
+			ELSE
+				PRINTFORML 说实话有些等不及了…」
+			ENDIF
+		;元气
+		ELSEIF CFLAG:A:600 == 1
+			PRINTFORM 「%MASTERNAME:A%，下次调教的时间是？
+			IF TALENT:傲娇 || TALENT:A:害羞 || TALENT:A:贞操重视 || TALENT:胆怯
+				PRINTL 这、这不算是催促……吧？」
+			ELSE
+				PRINTL 已经到忍耐的极限了」
+			ENDIF
+		;小恶魔系
+		ELSEIF TALENT:小恶魔 || CFLAG:A:600 == 10
+			PRINTFORML 「喂～下次什么时候调教%CSTR:A:0%呢？不把%CSTR:A:0%弄得乱七八糟的可不算数哦？」
+		;阴暗无口
+		ELSEIF CFLAG:A:600 == 8
+			PRINTFORML 「下次…什么时候？」
+		ELSE
+			IF TALENT:绅士 || TALENT:美人
+				PRINTFORML 「…下次的调教时间是…什么时候呢？啊…那个……不是在催促的意思……」
+			ELSE
+				PRINTFORM 「下、下次的调教还有多久？
+				IF TALENT:傲娇 || TALENT:A:害羞 || TALENT:A:贞操重视 || TALENT:胆怯
+					PRINTFORML …不要那么看我，只是提前确认一下以做好心理准备……而已哦？」
+				ELSE
+					IF !TIME
+						PRINTFORML 今天晚上……不行吗？」
+					ELSE
+						PRINTFORML 明天的话……可以吗？」
+					ENDIF
+				ENDIF
+			ENDIF
+		ENDIF
+		PRINTFORMW 像这样追问着…
+	ENDIF
+;服从陷落
+ELSEIF TALENT:A:服从 || TALENT:A:隶属
+	PRINTFORMW 似乎已经习惯这里的生活，满脸惬意…
+;未陷落＆屈服刻印３
+ELSEIF !KANRAKU(A) && MARK:A:屈服刻印 >= 3
+	PRINTW 呆呆地望着窗外…
+;未陷落
+ELSE
+	PRINTW 似乎不太高兴地在房间里徘徊…
+ENDIF
+
+;-------------------------------------------------
+;歌唱练习をしている
+;-------------------------------------------------
+@DAILY_LIFE_1
+PRINTFORMW 经过%CALLNAME:A%的房间时，听到了从里面传来的歌声
+IF TALENT:A:悲观 || TALENT:A:失意 || TALENT:A:嫉妒
+	IF !RAND:5 || (TALENT:A:失意 && !RAND:2)
+		PRINTFORMW 「哀しみの捨て場所など♪　%CSTR:A:0%には何処にもないのだ♪」
+	ELSEIF !RAND:4 || (TALENT:A:失意 && !RAND:2)
+		PRINTFORMW 「どのくらい遠い場所だろう♪　あなたを忘れられるのは～♪」
+	ELSEIF !RAND:3
+		PRINTFORMW 「蝋細工～の～心だから～♪　今は～それを溶～か～し～たい～♪」
+	ELSEIF !RAND:2
+		PRINTFORMW 「どこに居たって～♪　どうせ鎖につながれた自由～♪」
+	ELSE
+		PRINTFORMW 「光の中で佇む君を見つめていると♪　胸の奥がきしむよ♪」
+	ENDIF
+ELSEIF TALENT:A:乐观
+	IF !RAND:5
+		PRINTFORMW 「そうさ　1000％のゆーうき♪　もう迷ーいはーなーいさー♪」
+	ELSEIF !RAND:4
+		PRINTFORMW 「誰　誰　誰より好きだよー♪　不器用な%CSTR:A:0%でゴメンー♪」
+	ELSEIF !RAND:3
+		PRINTFORMW 「心ウキウキ♪ 今日は嬉しい♪　コケシも踊るよ ラララララお祭り♪」
+	ELSEIF !RAND:2
+		PRINTFORMW 「牛排　牛排　牛排　素敵牛排美味しい牛排♪」
+	ELSE
+		PRINTFORMW 「微笑む太陽の奴へと　Vサイン♪　今日こそ%CSTR:A:2%にLOVING YOU♪」
+	ENDIF
+ELSE
+	IF !RAND:8
+		PRINTFORMW 「心ーのタルが隠ーしーてたー♪　幾千ーのきらめきがー♪」
+	ELSEIF !RAND:7
+		PRINTFORMW 「人生はまるでトランプの裏表ー♪」
+	ELSEIF !RAND:6
+		PRINTFORMW 「うーんめーいがー♪　揺れうーごくー時ー♪　未来ーが変ーわるー♪」
+	ELSEIF !RAND:5
+		PRINTFORMW 「%CSTR:A:0%のー好きなお話ー♪　それはお～い～しいキノコのお話ー♪」
+	ELSEIF !RAND:4
+		PRINTFORMW 「走るー冲击ーの♪　エボリューション♪　からだー貫く稲妻ー♪」
+	ELSEIF !RAND:3
+		PRINTFORMW 「抜けられない手遅れさ♪　支配されたホントの自分♪」
+	ELSEIF !RAND:2
+		PRINTFORMW 「ドーアーのーない米屋♪　お前の胸肉ピザみたい♪」
+	ELSE
+		PRINTFORMW 「君の中にいる僕はー♪　やがて泡のように消えてくー♪」
+	ENDIF
+ENDIF
+;反抗３もしくは失意
+IF MARK:A:反抗刻印 >= 3 || TALENT:A:失意 || TALENT:A:嫉妒
+	PRINTFORML 好像在反反复复唱着同一句歌词
+	IF TALENT:A:乐观
+		PRINTFORML 本应是明朗轻快的旋律，歌声却很凄凉…
+	ELSEIF TALENT:A:悲观
+		PRINTFORML 夹带了呜咽的歌声与黯淡的旋律结合，让人听了心情也不由得低落…
+	ELSE
+		PRINTFORML 平淡的歌声里隐含有\@ TALENT:A:失意 ? 悲伤 # 愤怒 \@的情绪…
+	ENDIF
+	PRINTFORMW 心情再也无法平静，不得不匆匆离开这个地方
+;歌唱经验１００以上
+ELSEIF (EXP:A:歌唱经验 >= 100 || TALENT:A:擅长歌唱) && RAND:2 == 0
+	IF TALENT:A:乐观
+		PRINTFORML 跟随着富有动感的节拍，不知不觉心跳得越来越快
+	ELSEIF TALENT:A:悲观
+		PRINTFORML 心情在婉转的歌声中渐渐沉静
+	ELSE
+		PRINTFORML 清澈的高音扫平了愁绪，使人身心舒畅
+	ENDIF
+	PRINTFORMW 在%CALLNAME:A%が唱完一首歌前因听得入迷而忘记了时间…
+;陷落済みのみ
+ELSEIF !RAND:3 && KANRAKU(A)
+	PRINTFORML 是想要克服自己不擅长的部分吗？
+	PRINTFORMW 总是重复着同一句歌词…
+ELSEIF !RAND:2
+	PRINTFORMW  \@ !RAND:2 ? 原来是以前的流行歌啊 # 原来是%CALLNAME:A%故乡的歌曲 \@，真令人怀念…
+ELSE
+	PRINTFORML 不知怎么了，今天%CALLNAME:A%的歌声有些奇怪
+	PRINTFORML 气息不稳，节奏也瞬息万变…
+	PRINTFORMW 实在是听得头晕眼花，只能捂住耳朵快步离去
+ENDIF
+EXP:A:歌唱经验 += 1
+PRINTFORMW %CALLNAME:A%的歌唱经验 ＋１
+
+;-------------------------------------------------
+;壁にブツブツ言う
+;-------------------------------------------------
+@DAILY_LIFE_2
+PRINTFORMW 经过%CALLNAME:A%的房间时，听到了里面传来的说话声…
+PRINTFORM 感觉很可疑，便往里头偷看，发现
+SIF CFLAG:A:7021
+PRINTFORM 一絲不掛的
+PRINTFORM %CALLNAME:A%正面对着墙壁
+IF !RAND:4 && (TALENT:A:淫乱 || TALENT:A:娼妇)
+	PRINTFORML 一副亢奋的样子兴致很高地嘟哝着什么
+ELSEIF !RAND:3
+	PRINTFORML 双手胡乱舞动
+ELSEIF !RAND:2
+	PRINTFORML 不知同谁谈笑风生
+ELSE
+	PRINTFORML 窃窃私语
+ENDIF
+PRINTFORMW ……好渗人
+PRINTFORM 正在这时，%CALLNAME:A%注意到了这边
+IF MARK:A:反抗刻印 >= 3 || TALENT:A:失意
+	PRINTFORML 这次开始目光凶狠地瞪着墙破口大骂
+	PRINTFORMW ……果然好可怕
+;主人に对して恋慕陷落
+ELSEIF (TALENT:A:恋慕 || TALENT:A:相亲相爱) && !TALENT:A:嫉妒
+	PRINTFORML 微笑着朝这边招手
+	PRINTFORMW ……三个人（？）隔着墙开始说话…
+;主人に对して服从陷落
+ELSEIF TALENT:A:服从 || TALENT:A:隶属
+	PRINTFORML 仔细地介绍起墙壁来
+	PRINTFORMW ……果然好可怕
+ELSEIF TALENT:A:淫乱 || TALENT:A:娼妇
+	PRINTFORML 提出了和墙壁一起群交的提议
+	PRINTFORMW ……实在是太吓人所以立即拒绝了
+ELSE
+	PRINTFORML 向这边微笑了一下，又开始和墙壁说话了
+	PRINTFORMW ……果然好可怕
+ENDIF
+
+;-------------------------------------------------
+;魔法っぽいことをしている
+;-------------------------------------------------
+@DAILY_LIFE_3
+;魔方陣
+IF !RAND:2
+	PRINTFORML 路过%CALLNAME:A%的房间时，
+	PRINTFORM 发现
+	SIF CFLAG:A:7021
+	PRINTFORM 一絲不掛的
+	PRINTFORML %CALLNAME:A%神叨叨地站在魔法阵前，口中念念有词
+	PRINTFORMW 这是什么奇怪的仪式吗，可别发生什么不好的事…
+	;五分の一の確率、对象が[学得慢]か技巧２以下の場合は二分の一の確率
+	IF ((TALENT:A:学得慢 || ABL:A:技巧 <= 2) && !RAND:2) || !RAND:5
+		PRINTFORML 刚这么想着，魔法阵就猝不及防地爆炸了……
+		PRINTFORML 浑身漆黑的%CALLNAME:A%从烟雾中走出来
+		PRINTFORML “砰”的一声倒在%PLAYER_NAME()%的脚下
+		PRINTFORMW 真会给人添麻烦，只能让这家伙去别的房间睡了…
+	ELSE
+		PRINTFORML 忽然间，法阵中心闪烁起神秘的光芒，其间还点缀着漂亮的蓝色火焰
+		PRINTFORML 见到这一幕的%CALLNAME:A%立刻念起了另一串咒语
+		PRINTFORMW 似乎集中起注意力了，为免打扰先暂时离开吧…
+	ENDIF
+;塔罗ット占卜
+ELSE
+	PRINTFORML 路过%CALLNAME:A%的房间时，
+	PRINTFORM 碰巧看到
+	SIF CFLAG:A:7021
+	PRINTFORM 一絲不掛的
+	PRINTFORML %CALLNAME:A%用塔罗牌占卜
+	PRINTFORMW 正襟危坐的%CALLNAME:A%一边嘟哝着什么一边神色凝重地翻动卡片
+	;五分の一の確率、对象が[学得慢]か技巧２以下の場合は二分の一の確率
+	IF ((TALENT:A:学得慢 || ABL:A:技巧 <= 2) && !RAND:2) || !RAND:5
+		PRINTFORML 是在困惑要如何解释卡片的含义吗？
+		PRINTFORMW %CALLNAME:A%一副为难的样子和手中的卡片对视着…
+	ELSE
+		PRINTFORML 托着下巴沉吟片刻，%CALLNAME:A%强有力地点了下头
+		PRINTFORMW 看来是得到了不错的占卜结果…
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;実験っぽいことをしている
+;-------------------------------------------------
+@DAILY_LIFE_4
+;フラスコで実験
+IF !RAND:2
+	PRINTFORM 厨房里，
+	PRINTFORML %CALLNAME:A%正把锅和烧瓶等器械组合起来做实验，
+	PRINTFORMW 并往咕嘟咕嘟滚开的锅里倒下了蓝色的液体
+	;五分の一の確率、对象が[学得慢]か技巧２以下の場合は二分の一の確率
+	IF ((TALENT:A:学得慢 || ABL:A:技巧 <= 2) && !RAND:2) || !RAND:5
+		IF !RAND:2
+			PRINTFORML 紧接着“砰”的一声，锅子爆炸了…
+			PRINTFORML 浑身漆黑的%CALLNAME:A%自烟雾里出现
+			PRINTFORML 然后“哐当”倒在了%PLAYER_NAME()%的面前
+			PRINTFORMW 惊讶地为其做了治疗后，决定让这家伙睡到其他房间去…
+		ELSE
+			PRINTFORMW ………
+			PRINTFORMW ………………
+			PRINTFORMW ………………………
+			PRINTFORML 似乎没有产生任何变化
+			PRINTFORMW 凝视着毫无动静的烧瓶，%CALLNAME:A%一脸的不可思议
+		ENDIF
+	ELSE
+		IF !RAND:2
+			PRINTFORML 紧接着，锅中冒出紫色的烟，沸腾的液体恢复了平静
+			PRINTFORML %CALLNAME:A%东张西望了一阵，发现了这边
+			PRINTFORMW 随即，把整个宅邸都卷入其中的捉迷藏开始了…
+		ELSE
+			PRINTFORML 烧瓶里的内容染上了彩虹色，虽然颇为明亮，却令人毛骨悚然地闪耀着
+			PRINTFORMW %CALLNAME:A%在一瞬的犹豫后，下定决心一般一口气喝干了它
+			IF !RAND:2
+				PRINTFORML 看起来实验总算是成功了
+				PRINTFORMW 这次他开始在研究笔记上沙沙写着什么…
+			ELSE
+				PRINTFORML 下一瞬，%CALLNAME:A%的脸色变成了彩虹色
+				PRINTFORMW 很遗憾，实验好像失败了…
+			ENDIF
+		ENDIF
+	ENDIF
+ELSE
+	PRINTFORML 无意中偷看了%CALLNAME:A%的房间
+	IF TALENT:A:禁断的知识 || ABL:A:技巧 >= 5
+		IF !RAND:2
+			PRINTFORML 看到了几个并排着的透明箱子
+			PRINTFORML 里面养着不知是蝾螈还是壁虎的东西
+			PRINTFORM 是在培育调配秘药的材料吗？
+			IF !RAND:3
+				PRINTFORMW 还是说，只是普通的宠物呢…
+			ELSE
+				PRINTW 
+			ENDIF
+		ELSE
+			PRINTFORML 发现里面摆放着许多造型奇妙的盆栽
+			PRINTFORML 比如显然有毒的色泽鲜丽的花，还有奇形怪状的巨大蘑菇
+			PRINTFORM 是在培育调配秘药的材料吗？
+			IF !RAND:3
+				PRINTFORMW 还是说，只是普通的观赏性植物呢…
+			ELSE
+				PRINTW 
+			ENDIF
+		ENDIF
+	ELSE
+		PRINTFORML 一股强烈的香味扑鼻而来
+		PRINTFORML 其源头好像是床边摆放的香草类盆栽
+		IF !RAND:3
+			PRINTFORMW 是自行栽培的用于调制香草茶的原料吗…
+		ELSE
+			PRINTFORMW 是在培育调配药物的材料吗？
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;读书
+;-------------------------------------------------
+@DAILY_LIFE_5
+;部屋で读书
+IF (!KANRAKU(A) && CFLAG:A:1 != 3) || TALENT:A:病娇
+	PRINTFORM 偷看%CALLNAME:A%的房间，发现
+	SIF CFLAG:A:7021
+	PRINTFORM 一絲不掛的
+	PRINTFORMW %CALLNAME:A%正在读书
+	IF MARK:A:反抗刻印 >= 2 
+		PRINTFORML 注意到门边的%PLAYER_NAME()%，%CALLNAME:A%合上书本，把头转了过来
+		PRINTFORM %CALLNAME:A%刚才读的书的标题是
+		IF !RAND:3
+			PRINTFORMW 『复仇者』…
+		ELSEIF !RAND:2
+			PRINTFORMW 『逃出监狱』…
+		ELSE
+			PRINTFORMW 『不下杀手又能让人痛苦的方法』…
+		ENDIF
+	ELSEIF TALENT:A:病娇
+		PRINTFORM 书的标题是
+		IF !RAND:3
+			PRINTFORMW 『外遇心理学』…
+		ELSEIF !RAND:2
+			PRINTFORMW 『离间情侣让他们分手的方法』…
+		ELSE
+			PRINTFORMW 『不下杀手又能让人痛苦的方法』…
+		ENDIF
+	ELSEIF CFLAG:A:2 >= 700
+		PRINTFORM %CALLNAME:A%正在读的书的标题是
+		IF !RAND:3
+			PRINTFORMW 『再见，斯德哥尔摩』…
+		ELSEIF !RAND:2
+			PRINTFORMW 『犯罪心理学入门』…
+		ELSE
+			PRINTFORMW 『斯德哥尔摩综合征』…
+		ENDIF
+	ELSEIF TALENT:A:失意
+		PRINTFORM 定睛一看，%CALLNAME:A%目无焦点，
+		IF !RAND:3
+			PRINTFORMW 从刚才起就没有翻过书…
+		ELSEIF !RAND:2
+			PRINTFORMW 只是机械性地哗啦哗啦翻动着书页…
+		ELSE
+			PRINTFORMW 书都拿倒了…
+		ENDIF
+	;未陷落
+	ELSE
+		PRINTFORML 注意到门边的%PLAYER_NAME()%，%CALLNAME:A%合上书本，把头转了过来
+		PRINTFORMW ……气氛变得很尴尬
+	ENDIF
+;図書室で读书
+ELSE
+	IF TALENT:A:幼稚 || TALENT:A:幼儿／幼儿退行
+		PRINTFORM 来到图书室，发现
+		PRINTFORMW %CALLNAME:A%正对着一本书咯吱咯吱地笑
+		PRINTFORML 即便注意到%PLAYER_NAME()%进来，也只是朝这边露出一个得意的笑容，随即又继续沉浸在书本的世界中
+		PRINTFORMW 去找找自己想看的书吧……
+		IF !RAND:2
+			PRINTFORML 回来一看，%CALLNAME:A%已经不见了，桌子上只剩下散乱的书本
+			PRINTFORMW 是已经厌倦了吗？
+			B = DAILYLIFE_GETTALENT_1(63)
+			IF B > 0 && MARK:B:反抗刻印 < 3 && KANRAKU(B) > 0
+				PRINTFORMW ………………
+				PRINTFORML 回来后看见%CALLNAME:A%正在整理乱七八糟的桌面
+				PRINTFORMW 不知什么时候在旁边的%CALLNAME:B%也帮忙收拾着…
+			ENDIF
+		ELSE
+			PRINTFORMW 找完书回来，发现%CALLNAME:A%趴在书上睡着了，嘴里念叨着梦话……
+			IF CFLAG:601 == 3
+				IF TALENT:A:服从 || TALENT:A:隶属
+					PRINTFORMW 这家伙好像在努力学习能帮到%PLAYER_NAME()%的技能
+				ELSE
+					PRINTFORML 这家伙好像在费力钻研能让%PLAYER_NAME()%神魂颠倒的技巧
+				ENDIF
+			ELSE
+				IF TALENT:A:服从 || TALENT:A:隶属 || (CFLAG:2000 == 6)
+					PRINTFORMW 「这下……就能帮到%MASTERNAME:A%了吧……」
+				ELSE
+					PRINTFORMW 「这下……一定可以迷住%MASTERNAME:A%……」
+				ENDIF
+			ENDIF
+			;体型差が無いと抱けない
+			;体格差を検索
+			LOCAL:1 = BUILD2(MASTER, A)
+			IF LOCAL:1 > 0
+				PRINTFORMW 最后苦笑着把%CALLNAME:A%抱回了房间…
+			ELSE
+				PRINTFORMW 最后苦笑着把%CALLNAME:A%叫醒带回了房间…
+			ENDIF
+		ENDIF
+	;主人に对して恋慕陷落
+	ELSEIF TALENT:A:恋慕 || TALENT:A:相亲相爱
+		PRINTFORMW 来到图书室，发现%CALLNAME:A%正在看书
+		IF !RAND:2
+			PRINTFORML 注意到%PLAYER_NAME()%进来的%CALLNAME:A%立刻笑脸相迎
+			PRINTFORMW 坐在旁边的座位上，和满脸开心的%CALLNAME:A%一起聊了喜欢的书的话题…
+		ELSE
+			PRINTFORML %CALLNAME:A%注意到%PLAYER_NAME()%进来后慌慌张张合上书本把书塞回了书架
+			PRINTFORM 感到好奇所以询问%CALLNAME:A%那是什么书，
+			IF TALENT:A:害羞 && (TALENT:A:胆怯 || TALENT:A:直率 || TALENT:A:老实)
+				PRINTFORMW 结果%CALLNAME:A%红着脸小声地说了些什么就落荒而逃了
+				PRINTFORMW 到底是怎么一回事啊…
+			ELSEIF TALENT:A:反抗 || TALENT:A:傲娇 || TALENT:A:高傲
+				PRINTFORML 没想到被满脸通红的%CALLNAME:A%训了一顿
+				PRINTFORMW 然后这家伙就跟躲避什么可怕东西似的逃出了图书室
+				PRINTFORMW 到底是怎么一回事啊…
+			ELSE
+				PRINTFORMW 结果%CALLNAME:A%吞吞吐吐地说了些什么就飞快地逃走了
+				PRINTFORMW 到底是怎么一回事啊…
+			ENDIF
+		ENDIF
+	;淫乱か服从
+	ELSE
+		PRINTFORMW 来到图书室，发现%CALLNAME:A%正在看书
+		IF !RAND:3
+			PRINTFORMW %CALLNAME:A%沉浸在书本的世界中，没有注意到%PLAYER_NAME()%…
+			PRINTFORMW 看来还是不要打扰%CALLNAME:A%了，去找找想看的书吧
+		ELSEIF !RAND:2
+			PRINTFORMW %CALLNAME:A%沉浸在书本的世界中，没有注意到%PLAYER_NAME()%…
+			PRINTFORMW 找了本感兴趣的书坐下看了起来
+			PRINTFORMW 没多久听到了%CALLNAME:A%丢人的呼声，就像是突然被吓了一跳那样
+			PRINTFORMW ……有趣
+		ELSE
+			PRINTFORMW %CALLNAME:A%注意到这边后抬起头打了声招呼，随即目光又落回到书本上
+			;淫乱陷落
+			IF TALENT:A:淫乱 || TALENT:A:娼妇
+				PRINTFORMW 『不能说的话』……？
+			;服从陷落
+			ELSE
+				IF TALENT:A:施虐狂 && !RAND:2
+					PRINTFORMW 『人体要害』……？
+				ELSE
+					PRINTFORMW 『ＳＭ百选』……？
+				ENDIF
+			ENDIF
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;おもらし
+;-------------------------------------------------
+@DAILY_LIFE_6
+;他に[漏尿癖]持ちのキャラがいるか検索
+B = DAILYLIFE_GETTALENT_1(57)
+;[漏尿癖]持ちがいるとき二分の一の確率で、二人で布団干し
+IF B > 0 && !RAND:2 && !TALENT:嫉妒
+	PRINTFORML 无意间看了眼窗外的院子，发现晾着两床被单
+	PRINTFORML 今早上尿床了的是……%CALLNAME:A%和……%CALLNAME:B%吗
+	PRINTFORMW 好像是因此产生了微妙的革命情谊，两个人一边气氛颇好地聊天一边晾晒床单…
+;１人で布団干し
+ELSE
+	PRINTFORML 无意间看了眼窗外的院子，发现晾着一床被单
+	IF TALENT:A:害羞 || TALENT:A:老实
+		PRINTFORML 旁边站着脸颊羞红的%CALLNAME:A%
+	ELSEIF (TALENT:A:乐观 || TALENT:A:不知羞耻) && !TALENT:A:大人
+		PRINTFORML 旁边站着若无其事的%CALLNAME:A%
+	ELSE
+		PRINTFORML 旁边站着闷闷不乐的%CALLNAME:A%
+	ENDIF
+	PRINTFORM 看来又犯错了呢
+	IF TALENT:A:学得慢 || TALENT:A:幼稚 || TALENT:A:幼儿／幼儿退行
+		PRINTL 
+		PRINTFORMW 不过在晾干之前还是洗一洗比较好吧…
+	ELSE
+		PRINTW …
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;庭院でひなたぼっこ
+;-------------------------------------------------
+@DAILY_LIFE_7
+PRINTFORML 路过院子的时候偶遇了正在晒太阳的%CALLNAME:A%
+IF MARK:A:反抗刻印 >= 3 || TALENT:A:失意
+	PRINTFORMW 一看到%PLAYER_NAME()%，%CALLNAME:A%立刻起身，摆着臭脸离开了…
+ELSEIF TALENT:A:兽耳 == 1
+	PRINTFORML %CALLNAME:A%在暖融融的阳光下惬意地眯着眼
+	PRINTFORML 注意到这边的动静后，像真正的兽类一样动了动耳朵
+	IF !RAND:2
+		PRINTFORMW 气氛很是不错，两个人一起待了会儿…
+	ELSE
+		PRINTFORMW 在一旁望着心情不错的%CALLNAME:A%，不知不觉天就黑了…
+	ENDIF
+ELSE
+	PRINTFORML %CALLNAME:A%在阳光下心情舒畅地仰望天空
+	PRINTFORML 注意到这边的动静后，眯着眼点了点头
+	IF !RAND:2
+		PRINTFORMW 气氛很是不错，两个人一起待了会儿…
+	ELSE
+		PRINTFORMW 在一旁望着心情不错的%CALLNAME:A%，不知不觉天就黑了…
+	ENDIF
+ENDIF
+PRINTL
+PRINTFORML %CALLNAME:A%的体力和气力少量回复
+;体力・气力を１０％回復
+BASE:A:体力 += MAXBASE:A:体力 / 10
+BASE:A:气力 += MAXBASE:A:气力 / 10
+
+;-------------------------------------------------
+;屋根の上で笑っている
+;-------------------------------------------------
+@DAILY_LIFE_8
+PRINTFORML 无意间打量窗外，发现了屋顶上的%CALLNAME:A%
+PRINTFORMW 仰望着夜空，身披青白色月光的%CALLNAME:A%，看上去就像是这个世界以外的存在一般
+IF MARK:A:反抗刻印 >= 3 || TALENT:A:失意
+	PRINTFORMW 注意到%PLAYER_NAME()%的视线后，%CALLNAME:A%隐没了身形…
+ELSEIF TALENT:A:恋慕 || TALENT:A:相亲相爱
+	PRINTFORML 注意到%PLAYER_NAME()%的视线后，%CALLNAME:A%神秘而温柔地一笑，转身离开了屋顶
+	PRINTFORMW 不一会儿，%CALLNAME:A%来到%PLAYER_NAME()%身边，两个人相互依偎着抬起头，一起看向空中的皎皎月牙…
+ELSEIF TALENT:A:淫乱 || TALENT:A:娼妇
+	PRINTFORMW 注意到%PLAYER_NAME()%的视线后，%CALLNAME:A%露出了神秘妖异的笑容，随即又一次看向空中的月亮…
+ELSEIF TALENT:A:服从 || TALENT:A:隶属
+	PRINTFORMW 注意到%PLAYER_NAME()%的视线后，%CALLNAME:A%从屋顶上下来，跪在了%PLAYER_NAME()%脚边…
+ENDIF
+
+;-------------------------------------------------
+;兽耳/庭院で摇摇晃晃している
+;-------------------------------------------------
+@DAILY_LIFE_9
+IF TIME == 0
+	PRINTFORML 从窗户往外看，发现%CALLNAME:A%正在院子里来回走动
+	PRINTFORMW 好像还凑着鼻子嗅来嗅去的……？　是在找什么东西吗？
+ELSE
+	PRINTFORML 听到了院子里传来的声响
+	PRINTFORML 把头探出去看了眼窗外，借着屋里透出去的光线发现%CALLNAME:A%正在院子里来回走动
+	PRINTFORML 身形被光照得影影绰绰，就算察觉到%PLAYER_NAME()%的视线也没停下
+	PRINTFORMW 好像还凑着鼻子嗅来嗅去的……？　是在找什么东西吗？
+ENDIF
+IF RAND:5 == 0
+	PRINTFORML 哦呀，好像有收获了
+	PRINTFORMW ……似乎是没什么兴趣的东西，随手扔掉后又开始了新一轮的“寻宝”
+	PRINTFORMW 到底在找什么呢…
+ELSEIF !RAND:4
+	PRINTFORML 正这么想着，%CALLNAME:A%嗖的一下跳远了
+	PRINTFORMW 就像是被什么吓到了一样惊慌失措
+	PRINTFORML 过了会儿，又再次试探着接近了刚才的地方
+	PRINTFORML 到底在找什么啦…
+	PRINTFORMW 啊。又逃跑了
+ELSEIF !RAND:3
+	PRINTFORML ？　草丛里可能有什么在意的东西，%CALLNAME:A%一头扎进去窸窸窣窣地翻找着
+	PRINTFORML 屁股和尾巴也随着动作摇来晃去
+	PRINTFORMW 所以到底在找什么啊…
+ELSEIF !RAND:2
+	PRINTFORML 就这样徘徊了好一阵，最终一无所获只能放弃，然后溜达着去了别的地方
+	PRINTFORMW 到底是在找什么呢…
+ELSE
+	PRINTFORML 哦呀，好像有收获了
+	PRINTFORML 满脸开心地捡起了什么，得意洋洋地捧着那东西到其他地方去了
+	PRINTFORMW ……到底怎么一回事…
+ENDIF
+
+;-------------------------------------------------
+;縫物
+;-------------------------------------------------
+@DAILY_LIFE_10
+PRINTFORM 路过
+IF !RAND:2
+	PRINTFORM 厨房时
+	PRINTFORMW ，发现%CALLNAME:A%正在飞针走线
+ELSE
+	PRINTFORM %CALLNAME:A%的房间时，发现
+	SIF CFLAG:A:7021
+	PRINTFORM 一絲不掛的
+	PRINTFORMW %CALLNAME:A%正在飞针走线
+ENDIF
+PRINTFORMW 真不愧是擅长用针的人，手指翻飞极为灵活
+IF TALENT:A:失意 || TALENT:A:嫉妒
+	PRINTFORML 对方好像并未注意到%PLAYER_NAME()%的存在，一脸出神地继续着手上的活计
+	PRINTFORML 总觉得%CALLNAME:A%有些心不在焉，就在一旁担忧地观察起来
+	PRINTFORM 下一秒，
+	IF !RAND:2
+		PRINTFORMW %CALLNAME:A%痛呼一声，指尖冒出血珠
+	ELSE
+		PRINTFORMW %CALLNAME:A%的眼角滑落下一滴泪，小声地哭了
+	ENDIF
+	PRINTFORMW 将这副模样还继续缝补的%CALLNAME:A%拉起来，不由分说地带往自己的房间…
+ELSEIF MARK:A:反抗刻印 >= 3
+	PRINTFORML 然而，在注意到%PLAYER_NAME()%后就停下了动作，握着针一直盯着这边
+	PRINTFORML 互相尴尬地对视了好一阵，%CALLNAME:A%收起针线篮头也不回地离开了…
+ELSEIF TALENT:A:受虐狂 == 2 && !RAND:2
+	PRINTFORML 满心佩服地观望了一会儿，发现%CALLNAME:A%好像不只是在做针线活
+	PRINTFORML 间或偷偷地用针扎刺自己的手指，还兴奋地喘息着，怎么看都不太对劲
+	PRINTFORM ……在这家伙把自己弄得满手是血前不得不冲上去阻止了
+	IF TALENT:A:男性 || TALENT:A:双性
+	    PRINTFORMW 他
+	ELSE
+	    PRINTFORMW 她
+	ENDIF
+;主人に对して恋慕陷落＆怀孕中
+ELSEIF (TALENT:A:恋慕 || TALENT:A:相亲相爱) && TALENT:A:怀孕
+	PRINTFORML %CALLNAME:A%时不时会抚摸一下自己的肚子
+	PRINTFORMW 看样子是想提前为肚子里的孩子做点东西
+	PRINTFORML 本来神情忧郁的%CALLNAME:A%在看到%PLAYER_NAME()%后绽放出笑容，朝这边挥了挥手
+	PRINTFORMW 陪着做针线活的%CALLNAME:A%聊天解闷，度过了一段愉快的时光
+	SIF !MALE(A)
+		PRINTFORMW ……话说回来，%CALLNAME:A%似乎不只是身体，连心都完全变成女人了
+;主人に对して恋慕陷落＆怀孕していない場合
+ELSEIF TALENT:A:恋慕 || TALENT:A:相亲相爱
+	IF TALENT:A:反抗 || TALENT:A:傲娇 || TALENT:A:自大
+		PRINTFORML 满心佩服地观望了一会儿，却看到%CALLNAME:A%的脸变得越来越红…
+		PRINTFORMW 还被训斥说不要在这儿碍事
+		PRINTFORML 尽管摸不着头脑，总之先道了歉
+		PRINTFORML 接着就被%CALLNAME:A%用尺子在身上比划来比划去
+		PRINTFORMW 对此发问后，果不其然又被训了一顿…
+	ELSE
+		PRINTFORML 本来神情忧郁的%CALLNAME:A%在看到%PLAYER_NAME()%后绽放出笑容，朝这边挥了挥手
+		PRINTFORMW 等%PLAYER_NAME()%走过去后，%CALLNAME:A%爽快地给%PLAYER_NAME()%量了尺寸
+		PRINTFORML 看样子是要为%PLAYER_NAME()%亲手做一件衣服
+		PRINTFORMW 陪着做针线活的%CALLNAME:A%聊天解闷，度过了一段愉快的时光
+	ENDIF
+ELSEIF (TALENT:A:淫乱 || TALENT:A:娼妇) && TALENT:A:怀孕
+	PRINTFORML %CALLNAME:A%时不时会抚摸一下自己的肚子
+	PRINTFORML 看样子是想提前为肚子里的孩子做点东西
+	PRINTFORM 未免打扰到
+	IF TALENT:A:男性 || TALENT:A:双性
+	    PRINT 他
+	ELSE
+	    PRINT 她
+	ENDIF
+	PRINTFORMW ，转过身悄悄地离开了
+ELSEIF TALENT:A:淫乱 || TALENT:A:娼妇
+	PRINTFORML 满心佩服地观望了一会儿，%CALLNAME:A%突然朝这边展现出一个妖艳的笑容
+	PRINTFORMW 说什么“下次来玩针扎PLAY吧”…
+	IF TALENT:A:施虐狂 || TALENT:A:受虐狂
+		IF TALENT:A:施虐狂 && TALENT:MASTER:施虐狂
+			PRINTFORML 回答如果自己是扎人的那方就可以
+			PRINTFORMW %CALLNAME:A%对此很不满的样子…
+		ELSEIF TALENT:A:受虐狂 && TALENT:MASTER:受虐狂
+			PRINTFORML 回答如果自己是被扎的那方就可以
+			PRINTFORMW %CALLNAME:A%对此很不满的样子…
+		ELSEIF TALENT:MASTER:施虐狂 || TALENT:MASTER:受虐狂
+			PRINTFORML Ｓ和Ｍ的需求正好互补，那就试试看吧…
+			PRINTFORMW 两人就ＳＭ相关的话题兴致勃勃地聊了起来
+		ELSE
+			PRINTFORMW 这还是算了吧……急忙逃离了现场
+		ENDIF
+	ELSE
+		IF TALENT:MASTER:施虐狂
+			PRINTFORMW 那么……就追加在下次的调教计划上吧…
+		ELSEIF TALENT:MASTER:受虐狂
+			PRINTFORMW 不管怎么说……还是更想做被扎的那一方…
+		ELSE
+			PRINTFORMW 不好意思，完全没有这样的打算…
+		ENDIF
+	ENDIF
+;服从陷落のとき
+ELSE
+	PRINTFORMW %CALLNAME:A%帮%PLAYER_NAME()%缝补了衣服
+ENDIF
+EXP:A:家务经验 += 3
+PRINTFORMW %CALLNAME:A%的家务经验 ＋３
+
+;-------------------------------------------------
+;扫除
+;-------------------------------------------------
+@DAILY_LIFE_11
+;一緒に扫除したフラグ
+LOCAL = 0
+PRINTFORM 路过
+IF !TIME && !RAND:3
+	PRINT 庭院
+ELSEIF !RAND:2
+	PRINT 走廊
+ELSE
+	PRINT 厨房
+ENDIF
+PRINTFORMW 时看见%CALLNAME:A%正在那儿做扫除
+IF MARK:A:反抗刻印 >= 3 || TALENT:A:失意
+	PRINTFORML 注意到%PLAYER_NAME()%的视线后
+	PRINTFORMW %CALLNAME:A%的表情瞬间僵硬，丢下扫帚跑远了
+ELSE
+	IF TALENT:A:傲娇 || TALENT:A:害羞
+		PRINTFORML 忍不住夸赞了一句，%CALLNAME:A%的脸就红得像苹果
+		PRINTFORMW 怎么看都是害羞了
+		PRINTFORML 觉得好玩就又追加了感谢，这次一直红到了脖子根，连回话都结结巴巴
+		PRINTFORMW ……话说回来从刚才就一直在打扫同一个地方
+	ELSEIF TALENT:A:学得快
+		PRINTFORML 态度认真，手脚利落，一次比一次做得更好了
+		PRINTFORMW 这么观望了一会儿，不由得心生感慨…
+	ELSEIF (TALENT:A:高傲 || TALENT:A:自大) && KANRAKU(A) != 3
+		PRINTFORML 不小心弄出声音让%CALLNAME:A%发现后，被抓壮丁似的强迫帮忙
+		PRINTFORMW 说是一起打扫，实际上是被%CALLNAME:A%指使着干着干那…
+		LOCAL = 1
+	ELSE
+		PRINTFORML %PLAYER_NAME()%决定上前帮忙
+		PRINTFORMW 于是一边听着%CALLNAME:A%哼的歌一边和%CALLNAME:A%一块儿忙碌起来…
+		LOCAL = 1
+	ENDIF
+ENDIF
+EXP:A:家务经验 += 3
+IF LOCAL
+	EXP:MASTER:家务经验 += 3
+	PRINTFORMW 两人的家务经验 ＋３
+ELSE
+	PRINTFORMW %CALLNAME:A%的家务经验 ＋３
+ENDIF
+
+;-------------------------------------------------
+;洗濯
+;-------------------------------------------------
+@DAILY_LIFE_12
+LOCAL = 0
+PRINTFORML 路过时看见%CALLNAME:A%正在洗衣服……
+PRINTFORMW 好像连%PLAYER_NAME()%的份也一起洗了
+IF MARK:A:反抗刻印 >= 3 || TALENT:A:失意
+	PRINTFORML 注意到%PLAYER_NAME()%在旁边后
+	PRINTFORMW %CALLNAME:A%的表情瞬间僵硬，丢下一堆没洗完的衣服起身走了
+ELSE
+	;对象が恋慕陷落もしくは、淫乱陷落かつ性保守/贞操重视/害羞持ちのとき、二分の一の確率
+	IF ((CFLAG:A:39 == 3 || CFLAG:A:39 == 6 || CFLAG:A:39 == 165) || ((TALENT:A:淫乱 || TALENT:A:娼妇) && (TALENT:A:性保守 || TALENT:A:贞操重视 || TALENT:A:害羞))) && !RAND:2
+		PRINTFORML 不知是不是错觉，%CALLNAME:A%的身形顿了顿
+		PRINTFORM 仔细一看，
+		IF TALENT:A:男性 || TALENT:A:双性
+		    PRINT 他
+		ELSE
+		    PRINT 她
+		ENDIF
+		PRINTFORMW 的手里捧着%PLAYER_NAME()%的内衣，脸颊微微发红
+		PRINTFORMW 原来如此…
+		IF TALENT:A:淫乱 || TALENT:A:娼妇
+			PRINTFORML 洗完后，%CALLNAME:A%偷偷藏了一件内衣在怀里，做贼心虚地抬起头左右张望
+			PRINTFORMW …%CALLNAME:A%和%PLAYER_NAME()%的视线对上了
+			PRINTFORML %CALLNAME:A%一溜烟逃跑了！
+			PRINTFORMW 带着内衣一起…
+		ELSE
+			PRINTFORML %CALLNAME:A%反复深呼吸了几次，垂首思考了一阵子，这才又继续起手上的动作
+			PRINTFORMW ……？
+		ENDIF
+	;淫乱陷落かつ性保守/贞操重视/害羞がないとき、二分の一の確率
+	ELSEIF ((TALENT:A:淫乱 || TALENT:A:娼妇) && !TALENT:A:性保守 && !TALENT:A:贞操重视 && !TALENT:A:害羞) && !RAND:2
+		PRINTFORML 接着，似乎从衣物堆里翻出了一件眼熟的东西
+		PRINTFORMW 好像是%PLAYER_NAME()%的内衣
+		IF !RAND:2
+			PRINTFORML 竟然就那样偷偷摸摸地塞进怀里了…
+			PRINTFORMW 总而言之过去骂了一顿
+		ELSE
+			PRINTFORML 竟然捧到鼻子下一脸陶醉地嗅闻…
+			PRINTFORML 非但如此，一只手还在两腿间放肆地活动着
+			PRINTFORMW 总而言之过去骂了一顿
+		ENDIF
+		;情欲之珠
+	ELSE
+		;主人に对して恋慕陷落
+		IF TALENT:A:恋慕 || TALENT:A:相亲相爱
+			PRINTFORML 察觉到%PLAYER_NAME()%在，%CALLNAME:A%拜托%PLAYER_NAME()%过去搭把手
+			PRINTFORMW 晴朗的天空下，两个人一起洗了衣服…
+			LOCAL = 1
+		;其他
+		ELSE
+			PRINTFORMW 晴朗的天空下，%CALLNAME:A%一件件晾晒着洗干净的衣服…
+		ENDIF
+	ENDIF
+ENDIF
+EXP:A:家务经验 += 3
+IF LOCAL == 1
+	EXP:MASTER:家务经验 += 3
+	PRINTFORMW 两人的家务经验 ＋３
+ELSE
+	PRINTFORMW %CALLNAME:A%的家务经验 ＋３
+ENDIF
+
+;-------------------------------------------------
+;お祈り
+;-------------------------------------------------
+@DAILY_LIFE_13
+;未陷落
+IF !KANRAKU(A)
+	PRINTFORM 偷看%CALLNAME:A%的房间，发现
+	SIF CFLAG:A:7021
+	PRINTFORM 一絲不掛的	
+	PRINTFORM %CALLNAME:A%正在
+;昼
+ELSEIF !TIME
+	PRINTFORM 到院子里晒太阳时，发现%CALLNAME:A%正在
+;夜
+ELSE
+	PRINTFORM 偷看%CALLNAME:A%的房间，发现
+	SIF CFLAG:A:7021
+	PRINTFORM 一絲不掛的	
+	PRINTFORM %CALLNAME:A%正在月光下
+ENDIF
+PRINTFORMW 祈祷
+IF MARK:A:反抗刻印 >= 3 || TALENT:A:失意
+	PRINTFORML 注意到%PLAYER_NAME()%后，%CALLNAME:A%的眼眶里浮现出雾气
+	PRINTFORML 恨恨地闭上眼，装作没看到般再次祈祷起来
+	PRINTFORM %CALLNAME:A%所祈祷的内容是
+	IF TALENT:A:失意
+		PRINTFORMW 『望……能平安无事』
+	ELSEIF !RAND:3
+		PRINTFORMW 『望洗心革面，改过自新』
+	ELSEIF !RAND:2
+		PRINTFORMW 『神明啊…快显灵吧』
+	ELSE
+		PRINTFORMW 『望所有恶徒能改邪归正』
+	ENDIF
+;主人と相亲相爱両想い、相爱
+ELSEIF TALENT:A:相亲相爱 && !TALENT:A:嫉妒
+	PRINTFORML 注意到%PLAYER_NAME()%后，%CALLNAME:A%的脸上绽放出明朗的笑容
+	PRINTFORM 奇怪地询问
+	IF TALENT:A:男性 || TALENT:A:双性
+	    PRINT 他
+	ELSE
+	    PRINT 她
+	ENDIF
+	PRINTFORM 在为什么祈祷
+	IF (TALENT:A:直率 || TALENT:A:不知羞耻) && !RAND:2
+		PRINTFORML 『希望这样的生活能够一直持续下去』
+		PRINTFORMW 得到了这样的回复…
+	ELSEIF TALENT:A:刚强 || TALENT:A:高傲
+		PRINTFORMW %CALLNAME:A%笑而不语，只是凑过来轻轻吻了一下%PLAYER_NAME()%便返回了房间…
+	ELSE
+		PRINTFORML 『希望有好事发生』
+		PRINTFORMW 得到了这样的回复…
+	ENDIF
+;恋慕
+ELSEIF TALENT:A:恋慕
+	IF !RAND:2
+		PRINTFORM 注意到%PLAYER_NAME()%后，%CALLNAME:A%开心地邀请%PLAYER_NAME()%过去陪
+		IF TALENT:A:男性 || TALENT:A:双性
+            PRINTL 他
+        ELSE
+            PRINTL 她
+        ENDIF
+		PRINTFORMW 和%CALLNAME:A%一起晒了太阳…
+	ELSE
+		PRINTFORML 坐到微笑着的%CALLNAME:A%旁边
+		PRINTFORMW 静静陪伴着向心中的神奉上祈祷的%CALLNAME:A%…
+	ENDIF
+;未陷落で共犯者でない
+ELSEIF !KANRAKU(A) && CFLAG:A:1 != 3
+	PRINTFORML 是在向神灵祈求帮助吗
+	PRINTFORMW ……很可惜，那是徒劳的
+;其他
+ELSE
+	IF !RAND:2
+		PRINTFORML %CALLNAME:A%沉迷于祈祷，没有注意到%PLAYER_NAME()%…
+		PRINTFORM 不想打扰到
+		IF TALENT:A:男性 || TALENT:A:双性
+            PRINTL 他
+        ELSE
+            PRINTL 她
+        ENDIF
+        PRINTFORMW ，%PLAYER_NAME()%离开了那个地方
+	ELSE
+		PRINTFORMW 注意到%PLAYER_NAME()%后，%CALLNAME:A%问了声好，随后继续安静地祈祷
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;ぼー
+;-------------------------------------------------
+@DAILY_LIFE_14
+PRINTFORM 从
+IF !TIME && !RAND:3 && KANRAKU(A)
+	PRINTFORM 在院子里
+	PRINTFORMW 发呆的%CALLNAME:A%身边经过
+ELSEIF !RAND:2 && KANRAKU(A)
+	PRINTFORM 在食堂椅子上
+	PRINTFORMW 发呆的%CALLNAME:A%身边经过
+ELSE
+	PRINTFORM 在房间的床上
+	PRINTFORM 发呆
+	SIF CFLAG:A:7021
+	PRINTFORM 且一絲不掛
+	PRINTFORMW	的%CALLNAME:A%身边经过
+ENDIF
+
+;恋慕陷落＆反抗２以下
+IF (TALENT:A:恋慕 || TALENT:A:相亲相爱) && MARK:A:反抗刻印 <= 2
+	PRINTFORMW …………
+	PRINTFORMW …………
+	PRINTFORMW 啊。\@ TALENT:A:呆毛 ? 呆毛动 # 脸红 \@了
+;服从陷落＆反抗２以下
+ELSEIF (TALENT:A:服从 || TALENT:A:隶属) && MARK:A:反抗刻印 <= 2
+	PRINTFORMW …………
+	PRINTFORMW …………
+	PRINTFORMW 注意到%PLAYER_NAME()%后，%CALLNAME:A%浑身一震，失去平衡摔倒了
+;それ以外
+ELSE
+	PRINTFORMW …………
+	PRINTFORMW 完全没有动过呢…
+ENDIF
+
+;-------------------------------------------------
+;ダンシング
+;-------------------------------------------------
+@DAILY_LIFE_15
+VARSET LOCAL
+;他出場キャラをBに代入(未陷落/失意状態のキャラを除く)
+B = DAILYLIFE_GETCHARA(1)
+IF !RAND:2
+	PRINTFORM 穿过走廊时，突然被凑过来的%CALLNAME:A%拉到了食堂里
+ELSE
+	PRINTFORM 偶然路过食堂，看到了%CALLNAME:A%的身影…
+ENDIF
+IF B > 0
+	PRINTL 
+	PRINTFORMW %CALLNAME:B%也在场
+;他出場キャラがいない
+ELSE
+	PRINTW 
+ENDIF
+PRINTFORM %CALLNAME:A%几步攀上桌子摆好架势，毫无预兆地跳起了
+IF TALENT:A:自大 || TALENT:A:性好奇
+	PRINTFORMW 节奏轻快时髦的街舞
+ELSEIF TALENT:A:高傲 || TALENT:A:性保守
+	PRINTFORMW 戏剧风的舒缓细腻的舞蹈…
+ELSEIF TALENT:A:性开放 || TALENT:A:贞操淡漠
+	PRINTFORMW 极为强调身体曲线，奔放热情的舞蹈…
+ENDIF
+PRINTFORM %CALLNAME:A%
+;淫乱陷落
+IF KANRAKU(A) == 2
+	PRINTFORMW 的眼神性感又放浪
+;服从陷落(相手は問わず)
+ELSEIF KANRAKU(A) == 3
+	PRINTFORMW 像歌剧表演里那样朝%PLAYER_NAME()%行了一礼
+ELSE
+    PRINT 在举手投足的间隙
+	IF TALENT:A:自大 || TALENT:A:性好奇
+		PRINTFORMW 朝%PLAYER_NAME()%Wink了一下
+	ELSEIF TALENT:A:高傲 || TALENT:A:性保守
+		PRINTFORMW 向%PLAYER_NAME()%投来飘渺虚无的目光
+	ELSEIF TALENT:A:性开放 || TALENT:A:贞操淡漠
+		PRINTFORMW 向%PLAYER_NAME()%投来魅惑勾人的目光
+	ELSE
+		PRINTFORMW 朝%PLAYER_NAME()%轻轻地挥了一下手
+	ENDIF
+ENDIF
+;成功
+IF (ABL:A:技巧 - TALENT:A:学得慢 + TALENT:A:学得快) * 20 > RAND:100
+	PRINTFORML 被%CALLNAME:A%动人的舞姿与绝妙的平衡所吸引
+	IF B > 0
+		LOCAL:1 = B
+	ENDIF
+	IF LOCAL:1
+		IF TALENT:(LOCAL:1):缺乏感情
+			PRINTFORML %CALLNAME:(LOCAL:1)%虽一如既往神情淡漠，眼中却闪亮亮地放着光
+		ELSEIF TALENT:(LOCAL:1):反抗 || TALENT:(LOCAL:1):自大
+			PRINTFORML %CALLNAME:(LOCAL:1)%本是嘲讽的神情里夹带了几分佩服
+		ELSEIF TALENT:(LOCAL:1):直率 || TALENT:(LOCAL:1):幼稚 || TALENT:(LOCAL:1):幼儿／幼儿退行
+			PRINTFORML %CALLNAME:(LOCAL:1)%一脸开心地在旁喝彩欢呼
+		ELSE
+			PRINTFORML %CALLNAME:(LOCAL:1)%在旁满脸佩服
+		ENDIF
+	ENDIF
+	IF B > 0
+		PRINTFORM 在两人的
+	ELSE
+		PRINTFORM 在%PLAYER_NAME()%的
+	ENDIF
+	PRINTFORMW 注视下，渐入佳境的%CALLNAME:A%落下了最后一个舞步
+	PRINTFORM 与此同时，
+	IF B > 0
+		PRINTFORM %PLAYER_NAME()%带头
+	ELSE
+	    PRINTFORM %PLAYER_NAME()%
+	ENDIF
+	PRINTFORM 鼓起掌来，%CALLNAME:A%沐浴着掌声有些得意地
+	;失敗
+	IF RAND:10 > 6
+		PRINTFORMW 准备从桌子上跳下
+		PRINTFORML ……本以为失足的%CALLNAME:A%会摔倒在桌子面前，没想到脚绊住了桌腿
+		PRINTFORMW “哐当”一声巨响后，连带整面桌子都翻了个转儿压了上来
+		PRINTFORML 摇了摇头，对着被压倒在桌下狼狈不已的%CALLNAME:A%叹了口气
+		;体格差を検索
+		LOCAL:1 = BUILD2(MASTER, A)
+		IF LOCAL:1 > 2
+			PRINTFORMW 随即轻巧地把人抱起来带往房间…
+		ELSEIF LOCAL:1 > 0
+			PRINTFORMW 随即把人抱起来带往房间…
+		ELSE
+			PRINTFORMW 随即哼哧哼哧地把人拖往房间…
+		ENDIF
+	;成功
+	ELSE
+		PRINTFORML 从桌子上跳下
+		IF TALENT:A:相亲相爱
+			PRINTFORMW 欢喜地扑过来抱住了%PLAYER_NAME()%…
+		ELSE
+			PRINTFORMW 下巴微抬，眼角眉梢都是藏不住的笑意
+		ENDIF
+	ENDIF
+;失敗
+ELSE
+	PRINTFORMW 可惜%CALLNAME:A%并没有神气多久就失足踩空，从桌上摔了下来…
+	PRINTFORML 摇了摇头，对着趴在地上狼狈不已的%CALLNAME:A%叹了口气
+	;体格差を検索
+	LOCAL:1 = BUILD2(MASTER, A)
+	IF LOCAL:1 > 2
+		PRINTFORMW 随即轻巧地把人抱起来带往房间…
+	ELSEIF LOCAL:1 > 0
+		PRINTFORMW 随即把人抱起来带往房间…
+	ELSE
+		PRINTFORMW 随即哼哧哼哧地把人拖往房间…
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;夜にトイレに
+;-------------------------------------------------
+@DAILY_LIFE_16
+PRINTFORML 单手提灯在昏暗的屋子里巡视时
+PRINTFORMW 碰巧撞上了刚从厕所里出来的%CALLNAME:A%
+IF MARK:A:反抗刻印 >= 3
+	PRINTFORML 没想到被%CALLNAME:A%当做可疑的人粗暴地挟制住了
+	PRINTFORMW 很是吃了一番苦头……
+ELSEIF TALENT:A:胆怯 && TALENT:A:直率 && !TALENT:A:大人 && !TALENT:A:反抗 && !TALENT:A:高傲
+	IF ABL:A:顺从 > RAND:6
+		PRINTFORMW 抱紧在黑暗中瑟瑟发抖的%CALLNAME:A%，将其送回了房间…
+	ELSE
+		PRINTFORML 可能以为看到了妖怪，%CALLNAME:A%面色扭曲，发出了无声的悲鸣
+		PRINTFORMW 朝着自己的房间一溜烟逃走了…
+	ENDIF
+ELSEIF TALENT:A:刚强 && (TALENT:A:恋慕 || TALENT:A:相亲相爱)
+	PRINTFORMW 于是和%CALLNAME:A%交接班，先回屋休息了…
+ELSEIF TALENT:A:刚强 && !TALENT:A:胆怯
+	PRINTFORML 即便身处黑暗，%CALLNAME:A%也全无惧色
+	PRINTFORM 慎重起见还是先把
+	IF TALENT:A:男性 || TALENT:A:双性
+	    PRINT 他
+	ELSE
+	    PRINT 她
+	ENDIF
+	PRINTFORMW 送回了房间…
+ELSE
+	PRINTFORMW 互相点头示意，分别后继续巡逻…
+ENDIF
+
+;-------------------------------------------------
+;木に登っている　;性格タイプ：元気、甘えん坊、ショタ、不思議子限定
+;-------------------------------------------------
+@DAILY_LIFE_17
+;兽耳(猫耳)
+IF TALENT:A:兽耳 == 1
+	PRINTFORMW 望向窗外，看到了坐在院子里的树上眺望着远方的%CALLNAME:A%的身影
+	PRINTFORMW 耳朵一动一动的，神奇洋洋的，到底是怎么上去的啊？
+	IF TALENT:A:冒冒失失
+		PRINTFORMW …………
+		PRINTFORMW 天快黑的时候，依稀听到了谁的悲鸣
+		PRINTFORML 感到奇怪地朝外面一看
+		PRINTFORMW 原来是树上的%CALLNAME:A%在那儿凄厉地叫着
+		PRINTFORML 好像是没办法下来了
+		PRINTFORMW 只能搬着梯子去救人了
+	ENDIF
+ELSE
+	IF CFLAG:A:611
+		PRINTFORML 「%CSTR:A:3%……%MASTERNAME:A%……？」
+	ELSEIF CFLAG:A:603 || CFLAG:A:605
+		PRINTFORML 「喂——！　%CSTR:A:3%～！　%MASTERNAME:A%～！」
+	ELSE
+		PRINTFORML 「%CSTR:A:3%～！　%MASTERNAME:A%～！　看这里看这里！」
+	ENDIF
+	PRINTFORMW 窗外传来%CALLNAME:A%呼唤%PLAYER_NAME()%的声音
+	PRINTFORMW 可是探出头去在窗下找了半天也没找到%CALLNAME:A%的身影…
+	PRINTFORMW 疑惑地环顾四周，这才看到坐在树枝上向这边招手的%CALLNAME:A%
+	PRINTFORMW 在那种地方干什么呢…还笑得那么开心
+	SIF TALENT:A:冒冒失失
+		PRINTFORMW ……啊，掉下来了
+ENDIF
+
+;-------------------------------------------------
+;手伝い
+;-------------------------------------------------
+@DAILY_LIFE_18
+PRINTFORMW 正想把街上买来的物资搬运到仓库时，%CALLNAME:A%碰巧从旁边路过
+IF TALENT:A:学得慢 || TALENT:A:幼儿／幼儿退行 || TALENT:A:幼稚 || TALENT:A:冒冒失失
+	LOCALS = 略显吃力
+ELSE
+	LOCALS = 手脚麻利
+ENDIF
+IF TALENT:A:直率
+	IF TALENT:A:自我奉献 || ABL:A:侍奉精神 >= 5
+		PRINTFORMW 看着堆积如山的物资，%CALLNAME:A%主动提出帮忙
+		PRINTFORMW 于是，在%LOCALS%的%CALLNAME:A%的帮助下很快搞定了一切…
+	ELSE
+		PRINTFORM 和%CALLNAME:A%打了声招呼，
+		IF TALENT:A:男性 || TALENT:A:双性
+		    PRINT 他
+		ELSE
+		    PRINT 她
+		ENDIF
+		PRINTFORMW 就爽快地说要帮忙
+		IF TIME == 0
+			PRINTFORMW 于是，和%LOCALS%的%CALLNAME:A%一起搬运到日暮黄昏才全部搞定…
+		ELSE
+			PRINTFORMW 于是，和%LOCALS%的%CALLNAME:A%一起搬运到日期变更才全部搞定…
+		ENDIF
+	ENDIF
+ELSE
+	IF (TALENT:A:恋慕 && ABL:A:侍奉精神 >= 5) || TALENT:A:相亲相爱 || TALENT:A: 服从 || TALENT:A:隶属
+		PRINTFORMW 和往常一样，在和%PLAYER_NAME()%的视线对上后，%CALLNAME:A%就微红着脸说要帮忙
+		PRINTFORMW 于是，在%LOCALS%的%CALLNAME:A%的帮助下很快搞定了一切…
+	ELSEIF ABL:A:侍奉精神 >= 5
+		PRINTFORMW 叫住了走路带风的%CALLNAME:A%向其请求支援
+		IF TIME == 0
+			PRINTFORMW 于是，和%LOCALS%的%CALLNAME:A%一起搬运到日暮黄昏才全部搞定…
+		ELSE
+			PRINTFORMW 于是，和%LOCALS%的%CALLNAME:A%一起搬运到日期变更才全部搞定…
+		ENDIF
+	ELSE
+		PRINTFORMW 然而%CALLNAME:A%像是没看到%PLAYER_NAME()%似的径直走了过去…
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;庭院で遊んでいる
+;-------------------------------------------------
+@DAILY_LIFE_19
+;[幼稚][幼儿／幼儿退行]のいずれかを持つキャラから１人選択する
+B = DAILYLIFE_GETTALENT_1(150,151)
+IF B > 0 && !RAND:2
+	PRINTFORMW %CALLNAME:A%和%CALLNAME:B%正在庭院的花坛里玩游戏
+	
+	PRINTFORMW 两个人一前一后地追逐着，身形在花丛间穿梭
+	PRINTFORMW 看起来%CALLNAME:B%是鬼，而%CALLNAME:A%是被鬼追捕的对象
+	IF ABL:A:技巧 >= ABL:B:技巧
+		PRINTFORMW %CALLNAME:A%巧妙地回避了%CALLNAME:B%的飞扑，看起来心情不错…
+	ELSE
+		PRINTFORMW %CALLNAME:A%眨眼间就被%CALLNAME:B%抓住了
+		PRINTFORMW 这次%CALLNAME:A%成了鬼，%CALLNAME:B%急忙转身逃跑…
+	ENDIF
+ELSE
+	PRINTFORMW %CALLNAME:A%正在庭院的花坛里玩耍
+	IF !RAND:3
+		PRINTFORMW 一边唱着歌，一边围着花朵们手舞足蹈
+	ELSEIF !RAND:2
+		PRINTFORMW 乐此不疲地追逐着飞舞的蝴蝶
+	ELSE
+		PRINTFORMW 似乎是在和瓢虫……大眼瞪小眼？
+	ENDIF
+	IF MARK:A:反抗刻印 >= 3
+		PRINTFORML 注意到%PLAYER_NAME()%在偷看后
+		PRINTFORMW %CALLNAME:A%吃了一惊，转过身跑掉了…
+	ELSEIF TALENT:A:恋慕 || TALENT:A:相亲相爱
+		PRINTFORMW 注意到%PLAYER_NAME()%在附近，%CALLNAME:A%立刻邀请%PLAYER_NAME()%过去一起玩
+		PRINTFORMW %PLAYER_NAME()%一口应下，当即看到%CALLNAME:A%高兴又害羞的模样…
+	ELSE
+		PRINTFORMW 沉迷于游戏，%CALLNAME:A%没有注意到%PLAYER_NAME()%的存在
+		PRINTFORMW 时间在观看%CALLNAME:A%的玩乐中度过…
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;ビデオ観賞
+;-------------------------------------------------
+@DAILY_LIFE_20
+PRINTFORMW 穿过走廊时听到了不知从哪里传来的奇怪声响…
+PRINTFORMW 寻找着声音的源头，最终来到%CALLNAME:A%的房间前
+PRINTFORM 往里偷看，发现
+SIF CFLAG:A:7021
+PRINTFORM 一絲不掛的
+PRINTFORMW %CALLNAME:A%用手捂着脸，正在看调教时拍摄的录像带…
+;Bにイベント出場できるキャラを入れる
+B = DAILYLIFE_GETCHARA(1)
+IF B > 0 && ABL:B:同性倾向 > 1 && RAND:2
+	PRINTFORM 同时，站在%CALLNAME:A%身后的%CALLNAME:B%
+	IF TALENT:B:无动于衷 && TALENT:B:缺乏感情
+		PRINTFORMW 一如既往面无表情地看着画面
+	ELSEIF TALENT:B:贞操重视 || TALENT:B:害羞
+		PRINTFORMW 脸颊通红地看着画面
+	ELSEIF TALENT:B:淫乱 || TALENT:B:娼妇
+		PRINTFORMW 一副性欲高涨的模样，看着屏幕上的画面和身前的%CALLNAME:A%低低地喘息
+	ELSE
+		PRINTFORMW 也一样凝视着画面
+	ENDIF
+	PRINTFORMW 看来有别的『偷窥狂』捷足先登了呢…
+	SIF !RAND:2
+		PRINTFORMW 不久后，暴露存在的%CALLNAME:B%被%CALLNAME:A%从屋子里丢了出来…
+;其他
+ELSE
+	PRINTFORMW 原来这就是那种奇怪声响的真面目
+	IF TALENT:A:无动于衷 || TALENT:A:缺乏感情
+		PRINTFORMW %CALLNAME:A%一如既往面无表情，稍微有一点脸红地凝视着画面…
+	ELSEIF TALENT:A:贞操重视 || TALENT:A:害羞 || TALENT:A:性保守
+		PRINTFORMW %CALLNAME:A%满脸通红，从指间的缝隙里窥视着画面…
+	ELSEIF TALENT:A:淫乱 || TALENT:A:娼妇
+		PRINTFORML %CALLNAME:A%一边观看记录了自己痴态的影像
+		PRINTFORMW 一边把手放在胯间快速活动着
+	ELSEIF (TALENT:A:反抗 && TALENT:A:高傲) || TALENT:A:傲娇
+		PRINTFORML %CALLNAME:A%自言自语地辩解着什么
+		PRINTFORMW 一边有些困扰地看着画面…
+	ELSE
+		PRINTFORMW %CALLNAME:A%面颊通红，如饥似渴地凝视着画面…
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;浴室上がり
+;-------------------------------------------------
+@DAILY_LIFE_21
+;喜欢引人注目OR解放で露出癖３以上か、露出癖５以上
+IF ((TALENT:A:喜欢引人注目 || TALENT:A:性开放) && ABL:A:露出癖 >= 3) || ABL:A:露出癖 >= 5
+	LOCALS = 赤身裸体的
+ELSE
+	IF MALE(A)
+		LOCALS = 将浴巾围在腰间的
+	ELSE
+		LOCALS = 披着浴巾的
+	ENDIF
+ENDIF
+PRINTFORML 在房间里喝茶的时候
+PRINTFORMW 依稀看见%LOCALS%%CALLNAME:A%从旁边经过…？
+PRINTFORMW 是、是错觉吗…
+PRINTFORMW …………
+;他に[不知羞耻]持ちのキャラがいるか検索
+B = DAILYLIFE_GETTALENT_1(36)
+IF B > 0 && !RAND:3
+	PRINTFORMW 片刻后，这次是围着条浴巾的%CALLNAME:B%穿过了走廊
+	PRINTFORMW 带起的风吹动了茶汤…
+ELSE
+	PRINTFORMW 不一会儿，表情复杂的%CALLNAME:A%又折返回来了
+	PRINTFORMW 似乎是去了浴场才想起没有喝的，又蹬蹬跑到食堂拿来一罐饮料
+	IF (TALENT:A:恋慕 || TALENT:A:相亲相爱) && (TALENT:A:喜欢引人注目 || TALENT:A:不知羞耻) && !TALENT:A:缺乏感情
+		PRINTFORML 察觉到%PLAYER_NAME()%不可思议的目光
+		PRINTFORMW %CALLNAME:A%微笑着摆出造型，轻轻抚摸着身体…
+	ELSEIF (TALENT:A:淫乱 || TALENT:A:娼妇) && (TALENT:A:喜欢引人注目 || TALENT:A:不知羞耻) && !TALENT:A:缺乏感情
+		PRINTFORML 察觉到%PLAYER_NAME()%不可思议的目光
+		PRINTFORMW %CALLNAME:A%摆出性感造型，甚至抛了个媚眼，轻轻扭动着臀部…
+	ELSE
+		PRINTFORML 察觉到%PLAYER_NAME()%不可思议的目光
+		PRINTFORMW %CALLNAME:A%打了声招呼后离去了…
+	ENDIF
+	;说教癖持ちのキャラ数を計算
+	VARSET LOCAL
+	B = -1
+	REPEAT CHARANUM
+		SIF TALENT:COUNT:说教癖 && DAILYLIFE_CHARA(COUNT, 1)
+			LOCAL++
+	REND
+	IF LOCAL
+		;お説教キャラから随机で１人選択する
+		$RAND_CHARA
+		B = RAND:CHARANUM
+		SIF !TALENT:B:说教癖 || !DAILYLIFE_CHARA(B, 1)
+			GOTO RAND_CHARA
+	ENDIF
+	;出場可なキャラがいるとき三分の一の確率で激しくお説教イベント
+	IF LOCAL && !RAND:3
+		PRINTFORMW 正在发愣之际，%CALLNAME:B%也经过了这里
+		PRINTFORM 看清楚%CALLNAME:A%的身姿，%CALLNAME:B%不由分说地叫住
+		IF TALENT:A:男性 || TALENT:A:双性
+		    PRINT 他
+		ELSE
+		    PRINT 她
+		ENDIF
+		PRINTFORMW 让其正坐
+		PRINTFORMW …………看样子%CALLNAME:B%的说教时间开始了
+		PRINTFORMW 趁火星还没波及到自己身上，赶紧离场吧…
+		PRINTFORMW ……………
+		PRINTFORMW …………
+		PRINTFORMW ………
+		PRINTFORMW ……
+		PRINTFORMW …
+		IF !TIME
+			PRINTFORMW %CALLNAME:B%的说教一直持续到了中午…
+		ELSE
+			PRINTFORMW %CALLNAME:B%的说教一直持续到了深夜…
+		ENDIF
+		PRINTFORMW 注意到%PLAYER_NAME()%也在，%CALLNAME:A%投来了“救救我”的视线
+		;Aが恋慕陷落
+		IF TALENT:A:恋慕 || TALENT:A:相亲相爱
+			PRINTFORMW 这样实在是太可怜了，无奈之下努力安抚住%CALLNAME:B%将%CALLNAME:A%解放了
+			IF TALENT:A:相亲相爱
+				PRINTFORML 或许是因为长时间正坐，腿脚不太利索
+				PRINTFORMW 站起来的瞬间，%CALLNAME:A%失去平衡朝这边摔了过来
+				PRINTFORML 慌慌张张地伸手接住，怀里的人比想象中的更加虚弱
+				PRINTFORM 于是%PLAYER_NAME()%决定陪同%CALLNAME:A%回到
+				IF TALENT:A:男性 || TALENT:A:双性
+        		    PRINT 他
+        		ELSE
+        		    PRINT 她
+        		ENDIF
+        		PRINTFORMW 的房间
+				;Bも恋慕陷落
+				SIF TALENT:B:恋慕 || TALENT:B:相亲相爱
+					PRINTFORMW 不知为何，感觉%CALLNAME:B%好像突然失去了兴致
+					PRINTFORM 不过
+				PRINTFORMW %CALLNAME:A%非常开心，有些羞怯地握住了%PLAYER_NAME()%的手
+
+			ELSE
+				LOCAL:1 = BUILD2(MASTER, A)
+				IF LOCAL:1 > 1 || LOCAL:1 < -1
+					PRINTFORMW 把比想象中更加虚弱的%CALLNAME:A%送回了房间
+				ELSE
+					PRINTFORMW 借了一只肩膀过去，把比想象中更加虚弱的%CALLNAME:A%送回了房间
+				ENDIF
+				;Bも恋慕陷落
+				SIF TALENT:B:恋慕 || TALENT:B:相亲相爱
+					PRINTFORMW 不知为何，感觉%CALLNAME:B%好像突然失去了兴致…
+			ENDIF
+		ELSE
+			PRINTFORMW 虽然真的很可怜，但还是决定放任不管
+			PRINTFORMW …………距离%CALLNAME:A%逃出苦海，大概还有一个小时的时间…
+		ENDIF
+	;出場可なキャラがいるとき三分の二の確率で普通にお説教
+	ELSEIF LOCAL
+		PRINTFORMW 正在发愣之际，就听到了%CALLNAME:B%严厉的呵斥
+		PRINTFORMW 看来是就光着身子转来转去一事狠狠地展开了说教…
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;可愛いものを見ている
+;-------------------------------------------------
+@DAILY_LIFE_22
+PRINTFORMW 来到食堂时，发现%CALLNAME:A%正\@ TALENT:A:失意 ? 时不时地偷 # 目光灼灼地 \@看着什么东西
+IF RAND:8 == 0
+	LOCALS = 一尊小小的士兵人偶
+ELSEIF RAND:7 == 0
+	LOCALS = 一套俄罗斯套娃
+ELSEIF RAND:6 == 0
+	LOCALS = 一个小猫的手办
+ELSEIF RAND:5 == 0
+	LOCALS = 一只大熊猫玩偶
+ELSEIF !RAND:4
+	LOCALS = 一尊小鸟形状的摆设
+ELSEIF !RAND:3
+	LOCALS = 一尊木雕的熊
+ELSEIF !RAND:2
+	LOCALS = 一只白熊布娃娃
+ELSE
+	LOCALS = 一幅被装裱起来的小狗的画
+ENDIF
+PRINTFORMW 其视线的前方是%LOCALS%…
+IF TALENT:A:失意
+	PRINTFORM 把%CALLNAME:A%所注视着的东西作为礼物赠送给
+	IF TALENT:A:男性 || TALENT:A:双性
+	    PRINT 他
+	ELSE
+	    PRINT 她
+	ENDIF
+	PRINTFORML 后
+	PRINTFORMW 像是要确认一般，%CALLNAME:A%着迷地伸出手轻轻抚摸着
+	PRINTFORML 这段时间%CALLNAME:A%一直有些消沉
+	PRINTFORMW 这下子总算是精神点儿了…
+	CFLAG:A:36 -= 3
+ELSEIF MARK:A:反抗刻印 >= 3
+	PRINTFORML 是很中意这个吗？就那样一动不动看好了一会儿
+	PRINTFORMW 然而在察觉到%PLAYER_NAME()%的存在后，%CALLNAME:A%匆匆地离开了…
+ELSEIF TALENT:A:反抗
+	PRINTFORM 看起来很想要的样子，于是打算顺水推舟送给
+	IF TALENT:A:男性 || TALENT:A:双性
+	    PRINT 他
+	ELSE
+	    PRINT 她
+	ENDIF
+	PRINTFORMW ，却被%CALLNAME:A%慌慌张张地拒绝了
+	;主人に对して恋慕・服从陷落
+	IF TALENT:A:恋慕 || TALENT:A:相亲相爱 || TALENT:A:服从 || TALENT:A:隶属
+		PRINTFORMW 最终只能强行将东西塞到%CALLNAME:A%怀里让其收下
+		PRINTFORMW 与刚才拒绝的态度相反，%CALLNAME:A%似乎非常开心…
+	ELSE
+		PRINTFORMW 竭尽全力把视线从心仪的物件上移开，%CALLNAME:A%灰溜溜地返回了自己的房间…
+	ENDIF
+ELSEIF TALENT:A:自大 || TALENT:A:高傲 || TALENT:A:傲娇
+	PRINTFORM 看起来很想要的样子，于是打算顺水推舟送给
+	IF TALENT:A:男性 || TALENT:A:双性
+	    PRINTL 他
+	ELSE
+	    PRINTL 她
+	ENDIF
+	PRINTFORMW %CALLNAME:A%说着类似“这可是你非要给的”这样辩解的话将礼物收下了
+	PRINTFORMW %CALLNAME:A%今天一整天心情都非常好…
+ELSEIF TALENT:A:直率 || TALENT:A:幼稚 || TALENT:A:幼儿／幼儿退行
+	PRINTFORM 看起来很想要的样子，于是打算顺水推舟送给
+	IF TALENT:A:男性 || TALENT:A:双性
+	    PRINTL 他
+	ELSE
+	    PRINTL 她
+	ENDIF
+	PRINTFORMW %CALLNAME:A%眼前一亮，收下的同时就抱着礼物飞快地跑回了自己的房间…
+ELSE
+	PRINTFORML 泡茶、倒茶、喝茶
+	PRINTFORMW %CALLNAME:A%的视线全程都没有离开过它…
+ENDIF
+
+;-------------------------------------------------
+;つまみぐい
+;-------------------------------------------------
+@DAILY_LIFE_23
+IF !TIME
+	PRINTFORMW 偷偷靠近无人厨房的漆黑人影…
+ELSE
+	PRINTFORMW 偷偷靠近被黑暗所笼罩的厨房的漆黑人影…
+ENDIF
+PRINTFORMW 其正体乃是――%CALLNAME:A%是也！
+;欲望に直率
+IF TALENT:A:反抗 || TALENT:A:自大 || ABL:A:欲望 >= ABL:A:顺从
+	PRINTFORML 在柜子里翻出零食后，%CALLNAME:A%毫不犹豫地把它们扔进嘴里咀嚼起来
+	IF ABL:A:技巧 >= RAND:6
+		PRINTFORMW 事后将包装纸揉成一团，消除掉自己来过的痕迹后心满意足地走了…
+	ELSE
+		PRINTFORMW 事后留下一片狼藉心满意足地走了…
+	ENDIF
+ELSE
+	PRINTFORMW 在柜子里发现零食后，%CALLNAME:A%当即伸出一双魔爪
+	PRINTFORMW 然而，在那之前%CALLNAME:A%的脸上闪现过一丝晦暗不明的神色，收回手离去了…
+	PRINTFORMW 比起欲望，似乎是理性更胜了一筹…
+ENDIF
+PRINTL
+PRINTFORML %CALLNAME:A%的体力少量回复
+;体力・气力を１０％回復
+BASE:A:体力 += MAXBASE:A:体力 / 10
+
+;-------------------------------------------------
+;他の奴隶を慰めている
+;-------------------------------------------------
+@DAILY_LIFE_24
+;悲观か失意を持つキャラから随机で１人選択する
+B = DAILYLIFE_GETTALENT_1(26,162)
+PRINTFORMW %CALLNAME:B%的房间里传出了%CALLNAME:A%和%CALLNAME:B%两个人的声音
+PRINTFORMW %CALLNAME:A%似乎在安慰着满面愁容的%CALLNAME:B%
+PRINTFORMW %CALLNAME:B%整个人无精打采，完全没能振作起来…
+PRINTFORMW 不过%CALLNAME:A%并没有放弃，仍旧保持着温柔和善的态度
+IF KANRAKU(A) && KANRAKU(B)
+	PRINTFORMW ……不知过了多久，%CALLNAME:B%总算是打起精神来了
+	PRINTFORMW 心下稍安，看来可以离开了
+ELSE
+	PRINTFORMW 妨碍到那两人似乎也不太好，现在就先离开吧…
+ENDIF
+CFLAG:B:36 -= 3
+CALL RELATION_UP(A,B,20)
+;-------------------------------------------------
+;哼着小曲ふふんふ
+;-------------------------------------------------
+@DAILY_LIFE_25
+IF ABL:A:歌唱技能 && !RAND:2
+	PRINTFORMW 经过%CALLNAME:A%的房间时，听到了里面传出的水音和%CALLNAME:A%的哼歌声…
+	PRINTFORMW 似乎很是惬意的样子呢
+	PRINTFORMW 这么想着暂时离开了…
+	PRINTFORMW 与此同时，自己也哼起了同样的旋律
+ELSE
+	PRINTFORMW 好像有谁哼着歌从%PLAYER_NAME()%房间前路过了
+	PRINTFORMW 虽然没看到正脸，但那多半是%CALLNAME:A%没错…
+ENDIF
+EXP:A:歌唱经验 += 1
+PRINTFORML %CALLNAME:A%的歌唱经验 ＋１
+
+;-------------------------------------------------
+;ため息ひとつ
+;-------------------------------------------------
+@DAILY_LIFE_26
+PRINTFORML 从%CALLNAME:A%的房间前路过时
+PRINTFORM 发现
+SIF CFLAG:A:7021
+PRINTFORM 一絲不掛的
+PRINTFORMW %CALLNAME:A%呆呆地望着窗外，突然轻叹了一口气
+IF KANRAKU(A)
+	PRINTFORMW 虽然看起来已经习惯这里的生活了，但果然还是有着许多无法言明的想法吧
+	PRINTFORMW %PLAYER_NAME()%不发一语，沉默地离开了那个地方…
+ELSE
+	PRINTFORMW 那个身影阴沉而又虚幻…
+ENDIF
+
+;-------------------------------------------------
+;吃饭当番
+;-------------------------------------------------
+@DAILY_LIFE_27
+LOCAL:2 = 1
+;日常に登場できるキャラを１人選択
+B = DAILYLIFE_GETCHARA(0)
+PRINTFORMW 今天负责准备\@ TIME ? 晚饭 # 早饭 \@的是%CALLNAME:A%
+SIF CFLAG:A:7022
+PRINTFORM 先赤身裸体套上围裙之後，
+IF TALENT:A:无动于衷 || TALENT:A:缺乏感情 || TALENT:A:病娇
+	PRINTFORMW %CALLNAME:A%面无表情地点点头，开始制作料理…
+ELSEIF TALENT:A:反抗 || TALENT:A:自大 || TALENT:A:高傲 || TALENT:A:抵抗
+	PRINTFORMW %CALLNAME:A%极为勉强地站到料理台前…
+ELSEIF TALENT:A:自我奉献 || TALENT:A:乐观 || TALENT:A:擅长料理
+	PRINTFORMW %CALLNAME:A%干劲十足地站到料理台前…
+ELSE
+	PRINTFORMW %CALLNAME:A%点点头，开始制作料理…
+ENDIF
+SIF TALENT:A:擅长料理
+	PRINTFORMW 毫无疑问，一定会是非常美味的一餐
+IF TALENT:A:不擅料理
+	PRINTFORM 尽管有些不安，现在也只能交给
+	IF TALENT:A:男性 || TALENT:A:双性
+	    PRINT 他
+	ELSE
+	    PRINT 她
+	ENDIF
+	PRINTFORMW 了
+ENDIF
+LOCAL = 1
+;BがAの守備範囲か判定
+IF B > 0 && !TALENT:A:嫉妒 && !TALENT:A:病娇
+	;Aが淫乱陷落でない
+	SIF !TALENT:A:淫乱 && !TALENT:A:娼妇
+		LOCAL = 0
+	;Bが男性のとき、Aが[讨厌男人]をもっているか、[男好き]が無く男同成瘾が２以下
+	SIF (TALENT:B:男性 || TALENT:B:双性) && TALENT:A:讨厌男人 && ABL:A:男同成瘾 <= 2
+		LOCAL = 0
+	;Bが女性の時、Aが[讨厌女人]をもっているか、[女好き]が無く百合成瘾が２以下
+	SIF !TALENT:B:男性 && !TALENT:B:双性 && TALENT:A:讨厌女人 && ABL:A:百合成瘾 <= 2
+		LOCAL = 0
+ENDIF
+;AがBの守備範囲か判定
+LOCAL:1 = 1
+IF B > 0 && !TALENT:A:嫉妒 && !TALENT:A:病娇
+	;Aが男性のとき、Bが[讨厌男人]をもっているか、[男好き]が無く男同成瘾が２以下
+	SIF (TALENT:A:男性 || TALENT:A:双性) && TALENT:B:讨厌男人 && ABL:B:男同成瘾 <= 2
+		LOCAL:1 = 0
+	;Aが女性の時、Bが[讨厌女人]をもっているか、[女好き]が無く百合成瘾が２以下
+	SIF !TALENT:A:男性 && !TALENT:A:双性 && TALENT:B:讨厌女人 && ABL:B:百合成瘾 <= 2
+		LOCAL:1 = 0
+ENDIF
+PRINTL ………
+PRINTL ……
+PRINTW …
+IF B > 0 && LOCAL && !TALENT:A:嫉妒 && !TALENT:A:病娇
+ELSEIF !TALENT:A:病娇
+	;和风
+	IF TALENT:A:和风
+		PRINTFORML 「幸不辱命，全部的菜色就是这些了。好了，不用客气，请趁热吃吧」
+	;高傲
+	ELSEIF CFLAG:A:600 == 6
+		PRINTFORML 「搞定了…别愣在那里，趁没冷掉快给我吃」
+	;稳重
+	ELSEIF CFLAG:A:600 == 2
+		PRINTFORML 「来，不用客气，尽请慢用」
+	;元气
+	ELSEIF CFLAG:A:600 == 1
+		PRINTFORML 「好喽，快吃吧」
+	;小恶魔、直率
+	ELSEIF TALENT:A:小恶魔 || CFLAG:A:600 == 11
+		PRINTFORML 「好了好了，快点趁热吃了它♪」
+	;阴暗无口
+	ELSEIF CFLAG:A:600 == 8
+	    PRINTFORML 「可以吃了」
+	ELSE
+		PRINTFORML 「做好了，快来吃吧」
+	ENDIF
+ENDIF
+IF B > 0 && LOCAL && !TALENT:A:嫉妒 && !TALENT:A:病娇
+	PRINTFORMW 好慢，还没有好吗……
+	PRINTFORMW 实在是很在意，所以去厨房看看情况
+	PRINTFORMW ……%CALLNAME:A%好像要把%CALLNAME:B%做成人体盛…
+	PRINTFORMW 总而言之立刻制止了%CALLNAME:A%的行为
+	IF TALENT:B:淫乱 || TALENT:B:娼妇
+		PRINTFORM 看上去对此满怀期待的%CALLNAME:B%
+		IF LOCAL:1
+			PRINTFORMW 无言地向%PLAYER_NAME()%投来了冰冷的视线
+		ELSE
+			PRINTFORMW 虽然向%PLAYER_NAME()%表达了谢意，但怎么看都很遗憾的样子…
+		ENDIF
+	ELSEIF LOCAL:1
+		PRINTFORM 险些就要被当作菜肴端上桌的%CALLNAME:B%
+		IF MARK:B:反抗刻印 >= 3
+			PRINTFORMW 向搭救自己的%PLAYER_NAME()%小声地表示了感谢
+		ELSEIF TALENT:B:恋慕 || TALENT:B:相亲相爱
+			PRINTFORML 向搭救自己的%PLAYER_NAME()%表达了谢意
+			PRINTFORMW 并极力解释事情的来龙去脉以证明自己的清白
+		ELSE
+			PRINTFORMW 反复地向搭救自己的%PLAYER_NAME()%表示感谢
+		ENDIF
+	ELSE
+		PRINTFORMW 遭到%CALLNAME:A%的袭击，此刻十分害怕的%CALLNAME:B%向%PLAYER_NAME()%表达了深深的谢意
+	ENDIF
+	LOCAL:2 = 0
+ELSEIF TALENT:A:病娇
+;毒殺事件へダイブ
+	PRINTFORMW %CALLNAME:A%将做好的菜端上餐桌
+	PRINTFORMW %PLAYER_NAME()%道谢后立即开动
+	PRINTFORMW ……！
+	PRINTFORMW 发现饭菜里被下了毒时已经晚了
+	K = 8
+	TFLAG:13 = 26
+	CALL KOJO_MESSAGE_EVENT
+	QUIT
+ELSEIF TALENT:A:不擅料理 && !RAND:2
+	PRINTFORMW %CALLNAME:A%将做好的菜端上餐桌
+	PRINTFORMW %PLAYER_NAME()%道谢后立即开动
+	PRINTFORMW ……！
+	PRINTFORMW 自己现在还能活着真是一件不可思议的事情……
+	PRINTFORMW 在满脸惊愕的%CALLNAME:A%面前，%PLAYER_NAME()%脸色青白，差点摔倒在地
+	IF (TALENT:A:反抗 || TALENT:A:自大 || TALENT:A:高傲) && KANRAKU(A) != 3
+		;古风or堅い
+		IF TALENT:A:和风 || CFLAG:A:600 == 3
+			PRINTFORML 「这、这种反应还真是失礼…」
+		;高傲
+		ELSEIF CFLAG:A:600 == 6
+			PRINTFORML 「这算什么反应啊…！　好过分！　真是个不讲礼貌的家伙…」
+		;元气
+		ELSEIF CFLAG:A:600 == 1
+			PRINTFORML 「这、这样的反应…是不是太过分了一点？！」
+		;别扭、任性
+		ELSEIF CFLAG:A:600 == 5 || CFLAG:A:600 == 10
+			PRINTFORML 「这种反应…太没礼貌了！」
+		;子供、直率
+		ELSEIF TALENT:A:幼稚 || CFLAG:A:600 == 11
+			PRINTFORML 「这种反应算什么啦…好伤人…」
+		;阴暗无口
+		ELSEIF CFLAG:A:600 == 8
+			PRINTFORML 「过分…」
+		ELSE
+			PRINTFORML 「这种夸张的反应算什么啊？　真过分…」
+		ENDIF
+		PRINTFORMW 说着%CALLNAME:A%气鼓鼓地尝了一口自己的料理
+		PRINTW ・
+        PRINTW ・
+        PRINTW ・
+		SIF CFLAG:A:7024
+		PRINTFORMW 除了酱汁让人联想起%PLAYER_NAME()%的味道，但是其他的部份实在不能算是人类的食物
+		PRINTFORMW 那之后两个人默契地没有再提，一起把料理倒掉了…
+		JUEL:A:6 += 20
+		PRINTFORMW %PALAMNAME:6%之珠＋20
+	ELSEIF TALENT:A:自我奉献 || TALENT:A:鼓舞 || TALENT:A:乐观 || TALENT:A:胆怯 || TALENT:A:老实 || TALENT:A:幼稚
+		;和风、认真
+		IF TALENT:A:和风 || CFLAG:A:600 == 3
+			PRINTFORML 「喂！？还、还好吗？！　应该没有加什么奇怪的东西啊…」
+		;高傲
+		ELSEIF CFLAG:A:600 == 6
+			PRINTFORML 「欸！？　喂、喂？没事吧？！　明明也没加什么奇怪的东西啊…」
+		;元气
+		ELSEIF CFLAG:A:600 == 1
+			PRINTFORML 「欸！？　没、没事吧？！　怎么办…」
+		;别扭、任性
+		ELSEIF CFLAG:A:600 == 5 || CFLAG:A:600 == 10
+			PRINTFORML 「欸！？　没、没事吧？　为什么会变成这样啊？！」
+		;子供、直率
+		ELSEIF TALENT:A:幼稚 || CFLAG:A:600 == 11
+			PRINTFORML 「欸！？…为什么会这样？　怎么办啊…」
+		;阴暗无口
+		ELSEIF CFLAG:A:600 == 8
+			PRINTFORML 「……！？…还好吗？」
+		ELSE
+			PRINTFORML 「欸！？　没、没事吧？！　明明没有加奇怪的东西进去…」
+		ENDIF
+		PRINTFORMW %CALLNAME:A%慌忙跑到%PLAYER_NAME()%身边，尝了一口自己的料理
+		PRINTW ・
+        PRINTW ・
+        PRINTW ・
+		SIF CFLAG:A:7024
+		PRINTFORMW 除了酱汁让人联想起%PLAYER_NAME()%的味道，但是其他的部份实在不能算是人类的食物
+		PRINTFORMW 那之后两个人默契地没有再提，一起把料理倒掉了…
+		JUEL:A:6 += 20
+		PRINTFORMW %PALAMNAME:6%之珠＋20
+	ELSE
+		PRINTFORMW %CALLNAME:A%难堪地摸摸后脑勺，转身去取胃药…
+	ENDIF
+ELSEIF TALENT:A:不擅料理 || (ABL:A:料理技能 <= 2 && !RAND:3)
+	PRINTFORMW %CALLNAME:A%将做好的菜端上餐桌
+	PRINTFORMW %PLAYER_NAME()%道谢后立即开动
+	PRINTFORMW ……！
+	PRINTFORMW 极限……不，这已经超出人类的味觉承受能力了……
+	IF TALENT:A:反抗 || TALENT:A:自大 || TALENT:A:高傲 || TALENT:A:抵抗
+		;和风、认真
+		IF TALENT:A:和风 || CFLAG:A:600 == 3
+			PRINTFORML 「嗯？　怎么这个表情…」
+		;高傲
+		ELSEIF CFLAG:A:600 == 6
+			PRINTFORML 「干嘛啊摆这么张臭脸……就那么难吃吗？」
+		;元气
+		ELSEIF CFLAG:A:600 == 1
+			PRINTFORML 「这张一言难尽的脸是怎么回事…」
+		;别扭、任性
+		ELSEIF CFLAG:A:600 == 5 || CFLAG:A:600 == 10
+			PRINTFORML 「为什么表情那么的微妙…？」
+		;子供
+		ELSEIF TALENT:A:幼稚
+			PRINTFORML 「啊咧…？　不好吃吗？」
+		;直率
+		ELSEIF CFLAG:A:600 == 11
+			PRINTFORML 「…不好吃吗？」
+		;无口
+		ELSEIF CFLAG:A:600 == 8
+			PRINTFORML 「……？」
+		ELSE
+			PRINTFORML 「为什么露出这么微妙的表情？　真的那么不行吗？」
+		ENDIF
+		PRINTFORMW 看着沉默不语的%PLAYER_NAME()%，%CALLNAME:A%满腹疑惑地尝了一口自己的料理
+		PRINTW ・
+        PRINTW ・
+        PRINTW ・
+		SIF CFLAG:A:7024
+		PRINTFORMW 除了酱汁让人联想起%PLAYER_NAME()%的味道，但是其他的部份实在不能算是人类的食物
+		PRINTFORMW 结果自己也脸色发青地倒下了…
+	ELSE
+		SIF TALENT:A:自我奉献 || TALENT:A:鼓舞 || TALENT:A:乐观 || TALENT:A:幼稚
+			PRINTFORMW 面对%CALLNAME:A%满怀期待的笑容，下定决心尝了一口
+		;和风、认真
+		IF TALENT:A:和风 || CFLAG:A:600 == 3
+			PRINTFORML 「怎么样…味道如何？　这次的还算是自信之作」
+		;高傲
+		ELSEIF CFLAG:A:600 == 6
+			PRINTFORML 「好吃吗？　这次可是发挥出了全部水平的自信之作，要心怀感激啊」
+		;稳重、腹黑
+		ELSEIF CFLAG:A:600 == 2 || CFLAG:A:600 == 7
+			;もっと丁寧な敬語で喋りそうなキャラ
+			IF !TALENT:A:幼稚 && !TALENT:A:幼儿／幼儿退行 && (TALENT:A:胆怯 || TALENT:A:绅士 || TALENT:A:美人)
+				PRINTFORML 「如何，还行吗？　要是合胃口的话就再好不过了…」
+			ELSE
+				PRINTFORML 「怎么样？　好吃吗？　这次的是自信之作哦」
+			ENDIF
+		;元气
+		ELSEIF CFLAG:A:600 == 1
+			PRINTFORML 「怎么样？　好不好吃？　%CSTR:A:0%对这次的味道超有自信的！」
+		;子供
+		ELSEIF TALENT:A:幼稚
+			PRINTFORML 「好吃吗好吃吗？　这可是%CSTR:A:0%很努力做的哦！」
+		;直率
+		ELSEIF CFLAG:A:600 == 11
+			PRINTFORML 「好吃吗？　%CSTR:A:0%对这次的味道还蛮有自信的哦」
+		;无口
+		ELSEIF CFLAG:A:600 == 8
+			PRINTFORML 「…好吃吗？」
+		ELSE
+			PRINTFORML 「那个…还合胃口吗？　虽然算是自信之作…」
+		ENDIF
+		IF TALENT:A:自我奉献 || TALENT:A:鼓舞 || TALENT:A:乐观 || TALENT:A:幼稚
+			PRINTFORML 要怎么回答比较好呢，是老实说出心中感想，还是选择善意的谎言呢
+			PRINTFORML 这么犹豫着，并没有立刻告诉%CALLNAME:A%答案
+			PRINTFORMW 而是在稍微思考了一下后才说了好吃
+			PRINTFORMW %CALLNAME:A%开心地把料理推得更近了一点
+			PRINTFORMW 说是想要更加详细的感想…
+		ELSE
+			PRINTFORML 要怎么回答比较好呢？
+			PRINTL 
+			$INPUT_LOOP_1
+			PRINTL [0]回答好吃
+			PRINTL [1]回答不好吃
+			INPUT
+			IF RESULT == 0
+				PRINTFORMW %PLAYER_NAME()%有些佩服地望着少了一半的盐瓶
+				PRINTFORML 目送着心满意足的%CALLNAME:A%离去
+				PRINTFORMW 已经没有说其他话的力气，脱力地趴在了桌子上…
+			ELSEIF RESULT == 1
+				PRINTFORMW %PLAYER_NAME()%有些佩服地望着少了一半的盐瓶
+				PRINTFORML 目送着仿佛明白了什么的%CALLNAME:A%离去
+				PRINTFORMW 顿时松了口气，脱力地趴在了桌子上…
+			ELSE
+				GOTO INPUT_LOOP_1
+			ENDIF
+		ENDIF
+	ENDIF
+ELSEIF ABL:A:料理技能 >= 5 || (TALENT:A:擅长料理 && !RAND:2)
+	PRINTFORMW %CALLNAME:A%将做好的菜端上餐桌
+	PRINTFORMW %PLAYER_NAME()%道谢后立即开动
+	IF RAND:4 >= 1
+		PRINTFORMW ……非常美味…
+	ELSE
+		PRINTFORMW ……或许，喜欢的料理又多了一样
+	ENDIF
+	PRINTFORMW 这么想着又吃了一口
+	IF TALENT:A:自大
+		;任性、无常识
+		IF CFLAG:A:600 == 10 || CFLAG:A:600 == 12
+			PRINTFORML 「哼哼，好吃吧？这也是理所当然的」
+		;元气
+		ELSEIF CFLAG:A:600 == 1
+			PRINTFORML 「哼哼，认真起来的话，这样的水平不过是小菜一碟」
+		;蛮不讲理
+		ELSEIF CFLAG:A:600 == 9
+			PRINTFORML 「好吃吧？　超棒的吧？　%CSTR:A:0%可是很有自信哦」
+		;子供
+		ELSEIF TALENT:A:幼稚
+			PRINTFORML 「嗯～哼！　很好吃吧？　因为是自信之作嘛！」
+		;无口
+		ELSEIF CFLAG:A:600 == 8
+			PRINTFORML 「%CSTR:A:0%对此很有自信，很好吃吧？」
+		ELSE
+			PRINTFORML 「哼哼，这也是当然的，为了这一天%CSTR:A:0%可是一直都在磨练做菜的技术啊」
+		ENDIF
+	ELSE
+		;稳重，直率
+		IF CFLAG:A:600 == 2 || CFLAG:A:600 == 11
+			;もっと丁寧な敬語で喋りそうなキャラ
+			IF !TALENT:A:幼稚 && !TALENT:A:幼儿／幼儿退行 && (TALENT:A:胆怯 || TALENT:A:绅士 || TALENT:A:美人)
+				PRINTFORML 「还算满意吗？那真是太好了…」
+			ELSE
+				PRINTFORML 「能合%CSTR:A:2%的口味真是太好了…」
+			ENDIF
+		ELSEIF CFLAG:A:600 == 12 || CFLAG:A:600 == 7
+			PRINTFORML 「%CSTR:A:2%能满意真是太好了…」
+		ELSEIF CFLAG:A:600 == 8
+			PRINTFORML 「太好了…」
+		ELSEIF CFLAG:A:600 == 6 || CFLAG:A:600 == 9
+			PRINTFORML 「不错，这个表情就对了」
+		ELSE
+			PRINTFORML 「合%CSTR:A:2%口味真是太好了…」
+		ENDIF
+	ENDIF
+	IF TALENT:A:自大 || CFLAG:A:600 == 6 || CFLAG:A:600 == 12
+		PRINTFORMW %CALLNAME:A%得意洋洋地挺起胸膛
+		IF TALENT:A:恋慕 || TALENT:A:相亲相爱
+			PRINTFORMW 之后直到用餐完毕，%CALLNAME:A%都一副忍不住笑出来的模样看着%PLAYER_NAME()%…
+		ELSE
+			PRINTFORM 随后
+			IF TALENT:A:男性 || TALENT:A:双性
+    		    PRINT 他
+    		ELSE
+    		    PRINT 她
+    		ENDIF
+    		PRINTFORMW 兴致高昂地哼着歌回了厨房…
+		ENDIF
+	ELSEIF TALENT:A:自我奉献 || TALENT:A:胆怯 || TALENT:A:老实 || TALENT:A:幼稚
+		PRINTFORMW %CALLNAME:A%高兴又羞怯
+		IF (TALENT:A:恋慕 || TALENT:A:相亲相爱) && TALENT:A:幼稚
+			PRINTFORMW 红着脸扑过来抱住了%PLAYER_NAME()%
+			PRINTFORMW 这个姿势有点难活动，但还是维持着被抱住的模样吃完了一餐
+		ELSE
+			PRINTFORMW 脸颊红红地回厨房去了
+		ENDIF
+	ELSE
+		IF TALENT:A:相亲相爱
+			PRINTFORMW %CALLNAME:A%笑眯眯地看着%PLAYER_NAME()%吃光了所有料理
+			PRINTFORMW 随后说着这是餐后甜点，凑过来与%PLAYER_NAME()%双唇相叠…
+		ELSE
+			PRINTFORMW %CALLNAME:A%颇为得意地回厨房去了
+		ENDIF
+	ENDIF
+ELSE
+	PRINTFORMW %CALLNAME:A%将做好的菜端上餐桌
+	PRINTFORMW %PLAYER_NAME()%道谢后立即开动
+	IF !RAND:2
+		PRINTFORMW 味道挺不错的嘛…
+	ELSE
+		PRINTFORMW 哦哦，是喜欢的味道呢…
+	ENDIF
+	PRINTFORML 等%PLAYER_NAME()%咽下口中的食物后，%CALLNAME:A%询问了%PLAYER_NAME()%的感想
+	PRINTL 
+	$INPUT_LOOP_2
+	PRINTL [0]回答好吃
+	PRINTL [1]回答不好吃
+	INPUT
+	IF RESULT == 0
+		IF TALENT:A:反抗 || TALENT:A:自大 || TALENT:A:高傲
+			PRINTFORMW %CALLNAME:A%立刻摆出一副理所应当的样子
+			SIF TALENT:A:恋慕 || TALENT:A:相亲相爱
+				PRINTFORMW 不过，脸上满满都是藏也藏不住的喜悦…
+		ELSEIF TALENT:A:自我奉献 || TALENT:A:胆怯 || TALENT:A:老实 || TALENT:A:幼稚
+			PRINTFORMW %CALLNAME:A%说着“太好了”，一边抚着胸口
+			SIF TALENT:A:恋慕 || TALENT:A:相亲相爱
+				PRINTFORMW 并保证下次会更加努力
+		ELSE
+			PRINTFORMW %CALLNAME:A%颇为得意地点着头
+		ENDIF
+	ELSEIF RESULT == 1
+		PRINTFORMW %PLAYER_NAME()%有些佩服地望着少了一半的盐瓶
+		PRINTFORML 目送着仿佛明白了什么的%CALLNAME:A%离去
+		PRINTFORMW 顿时松了口气，有些脱力地趴在了桌子上…
+	ENDIF
+ENDIF
+IF LOCAL:2
+	EXP:A:家务经验 += 5
+	PRINTFORMW %CALLNAME:A%的家务经验 ＋５
+ENDIF
+
+;-------------------------------------------------
+;ナルシズム
+;-------------------------------------------------
+@DAILY_LIFE_28
+PRINTFORMW 决定去看看%CALLNAME:A%的情况…
+PRINTFORMW 这么想着轻轻推开%CALLNAME:A%的房门朝里面看去
+SIF CFLAG:A:7021
+PRINTFORM 一丝不挂的
+PRINTFORMW %CALLNAME:A%正站在镜子前
+IF TALENT:A:巨乳 || TALENT:A:爆乳
+	IF TALENT:A:男性
+		PRINTFORMW 像是在确认其分量一样抚摸着自己壮观的胸膛
+	ELSE
+		PRINTFORMW 像是在确认其分量一样抚摸着自己丰满的双峰
+	ENDIF
+	IF TALENT:A:胆怯 || TALENT:A:老实 || TALENT:A:悲观
+		PRINTFORMW 好像不太喜欢这对多余的胸部，神情郁郁寡欢
+	ELSE
+		PRINTFORMW 随即尝试性地往上掂了两下……好像蛮重的
+	ENDIF
+ELSEIF TALENT:A:贫乳 || TALENT:A:绝壁
+	PRINTFORML 像是在确认其分量一样将手放在自己平坦的胸脯上
+	SIF TALENT:A:矮小体型
+		PRINTFORMW 随即又抚摸起自己脖颈周围的肌肤
+	PRINTFORMW 似乎在考虑着各种各样的事情…
+ELSE
+	IF !RAND:3
+		PRINTFORMW 像是在确认自己身上都有哪些地方发生了变化
+	ELSEIF !RAND:2
+		PRINTFORMW 好像很在意自己上臂附近的赘肉
+	ELSE
+		PRINTFORMW 似乎在仔细地检查自己的腰围
+	ENDIF
+ENDIF
+IF MARK:A:反抗刻印 >= 3
+	PRINTFORML 察觉到%PLAYER_NAME()%的视线，%CALLNAME:A%回过头来
+	PRINTFORMW 然后神情冷漠地走近，“砰”的一声把门关上了……
+	PRINTFORMW 没办法，只能耸耸肩自觉离开……
+ELSEIF TALENT:A:无动于衷 || TALENT:A:缺乏感情
+	PRINTFORMW 突然，%CALLNAME:A%好像在镜子里看到了%PLAYER_NAME()%的身影
+	PRINTFORM 不过
+	IF TALENT:A:男性 || TALENT:A:双性
+	    PRINT 他
+	ELSE
+	    PRINT 她
+	ENDIF
+	PRINTFORMW 完全不在意的样子，继续对镜自照…
+ELSEIF (TALENT:A:性保守 || TALENT:A:害羞) && !CFLAG:604
+	PRINTFORMW 察觉到%PLAYER_NAME()%的视线，%CALLNAME:A%脸颊通红，慌慌张张地跑过来关上了门
+	PRINTFORMW 挠了挠头，只能自觉离开了…
+ELSEIF TALENT:A:贞操淡漠 || TALENT:A:不知羞耻 || TALENT:A:小恶魔
+	PRINTFORMW 察觉到%PLAYER_NAME()%的视线，%CALLNAME:A%摆出了挑逗的姿势…
+ELSEIF TALENT:A:反抗 || TALENT:A:高傲 || TALENT:A:抵抗
+	PRINTFORMW 察觉到%PLAYER_NAME()%的视线，%CALLNAME:A%气呼呼地冲过来把门关上了
+	PRINTFORMW 挠了挠头，只能自觉离开了…
+ELSE
+	PRINTFORMW 察觉到%PLAYER_NAME()%的视线，%CALLNAME:A%歪着头看了过来…
+	PRINTFORMW 稍微聊了会儿后离开了
+ENDIF
+
+;-------------------------------------------------
+;陷落前の态度
+;-------------------------------------------------
+@DAILY_LIFE_29
+PRINTFORMW 穿过走廊时听到了奇怪的声响
+PRINTFORMW 寻找了一番，发现%CALLNAME:A%四肢着地趴在房间中央
+PRINTFORMW 正拼命往柜底的缝隙里伸长手臂
+PRINTFORMW 看来是有什么东西掉进去了…%PLAYER_NAME()%当即转身找了根棍子过来
+IF CFLAG:A:600 == 5 || CFLAG:A:600 == 6 || TALENT:A:反抗 || TALENT:A:自大 || TALENT:A:高傲
+	PRINTFORML 感觉有手放到自己肩上，%CALLNAME:A%吓了一跳转过头来
+	PRINTFORMW 看清是%PLAYER_NAME()%，脸上立刻流露出厌恶的神色
+	PRINTFORMW 唔，毕竟是因为平日的调教才造成了%CALLNAME:A%现在的态度，这也没有办法…
+	PRINTFORML 把带来的棍子递过去，%CALLNAME:A%直言不需要
+	PRINTFORMW 数次推让后，%CALLNAME:A%终于勉强收下
+	PRINTFORMW 借助棍子，这次终于成功把落进缝隙的东西掏了出来
+	PRINTFORMW %CALLNAME:A%的表情有些不自然，小声地说了谢谢
+ELSEIF CFLAG:A:600 == 11 || TALENT:A:胆怯 || (MARK:A:痛苦刻印 && EXP:A:痛苦快乐经验 >= 40 && CFLAG:A:2 < -400)
+	PRINTFORML 感觉有手放到自己肩上，%CALLNAME:A%身形一僵，小心翼翼地转过头来
+	PRINTFORMW 看清是%PLAYER_NAME()%，脸上立刻流露出胆怯的神色
+	PRINTFORMW 加上%PLAYER_NAME()%手里拿着棍子，可能以为要挨打了，%CALLNAME:A%浑身都哆嗦起来
+	PRINTFORMW 唔，毕竟是因为平日的调教才造成了%CALLNAME:A%现在的态度，这也没有办法…
+	PRINTFORMW 把带来的棍子递过去，%CALLNAME:A%抖着手接下了
+	PRINTFORMW 借助棍子，这次终于成功把落进缝隙的东西掏了出来
+	PRINTFORMW %CALLNAME:A%的恐惧心稍稍减轻，带着些许笑意诚恳地道了谢
+ELSE
+	PRINTFORML 感觉有手放到自己肩上，%CALLNAME:A%吓了一跳转过头来
+	PRINTFORMW 看清是%PLAYER_NAME()%，脸上立刻浮现出一丝不安
+	PRINTFORMW 唔，毕竟是因为平日的调教才造成了%CALLNAME:A%现在的态度，这也没有办法…
+	PRINTFORML 把带来的棍子递过去，%CALLNAME:A%露出惊讶的表情
+	PRINTFORMW 经过数次推让，%CALLNAME:A%才老实地收下
+	PRINTFORMW 借助棍子，这次终于成功把落进缝隙的东西掏了出来
+	PRINTFORMW 是因此对%PLAYER_NAME()%萌生出好感了吗，%CALLNAME:A%难得笑着道了谢
+ENDIF
+
+;-------------------------------------------------
+;营养剂
+;-------------------------------------------------
+@DAILY_LIFE_30
+;体力が半分以下のキャラを検索
+VARSET LOCAL
+FOR LOCAL, 0, CHARANUM
+	;主人は除く
+	SIF LOCAL == MASTER
+		CONTINUE
+	;日常イベントに登場不可
+	SIF !DAILYLIFE_CHARA(LOCAL)
+		CONTINUE
+	;既に登場しているキャラと被っていたら不可
+	SIF LOCAL == A
+		CONTINUE
+	;体力が半分以下でなければ不可
+	SIF (BASE:LOCAL:体力 * 2) > MAXBASE:LOCAL:体力
+		CONTINUE
+	LOCAL:(10 + LOCAL:1) = LOCAL
+	LOCAL:1++
+NEXT
+;条件に当てはまるキャラから随机で１人選択する
+IF LOCAL:1
+	LOCAL:2 = RAND:(LOCAL:1)
+	B = LOCAL:(10 + LOCAL:2)
+ENDIF
+;B体力５０％回復
+IF B > 0 && RAND:2
+	PRINTFORMW 从%CALLNAME:A%的房间前路过时，听到了里面的谈话声
+	PRINTFORMW 朝屋内张望，看到了%CALLNAME:A%和%CALLNAME:B%，%CALLNAME:B%的手里拿着一个小瓶子
+	PRINTFORML %CALLNAME:B%好像很疲倦的样子，脸色不是很好
+	PRINTFORM 突然，
+	IF TALENT:B:男性 || TALENT:B:双性
+	    PRINT 他
+	ELSE
+	    PRINT 她
+	ENDIF
+	PRINTFORMW 把瓶口凑到嘴边，就那样将里面的东西喝了下去
+	PRINTFORMW 也不知道那里面装了什么，不由有点担心，但%CALLNAME:B%的脸色倒是比刚才好一些了
+	PRINTFORML 喝完瓶子里的液体后，%CALLNAME:B%向%CALLNAME:A%道了谢…
+	PRINTFORMW 看来那瓶液体是%CALLNAME:A%亲手调配的营养剂
+	PRINTFORML 之后两人气氛和睦地聊起天来
+	PRINTFORMW 继续偷看下去也没意义，%PLAYER_NAME()%转身离开了
+	;体力を５０％回復
+	BASE:B:体力 += MAXBASE:B:体力 / 10 * 5
+	PRINTL
+	PRINTFORMW %CALLNAME:B%的体力回复了５０％！
+	CALL RELATION_UP(A,B,15)
+;B体力２０％回復
+ELSEIF B > 0
+	PRINTFORMW 从%CALLNAME:A%的房间前路过时，听到了里面的谈话声
+	PRINTFORMW 朝屋内张望，看到了%CALLNAME:A%和%CALLNAME:B%，%CALLNAME:B%称自己的心情不是很好
+	PRINTFORMW %CALLNAME:A%听罢递给%CALLNAME:B%一个小瓶子，说里面装的是普通的营养剂
+	PRINTFORMW %CALLNAME:B%接过瓶子喝了下去，不一会儿后，%CALLNAME:B%的心情看起来好多了
+	PRINTFORML %CALLNAME:B%向%CALLNAME:A%道谢，之后两人气氛和睦地聊起天来
+	PRINTFORMW 继续偷看下去也没意义，%PLAYER_NAME()%转身离开了
+	;体力を５０％回復
+	BASE:B:体力 += MAXBASE:B:体力 / 10 * 2
+	PRINTL
+	PRINTFORMW %CALLNAME:B%的体力回复了２０％！
+	CALL RELATION_UP(A,B,15)
+ELSE
+	PRINTFORMW 穿过走廊时，迎面碰上了微笑着的%CALLNAME:A%
+	IF TALENT:A:男性 || TALENT:A:双性
+	    PRINT 他
+	ELSE
+	    PRINT 她
+	ENDIF
+	PRINTFORMW 询问%PLAYER_NAME()%是否有感到疲倦，随即没等%PLAYER_NAME()%回答就递过来一个小瓶子
+	PRINTFORMW 虽然不经思索就顺势收下了，但还是问了一下里面装的是什么
+	;稳重
+	IF CFLAG:A:600 == 2
+		PRINTFORMW 「只是普通的营养剂，不用想太多，喝吧」
+	;高傲
+	ELSEIF CFLAG:A:600 == 6
+		PRINTFORMW 「不过是营养剂罢了，总而言之别想太多，喝就是了」
+	;认真
+	ELSEIF CFLAG:A:600 == 3
+		;もっと丁寧な敬語で喋りそうなキャラ
+		IF !TALENT:A:幼稚 && !TALENT:A:幼儿／幼儿退行 && (TALENT:A:胆怯 || TALENT:A:绅士 || TALENT:A:美人)
+			PRINTFORMW 「只是普通的营养剂而已，还请务必喝下…」
+		ELSE
+			PRINTFORMW 「普通的营养剂啦，喝喝看嘛」
+		ENDIF
+	;元气
+	ELSEIF CFLAG:A:600 == 1
+		PRINTFORMW 「普通的营养剂而已啦，别想太多，喝嘛」
+	;子供枠
+	ELSEIF TALENT:A:幼稚 || CFLAG:A:600 == 10 || CFLAG:A:600 == 11
+		PRINTFORMW 「是能让人打起精神的神奇药水哦，快喝快喝」
+	;无常识、不思议
+	ELSEIF  CFLAG:A:600 == 12 || CFLAG:A:600 == 13
+		PRINTFORMW 「是普通的营养剂哦，不用在意，喝喝看？」
+	ELSE
+		PRINTFORMW 「是普通的营养剂，总而言之，请喝下它」
+	ENDIF
+	;主人に对して恋慕陷落
+	IF TALENT:A:恋慕 || TALENT:A:相亲相爱
+		PRINTFORMW %CALLNAME:A%带来的东西应该不会有问题…
+		PRINTFORMW 犹豫不决时，%CALLNAME:A%率先尝了一口瓶里的液体
+		PRINTFORMW 都做到这步还拒绝就说不过去了
+		;认真
+		IF CFLAG:A:600 == 3
+			;もっと丁寧な敬語で喋りそうなキャラ
+			IF !TALENT:A:幼稚 && !TALENT:A:幼儿／幼儿退行 && (TALENT:A:胆怯 || TALENT:A:绅士 || TALENT:A:美人)
+				PRINTFORMW 「如果%MASTERNAME:A%能打起精神来，%CSTR:A:0%也会感到很满足」
+			ELSE
+				PRINTFORMW 「只要%MASTERNAME:A%能打起精神来，就比什么都好」
+			ENDIF
+		;元气
+		ELSEIF CFLAG:A:600 == 1
+			PRINTFORMW 「如果%MASTERNAME:A%能打起精神来就万事大吉了」
+		;子供枠
+		ELSEIF TALENT:A:幼稚 || CFLAG:A:600 == 10 || CFLAG:A:600 == 11
+			PRINTFORMW 「只要%MASTERNAME:A%打起精神来，%CSTR:A:0%就会很开心」
+		ELSE
+			PRINTFORMW 「想看到%MASTERNAME:A%打起精神来的样子」
+		ENDIF
+		PRINTFORMW 把药水喝下后，好像的确恢复了一点元气…
+		EXP:A:爱情经验 += 1
+		PRINTL
+		PRINTFORMW 爱情经验＋1
+	ELSE
+		$INPUT_LOOP_EIYOUZAI
+		PRINTL [0]喝下
+		PRINTL [1]拒绝
+		INPUT
+		IF RESULT == 0
+			PRINTFORMW 大概是%CALLNAME:A%亲手调配的药剂
+			PRINTFORMW 那样的话，应该不会放什么奇怪的东西…这么想着坦率收下了
+			;认真
+			IF CFLAG:A:600 == 3
+				;もっと丁寧な敬語で喋りそうなキャラ
+	    		IF !TALENT:A:幼稚 && !TALENT:A:幼儿／幼儿退行 && (TALENT:A:胆怯 || TALENT:A:绅士 || TALENT:A:美人)
+					PRINTFORMW 「如果%MASTERNAME:A%能打起精神来，%CSTR:A:0%也会感到很满足」
+				ELSE
+					PRINTFORMW 「能让%MASTERNAME:A%打起精神就好了」
+				ENDIF
+			;元气
+			ELSEIF CFLAG:A:600 == 1
+				PRINTFORMW 「如果%MASTERNAME:A%能打起精神来就再好不过了」
+			;子供枠
+			ELSEIF TALENT:A:幼稚 || CFLAG:A:600 == 10 || CFLAG:A:600 == 11
+				PRINTFORMW 「%MASTERNAME:A%打起精神来的话，%CSTR:A:0%也会很开心的」
+			ELSE
+				PRINTFORMW 「希望%MASTERNAME:A%可以打起精神来」
+			ENDIF
+			PRINTFORMW 把药水喝下后，好像的确恢复了一点元气…
+			JUEL:A:恭顺 += 50
+			PRINTL
+			PRINTFORMW %CALLNAME:A%的恭顺之珠+50
+		ELSEIF RESULT == 1
+			PRINTFORMW 实在不想喝这种来历不明的东西…郑重地拒绝了
+			PRINTFORMW %CALLNAME:A%不满地离开了
+			JUEL:A:屈服 += 50
+			JUEL:A:反感 += 10
+			PRINTL
+			PRINTFORML %CALLNAME:A%的屈服之珠+50
+			PRINTFORMW %CALLNAME:A%的反感之珠+10
+		ELSE
+			GOTO INPUT_LOOP_EIYOUZAI
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;部屋から連れだす
+;-------------------------------------------------
+@DAILY_LIFE_31
+;Aの様子
+;无动于衷or缺乏感情
+IF TALENT:A:无动于衷 || TALENT:A:缺乏感情
+	PRINTFORM 偷看%CALLNAME:A%的房间，发现
+	SIF CFLAG:A:7021
+	PRINTFORM 一丝不挂的	
+	PRINTFORMW	%CALLNAME:A%坐在角落里发呆
+;悲观
+ELSEIF TALENT:A:悲观
+	PRINTFORML 偷看%CALLNAME:A%的房间，发现%CALLNAME:A%一脸阴沉地坐在椅子上
+	PRINTFORMW 又在考虑一些悲观的事了吗…
+ELSE
+	PRINTFORMW 偷看%CALLNAME:A%的房间，发现%CALLNAME:A%孤零零地坐在房间的正中央
+ENDIF
+PRINTFORMW 明明说过可以自由活动的，可是消极的%CALLNAME:A%还是很少离开房间
+PRINTFORML 难得的休息时间，还是做点让自己更开心的事比较好不是吗
+PRINTFORMW 这么想着，决定把%CALLNAME:A%带出去透透气
+;无动于衷＆缺乏感情
+IF TALENT:A:无动于衷 && TALENT:A:缺乏感情
+	PRINTFORML 进入房间时，%CALLNAME:A%一语不发，没什么特别的反应
+	PRINTFORMW 姑且勉强把这家伙从房间里拉了出去
+	PRINTFORMW 接下来应该去哪儿呢…首先就图书室吧
+	PRINTFORM 将%CALLNAME:A%带到图书室，告诉
+	IF TALENT:A:男性 || TALENT:A:双性
+	    PRINT 他
+	ELSE
+	    PRINT 她
+	ENDIF
+	PRINTFORML 可以选自己喜欢的书看
+	PRINTFORMW %CALLNAME:A%浏览了一会儿书架，不知为何最后选中的是一本词典
+	PRINTFORMW 这时%PLAYER_NAME()%也选好了想看的书，于是坐在%CALLNAME:A%身边读了起来
+	PRINTFORML 悄悄注意身旁的动静，看见%CALLNAME:A%时不时对着书页点头
+	PRINTFORMW 好像是真的沉浸其中…
+	PRINTFORMW 休息时间差不多要结束的时候，和%CALLNAME:A%打了招呼，将其送回房间
+	PRINTFORMW 临别时%CALLNAME:A%微微红了脸，对把自己带出房间一事表示感谢
+;悲观、害羞　感情乏しくない
+ELSEIF TALENT:A:悲观 && TALENT:A:害羞 && !TALENT:A:缺乏感情
+	PRINTFORML 进入房间拉起%CALLNAME:A%的手
+	PRINTFORML 可能误会自己做错了事要受到惩罚，%CALLNAME:A%浑身僵硬
+	PRINTFORMW 并未解释太多，只是径直把人带到了图书室
+	PRINTFORML 告诉%CALLNAME:A%可以选自己喜欢的书看，%CALLNAME:A%愣了愣，开始在书架间浏览
+	PRINTFORMW 最终选中的是一本结局悲惨的小说
+	PRINTFORMW 这时%PLAYER_NAME()%也选好了想看的书，于是坐在%CALLNAME:A%身边读了起来
+	PRINTFORML 悄悄注意身旁的动静
+	PRINTFORMW 看见%CALLNAME:A%眼里滚动着泪珠，一边呜咽一边翻动书页
+	PRINTFORMW 好像是真的沉浸其中…
+	PRINTFORML 休息时间差不多要结束的时候，和%CALLNAME:A%打了招呼，将其送回房间
+	PRINTFORMW 临别时%CALLNAME:A%微微红了脸，对把自己带出房间一事表示感谢
+;老实　害羞
+ELSEIF TALENT:A:老实 && TALENT:A:害羞
+	PRINTFORMW 进入房间拉起%CALLNAME:A%的手，强行把惊慌失措的%CALLNAME:A%带到了图书室
+	PRINTFORML 告诉%CALLNAME:A%可以选自己喜欢的书看，%CALLNAME:A%愣了愣，开始在书架间浏览
+	PRINTFORMW 最后挑了一本普通的小说
+	PRINTFORMW 这时%PLAYER_NAME()%也选好了想看的书，于是坐在%CALLNAME:A%身边读了起来
+	PRINTFORML 悄悄注意身旁的动静，看见%CALLNAME:A%忘我地读着，如同忘记了周围的一切
+	PRINTFORMW 显然是真的沉浸其中…
+	PRINTFORML 休息时间差不多要结束的时候，和%CALLNAME:A%打了招呼，将其送回房间
+	PRINTFORMW 临别时%CALLNAME:A%微微红了脸，对把自己带出房间一事表示感谢
+ELSE
+	PRINTFORM 进入房间拉起%CALLNAME:A%的手，有些强硬地把
+	IF TALENT:A:男性 || TALENT:A:双性
+	    PRINT 他
+	ELSE
+	    PRINT 她
+	ENDIF
+	PRINTFORML 带到图书室
+	PRINTFORML 告诉%CALLNAME:A%可以选自己喜欢的书看，%CALLNAME:A%开始在书架间浏览
+	PRINTFORMW 最后挑了一本普通的小说
+	PRINTFORMW 这时%PLAYER_NAME()%也选好了想看的书，于是坐在%CALLNAME:A%身边读了起来
+	PRINTFORML 悄悄注意身旁的动静，看见%CALLNAME:A%忘我地读着，如同忘记了周围的一切
+	PRINTFORMW 显然是真的沉浸其中…
+	PRINTFORML 休息时间差不多要结束的时候，和%CALLNAME:A%打了招呼，将其送回房间
+	PRINTFORMW 临别时%CALLNAME:A%叫住%PLAYER_NAME()%，对把自己带出房间一事表示了感谢
+ENDIF
+
+;-------------------------------------------------
+;幼稚な奴隶を励ます
+;-------------------------------------------------
+@DAILY_LIFE_32
+;[幼稚][幼儿／幼儿退行]持ちを検索
+B = DAILYLIFE_GETTALENT_1(150, 151)
+PRINTFORMW 经过浴场时看到了%CALLNAME:A%和%CALLNAME:B%的身影
+PRINTFORML %CALLNAME:B%的身上脏兮兮的，沾满了灰尘…
+PRINTFORMW 多半又是去哪个空房间玩了吧
+PRINTFORML %CALLNAME:A%艰难地把%CALLNAME:B%拖往更衣室………
+PRINTFORMW 过了一会儿，%CALLNAME:A%从更衣室里出来，把%CALLNAME:B%的脏衣服丢进了洗衣篮
+PRINTFORML 就在%CALLNAME:A%准备洗衣服时，%CALLNAME:B%光着身子从更衣室里溜出来了
+PRINTFORMW 「这副德行又要去哪里啊？不可以不穿衣服到处乱跑」
+PRINTFORMW 像这样念叨着的%CALLNAME:A%再次把%CALLNAME:B%推进了更衣室………
+PRINTFORM 不久后，浴室里传出%CALLNAME:B%哈哈笑着戏水的声音
+PRINTFORMW 以及%CALLNAME:A%狼狈的叫声
+PRINTFORMW 一直待在这里也不太好，%PLAYER_NAME()%转身离开了
+PRINTFORML 之后去食堂吃饭的时候，在走廊里遇到了洗完澡神清气爽的%CALLNAME:B%
+PRINTFORMW 互相打了招呼，显然%CALLNAME:B%的心情十分愉快，真是太好了
+CALL RELATION_UP(A,B,10)
+
+;-------------------------------------------------
+;自我奉献な扫除
+;-------------------------------------------------
+@DAILY_LIFE_33
+PRINTFORML 整理完仓库后全身都沾满了灰尘，于是打算去浴室洗个澡
+PRINTFORMW 拿着换洗衣物走进浴场，撞上%CALLNAME:A%正在里面做扫除
+IF MARK:A:反抗刻印 >= 3
+	PRINTFORMW 对%CALLNAME:A%说了声辛苦了，然而并没有得到回应
+	IF TALENT:A:男性 || TALENT:A:双性
+	    PRINT 他
+	ELSE
+	    PRINT 她
+	ENDIF
+	PRINTFORMW 只是默默做完了扫除，然后就离开这里快速走远了
+	PRINTFORMW 没办法，先洗澡吧
+	PRINTFORMW ……走进浴室，发现%CALLNAME:A%连浴室的角落里都打扫得干干净净
+	PRINTFORMW 尽管因为被无视以至于心情有些微妙，但还是在心中向%CALLNAME:A%道了谢
+ELSEIF !RAND:2
+	PRINTFORMW 对%CALLNAME:A%说了声辛苦了，便看到对方高兴又腼腆的模样
+	PRINTFORML 该不会连浴室里也打扫过了吧…这样问道
+	PRINTFORMW 得到了“打扫得干干净净的，尽可使用没有关系”的回答
+	PRINTFORMW 难得%CALLNAME:A%辛劳一场，决定接受这份好意
+	PRINTFORMW 走进浴室，发现里面焕然一新，都快认不出来了…
+	IF TALENT:A:恋慕 || TALENT:A:相亲相爱
+		PRINTFORMW 满心佩服地愣在门口，背后突然响起了窸窸窣窣的声音
+		IF TALENT:A:140 || TALENT:A:137
+			PRINTFORMW 回头一看，%CALLNAME:A%脱光了站在那里，只在腰间缠了一条浴巾
+		ELSE
+			PRINTFORMW 回头一看，%CALLNAME:A%脱光了站在那里，只在身上披了一条浴巾
+		ENDIF
+		;认真
+		IF CFLAG:A:600 == 3
+			IF TALENT:A:性保守 || TALENT:A:害羞 || TALENT:A:贞操重视
+				PRINTFORML 「…话、话说…可以让%CSTR:A:0%来…擦背吗？」
+			ELSE
+				PRINTFORML 「需要帮忙擦背吗？」
+			ENDIF
+		;温柔
+		ELSEIF CFLAG:A:600 == 2
+			;もっと丁寧な敬語で喋りそうなキャラ
+			IF !TALENT:A:幼稚 && !TALENT:A:幼儿／幼儿退行 && (TALENT:A:胆怯 || TALENT:A:绅士 || TALENT:A:美人)
+				PRINTFORML 「帮忙擦背的话，%MASTERNAME:A%会开心吗？」
+			ELSE
+				IF TALENT:A:性保守 || TALENT:A:害羞 || TALENT:A:贞操重视
+					PRINTFORML 「请、请问…可以帮%MASTERNAME:A%…擦、擦背吗？」
+				ELSE
+					PRINTFORML 「可以帮%MASTERNAME:A%擦背吗？」
+				ENDIF
+			ENDIF
+		;元气
+		ELSEIF CFLAG:A:600 == 1
+			IF TALENT:A:性保守 || TALENT:A:害羞 || TALENT:A:贞操重视
+				PRINTFORML 「那、那啥…需要帮忙擦背…吗？」
+			ELSE
+				PRINTFORML 「要不要%CSTR:A:0%来帮忙擦背？」
+			ENDIF
+		;子供枠
+		ELSEIF TALENT:A:幼稚 || CFLAG:A:600 == 10 || CFLAG:A:600 == 11
+			IF TALENT:A:性保守 || TALENT:A:害羞 || TALENT:A:贞操重视
+				PRINTFORML 「那、那个…想帮%MASTERNAME:A%擦背…可以吗？」
+			ELSE
+				PRINTFORML 「可不可以帮%MASTERNAME:A%擦背呢？」
+			ENDIF
+		;无口
+		ELSEIF CFLAG:A:600 == 8
+			IF TALENT:A:性保守 || TALENT:A:害羞 || TALENT:A:贞操重视
+				PRINTFORML 「…需要帮忙擦背吗？」
+			ELSE
+				PRINTFORML 「需要帮忙擦背吗？」
+			ENDIF
+		ELSE 
+			IF TALENT:A:性保守 || TALENT:A:害羞 || TALENT:A:贞操重视
+				PRINTFORML 「那、那什么…能帮%MASTERNAME:A%…擦、擦背吗？」
+			ELSEIF CFLAG:A:600 == 6 || TALENT:A:自大
+				PRINTFORML 「%CSTR:A:0%来帮%MASTERNAME:A%擦背，行吧？」
+			ELSE
+				PRINTFORML 「%CSTR:A:0%来帮%MASTERNAME:A%擦背吧，好吗？」
+			ENDIF
+		ENDIF
+		PRINTFORMW %CALLNAME:A%像这样询问道
+		PRINTFORMW 没有拒绝的理由，所以同意了
+		IF TALENT:A:140 || TALENT:A:137
+			PRINTFORML 得到许可，%CALLNAME:A%紧张地帮%PLAYER_NAME()%洗起头发
+			PRINTFORMW 从背面到臀部，乃至小腿肚至大腿根，全部都被%CALLNAME:A%仔细地擦洗了一番
+			PRINTFORML 在%CALLNAME:A%细致贴心的手法下，心情稍稍变得不一样了
+			PRINTFORMW %PLAYER_NAME()%转过身，帮%CALLNAME:A%也洗了起来
+		ELSE
+			PRINTFORML 现如今是女性身体的%CALLNAME:A%热情尽心地为%PLAYER_NAME()%擦洗着背部、腹部、胸部…
+			PRINTFORMW 乃至下体在内，全身上下都被好好照顾到了
+			PRINTFORML 鼻间萦绕着%CALLNAME:A%的香气，面前是%CALLNAME:A%认真又有些微红的侧脸
+			PRINTFORML 气氛彻底变得不一样了
+			PRINTFORMW %PLAYER_NAME()%猝不及防转过身，帮%CALLNAME:A%也洗了起来
+		ENDIF
+		PRINTFORMW 被%PLAYER_NAME()%擦洗身体的期间，%CALLNAME:A%的脸颊羞得通红，但并没有反抗
+		PRINTFORMW 那之后两人甜甜蜜蜜地泡了澡，疲劳一扫而空
+	EXP:A:爱情经验 += 1
+	PRINTFORMW %CALLNAME:A%的爱情经验 ＋１
+	ELSEIF TALENT:A:淫乱 || TALENT:A:娼妇
+		PRINTFORMW 满心佩服地愣在门口，背后突然响起了窸窸窣窣的声音
+		IF TALENT:A:140 || TALENT:A:137
+			PRINTFORML 回头一看，%CALLNAME:A%脱光了站在那里，只在腰间缠了一条浴巾
+		ELSE
+			PRINTFORML 回头一看，%CALLNAME:A%脱光了站在那里，只在身上披了一条浴巾
+		ENDIF
+		;认真，稳重
+		IF CFLAG:A:600 == 2 || CFLAG:A:600 == 3
+			IF TALENT:A:性保守 || TALENT:A:害羞 || TALENT:A:贞操重视
+				PRINTFORM 「%CSTR:A:0%、%CSTR:A:0%来帮忙擦背」
+			ELSE
+				;もっと丁寧な敬語で喋りそうなキャラ
+				IF !TALENT:A:幼稚 && !TALENT:A:幼儿／幼儿退行 && (TALENT:A:胆怯 || TALENT:A:绅士 || TALENT:A:美人)
+					PRINTFORM 「%CSTR:A:0%可以…帮忙擦背吗？」
+				ELSE
+					PRINTFORM 「%CSTR:A:0%来帮忙擦背」
+				ENDIF
+			ENDIF
+		;元气
+		ELSEIF CFLAG:A:600 == 1
+			PRINTFORM 「%CSTR:A:0%来帮忙擦背啦」
+		;高傲
+		ELSEIF CFLAG:A:600 == 6
+			IF TALENT:A:性保守 || TALENT:A:害羞 || TALENT:A:贞操重视
+				PRINTFORM 「%CSTR:A:0%、%CSTR:A:0%来帮%CSTR:A:2%擦背」
+			ELSE
+				PRINTFORM 「%CSTR:A:0%来帮%CSTR:A:2%擦背」
+			ENDIF
+		;无口
+		ELSEIF CFLAG:A:600 == 8
+			PRINTFORM 「擦背服务…」
+		;直率，任性
+		ELSEIF CFLAG:A:600 == 10 || CFLAG:A:600 == 11
+		    PRINTFORM 「特别的擦背服务♪」
+		ELSE
+		    PRINTFORM 「就由%CSTR:A:0%来帮忙擦背吧」
+		ENDIF
+		PRINTFORMW %CALLNAME:A%像这样说道
+		PRINTFORMW 机会难得，便爽快同意了
+		PRINTFORMW 得到许可，%CALLNAME:A%心情很好地开始为%PLAYER_NAME()%擦洗身体
+		PRINTFORM 当
+		IF TALENT:A:男性 || TALENT:A:双性
+		    PRINT 他
+		ELSE
+		    PRINT 她
+		ENDIF
+		PRINTFORML 的手触碰到%PLAYER_NAME()%的下身时，动作就变得暧昧起来
+		PRINTFORMW %CALLNAME:A%兴奋的喘息喷洒在%PLAYER_NAME()%的肌肤上
+		PRINTFORMW 在两个人冷静下来前是不可能正常洗澡了，因此把%CALLNAME:A%赶出了浴场…
+	ELSEIF TALENT:A:服从 || TALENT:A:隶属
+		PRINTFORMW 满心佩服地愣在门口，背后突然响起了窸窸窣窣的声音
+		IF TALENT:A:140 || TALENT:A:137
+			PRINTFORMW 回头一看，%CALLNAME:A%脱光了站在那里，只在腰间缠了一条浴巾
+		ELSE
+			PRINTFORMW 回头一看，%CALLNAME:A%脱光了站在那里，只在身上披了一条浴巾
+		ENDIF
+		;认真
+		IF CFLAG:A:600 == 3
+			IF TALENT:A:性保守 || TALENT:A:害羞 || TALENT:A:贞操重视
+				PRINTFORML 「…那、那个…想帮%CSTR:A:3%擦背…可以吗？」
+			ELSE
+				PRINTFORML 「想要帮%CSTR:A:3%擦背，请让%CSTR:A:0%来效劳吧」
+			ENDIF
+		;温柔，腹黑
+		ELSEIF CFLAG:A:600 == 2 || CFLAG:A:600 == 7
+			;もっと丁寧な敬語で喋りそうなキャラ
+			IF !TALENT:A:幼稚 && !TALENT:A:幼儿／幼儿退行 && (TALENT:A:胆怯 || TALENT:A:绅士 || TALENT:A:美人)
+				PRINTFORML 「能允许%CSTR:A:0%擦洗%CSTR:A:2%的背部吗？」
+			ELSE
+				IF TALENT:A:性保守 || TALENT:A:害羞 || TALENT:A:贞操重视
+					PRINTFORML 「…那、那个…想帮%CSTR:A:3%擦背…能允许吗？」
+				ELSE
+					PRINTFORML 「%CSTR:A:0%来为%CSTR:A:2%擦背吧。请让%CSTR:A:0%效劳」
+				ENDIF
+			ENDIF
+		;元气
+		ELSEIF CFLAG:A:600 == 1
+			IF TALENT:A:性保守 || TALENT:A:害羞 || TALENT:A:贞操重视
+				PRINTFORML 「那、那什么…想要帮%CSTR:A:3%擦背来着…」
+			ELSE
+				PRINTFORML 「%CSTR:A:0%来帮%CSTR:A:3%擦背吧。让%CSTR:A:0%效劳嘛」
+			ENDIF
+		;直率，任性
+		ELSEIF CFLAG:A:600 == 10 || 	CFLAG:A:600 == 11
+		    PRINTFORML 「想要帮%CSTR:A:3%擦背…可以吗？」
+		ELSE 
+			IF TALENT:A:性保守 || TALENT:A:害羞 || TALENT:A:贞操重视
+				PRINTFORML 「啊、那个…想帮%CSTR:A:3%擦背…可、可以吗？」
+			ELSE
+				PRINTFORML 「请允许%CSTR:A:0%为%CSTR:A:2%擦背」
+			ENDIF
+		ENDIF
+		PRINTFORMW %CALLNAME:A%像这样恳求道
+		PRINTFORML ……本能地摇摇头，还没开口说话
+		PRINTFORML 就看到%CALLNAME:A%皱着脸一副快哭了的模样
+		PRINTFORMW 受罪恶感煎熬，最后还是答应了
+		IF TALENT:A:140 || TALENT:A:137
+			PRINTFORML 得到许可，%CALLNAME:A%紧张地帮%PLAYER_NAME()%洗起头发
+			PRINTFORMW 从背面到臀部，乃至小腿肚至大腿根，全部都被%CALLNAME:A%仔细地擦洗了一番
+		ELSE
+			PRINTFORML 现如今是女性身体的%CALLNAME:A%热情尽心地为%PLAYER_NAME()%擦洗着背部、腹部、胸部…
+			PRINTFORMW 乃至下体在内，全身上下都被好好照顾到了
+		ENDIF
+		PRINTFORMW 入浴前沾上的脏污和灰尘丝毫不剩，%PLAYER_NAME()%心情舒畅地泡在浴池里…
+	ENDIF
+ELSE
+	PRINTFORMW %CALLNAME:A%打扫得很认真，没有注意到走进来的%PLAYER_NAME()%
+	PRINTFORMW 打了声招呼，%CALLNAME:A%吓了一跳抬起头来
+	PRINTFORMW 浴室里也打扫过了吗…这样问道
+	PRINTFORMW %CALLNAME:A%害羞地点点头
+	PRINTFORMW 向%CALLNAME:A%表示感谢后朝着更衣室走去…
+	PRINTFORMW 进入浴室，里面果然被打扫得焕然一新
+	PRINTFORMW 在心中向%CALLNAME:A%再次道谢，心情舒畅地享受起泡澡时间…
+ENDIF
+EXP:A:家务经验 += 3
+PRINTFORMW %CALLNAME:A%的家务经验 ＋３
+
+;-------------------------------------------------
+;ドミノ倒し
+;-------------------------------------------------
+@DAILY_LIFE_34
+PRINTFORMW 闲来无事，在食堂里玩起了多米诺骨牌
+PRINTFORML 集中精力摆了一半，兴趣逐渐流失
+PRINTFORMW 站起来伸了个懒腰，发现%CALLNAME:A%在旁边
+IF MARK:A:反抗刻印 >= 3
+	PRINTFORMW 视线刚一对上，%CALLNAME:A%就慌慌张张逃走了
+	PRINTFORMW 待进入走廊转角后，却又从墙后探出头来，小声地说了加油
+	PRINTFORMW ……似、似乎是在应援
+ELSEIF TALENT:A:恋慕 || TALENT:A:相亲相爱 || TALENT:A:服从 || TALENT:A:隶属
+	PRINTFORML 正想打招呼，%CALLNAME:A%突然发出“哇”的一声
+	PRINTFORMW %PLAYER_NAME()%被吓得后退半步，碰到了多米诺骨牌的一角
+	PRINTFORMW 一个接着一个，之前摆好的多米诺骨牌全部都倒下了………
+	PRINTFORMW 两个人齐齐傻眼
+	PRINTFORML %CALLNAME:A%回过神来不断地道歉
+	PRINTFORMW 说是刚才想到了一件有趣的事打算分享，没想到会吓到%PLAYER_NAME()%
+	PRINTFORML 反正也觉得枯燥了，倒了也没关系
+	PRINTFORMW 不过现在倒是想和%CALLNAME:A%一起玩这个了
+	PRINTFORMW 传达了自己的想法，%CALLNAME:A%立刻点头同意
+	PRINTFORMW 在%CALLNAME:A%的协助下共同摆好了所有的多米诺骨牌
+	PRINTFORML 接着从第一张开始推倒，看着地上的图阵依次翻转，逐渐展开
+	PRINTFORMW 当最后一张多米诺骨牌应声倒地，两人都感到十分开心…
+ELSE
+	PRINTFORMW 没等%PLAYER_NAME()%打招呼，%CALLNAME:A%就转过身仓皇逃跑了
+	PRINTFORMW 待进入走廊转角后，却又从墙后探出头来一直盯着这边
+	PRINTFORM 告诉
+	IF TALENT:A:男性 || TALENT:A:双性
+	    PRINT 他
+	ELSE
+	    PRINT 她
+	ENDIF
+	PRINTFORMW 凑近点看也没关系，%CALLNAME:A%才小心翼翼地走了回来
+	PRINTFORMW 在%CALLNAME:A%的协助下共同摆好了所有的多米诺骨牌
+	PRINTFORML 接着从第一张开始推倒，看着地上的图阵依次翻转，逐渐展开
+	PRINTFORMW 当最后一张多米诺骨牌应声倒地，两人都感到十分开心…
+ENDIF
+
+;-------------------------------------------------
+;いたずら/罠
+;-------------------------------------------------
+@DAILY_LIFE_35
+
+IF TALENT:A:相亲相爱 && !MARK:A:反抗刻印 && CFLAG:A:141
+	;罠に引っ掛かけた事を後悔する
+	PRINTFORML 在自己的房间里无所事事时，突然响起了敲门声
+	PRINTFORMW 告诉门外人门没锁，%CALLNAME:A%便推门而入了
+	PRINTFORM 不过
+	IF TALENT:A:男性 || TALENT:A:双性
+	    PRINT 他
+	ELSE
+	    PRINT 她
+	ENDIF
+	PRINTFORMW 的表情有些阴沉，也不知是怎么回事
+	PRINTFORMW 正在疑惑的时候，%CALLNAME:A%突兀地开始道歉
+	PRINTFORMW 歪着头表示不解，%CALLNAME:A%说是因为以前对%PLAYER_NAME()%做过恶作剧
+	;罠に引っ掛かった事も看破した事もある
+	IF GETBIT(CFLAG:A:141, 0) && GETBIT(CFLAG:A:141, 1)
+		PRINTFORMW 的确曾经为%CALLNAME:A%的恶作剧头痛过，但也有识破而回避掉的时候
+	;罠を看破した事がある
+	ELSEIF GETBIT(CFLAG:A:141, 1)
+		PRINTFORMW 的确是有那么几次，不过每次都很快识破而回避掉了
+	;罠に引っ掛かった事がある
+	ELSE
+		PRINTFORMW 的确有好几次都为%CALLNAME:A%的恶作剧头痛过
+	ENDIF
+	PRINTFORML 当时确实很生气，可是现在早就完全不在意了…
+	PRINTFORMW 原来在那之后，%CALLNAME:A%一直都为此耿耿于怀
+	PRINTFORMW 抚摸着低头等待裁决的%CALLNAME:A%的发丝，一边传达了宽恕之情
+	IF TALENT:A:幼稚 || CFLAG:A:600 == 11
+		PRINTFORMW %CALLNAME:A%的眼泪顿时掉了下来，一遍遍地哭着说对不起
+		PRINTFORM ……等%CALLNAME:A%冷静下来，牵着
+		IF TALENT:A:男性 || TALENT:A:双性
+    	    PRINT 他
+    	ELSE
+    	    PRINT 她
+    	ENDIF
+    	PRINTFORMW 坐到沙发上
+		PRINTFORMW 用手揽过%CALLNAME:A%的肩，温柔地把人搂在怀里
+		PRINTFORMW 两个人一起聊了会儿，甜蜜地度过了休息时间
+	ELSE
+		PRINTFORMW %CALLNAME:A%紧绷的身体放松下来，朝%PLAYER_NAME()%绽放出笑容
+		PRINTFORMW 两个人一起聊了会儿，甜蜜地度过了休息时间
+	ENDIF
+	EXP:A:爱情经验 += 3
+	EXP:MASTER:爱情经验 += 3
+	PRINTFORMW %PLAYER_NAME()%和%CALLNAME:A%的爱情经验 ＋３
+	SETBIT CFLAG:A:141, 2
+ELSE
+	;罠に引っ掛かる
+	IF TALENT:A:学得慢 || (ABL:MASTER:技巧 >= 4 && RAND:3 >= 1) || TALENT:A:冒冒失失
+		PRINTFORML 在自己的房间里无所事事时，门外突然响起了奇怪的声音
+		PRINTFORMW 正要起来查看究竟，那声音就转变为了敲门声
+	ELSE
+		PRINTFORMW 在自己的房间里无所事事时，突然响起了敲门声
+	ENDIF
+	PRINTFORMW 告诉门外人门没锁，却迟迟没有人进来
+	IF (TALENT:A:学得慢 && RAND:3 >= 1) || (ABL:MASTER:技巧 >= 4 && RAND:3 >= 1) || TALENT:A:冒冒失失 || CFLAG:MASTER:141
+		SIF CFLAG:MASTER:141
+			PRINT 以前好像也有过类似的情况，
+		PRINTFORML 抱着疑惑小心地过去开了一条门缝
+		PRINTFORMW 隔着缝隙上下左右地张望，果不其然在上方发现了一个挂着的水桶
+		PRINTFORMW 看来是被设下了打开门就会有水桶倒扣下来的陷阱
+		PRINTFORML 直接打开的话会触发陷阱……找了根棍子回来，一口气推开了房门
+		PRINTFORMW “吱呀”一声，水桶倾斜，从里面掉出一大团面粉，把门前的地板洒得一片雪白
+		PRINTFORML 确认过不会再有其他陷阱后，仔细地环视起走廊
+		PRINTFORMW 很快，在拐角处发现了正在偷看这边的%CALLNAME:A%的身影
+		PRINTFORMW 看来这个陷阱是%CALLNAME:A%设下的…
+		IF (TALENT:A:幼稚 && RAND:3 >= 1) || (TALENT:A:冒冒失失 && RAND:3 >= 1)
+			PRINTFORMW 意识到自己已经暴露，%CALLNAME:A%急忙想要逃走，紧接着就华丽地摔倒了
+			PRINTFORM 趁%CALLNAME:A%痛苦地捂着屁股时冲过去逮捕了
+			IF TALENT:A:男性 || TALENT:A:双性
+    		    PRINTW 他
+    		ELSE
+    		    PRINTW 她
+    		ENDIF
+			PRINTFORM 那之后好好地教育了%CALLNAME:A%一番，勒令
+			IF TALENT:A:男性 || TALENT:A:双性
+    		    PRINT 他
+    		ELSE
+    		    PRINT 她
+    		ENDIF
+    		PRINTFORMW 把走廊打扫干净才可以回房间
+		ELSE
+			PRINTFORMW 意识到自己已经暴露，%CALLNAME:A%一溜烟逃走了
+			PRINTFORMW 结果%PLAYER_NAME()%只能亲自打扫了走廊
+			SETBIT CFLAG:A:141, 1
+		ENDIF
+	ELSE
+		PRINTFORML 满腹疑惑地走过去开了门
+		PRINTFORMW 下一秒大量白色粉末从天而降，把%PLAYER_NAME()%全身染成了雪白
+		IF TALENT:A:幼稚
+			PRINTFORMW 还没弄清当下状况的时候，不远处传来一阵幸灾乐祸的笑声
+			PRINTFORMW 转过头，发现%CALLNAME:A%正躲在拐角后往这边偷看
+		ELSE
+			PRINTFORMW 还没弄清当下状况的时候，感觉到了一股强烈的视线
+			PRINTFORML 朝视线的方向转过身去，发现%CALLNAME:A%正躲在拐角后往这边偷看
+			PRINTFORMW 那个罪魁祸首一副幸灾乐祸的表情，总觉得让人火大
+		ENDIF
+		PRINTFORMW 来不及甩掉身上的面粉，立刻朝%CALLNAME:A%冲了过去
+		;他登場キャラ、陷落済み
+		B = DAILYLIFE_GETCHARA(1)
+		IF B > 0 && RAND:3 >= 1
+			PRINTFORMW 你追我赶好一阵，结果还是追丢了
+			PRINTFORML 没办法，还是先把身上的面粉弄掉吧
+			PRINTFORMW %PLAYER_NAME()%朝浴场走去，途中遇到了%CALLNAME:B%
+			IF (TALENT:B:恋慕  || TALENT:B:相亲相爱) && MARK:B:反抗刻印 < 3
+				PRINTFORMW 见到%PLAYER_NAME()%全身雪白的样子，%CALLNAME:B%非常担心
+				PRINTFORMW 简单说明了事情缘由，并拜托%CALLNAME:B%去取替换的衣物
+				PRINTFORMW ……在浴室里好好地洗了个澡，出来时正好%CALLNAME:B%也带着衣服过来了
+				PRINTFORML 换上干净的衣服，整个人神清气爽，于是跟%CALLNAME:B%说了谢谢
+				PRINTFORMW %CALLNAME:B%的脸有些发红，羞涩地勾起嘴角…
+				SIF TALENT:A:恋慕 || TALENT:A:相亲相爱
+					PRINTFORML ……好像有谁在看着这边，装作没注意到，和%CALLNAME:B%聊了会儿就回了房间
+					PRINTFORMW 没想到走廊已经被打扫干净了…
+			ELSEIF TALENT:B:胆怯 && CFLAG:B:600 == 11
+				PRINTFORMW 见到%PLAYER_NAME()%全身雪白的样子，%CALLNAME:B%见鬼一般发出一声悲鸣
+				PRINTFORMW 接着没等%PLAYER_NAME()%开口解释就一溜烟跑远了…
+			ELSE
+				PRINTFORMW 见到%PLAYER_NAME()%全身雪白的样子，%CALLNAME:B%捂住嘴差点笑了出来
+				PRINTFORMW 已经没有力气对%CALLNAME:B%发火，%PLAYER_NAME()%径直走向浴室…
+			ENDIF
+		ELSE
+			PRINTFORMW %PLAYER_NAME()%和%CALLNAME:A%的捉迷藏持续了很长一段时间…
+		ENDIF
+		SETBIT CFLAG:A:141, 0
+		;主人が罠に引っ掛かったことがあるフラグ
+		CFLAG:MASTER:141 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;いたずら/仓库漁り
+;-------------------------------------------------
+@DAILY_LIFE_36
+B = DAILYLIFE_GETCHARA(1)
+PRINTFORMW 穿过走廊时看见%CALLNAME:A%进入了没有使用过的房间
+PRINTFORM 好奇
+IF TALENT:A:男性 || TALENT:A:双性
+    PRINT 他
+ELSE
+    PRINT 她
+ENDIF
+PRINTFORML 进去干什么，于是偷偷地朝里面张望
+PRINTFORMW %CALLNAME:A%在房间里转来转去，左右环视着
+PRINTFORM 好像是发现屋子里没有想要的东西，
+PRINTFORM %CALLNAME:A%
+IF TALENT:A:幼稚
+	PRINTL 鼓起腮帮，很是不满
+ELSE
+	PRINTL 撇了撇嘴，有些不满
+ENDIF
+PRINTFORMW 是在找什么呢？%PLAYER_NAME()%抱着疑问回了自己的房间
+PRINTW …………… 
+PRINTFORML 稍微放松了一会儿，肚子有点饿了
+PRINTFORM 起身去食堂的途中，碰到了
+IF B > 0 && RAND:5 > 1
+	PRINTFORMW 并肩而行的%CALLNAME:A%和%CALLNAME:B%
+	IF TALENT:B:无动于衷
+		PRINTFORMW %CALLNAME:A%劲头十足，%CALLNAME:B%却是一副置身事外的模样
+	ELSEIF TALENT:B:缺乏感情
+		PRINTFORMW %CALLNAME:A%劲头十足，%CALLNAME:B%只是被%CALLNAME:A%单方面拉着走
+	ELSEIF TALENT:B:老实
+		PRINTFORMW %CALLNAME:A%劲头十足，%CALLNAME:B%则满脸困惑
+	ELSEIF TALENT:B:悲观
+		PRINTFORMW %CALLNAME:A%劲头十足，%CALLNAME:B%却脸色阴沉，看上去极为勉强
+	ELSEIF TALENT:B:性好奇 || TALENT:B:乐观 || TALENT:B:幼稚
+		PRINTFORMW 两个人都劲头十足，兴致高涨
+	ELSE
+		PRINTFORMW %CALLNAME:A%劲头十足，%CALLNAME:B%则是被%CALLNAME:A%拉着往前走
+	ENDIF
+	SIF TALENT:B:无动于衷 || TALENT:B:缺乏感情 || TALENT:B:老实 || TALENT:B:悲观
+		PRINTFORMW 怎么看都是%CALLNAME:A%把对什么都不太积极的%CALLNAME:B%强行从房间里拽了出来
+	IF !TALENT:A:男性 && !TALENT:A:双性 && !TALENT:B:男性 && !TALENT:B:双性
+        PRINT 她们
+    ELSE
+        PRINT 他们
+    ENDIF
+	PRINTFORML 前进的方向大概是仓库吧…
+	PRINTFORMW 到底打算去干什么呢？
+	PRINTFORMW 就在%PLAYER_NAME()%陷入沉思之际，仓库里传出了奇怪的响动
+	PRINTL 实在是很在意，所以悄悄地跟过去看了一眼
+	PRINT 仓库的门虚掩着，
+	IF (TALENT:B:性好奇 || TALENT:B:乐观 || TALENT:B:幼稚) && (!TALENT:B:无动于衷 || !TALENT:B:缺乏感情 || !TALENT:B:悲观 || !TALENT:B:老实 )
+		PRINTFORM %CALLNAME:A%和%CALLNAME:B%
+	ELSE
+		PRINTFORM %CALLNAME:A%
+	ENDIF
+	PRINTFORMW 背对着门口，正在架子间跟收纳箱里叮里哐啷地翻来找去
+	IF (TALENT:B:性好奇 || TALENT:B:乐观 || TALENT:B:幼稚) && (!TALENT:B:无动于衷 || !TALENT:B:缺乏感情 || !TALENT:B:悲观 || !TALENT:B:老实 )
+		PRINTFORM 两人
+	ELSE
+		PRINTFORM %CALLNAME:A%
+	ENDIF
+	PRINTFORMW 完全被仓库里存放的各种新奇事物吸引了注意力，双眼闪闪发光
+	PRINTFORML 这时不知道是碰到了什么开关，%CALLNAME:A%手里的东西突然动了起来
+	PRINTFORM 可能是由此联想到了什么，
+    IF TALENT:A:男性 || TALENT:A:双性
+        PRINT 他
+    ELSE
+        PRINT 她
+    ENDIF
+    PRINTFORMW 的脸顿时一片通红
+	PRINTFORM 那之后
+	IF (TALENT:B:性好奇 || TALENT:B:乐观 || TALENT:B:幼稚) && (!TALENT:B:无动于衷 || !TALENT:B:缺乏感情 || !TALENT:B:悲观 || !TALENT:B:老实 )
+		PRINTFORM 两人
+	ELSE
+		PRINTFORM %CALLNAME:A%
+	ENDIF
+	PRINTFORMW 又找出了很多没有见过的“宝物”，忙得是不可开交
+	IF TALENT:B:无动于衷 || TALENT:B:缺乏感情
+		PRINTFORMW 起初%CALLNAME:B%对%CALLNAME:A%的行为没有兴趣，仅仅只是在旁边看着
+		PRINTFORML 但在%CALLNAME:A%不断把找到的东西展示给%CALLNAME:B%看后
+		PRINTFORMW 受那些珍奇之物的吸引，%CALLNAME:B%时而惊讶，时而害羞，甚至还因Ｈ相关的道具兴奋起来
+	ELSEIF TALENT:B:悲观
+		PRINTFORML 一旁的%CALLNAME:B%看着仓库被弄得乱七八糟，罪魁祸首却毫无所觉继续搞破坏
+		PRINTFORMW 不由得脸色发青，数次想要上前阻止
+		PRINTFORML 然而在好奇心旺盛的%CALLNAME:A%面前，任何阻止都是徒劳的
+		PRINTFORMW 无奈之下，%CALLNAME:B%只能挨个捡起被胡乱扔在地上的东西
+		PRINTFORML 忽然间，%CALLNAME:B%的手停了下来，脸颊微微泛红
+		PRINTFORMW 看来那些Ｈ相关的道具对%CALLNAME:B%也有着强烈的吸引力
+	ELSEIF TALENT:B:老实
+		PRINTFORML 一旁的%CALLNAME:B%看着仓库被弄得乱七八糟，罪魁祸首却毫无所觉继续搞破坏
+		PRINTFORMW 吓得提心吊胆，瑟瑟发抖
+		PRINTFORML 但在%CALLNAME:A%得意地把找到的东西展示给%CALLNAME:B%看后
+		PRINTFORMW 尽管有所控制，%CALLNAME:B%的脸上还是浮现出害羞跟兴奋的神情
+	ELSEIF TALENT:B:性好奇 || TALENT:B:乐观 || TALENT:B:幼稚
+	ELSE
+		PRINTFORML %CALLNAME:B%起初还有所收敛，注意着不弄出太大的声音
+		PRINTFORMW 但在看到%CALLNAME:A%数次找出珍奇之物后，马上也沉浸在寻宝的快乐中
+	ENDIF
+	PRINTFORMW …不能放任这两人继续下去，出声叫了%CALLNAME:A%和%CALLNAME:B%的名字
+	PRINTFORMW 两人浑身一震，战战兢兢转过头来，确认了%PLAYER_NAME()%的身姿后，不约而同僵在当场
+	PRINTFORMW ……事后%PLAYER_NAME()%狠狠地数落了%CALLNAME:A%和%CALLNAME:B%一顿，三个人一起收拾了仓库
+	PRINTFORMW %CALLNAME:A%和%CALLNAME:B%尽管垂头丧气，但还是很感谢%PLAYER_NAME()%能帮忙善后
+	PRINTFORML 分别前再次告诫了%CALLNAME:A%和%CALLNAME:B%不可以乱翻仓库里的东西
+	PRINTFORMW 即使好奇，从哪里拿出来就要放回哪里去
+	PRINTFORMW %CALLNAME:A%和%CALLNAME:B%忙不迭地点头，向%PLAYER_NAME()%保证没有下次…
+	PRINTFORMW 教育完两个家伙，这次肚子是真的饿了，%PLAYER_NAME()%加快步伐朝食堂赶去……
+	CALL RELATION_UP(A,B,12)
+ELSE
+	PRINTFORMW 鬼鬼祟祟的%CALLNAME:A%
+	PRINTFORML %CALLNAME:A%前进的方向大概是仓库吧…
+	PRINTFORMW 到底打算去干什么呢？
+	PRINTFORMW 就在%PLAYER_NAME()%陷入沉思之际，仓库里传出了奇怪的响动
+	PRINTFORML 实在是很在意，所以悄悄地跟过去看了一眼
+	PRINTFORMW 仓库的门虚掩着，%CALLNAME:A%背对门口，正在架子间跟收纳箱里叮里哐啷地翻来找去
+	PRINTFORML %CALLNAME:A%完全被仓库里存放的各种新奇事物吸引了注意力，双眼闪闪发光
+	PRINTFORML 这时不知道是碰到了什么开关，%CALLNAME:A%手里的东西突然动了起来
+    PRINTFORM 可能是由此联想到了什么，
+    IF TALENT:A:男性 || TALENT:A:双性
+        PRINT 他
+    ELSE
+        PRINT 她
+    ENDIF
+    PRINTFORMW 的脸顿时一片通红
+	PRINTFORMW 那之后%CALLNAME:A%又找出了很多没有见过的“宝物”，忙得是不可开交
+	PRINTFORMW …不能放任这家伙继续下去，出声叫了%CALLNAME:A%的名字
+	PRINTFORML %CALLNAME:A%浑身一震，哆哆嗦嗦转过头来
+	PRINTFORMW 确认了%PLAYER_NAME()%的身姿后，%CALLNAME:A%石化了
+	PRINTFORMW ……事后%PLAYER_NAME()%狠狠地数落了%CALLNAME:A%一顿，两个人一起收拾了仓库
+	PRINTFORMW %CALLNAME:A%双目湿润，哭着感谢了愿意帮忙善后的%PLAYER_NAME()%
+	PRINTFORML 分别前，%PLAYER_NAME()%再次告诫了%CALLNAME:A%不可以乱翻仓库里的东西
+	PRINTFORMW 即使好奇，从哪里拿出来就要放回哪里去
+	PRINTFORMW %CALLNAME:A%忙不迭地点头，拍着胸脯保证没有下次…
+	PRINTFORMW 这次肚子是真的饿了，%PLAYER_NAME()%加快步伐朝食堂赶去……
+ENDIF
+
+;-------------------------------------------------
+;幼儿／幼儿退行な奴隶を励ます
+;-------------------------------------------------
+@DAILY_LIFE_37
+;[幼儿／幼儿退行]持ちを検索
+B = DAILYLIFE_GETTALENT_1(150)
+PRINTFORMW 走进食堂时，发现%CALLNAME:A%和%CALLNAME:B%都在
+PRINTFORM %CALLNAME:B%的面前放着
+IF TALENT:B:男性 || TALENT:B:双性
+	PRINT 他
+ELSE
+	PRINT 她
+ENDIF
+PRINTFORML 不爱吃的食物
+PRINTFORM %CALLNAME:A%在一旁为
+IF TALENT:B:男性 || TALENT:B:双性
+	PRINT 他
+ELSE
+	PRINT 她
+ENDIF
+PRINTFORMW 打气，鼓励似的喊着加油
+PRINTFORMW %CALLNAME:B%发出为难的呜呜声，和面前的食物对峙着
+PRINTFORML 过了一会儿，也许是下定了决心
+PRINTFORMW %CALLNAME:B%苦着脸尝了一小口，未经咀嚼就囫囵吞下了
+PRINTFORMW 接着像是要讨赏一般，%CALLNAME:B%朝%CALLNAME:A%露出得意的表情
+PRINTFORML %CALLNAME:A%抚摸着%CALLNAME:B%的头发，说着夸奖的话
+PRINTFORMW 得到了表扬的%CALLNAME:B%显得非常开心
+PRINTFORMW 在%CALLNAME:A%的支持下，%CALLNAME:B%成功克服了一样不擅长的食物…
+CALL RELATION_UP(A,B,10)
+
+;-------------------------------------------------
+;奴隶逃走記
+;-------------------------------------------------
+@DAILY_LIFE_40
+PRINTFORML 在房间里处理杂务时，宅邸的奴仆过来通报了一件事
+PRINTFORMW 说是擅自潜逃的%NAME:A%已经被抓了回来，绑在了房间里
+IF !RAND:3
+	PRINTFORML %CALLNAME:A%好像打算从院子里溜出去，结果被电栅栏电晕了
+	PRINTFORMW 听到响动的警卫找到了昏迷的%CALLNAME:A%，成功将之捕获
+	PRINTFORML ……看来得尽快调教%CALLNAME:A%，让其打消逃跑的念头
+	PRINTFORM 再来几次电击的话，
+    IF TALENT:A:男性 || TALENT:A:双性
+    	PRINT 他
+    ELSE
+     	PRINT 她
+    ENDIF
+    PRINTFORMW 的心脏会承受不住的
+ELSE
+	PRINTFORML 好像是在离开宅邸的瞬间，防止逃跑用的脚链发出了警报
+	PRINTFORMW 保镖们收到警报，立即赶去将之逮捕
+	PRINTFORM ……希望%CALLNAME:A%能明白
+	IF CFLAG:A:143 > 0
+		PRINT 无论逃跑多少次都
+	ELSE
+	    PRINT 盲目逃跑
+	ENDIF
+	PRINTFORMW 是没用的
+ENDIF
+IF CFLAG:A:143 > 0
+	PRINTFORMW 在%CALLNAME:A%心甘情愿留下来前，今天的闹剧大概还会重复上演
+ENDIF
+CFLAG:A:143 += 1
+;-------------------------------------------------
+;[喜欢运动]素質イベント
+;-------------------------------------------------
+@DAILY_LIFE_41
+;随机で登場キャラを選択
+B = DAILYLIFE_GETCHARA(1)
+IF B < 1
+	CALL DAILY_LIFE
+	RETURN 0
+ENDIF
+;Bだけ特定のスポーツが好きなら　AとBを交換する
+IF CSTR:B:11 != "" && CSTR:11 == ""
+	LOCAL = TARGET
+	TARGET = B
+	B = LOCAL
+ENDIF
+PRINTFORM 穿过走廊时听到了
+IF CSTR:11 == "柔道" || CSTR:11 == "剑道" || CSTR:11 == "相扑" || CSTR:11 == "空手道" || CSTR:11 == "弓道" || CSTR:11 == "合气道" || CSTR:11 == "拳法" || CSTR:11 == "武术" || CSTR:11 == "古武术" || CSTR:11 == "中国功夫" || CSTR:11 == "格斗技"
+	PRINTFORMW 道场那边传来的响动
+ELSEIF CSTR:11 == "游泳"
+	PRINTFORMW 室内游泳池那边传来的响动
+ELSE
+	PRINTFORMW 窗外传来的响动
+ENDIF
+PRINTFORM 过去一看，原来是%CALLNAME%和%CALLNAME:B%
+IF CSTR:11 == "网球" || CSTR:11 == "篮球" || CSTR:11 == "芭蕾" || CSTR:11 == "桌球"
+	PRINTFORM 穿着%CSTR:11%外套在
+ELSEIF CSTR:11 == "游泳" || CSTR:11 == "柔道" || CSTR:11 == "剑道" || CSTR:11 == "相扑" || CSTR:11 == "空手道" || CSTR:11 == "弓道" || CSTR:11 == "合气道" || CSTR:11 == "拳法" || CSTR:11 == "武术" || CSTR:11 == "古武术" || CSTR:11 == "中国功夫" || CSTR:11 == "格斗技"
+ELSE
+	PRINT 在院子里
+ENDIF
+IF CSTR:11 == "棒球"
+	PRINTFORMW 练习投接球
+ELSEIF CSTR:11 == "舞蹈" || CSTR:11 == "游泳" || CSTR:11 == "网球" || CSTR:11 == "篮球" || CSTR:11 == "芭蕾" || CSTR:11 == "桌球" || CSTR:11 == "柔道" || CSTR:11 == "剑道" || CSTR:11 == "相扑" || CSTR:11 == "空手道" || CSTR:11 == "弓道" || CSTR:11 == "合气道" || CSTR:11 == "拳法" || CSTR:11 == "武术" || CSTR:11 == "古武术" || CSTR:11 == "中国功夫" || CSTR:11 == "格斗技"
+	PRINTFORMW 练习%CSTR:11%
+ELSE
+	PRINTFORMW 运动
+ENDIF
+IF CSTR:11 != ""  && CSTR:B:11 != CSTR:11
+	PRINTFORMW 话说回来，%CALLNAME%貌似擅长%CSTR:11%来着
+	SIF TALENT:B:喜欢运动
+		PRINTFORMW %CALLNAME:B%也很喜欢运动，两人大概是意气相投了吧
+	PRINTFORMW 仔细一看，%CALLNAME%似乎在教%CALLNAME:B%%CSTR:11%的样子
+	IF CSTR:11 == "棒球" || CSTR:11 == "舞蹈" || CSTR:11 == "游泳" || CSTR:11 == "网球" || CSTR:11 == "篮球" || CSTR:11 == "芭蕾" || CSTR:11 == "桌球" || CSTR:11 == "柔道" || CSTR:11 == "剑道" || CSTR:11 == "相扑" || CSTR:11 == "空手道" || CSTR:11 == "弓道" || CSTR:11 == "合气道" || CSTR:11 == "拳法" || CSTR:11 == "武术" || CSTR:11 == "古武术" || CSTR:11 == "中国功夫" || CSTR:11 == "格斗技"
+	ELSE
+		PRINTFORMW …虽然并不是太明白为什么要在那种地方教%CSTR:11%…
+	ENDIF
+	PRINTFORMW 确认这两个人没什么事，%PLAYER_NAME()%转身离开了
+	IF TALENT:B:喜欢运动
+		CALL RELATION_UP(TARGET,B,10)
+	ELSE
+		CALL RELATION_UP(TARGET,B,5)
+	ENDIF
+ELSEIF CSTR:11 != "" && CSTR:B:11 == CSTR:11
+	PRINTFORMW 话说回来，%CALLNAME%和%CALLNAME:B%都很擅长%CSTR:11%呢
+	PRINTFORMW 两个人看起来相互比拼着，竞争得非常激烈
+	PRINTFORMW 不过运动可以缓解一定程度的压力，只要不弄坏周围的设施就没什么问题
+	PRINTFORMW 反正闲着也是闲着，%PLAYER_NAME()%干脆在旁边看了会儿两个人挥洒汗水的模样
+	PRINTL
+	PRINTFORMW %CALLNAME%和%CALLNAME:B%的＜压力值＞下降了
+	CFLAG:10 -= 10
+	CFLAG:B:10 -= 10
+	CALL RELATION_UP(TARGET,B,10)
+ELSE
+	PRINTFORMW 话说回来，%CALLNAME%貌似是喜欢运动来着
+	IF TALENT:B:喜欢运动
+		PRINTFORMW %CALLNAME:B%也喜欢运动，两人大概是意气相投了吧
+	ELSE
+		PRINTFORMW 也许是%CALLNAME%邀请了%CALLNAME:B%
+	ENDIF
+	PRINTFORMW 运动可以缓解一定程度的压力，只要不弄坏周围的设施就没什么问题
+	PRINTFORMW 确认这两个人没什么事，%PLAYER_NAME()%转身离开了
+	PRINTL
+	PRINTFORMW %CALLNAME%和%CALLNAME:B%的＜压力值＞下降了
+	CFLAG:10 -= 10
+	CFLAG:B:10 -= 10
+	IF TALENT:B:喜欢运动
+		CALL RELATION_UP(TARGET,B,10)
+	ELSE
+		CALL RELATION_UP(TARGET,B,5)
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;[美术属性]素質イベント
+;-------------------------------------------------
+@DAILY_LIFE_42
+IF CSTR:12 == ""
+	LOCALS = 美术
+ELSE
+	LOCALS = %CSTR:12%
+ENDIF
+PRINTFORML 经过%CALLNAME%的房间时，不经意往里面看了一眼
+SIF CFLAG:7021
+PRINTFORM 一丝不挂的
+IF CSTR:12 == "雕刻" || CSTR:12 == "建筑" || CSTR:12 == "摄影"
+	PRINTFORMW %CALLNAME%正一脸认真地画着一副设计图一样的东西
+ELSE
+	PRINTFORMW %CALLNAME%正一脸认真地画着什么
+ENDIF
+IF CFLAG:145
+	PRINTFORMW 恐怕，今天也在创作什么作品吧…
+ELSE
+	IF CSTR:12 == "漫画"
+		PRINTFORML 说起来，%CALLNAME%很擅长画%CSTR:12%呢
+	ELSE
+		PRINTFORML 说起来，%CALLNAME%很擅长%LOCALS%呢
+	ENDIF
+	PRINTFORMW 大概是在创作相关的作品吧…
+ENDIF
+
+IF RAND:5 > 2
+	IF CFLAG:145
+		PRINTFORMW 总是去打扰人家也不太好，这么想着离开了现场
+	ELSE
+		PRINTFORMW 对此没有太大兴趣，所以离开了现场
+	ENDIF
+;恋慕陷落 ２回目以降
+ELSEIF CFLAG:145 && KANRAKU(TARGET) == 1
+	CFLAG:145 += 1
+	PRINTFORML 毫不犹豫地推门而入
+	PRINTFORMW %CALLNAME%像以前一样向%PLAYER_NAME()%阐述了美术相关的见地，以及自己对%LOCALS%的心得体悟
+	;子供を捜す
+	LOCAL = -1
+	REPEAT CHARANUM
+		SIF (CFLAG:(2000 + NO:COUNT) == 7 || CFLAG:(2000 + NO:COUNT) == 8) && !RAND:2
+			LOCAL = COUNT
+	REND
+	;三回目限定 絵を描く場合限定
+	IF CFLAG:145 == 3 && (CSTR:12 == "绘画" || CSTR:12 == "水墨画" || CSTR:12 == "油画" || CSTR:12 == "水彩画")
+	    ;开朗元气
+		IF CFLAG:600 == 1
+			PRINTFORMW 「…呜哇好险，差点就忘了。快拿着这个，是给%MASTERNAME%的礼物哦｣
+		;稳重温柔
+		ELSEIF CFLAG:600 == 2
+			PRINTFORMW 「对了。有想要送给%MASTERNAME%的礼物…｣
+		;认真固执
+		ELSEIF CFLAG:600 == 3
+			PRINTFORMW 「…对了。有一样东西想送给%CSTR:2%｣
+		;花花公子
+		ELSEIF CFLAG:600 == 4
+			PRINTFORMW 「…对了。这里有给%MASTERNAME%的礼物哦｣
+		;别扭傲娇
+		ELSEIF CFLAG:600 == 5
+			PRINTFORMW 「…对了，拿着这个。虽说并不是专门为%CSTR:2%准备的｣
+		;目中无人高傲
+		ELSEIF CFLAG:600 == 6
+			PRINTFORMW 「…对了，收下这个。特别给%CSTR:2%准备的｣
+		;腹黑
+		ELSEIF CFLAG:600 == 7
+			PRINTFORMW 「…差点忘了。有想要送给%MASTERNAME%的礼物哦｣
+		;阴暗无口
+		ELSEIF CFLAG:600 == 8
+			PRINTFORMW 「啊，这个…礼物…｣
+		;蛮不讲理知识分子
+		ELSEIF CFLAG:600 == 9
+			PRINTFORMW 「…啊，想起来了。这个…是给%CSTR:2%的礼物｣
+		;任性爱撒娇
+		ELSEIF CFLAG:600 == 10
+			PRINTFORMW 「…啊。给%CSTR:2%准备了礼物哦｣
+		;直率纯真
+		ELSEIF CFLAG:600 == 11
+			PRINTFORMW 「…对了。给，这是为%MASTERNAME%准备的礼物哦｣
+		;无常识
+		ELSEIF CFLAG:600 == 12
+			PRINTFORMW 「…对了！这个，送给%CSTR:2%｣
+		;天然不思议
+		ELSEIF CFLAG:600 == 13
+			PRINTFORMW 「唔…想起来了，有要给%CSTR:2%的礼物来着｣
+		ENDIF
+		PRINTFORMW %CALLNAME%说着转身找出一幅画递到%PLAYER_NAME()%手里
+		PRINTFORMW ……似乎是专门为%PLAYER_NAME()%绘制的画像
+		PRINTFORML 原来如此……
+		PRINTFORMW 看到这幅画，多少能明白%CALLNAME%心中%PLAYER_NAME()%的形象了
+		PRINTFORMW 虽然感觉有些美化过头，但技术方面是没得说的
+		PRINTFORML 心情变得愉快起来，欣然接受画作，并向%CALLNAME%表达了谢意
+		PRINTFORML 同时还说下次想看到%CALLNAME%的自画像
+		PRINTFORMW %CALLNAME%有些害羞地笑着答应了
+	;子供の絵を描く
+	ELSEIF LOCAL > 0
+		PRINTFORMW 话说回来，%CALLNAME%画的那个人…
+		PRINTFORMW 总觉得和%CALLNAME:LOCAL%有些相似，是错觉吗…
+	ELSE
+		PRINTFORM 今天也在%CALLNAME%的房间里和
+		IF TALENT:男性 || TALENT:双性
+        	PRINT 他
+        ELSE
+        	PRINT 她
+        ENDIF
+        PRINTW 一起度过了一段悠闲的时光
+	ENDIF
+;淫乱か服从陷落 ２回目以降
+ELSEIF CFLAG:145 && KANRAKU(TARGET) > 1
+	CFLAG:145 += 1
+	PRINTFORMW 毫不犹豫地推门而入，和之前一样观察着%CALLNAME%
+	PRINTFORMW %CALLNAME%起初还有些坐立不安，之后就习惯了视线，专注于手上的事了
+	;三回目限定 絵を描く場合限定　服从限定
+	IF CFLAG:145 == 3 && KANRAKU(TARGET) == 3 && (CSTR:12 == "绘画" || CSTR:12 == "水墨画" || CSTR:12 == "油画" || CSTR:12 == "水彩画")
+		PRINTFORML 突然，%CALLNAME%转向这边
+	    ;开朗元气
+		IF CFLAG:600 == 1
+			PRINTFORMW 「…那、那什么，有想送给%CSTR:3%的礼物｣
+		;稳重温柔
+		ELSEIF CFLAG:600 == 2
+			PRINTFORMW 「那个…之前为%CSTR:3%准备了礼物…｣
+		;认真固执
+		ELSEIF CFLAG:600 == 3
+			PRINTFORMW 「…说起来，有想送给%CSTR:3%的礼物｣
+		;花花公子
+		ELSEIF CFLAG:600 == 4
+			PRINTFORMW 「那个，什么来着…啊，礼物，这里有给%CSTR:3%的礼物｣
+		;别扭傲娇
+		ELSEIF CFLAG:600 == 5
+			PRINTFORMW 「…那、那个，有个东西想交给%CSTR:3%…只是随便画的，请别多想｣
+		;目中无人高傲
+		ELSEIF CFLAG:600 == 6
+			PRINTFORMW 「…话说回来，之前给%CSTR:3%准备了礼物｣
+		;腹黑
+		ELSEIF CFLAG:600 == 7
+			PRINTFORMW 「…啊，对了。有给%CSTR:3%的礼物｣
+		;阴暗无口
+		ELSEIF CFLAG:600 == 8
+			PRINTFORMW 「…有给%CSTR:3%的东西｣
+		;蛮不讲理知识分子
+		ELSEIF CFLAG:600 == 9
+			PRINTFORMW 「…那什么，有样东西想给%CSTR:3%｣
+		;任性爱撒娇
+		ELSEIF CFLAG:600 == 10
+			PRINTFORMW 「话说…之前为%CSTR:3%准备了礼物｣
+		;直率纯真
+		ELSEIF CFLAG:600 == 11
+			PRINTFORMW 「…对了！…有东西想给%CSTR:3%看看，如果能收下就更好了｣
+		;无常识
+		ELSEIF CFLAG:600 == 12
+			PRINTFORMW 「…应该算是礼物吧，嗯，有给%CSTR:3%的礼物｣
+		;天然不思议
+		ELSEIF CFLAG:600 == 13
+			PRINTFORMW 「%CSTR:3%想要礼物吗？这、这里刚好有一份…｣
+		ENDIF
+		PRINTFORMW %CALLNAME%说着转身找出一幅画，有些紧张地递到%PLAYER_NAME()%手里
+		PRINTFORMW ……似乎是专门为%PLAYER_NAME()%绘制的画像
+		PRINTFORML 原来如此……
+		PRINTFORMW 看到这幅画，多少能明白%CALLNAME%心中%PLAYER_NAME()%的形象了
+		PRINTFORML 不过，这上面的%PLAYER_NAME()%都有些神格化了，本人没有这么大的魄力吧…
+		PRINTFORMW 总而言之心怀感激地收下了画，向%CALLNAME%表达了谢意
+		PRINTFORMW %CALLNAME%似乎很担心%PLAYER_NAME()%会不喜欢，这时才松了一口气
+		PRINTFORMW %PLAYER_NAME()%说下次想看到%CALLNAME%的自画像，%CALLNAME%战战兢兢地答应了
+	;ほかの奴隶の絵を描く　淫乱限定
+	ELSEIF KANRAKU(TARGET) == 2 && CSTR:12 != "書道" && CHARANUM > 2 && !RAND:2
+		PRINTFORMW 话说回来，%CALLNAME%画的那个人…
+		;一番関係度高いキャラを入れる
+		LOCAL = 0
+		REPEAT CHARANUM
+			SIF RELATION:(NO:COUNT) > RELATION:(NO:LOCAL)
+				LOCAL = COUNT
+		REND
+		IF LOCAL == 0
+			PRINTFORMW 总觉得和%PLAYER_NAME()%有些相似，是错觉吗…
+		ELSE
+			PRINTFORMW 总觉得和%CALLNAME:LOCAL%有些相似，是错觉吗…
+		ENDIF
+	ELSE
+		PRINTFORM 今天也在%CALLNAME%的房间里和
+		IF TALENT:男性 || TALENT:双性
+        	PRINT 他
+        ELSE
+        	PRINT 她
+        ENDIF
+        PRINTW 一起度过了一段悠闲的时光
+	ENDIF
+;恋慕陷落 初回
+ELSEIF !CFLAG:145 && KANRAKU(TARGET) == 1
+	CFLAG:145 += 1
+	PRINTFORMW 机会难得，想近距离仔细观看
+	PRINTFORM 进入房间时，
+	PRINTFORMW	%CALLNAME%惊讶于%PLAYER_NAME()%突然的访问，但还是笑脸相迎了
+	PRINTFORML \@ MALE(TARGET) ? 他 # 她 \@很高兴%PLAYER_NAME()%能对%LOCALS%感兴趣
+	PRINTFORMW 围绕着%LOCALS%聊了一会儿后，%CALLNAME%继续起之前的创作
+	;書道限定
+	IF CSTR:12 == "书法"
+		PRINTFORMW 专注于书法的\@ MALE(TARGET) ? 他 # 她 \@姿势优雅，令人赏心悦目
+	ELSE
+		PRINTFORML 虽然已经见识过%CALLNAME%各种各样的姿态
+		PRINTFORMW 但现在正专注于创作的\@ MALE(TARGET) ? 他 # 她 \@散发着一股与以往不同的独特气质，看上去就像是另一个人一样
+	ENDIF
+	PRINTFORMW %PLAYER_NAME()%对此感到非常新鲜…
+	PRINTFORMW 就这样在%CALLNAME%的房间里度过了一段悠闲的时光
+;淫乱か服从陷落 初回
+ELSE
+	CFLAG:145 += 1
+	PRINTFORMW 机会难得，想近距离仔细观看
+	PRINTFORM 进入房间时，
+	SIF CFLAG:7021
+	PRINTFORM 一丝不挂的	
+	PRINTFORMW	%CALLNAME%惊讶于%PLAYER_NAME()%突然的访问，表现得有些尴尬
+	PRINTFORMW 告诉%CALLNAME%不用在意，\@ MALE(TARGET) ? 他 # 她 \@才窘迫地继续起之前的创作
+	;書道限定
+	IF CSTR:12 == "书法"
+		PRINTFORMW 专注于书法的\@ MALE(TARGET) ? 他 # 她 \@姿势优雅，令人赏心悦目
+	ELSE
+		PRINTFORML 虽然已经见识过%CALLNAME%各种各样的姿态
+		PRINTFORMW 但现在正专注于创作的\@ MALE(TARGET) ? 他 # 她 \@散发着一股与以往不同的独特气质，看上去就像是另一个人一样
+	ENDIF
+	PRINTFORMW %PLAYER_NAME()%对此感到非常新鲜
+	PRINTFORMW 可能是因为%PLAYER_NAME()%一直沉默着什么都不说，%CALLNAME%依然是很不自在的样子
+	PRINTFORMW …不过这样的\@ MALE(TARGET) ? 他 # 她 \@也挺有意思的
+	PRINTFORMW 就这样在%CALLNAME%的房间里度过了一段悠闲的时光
+ENDIF
+;-------------------------------------------------
+;[音乐属性]素質イベント
+;-------------------------------------------------
+@DAILY_LIFE_43
+PRINTFORM 穿过走廊时，听到了
+IF CSTR:13 == "钢琴" || CSTR:13 == "吉他" || CSTR:13 == "竖琴" || CSTR:13 == "琵琶" || CSTR:13 == "古筝" || CSTR:13 == "古琴" || CSTR:13 == "月琴" || CSTR:13 == "小提琴" || CSTR:13 == "大提琴" || CSTR:13 == "二胡" || CSTR:13 == "风琴" || CSTR:13 == "马头琴" || CSTR:13 == "竖笛" || CSTR:13 == "唢呐" || CSTR:13 == "萨克斯" || CSTR:13 == "萧" || CSTR:13 == "笛子" || CSTR:13 == "笙" || CSTR:13 == "埙" || CSTR:13 == "葫芦丝"
+	PRINTFORMW 音乐室那边传来的旋律
+ELSE
+	PRINTFORMW 音乐室那边传来的声音
+ENDIF
+IF CSTR:13 == "钢琴" || CSTR:13 == "吉他" || CSTR:13 == "竖琴" || CSTR:13 == "琵琶" || CSTR:13 == "古筝" || CSTR:13 == "古琴" || CSTR:13 == "月琴"
+	PRINTFORMW 似乎是%CALLNAME%在里面弹%CSTR:13%
+ELSEIF CSTR:13 == "小提琴" || CSTR:13 == "大提琴" || CSTR:13 == "二胡" || CSTR:13 == "风琴" || CSTR:13 == "马头琴"
+	PRINTFORMW 似乎是%CALLNAME%在里面拉%CSTR:13%
+ELSEIF CSTR:13 == "竖笛" || CSTR:13 == "唢呐" || CSTR:13 == "萨克斯" || CSTR:13 == "萧" || CSTR:13 == "笛子" || CSTR:13 == "笙" || CSTR:13 == "埙" || CSTR:13 == "葫芦丝"
+	PRINTFORMW 似乎是%CALLNAME%在里面吹%CSTR:13%
+ELSE
+	PRINTFORMW 似乎是%CALLNAME%在里面演奏%CSTR:13%
+ENDIF
+IF !RAND:3
+	SIF TALENT:老实 || TALENT:胆怯 || TALENT:缺乏感情 || TALENT:无动于衷
+		PRINTFORM 和%CALLNAME%平时给人的印象相反，
+	PRINTFORMW \@ MALE(TARGET) ? 他 # 她 \@的演奏强而有力，振奋人心
+ELSEIF !RAND:2
+	SIF KANRAKU(TARGET) != 2 && (TALENT:老实 || TALENT:胆怯 || TALENT:缺乏感情 || TALENT:无动于衷)
+		PRINTFORM 和%CALLNAME%平时给人的印象相反，
+	PRINTFORMW \@ MALE(TARGET) ? 他 # 她 \@的演奏热情奔放，令人情绪高涨
+ELSE
+	PRINTFORMW \@ MALE(TARGET) ? 他 # 她 \@的演奏沉稳悠扬，治愈人心
+ENDIF
+;関係高いキャラを探す
+LOCAL = 0
+REPEAT CHARANUM
+	SIF COUNT != TARGET && RELATION:(NO:COUNT) >= RELATION:(NO:LOCAL) && DAILYLIFE_CHARA(COUNT, 1) && !RAND:2
+		LOCAL = COUNT
+REND
+IF LOCAL > 0
+	PRINTFORMW 不经意看向走廊对面，发现%CALLNAME:LOCAL%也正驻足聆听%CALLNAME%的演奏
+ENDIF
+PRINTFORMW 未免打扰到%CALLNAME%，%PLAYER_NAME()%自行离开了
+PRINTL
+IF LOCAL > 0
+	PRINTFORMW %CALLNAME%和%CALLNAME:LOCAL%的＜压力值＞下降了
+	CFLAG:10 -= 10
+	CFLAG:LOCAL:10 -= 10
+ELSE
+	PRINTFORMW %CALLNAME%的＜压力值＞下降了
+	CFLAG:10 -= 10
+ENDIF
+;-------------------------------------------------
+;日常エロイベントのC責め
+;-------------------------------------------------
+@DAILY_LIFE_50
+IF PENIS(TARGET)
+	PRINTFORML %PLAYER_NAME()%突发奇想，于是把%CALLNAME%叫了出来
+	PRINTFORMW 然后将\@ MALE(TARGET) ? 他 # 她 \@带到街上，一起进入昏暗的小巷
+	PRINTFORMW 在那里拉下%CALLNAME%裤子的拉链，掏出了\@ MALE(TARGET) ? 他 # 她 \@的阴茎…
+	;奴隶S、主人Mの場合は反撃する
+	IF ABL:嗜虐属性 > ABL:受虐属性 &&  ABL:嗜虐属性 > 2 && ABL:MASTER:嗜虐属性 < ABL:MASTER:受虐属性 &&  ABL:MASTER:受虐属性 > 2
+		IF MALE(MASTER)
+			PRINTFORMW 谁知%CALLNAME%也不服输地把手伸进了%PLAYER_NAME()%的裤子里
+		ELSE
+			PRINTFORMW 谁知%CALLNAME%也不服输地撩起%PLAYER_NAME()%的裙子，把手伸了进来
+		ENDIF
+		IF !RAND:2
+			PRINTFORMW 两个人互相摸索攻击对方的敏感点，内裤都湿透了…
+		ELSE
+			PRINTFORMW 两个人都压低声音忍耐着…
+		ENDIF
+	;普通の場合
+	ELSE
+		IF !RAND:2 && (TALENT:娼妇 || ABL:露出癖 > 8)
+			PRINTFORMW %CALLNAME%微微颤抖，陶醉地享受着%PLAYER_NAME()%的玩弄
+			PRINTFORMW 随着%PLAYER_NAME()%动作的加快，%CALLNAME%不顾外人的目光发出了高亢的呻吟…
+		ELSEIF TALENT:娼妇 || ABL:露出癖
+			PRINTFORML %CALLNAME%呼吸急促地期待着接下来的蹂躏
+			PRINTFORMW 还没对\@ MALE(TARGET) ? 他 # 她 \@做什么就完全勃起了
+			PRINTFORML %PLAYER_NAME()%轻轻地抚摸了几下手里的阴茎，%CALLNAME%立刻痉挛着迎来了高潮
+			PRINTFORMW 接着\@ MALE(TARGET) ? 他 # 她 \@主动拉起%PLAYER_NAME()%的手在自己的阴茎上摩擦起来…
+		ELSEIF !RAND:2
+			PRINTFORMW %CALLNAME%在%PLAYER_NAME()%的玩弄下拼命地忍耐着声音…
+		ELSE
+			PRINTFORMW 不一会儿，%CALLNAME%的裤子就被精液濡湿了…
+		ENDIF
+	ENDIF
+ELSE
+	PRINTFORML %PLAYER_NAME()%突发奇想，于是把%CALLNAME%叫了出来
+	PRINTFORMW 然后将\@ MALE(TARGET) ? 他 # 她 \@带到街上，一起进入昏暗的小巷
+	PRINTFORMW 在那里掀起%CALLNAME%的裙摆，恶意地抚弄\@ MALE(TARGET) ? 他 # 她 \@的阴唇…
+	;奴隶S、主人Mの場合は反撃する
+	IF ABL:嗜虐属性 > ABL:受虐属性 && ABL:嗜虐属性 > 2 && ABL:MASTER:嗜虐属性 < ABL:MASTER:受虐属性 &&  ABL:MASTER:受虐属性 > 2
+		IF MALE(MASTER)
+			PRINTFORMW 谁知%CALLNAME%也不服输地把手伸进了%PLAYER_NAME()%的裤子里
+		ELSE
+			PRINTFORMW 谁知%CALLNAME%也不服输地撩起%PLAYER_NAME()%的裙子，把手伸了进来
+		ENDIF
+		IF !RAND:2
+			PRINTFORMW 两个人互相摸索攻击对方的敏感点，内裤都湿透了…
+		ELSE
+			PRINTFORMW 两个人都压低声音忍耐着…
+		ENDIF
+	;普通の場合
+	ELSE
+		IF !RAND:2 && (TALENT:娼妇 || ABL:露出癖 > 8)
+			PRINTFORML %CALLNAME%微微颤抖，陶醉地感受着%PLAYER_NAME()%的手指
+			PRINTFORMW 随着%PLAYER_NAME()%动作的加快，%CALLNAME%不顾外人的目光发出了高亢的呻吟…
+		ELSEIF TALENT:娼妇 || ABL:露出癖
+			PRINTFORML %CALLNAME%呼吸急促地期待着接下来的蹂躏
+			PRINTFORMW 还没对\@ MALE(TARGET) ? 他 # 她 \@做什么，下面就湿透了
+			PRINTFORML %PLAYER_NAME()%轻轻地拨弄了几下两瓣阴唇，%CALLNAME%立刻痉挛着迎来了高潮
+			PRINTFORMW 接着\@ MALE(TARGET) ? 他 # 她 \@主动拉起%PLAYER_NAME()%的手指插入自己的小穴…
+		ELSEIF !RAND:2
+			PRINTFORMW %CALLNAME%在%PLAYER_NAME()%的玩弄下拼命地忍耐着声音…
+		ELSE
+			PRINTFORMW 不一会儿，%CALLNAME%的内裤就被爱液濡湿了…
+		ENDIF
+	ENDIF
+ENDIF
+PRINTL
+;奴隶S、主人Mの場合
+IF ABL:嗜虐属性 > ABL:受虐属性 &&  ABL:嗜虐属性 > 2 && ABL:MASTER:嗜虐属性 < ABL:MASTER:受虐属性 &&  ABL:MASTER:受虐属性 > 2
+	EXP:绝顶经验 += 2
+	EXP:MASTER:绝顶经验 += 2
+	PRINTFORML %CALLNAME%和%CALLNAME:MASTER%的%EXPNAME:2%＋2
+	IF PENIS(TARGET) && TALENT:TARGET:孩童尺寸== 0
+		EXP:射精经验 += 2
+		PRINTFORML %CALLNAME%的%EXPNAME:3%＋2
+	ENDIF
+	IF PENIS(MASTER) && TALENT:MASTER:孩童尺寸== 0
+		EXP:MASTER:射精经验 += 2
+		PRINTFORML %CALLNAME:MASTER%的%EXPNAME:3%＋2
+	ENDIF
+;普通の場合
+ELSE
+	IF TALENT:娼妇 || ABL:露出癖 > 8
+		EXP:绝顶经验 += 3
+		PRINTFORML %EXPNAME:2%＋3
+		IF PENIS(TARGET) && TALENT:TARGET:孩童尺寸== 0
+			EXP:射精经验 += 2
+			PRINTFORML %EXPNAME:3%＋2
+		ENDIF
+		JUEL:耻情 += 300
+		PRINTFORML %PALAMNAME:9%之珠＋300
+	ELSE
+		EXP:绝顶经验 += 2
+		PRINTFORML %EXPNAME:2%＋2
+		IF PENIS(TARGET) && TALENT:TARGET:孩童尺寸== 0
+			EXP:射精经验 += 2
+			PRINTFORML %EXPNAME:3%＋2
+		ENDIF
+		JUEL:耻情 += 200
+		PRINTFORML %PALAMNAME:9%之珠＋200
+	ENDIF
+ENDIF
+WAIT
+;-------------------------------------------------
+;日常エロイベントの(肛)自慰棒を入れさせて通りを歩かせる
+;-------------------------------------------------
+@DAILY_LIFE_51
+IF TALENT:男性 || TALENT:处女 || (EXP:Ａ经验 > EXP:Ｖ经验)
+	LOCALS = 肛塞
+ELSE
+	LOCALS = 自慰棒
+ENDIF
+;体格差を検索
+LOCAL:1 = BUILD2(MASTER, A)
+PRINTFORMW %PLAYER_NAME()%突发奇想，于是把%CALLNAME%叫了出来
+PRINTFORMW 让\@ MALE(TARGET) ? 他 # 她 \@含着%LOCALS%，就那样一起去了街上
+PRINTFORMW 然后，%PLAYER_NAME()%故意往热闹的地方走去…
+;未陷落
+IF !KANRAKU(TARGET)
+	IF !RAND:2
+		PRINTFORMW %CALLNAME%朝%PLAYER_NAME()%投来反感的视线，显得很焦躁
+	ELSE
+		PRINTFORMW 每当%PLAYER_NAME()%往里推进%LOCALS%，%CALLNAME%就会投来怨恨的视线
+	ENDIF
+	IF TALENT:高傲 || TALENT:自大 || TALENT:刚强 || TALENT:反抗
+		PRINTFORMW 打开开关后，%CALLNAME%双拳紧握忍耐着，嘴里说着诅咒%PLAYER_NAME()%的话
+	ELSE
+		PRINTFORMW 打开开关的瞬间，%CALLNAME%抱着双肩忍耐着，小声向%PLAYER_NAME()%求饶
+	ENDIF
+	PRINTFORML 待走到人少的地方，%PLAYER_NAME()%一口气把强度调到了最大
+	PRINTFORMW %CALLNAME%浑身一震，双腿弯折跪了下去…
+ELSEIF TALENT:娼妇 && ABL:露出癖 > 8
+	PRINTFORM %CALLNAME%极不自然地扭动着腰，
+	IF TALENT:男性 || TALENT:处女 || (EXP:Ａ经验 > EXP:Ｖ经验 && !TALENT:后庭处子)
+		PRINTW 一边走一边欲盖弥彰地捂住屁股
+	ELSE
+		PRINTW 一边走一边欲盖弥彰地捂住两腿之间
+	ENDIF
+	IF MALE(TARGET) && PENIS(TARGET)
+		PRINTFORML 即使隔着裤子也能很清楚地看到%CALLNAME%阴茎勃起的形状
+		PRINTFORMW 像是失禁了一般，%CALLNAME%的两腿之间出现了明显的深色痕迹
+	ELSE
+		PRINTFORML %CALLNAME%的短裙无法遮掩两腿间流下的透明液体
+		PRINTFORMW 像是失禁了一般，%CALLNAME%透明的爱液顺着腿根一直流到了膝盖
+	ENDIF
+	PRINTFORML 时不时还能听到%CALLNAME%嘶哑地喊着“要去了”的声音
+	PRINTFORMW 从\@ MALE(TARGET) ? 他 # 她 \@双手颤抖的频率就能看出\@ MALE(TARGET) ? 他 # 她 \@是多么的情动…
+ELSEIF ABL:露出癖 >= 5
+	PRINTFORMW %CALLNAME%夹住体内的%LOCALS%，颤颤巍巍地往前走着，每一次吐息都伴随身体微不可见的震动
+	PRINTFORML %PLAYER_NAME()%被\@ MALE(TARGET) ? 他 # 她 \@推到了路边紧紧抱住
+	PRINTFORMW 耳边是\@ MALE(TARGET) ? 他 # 她 \@炽热的呼吸，以及诸如“好、好爽”的胡言乱语
+	PRINTFORM %CALLNAME%双目失焦，
+	;体格差
+	IF LOCAL:1 > 0
+		PRINTFORMW 呻吟着把脸埋进%PLAYER_NAME()%的怀里
+	ELSE
+		PRINTFORMW 呻吟着把脸埋进%PLAYER_NAME()%的肩窝
+	ENDIF
+	PRINTFORMW 忽然\@ MALE(TARGET) ? 他 # 她 \@紧绷身体高喊了一声，就那样迎来了高潮…
+ELSE
+	IF !RAND:2
+		PRINTFORML %CALLNAME%两眼失焦，脚步虚浮地走着
+		PRINTFORMW %PLAYER_NAME()%按下开关的瞬间，%CALLNAME%打了个跌，差点摔倒
+		PRINTFORM \@ MALE(TARGET) ? 他 # 她 \@急忙
+		IF LOCAL:1 > 0 || TALENT:幼稚 || TALENT:幼儿／幼儿退行 || CFLAG:600 == 11
+			PRINTFORM 握住%PLAYER_NAME()%的手，
+		ELSE
+			PRINTFORM 抓住%PLAYER_NAME()%的肩，
+		ENDIF
+		PRINTFORMW 把头藏到%PLAYER_NAME()%身后小声地再三求饶
+		PRINTFORML 待走到人少的地方，%PLAYER_NAME()%一口气把强度调到了最大
+		PRINTFORMW %CALLNAME%两股战战，膝盖一软跪到了地上…
+	ELSE
+		PRINTFORML 当%PLAYER_NAME()%按下%LOCALS%的开关，%CALLNAME%的呼吸就变得急促了
+		PRINTFORMW 但\@ MALE(TARGET) ? 他 # 她 \@仍然努力着想要平静下来，闭上眼睛以图忘记自己的处境
+		PRINTFORMW 无奈\@ MALE(TARGET) ? 他 # 她 \@失败得很彻底，呼吸还是变得越来越凌乱
+		;体格差
+		IF LOCAL:1 > 0 || TALENT:幼稚 || TALENT:幼儿／幼儿退行 || CFLAG:600 == 11
+			PRINTFORML 起初\@ MALE(TARGET) ? 他 # 她 \@还用力紧抓着%PLAYER_NAME()%的手，不久后就颤抖着松开了
+		ELSE
+			PRINTFORML 起初\@ MALE(TARGET) ? 他 # 她 \@还用力紧抓着%PLAYER_NAME()%的肩，不久后就颤抖着滑落了
+		ENDIF
+		PRINTFORMW 带着委屈又恍惚的神态，%CALLNAME%摇摇晃晃地向前挪动…
+	ENDIF
+ENDIF
+PRINTL
+;未陷落
+IF !KANRAKU(TARGET)
+	IF TALENT:男性 || TALENT:处女 || (EXP:Ａ经验 > EXP:Ｖ经验)
+		EXP:Ａ经验 += 2
+		PRINTFORML %EXPNAME:1%＋2
+	ELSE
+		EXP:Ｖ经验 += 2
+		PRINTFORML %EXPNAME:0%＋2
+	ENDIF
+	EXP:绝顶经验 += 1
+	PRINTFORML %EXPNAME:2%＋1
+	IF PENIS(TARGET) && TALENT:TARGET:孩童尺寸== 0
+		EXP:射精经验 += 1
+		PRINTFORML %EXPNAME:3%＋1
+	ENDIF
+	;初めてなら异常经验が付く。（貴重な异常经验を得るチャンスが増えた…
+	IF CFLAG:144 == 0
+		EXP:异常经验 += 1
+		PRINTFORML %EXPNAME:50%＋１
+	ENDIF
+	JUEL:反感 += 100
+	PRINTFORML %PALAMNAME:12%之珠＋100
+	JUEL:耻情 += 20
+	PRINTFORML %PALAMNAME:9%之珠＋20
+ELSEIF TALENT:娼妇 && ABL:露出癖 > 8
+	IF TALENT:男性 || TALENT:处女 || (EXP:Ａ经验 > EXP:Ｖ经验)
+		EXP:Ａ经验 += 5
+		PRINTFORML %EXPNAME:1%＋5
+	ELSE
+		EXP:Ｖ经验 += 5
+		PRINTFORML %EXPNAME:0%＋5
+	ENDIF
+	EXP:绝顶经验 += 5
+	PRINTFORML 绝顶经验＋5
+	IF PENIS(TARGET) && TALENT:TARGET:孩童尺寸== 0
+		EXP:射精经验 += 3
+		PRINTFORML %EXPNAME:3%＋3
+	ENDIF
+	JUEL:耻情 += 500
+	PRINTFORML %PALAMNAME:9%之珠＋500
+ELSEIF ABL:露出癖 >= 5
+	IF TALENT:男性 || TALENT:处女 || (EXP:Ａ经验 > EXP:Ｖ经验)
+		EXP:Ａ经验 += 3
+		PRINTFORML %EXPNAME:1%＋3
+	ELSE
+		EXP:Ｖ经验 += 3
+		PRINTFORML %EXPNAME:0%＋3
+	ENDIF
+	EXP:绝顶经验 += 3
+	PRINTFORML 绝顶经验＋3
+	IF PENIS(TARGET) && TALENT:TARGET:孩童尺寸== 0
+		EXP:射精经验 += 2
+		PRINTFORML %EXPNAME:3%＋2
+	ENDIF
+	JUEL:耻情 += 400
+	PRINTFORML %PALAMNAME:9%之珠＋400
+ELSE
+	IF TALENT:男性 || TALENT:处女 || (EXP:Ａ经验 > EXP:Ｖ经验)
+		EXP:Ａ经验 += 2
+		PRINTFORML %EXPNAME:1%＋2
+	ELSE
+		EXP:Ｖ经验 += 2
+		PRINTFORML %EXPNAME:0%＋2
+	ENDIF
+	EXP:绝顶经验 += 2
+	PRINTFORML 绝顶经验＋2
+	IF PENIS(TARGET) && TALENT:TARGET:孩童尺寸== 0
+		EXP:射精经验 += 1
+		PRINTFORML %EXPNAME:3%＋1
+	ENDIF
+	JUEL:耻情 += 300
+	PRINTFORML %PALAMNAME:9%之珠＋300
+	JUEL:恐怖 += 100
+	PRINTFORML %PALAMNAME:11%之珠＋100
+ENDIF
+CFLAG:144 = 1
+WAIT
+;-------------------------------------------------
+;舔阴/口交の練習
+;-------------------------------------------------
+@DAILY_LIFE_71
+PRINTFORMW 经过%CALLNAME:A%的房间时，听到了里面传出的奇怪声音
+;主人の竿の有無で分岐
+IF PENIS(MASTER)
+	PRINTFORML 想着到底在干什么呢，凑过去一探究竟
+	PRINTFORML 就看到%CALLNAME:A%含着厨房里取出的黄瓜舔得津津有味
+ELSE
+	PRINTFORML 想着到底在干什么呢，凑过去一探究竟
+	PRINTFORML 就看到%CALLNAME:A%对着矿泉水瓶的瓶口舔来舔去
+ENDIF
+IF TALENT:A:相亲相爱
+	PRINTFORMW 可谓是非常热情又拼命地活动着舌头…
+	PRINTFORMW 大概是在做情景练习吧，偶尔%CALLNAME:A%还会深情地呼唤%PLAYER_NAME()%的名字
+;淫乱
+ELSEIF TALENT:A:淫乱 || TALENT:A:娼妇
+	PRINTFORMW 看着\@ MALE(A) ? 他 # 她 \@那么热情地活动舌头，竟让人有点羞耻…
+;服从
+ELSEIF (TALENT:A:服从 || TALENT:A:隶属) && PENIS(MASTER)
+	PRINTFORMW 偶尔\@ MALE(A) ? 他 # 她 \@还会用一边用黄瓜顶着喉咙，一边呼唤%PLAYER_NAME()%的名字
+ELSE
+	PRINTFORMW 像是在摸索更高超的技巧一样拼命活动着舌头
+ENDIF
+PRINTFORML ……说起来，最近%CALLNAME:A%的舌头越来越灵活了
+PRINTFORMW 原来一直偷偷做着这样的练习吗？
+IF !RAND:2
+	IF TALENT:A:淫乱 || TALENT:A:娼妇
+		PRINTFORML 打扰到\@ MALE(A) ? 他 # 她 \@的话就不好了，%PLAYER_NAME()%打算离开
+		PRINTFORMW 结果不小心弄出了响动，理所当然被发现了
+		PRINTFORMW 看见%PLAYER_NAME()%，%CALLNAME:A%放下手中的\@ PENIS(MASTER) ? 黄瓜 # 矿泉水瓶 \@，带着淫靡的笑容朝%PLAYER_NAME()%走来
+		PRINTFORMW 周围的气氛变得奇怪起来，%PLAYER_NAME()%不假思索拔腿就跑
+		PRINTFORMW 之后好长一段时间都在和%CALLNAME:A%捉迷藏…
+	ELSEIF (TALENT:A:胆怯 || TALENT:A:害羞) && !TALENT:A:淫乱 && !TALENT:A:娼妇
+		PRINTFORML 打扰到\@ MALE(A) ? 他 # 她 \@的话就不好了，%PLAYER_NAME()%打算离开
+		PRINTFORMW 结果不小心弄出了响动，理所当然被发现了
+		PRINTFORML 看见%PLAYER_NAME()%的%CALLNAME:A%羞红了脸，慌慌张张地藏起手里的\@ PENIS(MASTER) ? 黄瓜 # 矿泉水瓶 \@
+		PRINTFORMW 并恳求%PLAYER_NAME()%忘了刚才看到的一切
+		PRINTFORMW 看\@ MALE(A) ? 他 # 她 \@急得要哭的样子，还是当做没看见吧…
+	ELSEIF !KANRAKU(A)
+		PRINTFORML 打扰到\@ MALE(A) ? 他 # 她 \@的话就不好了，%PLAYER_NAME()%打算离开
+		PRINTFORMW 结果不小心弄出了响动，理所当然被发现了
+		PRINTFORMW 看见%PLAYER_NAME()%的%CALLNAME:A%羞红了脸，吞吞吐吐地开始为自己辩解
+		PRINTFORMW 看\@ MALE(A) ? 他 # 她 \@这么手忙脚乱的样子，刚才的事还是当做没看见吧…
+	ELSE
+		PRINTFORMW 不好意思打扰\@ MALE(A) ? 他 # 她 \@，%PLAYER_NAME()%悄悄地离开了…
+	ENDIF
+ELSE
+	PRINTFORMW 不好意思打扰\@ MALE(A) ? 他 # 她 \@，%PLAYER_NAME()%悄悄地离开了…
+ENDIF
+;主人の竿の有無で分岐
+IF PENIS(MASTER)
+	EXP:A:口交经验 += 1
+	PRINTFORMW %CALLNAME:A%的口交经验 ＋１
+ELSE
+	EXP:A:舔阴经验 += 1
+	PRINTFORMW %CALLNAME:A%的舔阴经验 ＋１
+ENDIF
+;-------------------------------------------------
+;イケナイコトの練習
+;-------------------------------------------------
+@DAILY_LIFE_72
+;学得慢、幼稚、幼儿／幼儿退行かつ反抗刻印２以下かつ[失意]でなく、Aより技巧が低いキャラから１人選択しBに代入
+VARSET LOCAL
+FOR LOCAL, 0, CHARANUM
+	IF (TALENT:LOCAL:学得慢 || TALENT:LOCAL:幼稚 || TALENT:LOCAL:幼儿／幼儿退行) && MARK:LOCAL:反抗刻印 < 3 && !TALENT:LOCAL:失意 && ABL:A:技巧 > ABL:LOCAL:技巧 && DAILYLIFE_CHARA(LOCAL, 1)
+		LOCAL:(10 + LOCAL:1) = LOCAL
+		LOCAL:1++
+	ENDIF
+NEXT
+IF LOCAL:1
+	LOCAL:2 = RAND:(LOCAL:1)
+	B = LOCAL:(10 + LOCAL:2)
+ENDIF
+IF B > 0 && RAND:3 > 0 && !TALENT:A:嫉妒
+	PRINTFORMW 偷看%CALLNAME:A%的房间，发现%CALLNAME:B%也在，两个人好像在那里做着什么
+	PRINTFORML %CALLNAME:A%用手比出下流的姿势，%CALLNAME:B%在一旁模仿
+	PRINTFORMW 看起来%CALLNAME:A%在教%CALLNAME:B%一些不可描述的动作…
+	PRINTFORML 两个人都那么认真地钻研着下流的事情，这一幕实在是太下流了
+	PRINTFORMW 还是当做没看见比较好吧…
+	CALL RELATION_UP(A,B,15)
+ELSE
+	PRINTFORMW 经过%CALLNAME:A%的房间时，不经意看见%CALLNAME:A%的手在奇怪地活动着
+	PRINTFORML 那个姿势总觉得有点下流……看来是在练习不可描述的动作
+	PRINTFORMW 原来如此，还是先回避吧…
+ENDIF
+
+;-------------------------------------------------
+;ＳＭプ雷の練習(绳子)
+;-------------------------------------------------
+@DAILY_LIFE_73
+PRINTFORMW 经过%CALLNAME:A%的房间时，听到了里面传出的奇怪响动
+PRINTFORM 往里一看，
+SIF CFLAG:A:7021
+PRINTFORM 一丝不挂的
+PRINTFORML %CALLNAME:A%似乎偷偷把绳子拿了出来，练习着捆绑的方法
+;学得慢かつ技巧４以下、または学得快かつ技巧２以下、または両方なく技巧３以下
+IF (TALENT:A:学得慢 && ABL:A:技巧 <= 4) || (TALENT:A:学得快 && ABL:A:技巧 <= 2) || (!TALENT:A:学得慢 && !TALENT:A:学得快 && ABL:A:技巧 <= 3)
+	IF !RAND:3
+		PRINTFORML \@ MALE(A) ? 他 # 她 \@把被子卷起来充作人体，迅速地缠起绳子
+		PRINTFORMW 也许是太过心急，绳子打结了
+		PRINTFORMW 看来还需多加练习…
+	ELSEIF !RAND:2
+		PRINTFORML \@ MALE(A) ? 他 # 她 \@对照着书本，把被子卷起来充作人体，小心翼翼地缠起绳子
+		PRINTFORMW 虽然花了不少时间，最终还是完成了漂亮的龟甲缚…
+	ELSE
+		PRINTFORML \@ MALE(A) ? 他 # 她 \@把被子卷起来充作人体，迅速地缠起绳子
+		PRINTFORMW 虽然只是简单的绑法，但整个动作行云流水非常流畅…
+	ENDIF
+ELSE
+	PRINTFORMW \@ MALE(A) ? 他 # 她 \@把被子卷起来充作人体，手法巧妙地缠绕起绳子
+	;异常经验
+	IF EXP:A:异常经验 >= 3 && RAND:2 == 0
+		PRINTFORMW 接着跨坐在上面一边啪啪拍打身下的被子一边露出恍惚的表情…
+	ELSE
+		PRINTFORMW 看着被五花大绑的被子，%CALLNAME:A%露出满足的表情…
+	ENDIF
+ENDIF
+EXP:A:调教经验 += 3
+PRINTFORMW %CALLNAME:A%的调教经验+3
+
+;-------------------------------------------------
+;ＳＭプ雷の練習(肛責め)
+;-------------------------------------------------
+@DAILY_LIFE_74
+PRINTFORMW %CALLNAME:A%的房间里传出了奇怪的声音…
+PRINTFORM 往里一看，
+SIF CFLAG:A:7021
+PRINTFORM 一丝不挂的
+PRINTFORM %CALLNAME:A%
+;肛塞を購入済み
+IF ITEM:肛塞 && !RAND:2
+	PRINTFORML 好像是在练习用肛塞扩张自己的肛门
+	PRINTFORMW 只见\@ MALE(A) ? 他 # 她 \@粗略地用舌头舔湿肛塞，然后就噗嗤一下插入了
+	;异常经验
+	IF EXP:A:异常经验 >= 3 && !RAND:2
+		PRINTFORMW 手法熟练地抽插着肛塞，%CALLNAME:A%露出了幸福的笑容…
+	ELSE
+		PRINTFORMW 房间里回荡起淫荡的声音，%CALLNAME:A%就那样一直玩弄着自己的屁股…
+	ENDIF
+ELSE
+	PRINTFORML 好像是在练习用手指扩张自己的肛门
+	PRINTFORMW 只见\@ MALE(A) ? 他 # 她 \@粗略地用舌头舔湿手指，然后就噗嗤一下插入了
+	;异常经验
+	IF EXP:A:异常经验 >= 3 && !RAND:2
+		PRINTFORMW %CALLNAME:A%享受着手指搅动肛门的快感，一脸陶醉…
+	ELSE
+		PRINTFORMW 房间里回荡起淫荡的声音，%CALLNAME:A%就那样一直玩弄着自己的屁股…
+	ENDIF
+ENDIF
+EXP:A:调教经验 += 3
+PRINTFORMW %CALLNAME:A%的调教经验+3
+
+;-------------------------------------------------
+;ＳＭプ雷の練習(鞭子、打屁股)
+;-------------------------------------------------
+@DAILY_LIFE_75
+PRINTFORMW %CALLNAME:A%的房间里传出了奇怪的声音…
+PRINTFORM 往里一看，
+SIF CFLAG:A:7021
+PRINTFORM 一丝不挂的
+PRINTFORM %CALLNAME:A%
+;鞭子を購入済み
+IF ITEM:鞭子 && !RAND:2
+	PRINTFORMW 好像是偷偷把鞭子拿了出来，练习着挥舞的技巧
+	;异常经验
+	IF EXP:A:异常经验 >= 3 && !RAND:2
+		PRINTFORMW 鞭子挥动时发出了劈开空气的噼啪声，%CALLNAME:A%陶醉在这样的声音里…
+	ELSE
+		PRINTFORMW 大概还不太熟练吧，%CALLNAME:A%几次扭动手腕改善挥鞭的姿势…
+	ENDIF
+ELSE
+	PRINTFORMW 大幅度地挥动手腕，像是在模拟着打屁股的情景练习
+	;异常经验
+	IF EXP:A:异常经验 >= 3 && !RAND:2
+		PRINTFORMW 忽然\@ MALE(A) ? 他 # 她 \@浑身一震，脸上流露出陶醉的神色…
+	ELSE
+		PRINTFORMW 大概还不太熟练吧，%CALLNAME:A%几次扭动手腕改善拍打的力度…
+	ENDIF
+ENDIF
+EXP:A:调教经验 += 3
+PRINTFORMW %CALLNAME:A%的调教经验+3
+
+;-------------------------------------------------
+;ちぎれ触手
+;-------------------------------------------------
+@DAILY_LIFE_76
+PRINTFORMW 巡视宅邸时，听到了像是活鱼在地上弹跳的奇怪声响……
+PRINTFORMW 朝着声源的发生地走去，在走廊的角落里发现了一截残破的触手前端
+PRINTFORMW 大概是调教时召唤出来的生物被切断出去的部分
+PRINTFORML 
+PRINTFORML 总而言之得尽快处理掉
+	IF !RAND:4
+		PRINTFORMW 和生活垃圾一起丢出去应该没问题吧？
+	ELSEIF !RAND:3
+		PRINTFORMW 慎重起见，烧掉比较好吗？
+	ELSEIF !RAND:2
+		PRINTFORMW 要是放任不管，鬼知道会不会再生成一个新的完整体
+	ELSE
+		PRINTFORMW 应该送还原地…吗？
+	ENDIF
+PRINTFORMW 看着手中活泼跳跃着的触手残肢，%PLAYER_NAME()%叹了口气
+
+PRINTFORML 这时，走廊对面出现了%CALLNAME:A%的身影
+PRINTFORMW 恐怕是和%PLAYER_NAME()%一样听到声音过来查看情况的吧
+
+;胆怯とか
+IF TALENT:A:胆怯 || TALENT:A:幼稚 || TALENT:A:幼儿／幼儿退行
+	PRINTFORMW 然而，%CALLNAME:A%在看清%PLAYER_NAME()%手上的东西后小小悲鸣了一声转身逃跑了……
+;淫乱系陷落
+ELSEIF TALENT:A:淫乱 || TALENT:A:娼妇
+	PRINTFORML 看清%PLAYER_NAME()%手中的东西，%CALLNAME:A%托着下巴陷入沉思
+	PRINTFORML 全身顿时弥漫着一股“想要”的氛围
+	PRINTFORMW 不用说，一定又是在想一些不可描述的事了
+	PRINTFORMW 继续呆在这里不知道\@ MALE(TARGET) ? 他 # 她 \@会做些什么，%PLAYER_NAME()%转身向另一个方向离开了
+	PRINTFORML 
+	PRINTFORMW %CALLNAME:A%舔了一下嘴唇，面露不满地朝自己房间走去……
+;禁断的知识、调和知识持ち
+ELSEIF TALENT:A:禁断的知识 && (TALENT:A:调和知识 || TALENT:A:化学属性)
+	PRINTFORMW 看清%PLAYER_NAME()%手中的触手后，%CALLNAME:A%突然开口说这是\@ MALE(TARGET) ? 他 # 她 \@的东西
+	PRINTFORMW 据说是打算用在秘药上的材料，一不留神却逃走了，好在及时找了回来
+	PRINTFORMW 将触手还给%CALLNAME:A%，\@ MALE(TARGET) ? 他 # 她 \@道谢后回了自己的房间
+	PRINTFORMW ……话说回来，到底什么药才会需要以触手为材料呢，稍微有点不安
+;被触手调教经验100以上の子
+ELSEIF EXP:A:55 >= 100
+	PRINTFORMW 或许已经看惯了这种东西，%CALLNAME:A%并没有太惊讶
+	PRINTFORMW \@ MALE(TARGET) ? 他 # 她 \@主动提出要和%PLAYER_NAME()%一起去将这玩意儿烧毁，两人达成共识，并肩离开了……
+;其他
+ELSE
+	PRINTFORMW 看清%PLAYER_NAME()%手中的东西后，%CALLNAME:A%好奇地问这是怎么来的
+	PRINTFORMW 具体怎么回事%PLAYER_NAME()%也是一头雾水
+	PRINTFORMW 之后两人就如何处理这个比较好展开了激烈讨论……
+ENDIF
+
+;-------------------------------------------------
+;みんなといっしょ/二人の会话１/反抗・陷落素質
+;-------------------------------------------------
+@DAILY_LIFE_100
+;随机で登場キャラを選択
+B = DAILYLIFE_GETCHARA(1)
+IF B < 1
+	CALL DAILY_LIFE
+	RETURN 0
+ENDIF
+PRINT 穿过走廊时
+IF !RAND:2
+	PRINTL 听到了角落处传来的人声
+	PRINTFORMW 好像是%CALLNAME:A%和%CALLNAME:B%在那里小声地闲聊
+ELSE
+	PRINTL 听到了食堂里传来的人声
+	PRINTFORMW 走近一看，原来是%CALLNAME:A%和%CALLNAME:B%
+ENDIF
+;主人の悪口
+IF MARK:A:反抗刻印 >= 3 && MARK:B:反抗刻印 >= 3
+	PRINTFORMW 两人瞎扯了一会儿有的没的，%CALLNAME:A%突然开始说起%PLAYER_NAME()%的坏话
+	PRINTFORML 起初只是%CALLNAME:A%单方面地发泄不满
+	PRINTFORMW 后来连%CALLNAME:B%也为之共鸣，甚至比%CALLNAME:A%还要积极地数落%PLAYER_NAME()%的种种不是
+	PRINTFORMW 看来这两人似乎因为%PLAYER_NAME()%这个共同敌人而诡异地团结了起来
+	PRINTFORM 得想个办法应对
+	IF !TALENT:A:男性 && !TALENT:A:双性 && !TALENT:B:男性 && !TALENT:B:双性
+        PRINT 她们
+    ELSE
+        PRINT 他们
+    ENDIF
+    PRINTFORMW 才行…%PLAYER_NAME()%暗自琢磨着，悄悄离开了
+ELSEIF MARK:A:反抗刻印 >= 3 || MARK:B:反抗刻印 >= 3
+	IF MARK:A:反抗刻印 >= 3
+		LOCAL:3 = A
+		LOCAL:4 = B
+	ELSE
+		LOCAL:3 = B
+		LOCAL:4 = A
+	ENDIF
+	IF TALENT:(LOCAL:4):恋慕 || TALENT:(LOCAL:4):相亲相爱
+		PRINTFORMW 两人瞎扯了一会儿有的没的，%CALLNAME:(LOCAL:3)%突然开始说起%PLAYER_NAME()%的坏话
+		PRINTFORML 起初只有%CALLNAME:(LOCAL:3)%一个人在那喋喋不休
+		IF TALENT:(LOCAL:3):男性 || TALENT:(LOCAL:3):双性
+        	PRINT 等他
+        ELSE
+        	PRINT 等她
+        ENDIF
+        PRINTFORMW 说完，%CALLNAME:(LOCAL:4)%却表达起对%PLAYER_NAME()%的恋慕之情
+		PRINTFORML %CALLNAME:(LOCAL:3)%听罢本能地反驳%CALLNAME:(LOCAL:4)%的话
+		PRINTFORMW 但在意识到%CALLNAME:(LOCAL:4)%的心情毫无虚假后，%CALLNAME:(LOCAL:3)%稍微软化了一点态度
+		PRINTFORMW %PLAYER_NAME()%在心中对拥护自己的%CALLNAME:(LOCAL:4)%致以深切的感谢，悄悄地离开了现场
+	ELSEIF TALENT:(LOCAL:4):服从 || TALENT:(LOCAL:4):隶属
+		PRINTFORMW 两人瞎扯了一会儿有的没的，%CALLNAME:(LOCAL:3)%突然开始说起%PLAYER_NAME()%的坏话
+		PRINTFORML 起初只有%CALLNAME:(LOCAL:3)%一个人在那喋喋不休
+		IF TALENT:(LOCAL:3):男性 || TALENT:(LOCAL:3):双性
+        	PRINT 等他
+        ELSE
+        	PRINT 等她
+        ENDIF
+		PRINTFORMW 说完，%CALLNAME:(LOCAL:4)%却煞有其事地强调起%PLAYER_NAME()%是多么的恐怖不可违抗
+		PRINTFORML %CALLNAME:(LOCAL:3)%听罢本能地反驳%CALLNAME:(LOCAL:4)%的话
+		PRINTFORMW 但从%CALLNAME:(LOCAL:4)%那儿听了详细的事例后，%CALLNAME:(LOCAL:3)%的气焰也渐渐弱了
+		PRINTFORMW %PLAYER_NAME()%对%CALLNAME:(LOCAL:4)%的表现非常满意，悄悄地离开了现场
+	ELSEIF TALENT:(LOCAL:4):淫乱 || TALENT:(LOCAL:4):娼妇
+		PRINTFORMW 两人瞎扯了一会儿有的没的，%CALLNAME:(LOCAL:3)%突然开始说起%PLAYER_NAME()%的坏话
+		PRINTFORML 起初只有%CALLNAME:(LOCAL:3)%一个人在那喋喋不休
+   		IF TALENT:(LOCAL:3):男性 || TALENT:(LOCAL:3):双性
+            PRINT 等他
+        ELSE
+            PRINT 等她
+        ENDIF
+        PRINTFORMW 说完，%CALLNAME:(LOCAL:4)%却莫名赞扬起%PLAYER_NAME()%的性能力来
+		PRINTFORML %CALLNAME:(LOCAL:3)%听罢本能地反驳%CALLNAME:(LOCAL:4)%的话
+		PRINTFORM 但很快
+   		IF TALENT:(LOCAL:3):男性 || TALENT:(LOCAL:3):双性
+            PRINT 他
+        ELSE
+            PRINT 她
+        ENDIF
+        PRINTFORMW 就发现对现在的%CALLNAME:(LOCAL:4)%说什么都是徒劳的，因此不得不停止批判
+		PRINTFORMW ……这到底算怎么回事啊？%PLAYER_NAME()%一头雾水离开了现场
+	ELSE
+		PRINTFORMW 两人瞎扯了一会儿有的没的，%CALLNAME:(LOCAL:3)%突然开始说起%PLAYER_NAME()%的坏话
+		PRINTFORMW %CALLNAME:(LOCAL:3)%语气粗暴，喋喋不休，%CALLNAME:(LOCAL:4)%完全插不进话
+		PRINTFORMW ……这到底算怎么回事啊？%PLAYER_NAME()%一头雾水离开了现场
+	ENDIF
+;二人とも相亲相爱
+ELSEIF TALENT:A:相亲相爱 && TALENT:B:相亲相爱
+	PRINTFORMW 两人瞎扯了一会儿有的没的，%CALLNAME:A%突然表达起对%PLAYER_NAME()%的恋慕之情
+	PRINTFORMW 起初只有%CALLNAME:A%一个人说得起劲，之后%CALLNAME:B%也不服输地争着抒发自己对%PLAYER_NAME()%的爱意
+	PRINTFORML 像是最近说过的情话啊，收到的礼物啊，约会的邀请啊…
+	PRINTFORMW 两个人就这样各自炫耀着和%PLAYER_NAME()%的ＬＯＶＥＬＯＶＥ日常
+	PRINTFORMW 总觉得空气都变热了，%PLAYER_NAME()%悄悄地离开了现场
+;二人とも恋慕
+ELSEIF TALENT:A:恋慕 && TALENT:B:恋慕
+	PRINTFORMW 两人瞎扯了一会儿有的没的，%CALLNAME:A%突然冒出一句对%PLAYER_NAME()%的赞扬
+	PRINTFORMW %CALLNAME:B%听罢也点着头表示同意，并列举出%PLAYER_NAME()%的好几个优点
+	PRINTFORMW 大概是达成了共识，两个人气氛融洽地讨论起吸引%PLAYER_NAME()%注意力的方法
+	PRINTFORMW 总觉得空气都变热了，%PLAYER_NAME()%悄悄地离开了现场
+;二人とも服从陷落
+ELSEIF KANRAKU(A) == 3 && KANRAKU(B) == 3
+	PRINTFORMW 两人瞎扯了一会儿有的没的，%CALLNAME:A%突然冒出一句“%CSTR:A:3%真的很恐怖”
+	PRINTFORMW %CALLNAME:B%听罢也点着头表示同意，并列举出好几个%PLAYER_NAME()%的可怕之处
+	PRINTFORMW 大概是达成了共识，两个人开始讨论起稳定%PLAYER_NAME()%情绪的方法
+	PRINTFORMW 真的有那么吓人吗？%PLAYER_NAME()%带着困惑悄悄地离开了
+;淫乱同士
+ELSEIF (TALENT:A:淫乱 || TALENT:A:娼妇) && (TALENT:B:淫乱 || TALENT:B:娼妇)
+	PRINTFORML 两人瞎扯了一会儿有的没的，%CALLNAME:A%突然说起了Ｈ的话题
+	IF TALENT:A:男性 || TALENT:A:双性
+    	PRINT 他
+    ELSE
+    	PRINT 她
+    ENDIF
+	PRINTFORMW 列举了自己经历过的一些刺激的性体验，%CALLNAME:B%听得兴味十足，也积极地加入讨论
+	PRINTFORMW 两人就这样谈论着各自的性经验和性技巧，俨然展开了一场Ｈ研讨会，气氛异常和谐
+	PRINTFORMW 这种情况还是离开比较好吧……
+;其他
+ELSE
+	PRINTFORM 两人瞎扯了一会儿有的没的，%CALLNAME:A%突然
+	IF TALENT:A:相亲相爱
+		PRINTFORMW 开始抒发对%PLAYER_NAME()%的爱意
+	ELSEIF TALENT:A:恋慕
+		PRINTFORMW 开始抒发对%PLAYER_NAME()%的恋慕之情
+	ELSEIF KANRAKU(A) == 3
+		PRINTFORMW 冒出一句“%CSTR:A:3%真的很恐怖”
+	ELSE
+		PRINTFORMW 开始列举自己经历过的一些异常性体验
+	ENDIF
+	PRINTFORM %CALLNAME:B%听罢
+	IF TALENT:B:相亲相爱
+		PRINTFORMW 炫耀起了自己和%PLAYER_NAME()%的ＬＯＶＥＬＯＶＥ日常
+	ELSEIF TALENT:B:恋慕
+		PRINTFORMW 夸赞起%PLAYER_NAME()%的几个优点
+	ELSEIF KANRAKU(B) == 3
+		PRINTFORMW 描述起%PLAYER_NAME()%是多么的可怕不可违抗
+	ELSE
+		PRINTFORMW 讲述起几种刺激的ＰＬＡＹ和做法
+	ENDIF
+	PRINTFORML 这两人大概还要说上好一会儿…
+	PRINTFORM 要是打扰到
+	IF !TALENT:A:男性 && !TALENT:A:双性 && !TALENT:B:男性 && !TALENT:B:双性
+        PRINT 她们
+    ELSE
+        PRINT 他们
+    ENDIF
+    PRINTFORMW 就不好了，%PLAYER_NAME()%悄悄地离开了现场
+ENDIF
+CALL RELATION_UP(A,B,10)
+;-------------------------------------------------
+;みんなといっしょ/お説教
+;-------------------------------------------------
+@DAILY_LIFE_101
+;出場キャラを１人検索
+B = DAILYLIFE_GETCHARA(1)
+SIF B > 0 && TALENT:B:说教癖
+	B = -1
+;つまみぐい
+IF B > 0 && CFLAG:B:600 != 3 && !TALENT:B:自制力 && !TALENT:B:性压抑 && !TALENT:B:胆怯 && (!TALENT:B:大人 || CFLAG:B:600 == 13)
+	PRINTFORMW 穿过走廊时，听到厨房那边传来%CALLNAME:A%斥责着谁的声音
+	PRINTFORMW 好奇地向厨房里偷看，原来是%CALLNAME:A%在对%CALLNAME:B%说教
+	PRINTFORMW %CALLNAME:B%的手里抓着点心，看起来是因为偷吃零食被%CALLNAME:A%逮了个正着
+	IF MARK:B:反抗刻印 >= 3
+		PRINTFORMW %CALLNAME:B%向来叛逆，不太驯服，也该让%CALLNAME:A%好好地治上一治
+	ELSE
+		PRINTFORMW 虽然有些可怜，但这次的确是%CALLNAME:B%做错了，应该受一点教训
+	ENDIF
+	PRINTFORMW ……………
+	PRINTFORMW …………
+	PRINTFORMW ………
+	PRINTFORMW ……
+	PRINTFORML …
+	PRINTFORMW 过了几个小时，想着应该结束了吧，%PLAYER_NAME()%起身去厨房看了看情况，没想到还在继续…
+	IF MARK:B:反抗刻印 >= 3
+		PRINTFORML 平时一直反抗%PLAYER_NAME()%的%CALLNAME:B%在看到%PLAYER_NAME()%后一反常态地投来哀求的视线
+		PRINTFORM 大概是希望%PLAYER_NAME()%把
+		IF TALENT:B:男性 || TALENT:B:双性
+        	PRINT 他
+        ELSE
+        	PRINT 她
+        ENDIF
+        PRINTFORMW 从%CALLNAME:A%手下救出来吧
+		PRINTL 
+		$INPUT_LOOP_OSEKKYOU1
+		PRINTL [0]没办法，帮吧
+		PRINTL [1]不帮
+		INPUT
+		IF RESULT == 0
+			PRINTFORMW %PLAYER_NAME()%决定帮助眼泪汪汪的%CALLNAME:B%
+			PRINTFORMW 从%CALLNAME:A%的说教中解脱的%CALLNAME:B%在离去前小声地对%PLAYER_NAME()%说了谢谢…
+			JUEL:B:恭顺 += 50
+			PRINTL
+			PRINTFORML %CALLNAME:B%的恭顺之珠+50
+		ELSEIF RESULT == 1
+			PRINTFORML 机会难得，也该让%CALLNAME:B%受点教训
+			PRINTFORMW %PLAYER_NAME()%这么想着转身离开了
+			PRINTFORMW 意识到无法得到拯救，%CALLNAME:B%露出悲痛的表情
+			PRINTFORMW …%CALLNAME:A%恐怕会一直说教到自己满意为止，没有一个小时多半是不会结束的
+			JUEL:B:屈服 += 50
+			JUEL:B:反感 += 10
+			PRINTL
+			PRINTFORML %CALLNAME:B%的屈服之珠+50
+			PRINTFORMW %CALLNAME:B%的反感之珠+10
+		ELSE
+			GOTO INPUT_LOOP_OSEKKYOU1
+		ENDIF
+	ELSE
+		PRINTFORMW %CALLNAME:B%在看到%PLAYER_NAME()%后投来了哀求的视线
+		PRINTFORM 看
+		IF TALENT:B:男性 || TALENT:B:双性
+        	PRINT 他
+        ELSE
+        	PRINT 她
+        ENDIF
+        PRINTFORML 一副泪眼朦胧的样子，经过这次的事后总该有所反省了吧
+		PRINTFORMW %PLAYER_NAME()%对可怜的%CALLNAME:B%施与了援手
+		PRINTFORMW 总算从%CALLNAME:A%的说教中解脱，%CALLNAME:B%有些沮丧地感谢了%PLAYER_NAME()%
+		PRINTFORMW 不过%CALLNAME:A%显然还没有说够，不满地皱着眉头
+	ENDIF
+;裸
+ELSEIF B > 0 && ABL:A:露出癖 < 5 && CFLAG:B:600 != 3 && ((!TALENT:B:害羞 && !TALENT:B:说教癖) || ABL:B:露出癖 >= 5)
+	PRINTFORMW 穿过走廊时，碰巧撞上了%CALLNAME:A%的说教现场
+	PRINTFORMW 惨遭%CALLNAME:A%教育的是只裹着一条浴巾就到处乱走的%CALLNAME:B%
+	PRINTFORML 多半是刚洗完澡，%CALLNAME:B%的身上还有未干的水珠
+	PRINTFORM 但看
+	IF TALENT:B:男性 || TALENT:B:双性
+    	PRINT 他
+    ELSE
+    	PRINT 她
+    ENDIF
+    PRINTFORMW 微微颤抖的样子，应该是被说上好一阵了
+	PRINTFORML 这样下去会感冒的，%PLAYER_NAME()%急忙上前制止了%CALLNAME:A%
+	PRINTFORM 但同时也没忘警告%CALLNAME:B%不可以再像这样
+	IF ABL:B:露出癖 >= 5
+		PRINTW 光溜溜地展示身体
+	ELSE
+		PRINTW 衣衫不整地招摇过市
+	ENDIF
+	PRINTFORML 安抚了因为没有说够而有些生气的%CALLNAME:A%，又给%CALLNAME:B%披上了温暖的外套
+	PRINTFORMW %CALLNAME:B%哆嗦着再三道谢，并保证不会再有下次
+	IF ABL:B:露出癖 >= 5
+	    PRINTFORM …虽然几乎没什么可信度，但现在姑且先相信
+		IF TALENT:B:男性 || TALENT:B:双性
+        	PRINTW 他
+        ELSE
+        	PRINTW 她
+        ENDIF
+    ELSE
+	    PRINTFORMW …但愿如此
+	ENDIF
+;よくわからない
+ELSEIF B > 0 && !RAND:2
+	PRINTFORMW 穿过走廊时，碰巧撞上了%CALLNAME:A%的说教现场
+	PRINTFORMW 惨遭%CALLNAME:A%教育的是不知自己究竟做错了什么，有点莫名其妙的%CALLNAME:B%
+	PRINTFORMW 打听了一下，结果只是因为一些琐碎的小事
+	PRINTFORMW 了解了前因后果，为免麻烦先行离开了
+	PRINTFORMW ……据说等%CALLNAME:A%结束说教已经是一个小时之后了
+;説教体験
+ELSE
+	PRINTFORML %PLAYER_NAME()%突然很好奇%CALLNAME:A%的说教最长能持续多久
+	PRINTFORM 因为每次
+	IF TALENT:A:男性 || TALENT:A:双性
+    	PRINT 他
+    ELSE
+    	PRINT 她
+    ENDIF
+    PRINTFORMW 都跟不会累一样，实在是想知道极限在哪里
+	PRINTFORMW …正好%CALLNAME:A%就在附近
+	PRINTFORML 尽管想亲身体验一下，但要是平白浪费了时间就不太妙了
+	PRINTFORMW 这么想着，索性直截了当地询问了%CALLNAME:A%的最长说教时间
+	PRINTFORMW %CALLNAME:A%指出这种问题毫无意义，但还是认真地回答了%PLAYER_NAME()%
+	PRINTFORMW ……好险好险
+	PRINTFORMW 幸好没有实践最初的想法
+ENDIF
+
+;-------------------------------------------------
+;みんなといっしょ/二人の会话２/相性・兄弟
+;-------------------------------------------------
+@DAILY_LIFE_102
+;出場キャラを１人検索
+B = DAILYLIFE_GETCHARA(1)
+IF B < 1
+	CALL DAILY_LIFE
+	RETURN 0
+ENDIF
+;関係判定
+LOCAL = RELATIONS2(A, B)
+;0=特に関係无 1=兄弟 2親子 3家族 4=同一人物 5=知り合い 6=師弟 7=友人 8=幼馴染
+;9=仕事仲間 10=部活仲間 11=同僚 12=同級生 13=恋人同士
+SELECTCASE LOCAL
+	CASE 1
+		LOCALS = 兄弟
+	CASE 2
+		LOCALS = 亲子
+	CASE 3
+		LOCALS = 家人
+	CASE 4
+		LOCALS = 同一人
+	CASE 5
+		LOCALS = 熟人
+	CASE 6
+		LOCALS = 师兄弟
+	CASE 7
+		LOCALS = 朋友
+	CASE 8
+		LOCALS = 青梅竹马
+	CASE 9
+		LOCALS = 同事
+	CASE 10
+		LOCALS = 社团伙伴
+	CASE 11
+		LOCALS = 同僚
+	CASE 12
+		LOCALS = 同学
+	CASE 13
+		LOCALS = 恋人
+ENDSELECT
+;面識があるか判定
+LOCAL:1 = 0
+;0=ない1=あったことはある3=結構あってる
+IF CFLAG:A:(799 + NO:B)
+	LOCAL:1 = 1
+	SIF CFLAG:A:(1199 + NO:B) + CFLAG:B:(1199 + NO:A) >= 1000
+		LOCAL:1 = 3
+ENDIF
+;関係があるとき、最低でも会ったことがある
+SIF LOCAL && !LOCAL:1
+	LOCAL:1 = 1
+
+;話は弾むか？
+LOCAL:2 = 0
+;0=全然1=あんまり2=そこそこ3=弾むよ4=仲良し
+IF RELATION:A:(NO:B) > 100 && RELATION:B:(NO:A) > 100
+	LOCAL:2 = 3 + RAND:2
+ELSEIF (RELATION:A:(NO:B) > 100 && RELATION:B:(NO:A) == 100) || (RELATION:B:(NO:A) > 100 && RELATION:A:(NO:B) == 100)
+	LOCAL:2 = 2 + RAND:2
+ELSEIF RELATION:A:(NO:B) == 100 && RELATION:B:(NO:A) == 100
+	LOCAL:2 = 1 + RAND:2
+ELSEIF RELATION:A:(NO:B) > 100 || RELATION:B:(NO:A) > 100
+	LOCAL:2 = 1
+ENDIF
+
+;好感度が高い方をAに入れ替え
+IF RELATION:B:(NO:A) > RELATION:A:(NO:B)
+	LOCAL:3 = B
+	B = A
+	A = LOCAL:3
+ENDIF
+
+PRINTFORMW 穿过走廊时，听到了食堂里传来的说话声
+PRINTFORMW 过去一看，原来是%CALLNAME:A%和%CALLNAME:B%\@ LOCAL ? 正在进行%LOCALS%之间的谈话 # 在那儿聊着什么 \@
+
+
+IF (TALENT:A:嫉妒 || TALENT:B:嫉妒) && LOCALS != "亲子"
+	LOCAL:1 = 0
+;A→Bが100以上
+ELSEIF RELATION:A:(NO:B) > 100
+	;B→Aが100以上
+	IF RELATION:B:(NO:A) > 100
+		IF !TALENT:A:男性 && !TALENT:A:双性 && !TALENT:B:男性 && !TALENT:B:双性
+            PRINT 她们
+        ELSE
+            PRINT 他们
+        ENDIF
+        PRINTFORML 的关系真的很好呢
+		;调教での面識あり
+		IF LOCAL:1
+			PRINTFORMW 经常能看到两个人待在一起
+		ELSE
+			PRINTFORMW 两个人总是有很多话说
+		ENDIF
+		LOCAL:1 = 4
+	;B→Aが100以下
+	ELSEIF RELATION:B:(NO:A) < 100
+		PRINTFORMW 这两人\@ LOCAL ? 虽然是%LOCALS%，但 # \@同时在场的情况还真少见呢
+		PRINTFORMW %CALLNAME:A%显然对%CALLNAME:B%抱有好感，不过%CALLNAME:B%那边就说不准了…
+		LOCAL:1 = 3
+	;B→Aが100
+	ELSE
+		PRINTFORMW 这两人\@ LOCAL ? 虽然是%LOCALS%，但 # \@同时在场的情况还真少见呢
+		PRINTFORMW %CALLNAME:A%显然对%CALLNAME:B%抱有好感，不过%CALLNAME:B%那边好像没什么感觉…
+		LOCAL:1 = 1
+	ENDIF
+;A→Bが100以下
+ELSEIF RELATION:A:(NO:B) < 100
+	PRINTFORML 这两人竟然会凑在一起聊天，还真是稀奇的光景
+	IF !TALENT:A:男性 && !TALENT:A:双性 && !TALENT:B:男性 && !TALENT:B:双性
+        PRINT 她们
+    ELSE
+        PRINT 他们
+    ENDIF
+	PRINTFORMW 虽然是\@ LOCAL ? %LOCALS% # \@，但彼此之间并不怎么来往…
+	LOCAL:1 = 0
+;A→Bが100
+ELSE
+	;B→Aが100以下
+	IF RELATION:B:(NO:A) < 100
+		PRINTFORMW 这两人\@ LOCAL ? 虽然是%LOCALS%，但 # \@同时在场的情况还真少见呢
+		PRINTFORMW %CALLNAME:B%特别不擅长应对%CALLNAME:A%，%CALLNAME:A%则好像完全不在乎%CALLNAME:B%…
+		LOCAL:1 = 2
+	;B→Aが100
+	ELSE
+		;调教での面識あり
+		IF LOCAL:1
+			PRINTFORMW \@ LOCAL ? 尽管是%LOCALS%，但这 # \@两人对彼此好像没什么想法，平时见了也跟没见到似的…
+		ELSE
+			PRINTFORMW \@ LOCAL ? 尽管是%LOCALS%，但 # \@%PLAYER_NAME()%好像是头一次看到这两人出现在同一个地方…
+		ENDIF
+		LOCAL:1 = 1
+	ENDIF
+ENDIF
+
+
+;会话は弾む？
+IF (TALENT:A:嫉妒 || TALENT:B:嫉妒) && LOCALS != "亲子"
+	PRINTFORMW 欸…两人之间的气氛好像有点剑拔弩张…
+	CALL RELATION_UP(A,B,(-10))
+ELSE
+	SELECTCASE LOCAL:2
+		;全然
+		CASE 0
+			PRINTFORMW 欸…两人之间的气氛突然有点剑拔弩张…
+			CALL RELATION_UP(A,B,(-5))
+		;あんまり
+		CASE 1
+			PRINTFORMW 欸…两人的对话突然中断了，似乎聊得并不愉快…
+			CALL RELATION_UP(A,B,(-3))
+		;そこそこ
+		CASE 2
+			PRINTFORMW %CALLNAME:A%和%CALLNAME:B%闲扯着一些有的没的，看样子对话还会继续一段时间…
+			IF !RAND:3
+				CALL RELATION_UP(A,B,(-3))
+			ELSEIF !RAND:2
+				CALL RELATION_UP(A,B,3)
+			ENDIF
+		;弾むよ
+		CASE 3
+			PRINTFORMW 两人聊得尤为起劲，像是有着说不完的话…
+			CALL RELATION_UP(A,B,5)
+		;仲良し
+		CASEELSE
+			PRINTFORML 虽然都是些没营养的话题，但两人聊得非常起劲
+			PRINTFORMW 看样子对话还会继续一段时间…
+			CALL RELATION_UP(A,B,7)
+	ENDSELECT
+ENDIF
+;-------------------------------------------------
+;读书にドキッとする
+;-------------------------------------------------
+@DAILY_LIFE_130
+PRINTFORMW 路过图书室时，看到%CALLNAME:A%坐在窗边，面前摊开了一本书
+PRINTFORMW 既然来了不如也找本书看，%PLAYER_NAME()%在书架间浏览起来
+PRINTFORMW 找好要看的书后，%PLAYER_NAME()%坐在了%CALLNAME:A%附近，偷偷地观察起\@ MALE(A) ? 他 # 她 \@
+IF TALENT:A:美人 && !TALENT:A:喜欢运动 && !TALENT:A:高大体型 && !TALENT:A:污臭钝感
+	PRINTFORML …%CALLNAME:A%专注阅读的样子非常迷人
+	PRINTFORMW 明明只是普通地坐在那里，却散发出独特的气质，举手投足都吸人眼球
+	PRINTFORML 一、一直这样发呆的话会被发现的
+	IF (TALENT:A:害羞 || TALENT:A:老实 || TALENT:A:胆怯) && !TALENT:A:缺乏感情 && !TALENT:A:不知羞耻 && !TALENT:A:反抗
+		PRINTFORMW 本想转移视线，却发现%CALLNAME:A%的脸染上了一层淡淡的薄红
+	ELSE
+		PRINTFORMW 刚这么想着，%CALLNAME:A%就转过头投来了疑惑的视线
+	ENDIF
+	PRINTFORML %PLAYER_NAME()%欲盖弥彰地收回失礼的目光，埋头于书本的世界
+	PRINTFORMW %CALLNAME:A%并没有说什么，也继续看了起来
+	PRINTFORMW …既然如此那就再多偷看一会儿
+ELSE
+    PRINTFORMW 啊，%CALLNAME:A%的脸是不是红了？
+ENDIF
+;-------------------------------------------------
+;吃饭
+;-------------------------------------------------
+@DAILY_LIFE_131
+PRINTFORMW 走进食堂时，看到%CALLNAME:A%正在品尝%LUNCH_NAME_SP(A)%
+PRINTFORMW 感觉很美味的样子，于是%PLAYER_NAME()%也拿了一份
+PRINTFORMW 之后就一边进食一边在不远处偷偷观察%CALLNAME:A%
+IF CFLAG:A:7024
+	PRINTFORMW 正吃的津津有味的%CALLNAME:A%，看到%PLAYER_NAME()%之後，不禁联想到餐点中酱汁的味道
+	PRINTFORMW 突然他满脸通红地端着餐盘，匆匆地离开了
+	JUEL:A:6 += 50
+	PRINTFORMW %PALAMNAME:6%之珠＋50
+ENDIF
+;-------------------------------------------------
+;嫁との一時/買い物
+;-------------------------------------------------
+@DAILY_LIFE_132
+VARSET LOCAL
+;恋慕陷落を１人選択
+B = DAILYLIFE_GETTALENT_1(3, 6)
+PRINTFORMW 生活用品快要用完了，得去采购才行…
+PRINTFORMW 正在罗列购物清单时，%CALLNAME:A%突然造访了%PLAYER_NAME()%的房间
+PRINTFORMW 看到%PLAYER_NAME()%面前的购物清单，%CALLNAME:A%提出了一起去采购的请求
+;両方恋慕陷落
+IF B > 0 && KANRAKU(A) == 1 && !MARK:B:反抗刻印 && !RAND:2 && !TALENT:A:嫉妒 && !TALENT:B:嫉妒
+	PRINTFORMW …不知从哪儿冒出来的%CALLNAME:B%也表达了同样的意愿
+	PRINTFORML 两人让%PLAYER_NAME()%稍等，然后转身回了各自的房间
+	PRINTFORM 不一会儿
+	IF !TALENT:A:男性 && !TALENT:A:双性 && !TALENT:B:男性 && !TALENT:B:双性
+        PRINT 她们
+    ELSE
+        PRINT 他们
+    ENDIF
+    PRINTFORMW 就换好衣服出来了
+	PRINTFORM 本来还担心
+	IF !TALENT:A:男性 && !TALENT:A:双性 && !TALENT:B:男性 && !TALENT:B:双性
+        PRINT 她们
+    ELSE
+        PRINT 他们
+    ENDIF
+    PRINTFORMW 起争执，不过现在看来意外的和谐
+    PRINTFORML %CALLNAME:A%和%CALLNAME:B%的话，应该不会为了逃跑动这种歪脑筋
+	PRINTFORMW %PLAYER_NAME()%松了一口气
+	IF !TALENT:A:相亲相爱 || !TALENT:B:相亲相爱
+		PRINTFORMW …不不不，不能掉以轻心，以防万一得提前想好应对的措施
+		PRINTFORM ……
+	ENDIF
+	PRINTFORMW 总而言之准备完毕后，三个人一起上了街
+	PRINTFORML ……………
+	;AとBの性格タイプ
+	IF TALENT:A:幼稚 || CFLAG:A:600 == 11
+		LOCAL = 2
+	ELSEIF TALENT:A:高傲 || TALENT:A:自大 || TALENT:A:反抗 || TALENT:A:傲娇 || CFLAG:A:600 == 6 || CFLAG:A:600 == 3
+		LOCAL = 3
+	ELSEIF TALENT:A:无动于衷 || TALENT:A:缺乏感情 || TALENT:A:老实 || TALENT:A:悲观
+		LOCAL = 1
+	ELSEIF TALENT:A:性好奇
+		LOCAL = 2
+	ELSE
+		LOCAL = 4
+	ENDIF
+	IF TALENT:B:幼稚 || CFLAG:B:600 == 11
+		LOCAL:1 = 2
+	ELSEIF TALENT:B:高傲 || TALENT:B:自大 || TALENT:B:反抗 || TALENT:B:傲娇 || CFLAG:B:600 == 6 || CFLAG:B:600 == 3
+	LOCAL:1 = 3
+	ELSEIF TALENT:B:无动于衷 || TALENT:B:缺乏感情 || TALENT:B:老实 || TALENT:B:悲观
+		LOCAL:1 = 1
+	ELSEIF TALENT:B:性好奇
+		LOCAL:1 = 2
+	ELSE
+		LOCAL:1 = 4
+	ENDIF
+	IF LOCAL == LOCAL:1
+		IF LOCAL == 1
+			PRINTFORML 平时淡漠消极的两人，此刻因为和%PLAYER_NAME()%一起上街而兴高采烈
+			PRINTFORMW %CALLNAME:A%今天异常的话痨，%CALLNAME:B%则是一直紧紧地挽住%PLAYER_NAME()%的手
+		ELSEIF LOCAL == 2
+			PRINTFORML %CALLNAME:A%和%CALLNAME:B%同往常一样对一切都充满了好奇心
+			PRINTFORMW 两人一人一边挽住了%PLAYER_NAME()%的手，兴致颇高
+			PRINTFORML 明明不是来玩的…
+			PRINTFORM 有如此快乐的两人相伴，
+		ELSEIF LOCAL == 3
+			PRINTFORM %CALLNAME:A%和%CALLNAME:B%的视线在%PLAYER_NAME()%和
+			IF !TALENT:A:男性 && !TALENT:A:双性 && !TALENT:B:男性 && !TALENT:B:双性
+                PRINT 她俩
+            ELSE
+                PRINT 他俩
+            ENDIF
+            PRINTFORMW 彼此之间来回逡巡，就这么一边走一边偷偷摸摸地乱打量着
+			PRINTFORML 实在受不了这诡异的气氛，于是开口询问这是怎么回事
+			PRINTFORMW %CALLNAME:A%没有回答，只是强硬地拽过了%PLAYER_NAME()%的一只手
+			PRINTFORMW 下一秒，%CALLNAME:B%不服输地拽起了另一边
+			PRINTFORMW 好像只是想要拉着%PLAYER_NAME()%的手一起走…
+		ELSE
+			PRINTFORMW %CALLNAME:A%和%CALLNAME:B%一人拽着%PLAYER_NAME()%的胳膊，一人勾着%PLAYER_NAME()%的肩
+			PRINTFORMW 这样根本没法走路了…
+			PRINTFORMW 虽说如此，三个人似乎就这样异常和睦（？）地逛起了商店
+		ENDIF
+	ELSE
+		PRINTFORM %CALLNAME:A%
+		IF LOCAL == 1
+			PRINTFORML 在后方不远的距离安静地跟随着
+		ELSEIF LOCAL == 2
+			PRINTFORML 牵着%PLAYER_NAME()%的手嬉闹着往前走
+		ELSEIF LOCAL == 3
+			PRINTFORML 拿着购物清单走在最前面
+		ELSE
+			PRINTFORML 勾着%PLAYER_NAME()%的肩膀一副心情很好的模样
+		ENDIF
+		PRINTFORM %CALLNAME:B%
+		IF LOCAL:1 == 1
+			PRINTFORMW 则亦步亦趋地跟着%PLAYER_NAME()%
+		ELSEIF LOCAL:1 == 2
+			PRINTFORMW 则兴奋地东张西望，时不时喊一下%PLAYER_NAME()%的名字
+		ELSEIF LOCAL:1 == 3
+			PRINTFORMW 则干劲十足地带头血拼
+		ELSE
+			PRINTFORMW 则兴高采烈地环着%PLAYER_NAME()%的腰
+		ENDIF
+		PRINTFORMW 三个人就这样异常和睦地逛起了商店
+	ENDIF
+	PRINTFORMW 感觉平时看腻了的街边风景也变得美丽起来，偶尔这样也还不错…
+ELSEIF TALENT:A:隶属
+	PRINTFORM %CALLNAME:A%的身心都已隶属于%PLAYER_NAME()%，把
+	IF TALENT:A:男性 || TALENT:A:双性
+    	PRINT 他
+    ELSE
+    	PRINT 她
+    ENDIF
+	PRINTFORMW 带出去应该没有问题
+	PRINTFORMW ……………
+	IF TALENT:A:小人体型
+		PRINTFORML ……然而，%CALLNAME:A%的个子实在太过娇小，稍微大一点的物件就束手无策
+		PRINTFORMW 最后为了安抚想要帮忙的%CALLNAME:A%，就将一袋苹果交给了
+		IF TALENT:A:男性 || TALENT:A:双性
+        	PRINT 他
+        ELSE
+        	PRINT 她
+        ENDIF
+		PRINTFORML ，回家后还表扬了一番
+        PRINTFORMW 没想到的是，%CALLNAME:A%似乎为此高兴了很长一段时间…
+	ELSE
+		PRINTFORML 两人分工很快就买齐了清单上的物品
+		PRINTFORMW %CALLNAME:A%帮忙拿了大半，一起悠闲地回家了…
+	ENDIF
+ELSE
+	IF TALENT:A:相亲相爱
+		PRINTFORML %CALLNAME:A%已经很久没有反抗过，彼此又是恋人的关系
+		PRINTFORMW 想来应该不会趁机逃跑
+	ELSE
+		PRINTFORML 最近%CALLNAME:A%都没有反抗过，何况还对%PLAYER_NAME()%抱有恋慕之情
+		PRINTFORMW 想来应该不会趁机逃跑
+		PRINTFORMW …不过以防万一，还是得事先想好应对的措施
+	ENDIF
+	PRINTFORM 答应%CALLNAME:A%的请求后，
+    IF TALENT:A:男性 || TALENT:A:双性
+    	PRINT 他
+    ELSE
+    	PRINT 她
+    ENDIF
+    PRINTFORML 转身回了自己的房间
+	PRINTFORMW 不一会儿，%CALLNAME:A%穿戴整齐出来了
+	PRINTFORMW 两人都准备完毕，就这样一起上了街
+	PRINTFORMW ……………
+	PRINTFORML 平时已经看腻了的街边风景，因为身边有了%CALLNAME:A%的存在而显得些许不同
+	IF TALENT:A:幼稚 || CFLAG:A:600 == 11
+		PRINTFORMW %CALLNAME:A%挽着%PLAYER_NAME()%的手臂，一副兴高采烈的样子
+	ELSE
+		PRINTFORMW %CALLNAME:A%牵着%PLAYER_NAME()%的手，一副兴高采烈的样子
+	ENDIF
+	PRINTFORMW 等意识到的时候，发现附近的人都在看着这边
+	IF TALENT:A:小人体型
+		PRINTFORMW ……总觉得他们的眼神很温柔…似乎隐含笑意…
+	ELSEIF TALENT:A:谜之魅力 && !DOUSEI(A,MASTER)
+		PRINTFORML ………无论男女老少似乎都被拥有谜之魅力的%CALLNAME:A%所吸引…
+		PRINTFORMW 看来是在羡慕着%PLAYER_NAME()%
+	ELSEIF TALENT:A:魅惑 || TALENT:A:人气 && !DOUSEI(A,MASTER)
+		PRINTFORML ………无论男女老少似乎都被散发着魅力的%CALLNAME:A%所吸引…
+		PRINTFORMW 看来是在羡慕着%PLAYER_NAME()%
+	;奴隶も主人も男（主人はデフォ女なので、性転換したという设定）
+	ELSEIF MALE(A) && MALE(MASTER)
+		PRINTFORML ……大概是因为同为性别男却紧紧地贴在一起很少见吧
+		PRINTFORMW 不过本来也就是这样的关系，所以没什么好在意的
+	;奴隶も主人も女（奴隶はデフォ男なので、性転換したという设定）
+	ELSEIF !MALE(A) && !MALE(MASTER)
+		PRINTFORML 和现在已经是女性的%CALLNAME:A%走在一起，大概就像是关系亲密的姐妹一般
+		PRINTFORMW ……总觉得他们的眼神很温柔…
+	ELSEIF !MALE(A) && MALE(MASTER) && (TALENT:A:魅力 || TALENT:A:美人)
+		PRINTFORMW ……视线主要来自男性…
+		PRINTFORML 现在已经是女性的%CALLNAME:A%比以往散发出了更加致命的吸引力
+		PRINTFORMW 看来是在羡慕着%PLAYER_NAME()%
+	ELSEIF MALE(A) && !MALE(MASTER) && (TALENT:A:魅力 || TALENT:A:美人)
+		PRINTFORMW ……视线主要来自女性…
+		PRINTFORML 毕竟%CALLNAME:A%拥有着毋容置疑的美貌，就连男性都可能动心，更不要说女人了
+		PRINTFORMW 看来是在羡慕着%PLAYER_NAME()%
+	ELSE
+		PRINTFORMW 也许是因为两人看起来很像是新婚燕尔的夫妇？
+	ENDIF
+	IF TALENT:A:胆怯 || CFLAG:A:600 == 11
+		IF TALENT:A:幼稚 || CFLAG:A:600 == 11
+			PRINTFORMW 周围的视线令%CALLNAME:A%不安，以至于紧紧地抱住了%PLAYER_NAME()%
+		ELSE
+			PRINTFORMW 周围的视线令%CALLNAME:A%不安，以至于紧紧地握住了%PLAYER_NAME()%的手
+		ENDIF
+		PRINTFORMW 喂喂，这样不就更加引人注目了吗…
+		PRINTFORMW 为了尽快从人群的注目礼中逃离，%PLAYER_NAME()%只能匆忙地买完东西，马不停蹄地带着%CALLNAME:A%回家
+	ELSEIF CFLAG:A:600 == 10 || TALENT:A:高傲 || TALENT:A:自大
+		PRINTFORMW %CALLNAME:A%同样注意到了周遭的视线，却并没有挪开手
+		PRINTFORMW 不仅如此，反而还贴得更加紧密
+		PRINTFORMW %PLAYER_NAME()%只能一边苦笑一边匆忙购物，马不停蹄地带着%CALLNAME:A%回家
+	ELSE
+		PRINTFORMW 和%PLAYER_NAME()%的焦头烂额不同，%CALLNAME:A%对周遭的视线一无所知
+		PRINTFORMW 没办法，只能尽快买完东西早点回家了
+	ENDIF
+	CFLAG:A:140 = 1
+ENDIF
+
+;-------------------------------------------------
+;嫁との一時/耳扫除
+;-------------------------------------------------
+@DAILY_LIFE_133
+PRINTFORML 在房间里掏耳朵时，%CALLNAME:A%碰巧从旁经过
+PRINTFORM 看见%PLAYER_NAME()%后，\@ MALE(TARGET) ? 他 # 她 \@
+IF TALENT:A:无动于衷 || TALENT:A:缺乏感情 || CFLAG:A:600 == 3 || CFLAG:A:600 == 5 || CFLAG:A:600 == 6 || CFLAG:A:600 == 8
+	PRINT 一下子
+ELSE
+	PRINT 微笑着
+ENDIF
+PRINT 凑近过来，
+SIF TALENT:A:老实
+	PRINT 有些腼腆地
+PRINTFORMW 询问%PLAYER_NAME()%是否需要\@ MALE(TARGET) ? 他 # 她 \@的帮忙
+PRINTFORMW 机会难得，于是坦率地把掏耳勺递给了\@ MALE(TARGET) ? 他 # 她 \@
+PRINTFORMW ……好厉害
+PRINTFORMW 单凭自己的话，是挖不到那么深的地方的
+IF TALENT:A:自我奉献 && TALENT:A:学得快
+	PRINTFORMW %CALLNAME:A%技巧娴熟，细心地清理了%PLAYER_NAME()%的耳垢
+ELSEIF TALENT:A:自我奉献
+	PRINTFORMW %CALLNAME:A%小心仔细地清理了%PLAYER_NAME()%的耳垢
+ELSEIF TALENT:A:学得快
+	PRINTFORMW %CALLNAME:A%把%PLAYER_NAME()%的耳垢清理得干干净净
+ELSEIF TALENT:A:学得慢 || TALENT:A:冒冒失失
+	PRINTFORML %CALLNAME:A%很积极地在%PLAYER_NAME()%的耳道挖来掏去，虽然感激这份心，但真的有点痛…
+	PRINTFORMW 毕竟这家伙一向笨拙，这种时候只能忍忍了…
+ELSE
+	PRINTFORMW %CALLNAME:A%积极地为%PLAYER_NAME()%清理了耳垢
+ENDIF
+LOCAL = 0
+;0:难以越过的底线
+IF TALENT:A:难以越过的底线
+	SETBIT LOCAL, 0
+;1:性压抑
+ELSEIF TALENT:A:性压抑 || GETBIT(CFLAG:A:25, 1)
+	SETBIT LOCAL, 1
+ENDIF
+;2:抵抗
+IF TALENT:A:抵抗 || GETBIT(CFLAG:A:25, 0)
+	SETBIT LOCAL, 2
+;6:反抗
+ELSEIF TALENT:A:反抗
+	SETBIT LOCAL, 6
+ENDIF
+;3:厌恶身体接触
+SIF TALENT:A:厌恶身体接触 || GETBIT(CFLAG:A:25, 3)
+	SETBIT LOCAL, 3
+;4:无动于衷
+IF TALENT:A:无动于衷
+	SETBIT LOCAL, 4
+;5:讨厌女人
+ELSEIF TALENT:A:讨厌女人 && !MALE(MASTER)
+	SETBIT LOCAL, 5
+;5:讨厌男人
+ELSEIF TALENT:A:讨厌男人 && MALE(MASTER)
+	SETBIT LOCAL, 6
+;7:自大
+ELSEIF TALENT:A:自大
+	SETBIT LOCAL, 7
+ENDIF
+IF LOCAL
+	PRINTFORMW 不过话说回来…
+	SIF LOCAL
+		PRINT 刚开始的时候
+	SIF GETBIT(LOCAL, 1)
+		PRINTFORM 还心房紧闭，对贞操严防死守，
+	SIF GETBIT(LOCAL, 0)
+		PRINTFORM 总是给人疏离又遥远的感觉，
+	SIF GETBIT(LOCAL, 2)
+		PRINTFORM 还很激烈地抵抗，
+	SIF GETBIT(LOCAL, 6)
+		PRINTFORM 还很抗拒，
+	SIF GETBIT(LOCAL, 3)
+		PRINTFORM 不论被做什么都很厌恶的样子，
+	SIF GETBIT(LOCAL, 4)
+		PRINTFORM 一直是一副无欲无求，无动于衷的模样，
+	SIF GETBIT(LOCAL, 5)
+		PRINTFORM 还总嚷嚷着讨厌女人，
+	SIF GETBIT(LOCAL, 6)
+		PRINTFORM 还总嚷嚷着讨厌男人，
+	SIF GETBIT(LOCAL, 7)
+		PRINTFORM 还傲慢得不可一世，
+	SIF LOCAL
+		PRINT 现在
+	PRINTFORML 竟然会主动提出为%CALLNAME:A%掏耳朵
+	IF TALENT:A:恋慕 || TALENT:A:淫乱 || TALENT:A:服从
+		PRINTFORMW 这都得益于调教的成果…
+	ELSE
+		PRINTFORMW 实在让人感慨万千…
+	ENDIF
+ENDIF
+EXP:A:爱情经验 += 5
+PRINTFORMW %CALLNAME:A%的爱情经验 ＋５
+
+;-------------------------------------------------
+;嫁との一時/お浴室
+;-------------------------------------------------
+@DAILY_LIFE_134
+PRINTFORML 去浴场洗澡的时候碰到了%CALLNAME:A%，和\@ MALE(TARGET) ? 他 # 她 \@寒暄了一会儿就打算直接进去
+PRINTFORMW %CALLNAME:A%突然说想帮忙擦洗后背，%PLAYER_NAME()%没怎么犹豫直接同意了
+PRINTFORM 之后%CALLNAME:A%
+IF TALENT:A:害羞
+	PRINT 红着脸
+ELSEIF !DOUSEI(A, MASTER)
+	PRINT 紧张而
+ENDIF
+PRINTFORMW 努力地为%PLAYER_NAME()%清洗了身体，连最私密的部分都尽职尽责地照顾到了
+PRINTFORML 忽然间，%CALLNAME:A%的手停了下来
+PRINTFORMW 转头问\@ MALE(TARGET) ? 他 # 她 \@怎么了，\@ MALE(TARGET) ? 他 # 她 \@没有答话，只是静静地把头靠在%PLAYER_NAME()%的肩上
+PRINTFORMW 过了一会儿，%CALLNAME:A%倾诉起对%PLAYER_NAME()%的恋慕之情
+PRINTFORML 说完后\@ MALE(TARGET) ? 他 # 她 \@没有再开口，也没有挪开头
+PRINTFORMW %PLAYER_NAME()%伸手揽住了%CALLNAME:A%的身躯，两个人沉默地享受着这一刻的温存
+EXP:A:爱情经验 += 5
+PRINTFORMW %CALLNAME:A%的爱情经验 ＋５
+
+;-------------------------------------------------
+;嫁との一時/晩酌
+;-------------------------------------------------
+@DAILY_LIFE_135
+PRINTFORMW 今晚的月色很美，%PLAYER_NAME()%心血来潮对月而酌，%CALLNAME:A%在一旁为%PLAYER_NAME()%斟酒
+IF ABL:A:料理技能 >= 3
+	PRINTFORM 下酒菜是%CALLNAME:A%亲手所做，
+ELSE
+	PRINTFORM 下酒菜是%CALLNAME:A%帮忙准备的，
+ENDIF
+PRINTFORMW 托\@ MALE(A) ? 他 # 她 \@的福，心情前所未有的舒畅
+IF TALENT:A:相亲相爱
+	IF TALENT:A:美人
+		PRINTFORML %CALLNAME:A%身披月光静静站在那里的样子比平时更为清丽
+		IF MALE(A)
+			PRINT 明明是男人，却散发出一股雌雄莫辩，虚幻不可侵犯的美，
+		ELSE
+		    PRINT 周身散发着一股缥缈若仙，虚幻不可侵犯的美，
+		ENDIF
+		PRINTFORMW 恍如月下盛开的一朵缀满夜露的睡莲
+	ENDIF
+	PRINTFORML 不经意间，注意到%CALLNAME:A%的脸染上了薄红，视线牢牢地锁定住%PLAYER_NAME()%手中的清酒
+	PRINTFORML 既然那么想尝一口的话……%PLAYER_NAME()%含着酒吻上了%CALLNAME:A%的唇
+	PRINTFORMW 两唇相接，彼此都缠绵着不愿分开
+	PRINTFORML 以这样的方式品尝到清酒的滋味，%CALLNAME:A%似乎很快就将醉欲醉
+	PRINTFORM 询问\@ MALE(A) ? 他 # 她 \@味道如何，%CALLNAME:A%
+	IF TALENT:A:老实 || TALENT:A:胆怯 || TALENT:A:悲观 || TALENT:A:害羞
+		PRINTW 羞涩地低头不语
+	ELSE
+	    PRINTFORMW 没有回答，只是用手环住了%PLAYER_NAME()%的脖子
+	ENDIF
+	PRINTFORMW 啊，答案已不重要了
+	PRINTFORMW 这一定是此生以来喝过的最好的月见酒
+ELSE
+	PRINTFORMW 一边喝着酒，一边赏着月，还有%CALLNAME:A%的陪伴，这一定是此生以来度过的最美好的一晚
+ENDIF
+EXP:A:爱情经验 += 5
+PRINTFORMW %CALLNAME:A%的爱情经验 ＋５
+
+;-------------------------------------------------
+;嫁との一時/料理
+;-------------------------------------------------
+@DAILY_LIFE_136
+LOCALS = %LUNCH_NAME_SP(A)%
+PRINTFORM 在厨房里看到了
+SIF CFLAG:A:7022
+PRINTFORM 全身赤裸只穿一条围裙的
+PRINTFORMW %CALLNAME:A%，似乎正在做饭的样子
+;ヘタ
+IF TALENT:A:不擅料理 || (!ABL:A:料理技能 && !TALENT:A:擅长料理)
+	PRINTFORML %CALLNAME:A%的料理天赋实在是有些难以启齿…
+	PRINTFORMW 不过即便如此，\@ MALE(A) ? 他 # 她 \@还是相当努力
+	PRINTFORMW 看\@ MALE(A) ? 他 # 她 \@身侧摊开的那几本料理书，恐怕现在也是在做着料理特训
+;上手
+ELSEIF TALENT:A:擅长料理 || (ABL:A:料理技能 >= 4 && !TALENT:A:不擅料理)
+	PRINTFORMW 站在料理台前的%CALLNAME:A%如鱼得水，一举一动挥洒自如，手法也很娴熟
+	PRINTFORMW %PLAYER_NAME()%不由得期待起等会儿的成品了
+;そこそこ
+ELSE
+	PRINTFORML %CALLNAME:A%并不擅长料理，但相当踏实努力
+	PRINTFORMW 看\@ MALE(A) ? 他 # 她 \@身侧摊开的那几本料理书，恐怕现在也是在做着料理特训
+ENDIF
+PRINTFORML 既然这么专注，打扰到\@ MALE(A) ? 他 # 她 \@就不好了
+PRINTFORMW %PLAYER_NAME()%小心地不发出声音，悄悄离开了
+PRINTFORMW ………
+PRINTFORMW 在自己的房间里看了会儿书，门外响起%CALLNAME:A%呼唤%PLAYER_NAME()%的声音
+PRINTFORML %PLAYER_NAME()%立即起身开门
+PRINTFORMW %CALLNAME:A%端着装有%LOCALS%的盘子走了进来，说是希望%PLAYER_NAME()%能帮忙尝尝味道
+;ヘタ
+IF TALENT:A:不擅料理 || (!ABL:A:料理技能 && !TALENT:A:擅长料理)
+	PRINTFORMW %CALLNAME:A%的%LOCALS%卖相不太好，%PLAYER_NAME()%犹豫着不知道该不该下口
+	PRINTFORML 不经意间，注意到%CALLNAME:A%偷偷打量%PLAYER_NAME()%的视线
+	PRINTFORMW 拒绝的话好像很可怜，还是鼓起勇气尝一口吧
+	PRINTFORMW ……………
+	IF !RAND:3
+		PRINTFORML %CALLNAME:A%所做的%LOCALS%就只是普通的味道，说不上好也说不上不好
+		PRINTFORMW 但这个水平对于%CALLNAME:A%来说已经算很大的进步，好歹算能入口了
+		PRINTFORMW 或许是看懂了%PLAYER_NAME()%的反应，%CALLNAME:A%流露出几分惆怅
+		PRINTFORMW %PLAYER_NAME()%安抚性地拍拍\@ MALE(A) ? 他 # 她 \@的肩，把真实感想告诉了\@ MALE(A) ? 他 # 她 \@
+		PRINTFORMW %CALLNAME:A%重拾信心，坚定地点了点头，发誓下次一定会呈上更美味的料理
+	ELSE
+		PRINTFORML 和预想一样，%CALLNAME:A%做的%LOCALS%有着不可思议的味道…
+		PRINTFORMW 准确的说，不像是人类能吃的食物
+		PRINTFORMW %PLAYER_NAME()%感到一阵眩晕，额头冒出了冷汗
+		PRINTFORMW 这副样子让%CALLNAME:A%意识到料理失败了，\@ MALE(A) ? 他 # 她 \@急忙道歉谢罪…
+		PRINTFORML 安抚过%CALLNAME:A%后，%PLAYER_NAME()%回到房间倒向床铺
+		PRINTFORMW 剩下的时间都用来休息了……
+	ENDIF
+;上手
+ELSEIF TALENT:A:擅长料理 || (ABL:A:料理技能 >= 4 && !TALENT:A:不擅料理)
+	PRINTFORML 不愧是擅长料理的%CALLNAME:A%
+	PRINTFORMW 托盘里的%LOCALS%色香味俱全，极大地勾起了%PLAYER_NAME()%的食欲
+	PRINTFORMW 面对这么珍贵的心意，%PLAYER_NAME()%也想要好好回应%CALLNAME:A%一番
+	PRINTFORMW ……………
+	IF TALENT:A:相亲相爱
+		PRINTFORMW 对%CALLNAME:A%说一个人吃实在是太浪费了，不如两个人一起
+		PRINTFORML %CALLNAME:A%微笑着欣然答应，坐到%PLAYER_NAME()%的身旁
+		PRINTFORMW 随即盛了一小份送到%PLAYER_NAME()%嘴边…
+		PRINTFORMW 两人一边愉快地闲聊，一边其乐融融地吃完了料理，饭后还交换了一个深情的吻
+		PRINTFORMW 那之后%PLAYER_NAME()%表达了还想再品尝一次的愿望，%CALLNAME:A%爽快地同意了
+	ELSE
+		PRINTFORMW 对%CALLNAME:A%说一个人吃实在是太浪费了，不如两个人一起
+		PRINTFORMW %CALLNAME:A%有些惊讶，但还是点头答应了
+		PRINTFORMW 两人一边闲聊着，一边尽情品尝了美味的料理
+	ENDIF
+;そこそこ
+ELSE
+	PRINTFORML %CALLNAME:A%所做的%LOCALS%虽然看起来很朴素，但飘散着一股很香的味道
+	PRINTFORMW 被那股香味勾起了食欲，%PLAYER_NAME()%心怀感激地道谢，不客气地开动了
+	PRINTFORMW ……………
+	IF TALENT:A:相亲相爱 || !RAND:2
+		PRINTFORML 或许是因为倾注了爱情的关系，比预想的还要好吃
+		PRINTFORMW %PLAYER_NAME()%一边思索着…一边不由自主地狼吞虎咽
+		PRINTFORMW 亲手做出的东西能得到%PLAYER_NAME()%的青睐，%CALLNAME:A%也十分高兴
+		PRINTFORMW \@ MALE(A) ? 他 # 她 \@勾起唇角，绽放出发自内心的笑容……
+	ELSE
+		PRINTFORML %CALLNAME:A%做的%LOCALS%有着不错的卖相，但味道上总觉得差了点什么
+		PRINTFORMW 不过像今天这样一直努力下去的话，相信很快就会有进步了
+		PRINTFORML %PLAYER_NAME()%的反应似乎令%CALLNAME:A%有些不安
+		PRINTFORMW \@ MALE(A) ? 他 # 她 \@眉头微蹙，询问%PLAYER_NAME()%是否不合口味
+		PRINTFORML %PLAYER_NAME()%拍着\@ MALE(A) ? 他 # 她 \@的肩说出了心声
+		PRINTFORMW 这次%CALLNAME:A%坚定地点了点头，发誓一定要让%PLAYER_NAME()%吃到足以称得上美味的料理
+	ENDIF
+ENDIF
+EXP:A:家务经验 += 3
+PRINTFORML %CALLNAME:A%的家务经验 ＋３
+EXP:A:爱情经验 += 5
+PRINTFORMW %CALLNAME:A%的爱情经验 ＋５
+
+;-------------------------------------------------
+;嫁との一時/约会
+;-------------------------------------------------
+@DAILY_LIFE_137
+PRINTFORML 忽然想起了以前和%CALLNAME:A%一起到街上购物的事
+PRINTFORMW 当时玩得真的很开心，一整天都非常充实…
+PRINTFORML 难得今天休息，没什么事做
+PRINTFORMW 现在立刻马上就想拉上%CALLNAME:A%飞往屋外尽情翱翔
+PRINTFORMW 思及此，%PLAYER_NAME()%当即起身朝%CALLNAME:A%的房间奔去
+IF !RAND:3
+	PRINTFORMW 途中，正巧和%CALLNAME:A%迎面撞上了
+	IF !RAND:3 && (TALENT:A:老实 || TALENT:A:胆怯) && CFLAG:A:600 != 3 && CFLAG:A:600 != 4 && CFLAG:A:600 != 6 && CFLAG:A:600 != 8
+		PRINTFORML %PLAYER_NAME()%询问%CALLNAME:A%今天是否有其他的预定
+		PRINTFORMW %CALLNAME:A%摇摇头，表示想和%PLAYER_NAME()%一起度过
+		PRINTFORMW 顺其自然的，%PLAYER_NAME()%向%CALLNAME:A%发出了一同出门的邀请
+		PRINTFORMW %CALLNAME:A%在些许震惊后腼腆地笑了笑
+		PRINTFORMW 「这算是…约会的邀请吗……？」
+		PRINTFORMW \@ MALE(TARGET) ? 他 # 她 \@红着脸吞吞吐吐地小声说着
+	ELSEIF !RAND:2
+		PRINTFORML %PLAYER_NAME()%询问%CALLNAME:A%今天是否有其他的预定
+		PRINTFORMW %CALLNAME:A%坦陈说稍微有一点安排
+		PRINTFORMW 尽管感觉时机不太好，还是抱着试一试的心态直言想约%CALLNAME:A%出门
+		PRINTFORMW %CALLNAME:A%在一瞬的惊讶后笑着答应了
+		PRINTFORML %PLAYER_NAME()%有些担心那些预定好的事要怎么办，谁知%CALLNAME:A%直接摇头说没有关系
+		PRINTFORMW 说是那些事并不是非得在今天内做完，相比之下难得受到邀请，更想要享受约会的乐趣
+	ELSE
+		PRINTFORML %PLAYER_NAME()%询问%CALLNAME:A%今天是否有其他的预定
+		PRINTFORMW %CALLNAME:A%坦陈说稍微有一点安排
+		PRINTFORMW 可能是失望的情绪表现得太明显，%CALLNAME:A%关心地问是不是有要紧事
+		PRINTFORMW %PLAYER_NAME()%回答说没有要紧事，只是想约\@ MALE(TARGET) ? 他 # 她 \@一起出去玩
+		PRINTFORMW %CALLNAME:A%顿时呆住了，随即慌慌张张地往一个方向跑去，嘴里不停说着“稍等一会儿”
+		PRINTFORMW %PLAYER_NAME()%看着%CALLNAME:A%的背影不禁哑然，但很快就安下心来等待了
+		PRINTFORMW 数分钟后%CALLNAME:A%气喘吁吁地回来了，说已经把事情全部办完，两人立刻就能出发
+		PRINTFORMW 看起来，\@ MALE(TARGET) ? 他 # 她 \@也一样期待着暌违的约会…
+	ENDIF
+ELSE
+	IF !RAND:2 || TALENT:A:喜欢读书
+		PRINTFORM 进入房间的时候，
+		SIF CFLAG:A:7021
+		PRINTFORM 一丝不挂的
+		PRINTFORML %CALLNAME:A%正在看书
+	ELSE
+		PRINTFORM 进入房间的时候，
+		SIF CFLAG:A:7021
+		PRINTFORM 一丝不挂的
+		PRINTFORML %CALLNAME:A%正躺在床上休息
+	ENDIF
+		PRINTFORMW %PLAYER_NAME()%询问%CALLNAME:A%今天是否有其他的预定，%CALLNAME:A%摇摇头表示今天很闲
+	PRINTFORMW 于是%PLAYER_NAME()%直言想要邀请\@ MALE(TARGET) ? 他 # 她 \@一块儿到街上去
+	PRINTFORMW %CALLNAME:A%听罢双颊微红，有些害羞地答应了
+ENDIF
+PRINTFORM 一起来到街上后，
+IF CFLAG:A:600 == 3 || CFLAG:A:600 == 4 || CFLAG:A:600 == 6 || CFLAG:A:600 == 8 ||CFLAG:A:600 == 9 
+	PRINTFORMW %CALLNAME:A%勾着%PLAYER_NAME()%的肩，两个人慢悠悠散着步
+ELSE
+	PRINTFORMW %CALLNAME:A%抱着%PLAYER_NAME()%的手臂，两个人慢悠悠散着步
+ENDIF
+IF !TALENT:A:性保守 && !TALENT:A:缺乏感情 && !TALENT:A:自制力 && !TALENT:A:胆怯 && CFLAG:A:600 != 3
+	PRINTFORML %CALLNAME:A%比往常还爱撒娇，时不时偷吻一下%PLAYER_NAME()%，旁若无人地打情骂俏
+	PRINTFORML %PLAYER_NAME()%切实地感受到了街上行人嫉妒的目光
+	PRINTFORMW 不过比起现在的快乐，其他人的感受根本无关紧要
+ENDIF
+PRINTFORMW 两人走遍了所有想去的地方，彻底玩了个尽兴
+PRINTFORMW 踏上归途的时候，自然而然地提出了下一次约会的邀请
+PRINTFORMW %CALLNAME:A%露出极为灿烂的笑容，毫不犹豫地答应了
+EXP:A:爱情经验 += 5
+PRINTFORMW %CALLNAME:A%的爱情经验 ＋５
+
+;-------------------------------------------------
+;嫁との一時/花嫁修業
+;-------------------------------------------------
+@DAILY_LIFE_138
+VARSET LOCAL
+;共犯者か、陷落済みの奴隶で主人からの调教经验１０００以上のキャラを検索
+FOR LOCAL, 0, CHARANUM
+	;主人は除く
+	SIF LOCAL == MASTER
+		CONTINUE
+	;日常イベントに登場不可
+	SIF !DAILYLIFE_CHARA(LOCAL)
+		CONTINUE
+	;既に登場しているキャラと被っていたら不可
+	SIF LOCAL == A
+		CONTINUE
+	;未陷落奴隶か[失意]、主人からの调教经验１０００未満なら不可
+	SIF !KANRAKU(LOCAL) || TALENT:LOCAL:失意 || CFLAG:LOCAL:(1199 + NO:MASTER) < 1000
+		CONTINUE
+	LOCAL:(10 + LOCAL:1) = LOCAL
+	LOCAL:1++
+NEXT
+IF LOCAL:1
+	LOCAL:2 = RAND:(LOCAL:1)
+	B = LOCAL:(10 + LOCAL:2)
+ENDIF
+LOCAL = RAND:2
+;アドバイスを受る
+IF B > 0 && ((!LOCAL && !GETBIT(CFLAG:A:142, 0)) || (LOCAL && !GETBIT(CFLAG:A:142, 1)))
+	PRINTFORML 穿过走廊时听到%CALLNAME:B%的房间里传来说话声
+	PRINTFORMW 因为好奇凑过去看了看，除了%CALLNAME:B%外%CALLNAME:A%也在里面
+	PRINTFORMW %CALLNAME:A%好像正从%CALLNAME:B%那里打听%PLAYER_NAME()%的喜好和习惯
+	IF TALENT:A:男性 || TALENT:A:双性
+    	PRINT 他
+    ELSE
+    	PRINT 她
+    ENDIF
+	PRINTFORMW 听得十分认真，连%CALLNAME:B%的一些建议都细心地摘抄了下来
+	IF TALENT:B:自我奉献
+		PRINTFORML 看起来%CALLNAME:B%虽然不太明白%CALLNAME:A%为什么要问这些事情
+		PRINTFORM 但一向乐于帮助他人的
+		IF TALENT:B:男性 || TALENT:B:双性
+        	PRINT 他
+        ELSE
+        	PRINT 她
+        ENDIF
+        PRINTFORMW 还是非常诚恳地给出了自己能给的所有建议
+	ELSEIF TALENT:B:无动于衷
+		PRINTFORML 即使是平常对一切都漠不关心，少言寡语的%CALLNAME:B%
+		PRINTFORMW 在%CALLNAME:A%热情又执着的请教下，还是耐下心来一一回答了问题
+	ELSEIF TALENT:B:缺乏感情
+		PRINTFORMW %CALLNAME:B%一向木讷寡言，但这次却意外地提出了很多中肯的建议
+	ELSEIF TALENT:B:反抗 || TALENT:B:自大
+		PRINTFORML %CALLNAME:B%虽然并非那种单纯直率的性格
+		PRINTFORMW 但在%CALLNAME:A%热情又执着的请教下，还是耐下心来一一回答了问题
+	ELSEIF TALENT:B:直率 || TALENT:B:乐观 || TALENT:B:性好奇
+		PRINTFORML %CALLNAME:B%对答如流地迅速回答了%CALLNAME:A%所有的问题
+		IF TALENT:B:男性 || TALENT:B:双性
+        	PRINT 他
+        ELSE
+        	PRINT 她
+        ENDIF
+		PRINTFORMW 的建议出乎意料地准确，实在是让人佩服
+	ELSE
+		PRINTFORMW %CALLNAME:B%在%CALLNAME:A%热情的攻势下，不得不把自己知道的所有东西倒豆子一样倒出来
+	ENDIF
+	PRINTFORMW 打扰到他们的话也不太好，%PLAYER_NAME()%转身离开了
+	PRINTFORMW ………过了一会儿，%CALLNAME:A%突然主动来了%PLAYER_NAME()%的房间
+	IF !LOCAL
+		PRINTFORML %PLAYER_NAME()%疑惑地问%CALLNAME:A%有什么事
+		PRINTFORMW %CALLNAME:A%声称自己是来给%PLAYER_NAME()%按摩的
+		PRINTFORML 事出突然，%PLAYER_NAME()%吓了一跳
+		PRINTFORMW 不过%CALLNAME:A%的按摩手法的确高明，完美地照顾了%PLAYER_NAME()%所有会觉得舒服的地方
+		PRINTFORMW …%CALLNAME:A%之前是在向%CALLNAME:B%请教这种事吗？
+		PRINTFORMW 感动地对%CALLNAME:A%说了谢谢，%CALLNAME:A%微笑着离开了房间
+		SETBIT CFLAG:A:142, 0
+	ELSE
+		PRINTFORML %PLAYER_NAME()%疑惑地问%CALLNAME:A%有什么事
+		PRINTFORMW %CALLNAME:A%回答说准备了特制的饮料
+		PRINTFORML 事出突然，%PLAYER_NAME()%吓了一跳
+		PRINTFORMW 不过正好也口渴了，就欣然受用了
+		PRINTFORMW %CALLNAME:A%调配的饮料非常可口，正好合%PLAYER_NAME()%的口味
+		PRINTFORMW …%CALLNAME:A%之前是在向%CALLNAME:B%请教这种事吗？
+		PRINTFORMW 感动地对%CALLNAME:A%说了谢谢，%CALLNAME:A%微笑着离开了房间
+		SETBIT CFLAG:A:142, 1
+	ENDIF
+ELSE
+	IF !LOCAL
+		PRINTFORMW 在房间里休息时，%CALLNAME:A%突然造访
+		PRINTFORML %PLAYER_NAME()%疑惑地问%CALLNAME:A%有什么事
+		PRINTFORMW %CALLNAME:A%声称自己是来给%PLAYER_NAME()%按摩的
+		PRINTFORMW 事出突然，%PLAYER_NAME()%吓了一跳，不过机会难得，还是点头同意了
+		PRINTFORM …%CALLNAME:A%的按摩
+		IF GETBIT(CFLAG:A:142, 0)
+			PRINTFORML 非常舒服…
+			PRINTFORMW 感动地对%CALLNAME:A%说了谢谢，%CALLNAME:A%微笑着离开了房间
+		ELSE
+			PRINTFORML 有些用力过猛，%PLAYER_NAME()%不禁叫苦不迭
+			PRINTFORMW 半途中止按摩后，%CALLNAME:A%有些不好意思地逃出了房间
+		ENDIF
+	ELSE
+		IF GETBIT(CFLAG:A:142,1)
+            PRINTFORMW 在房间里休息时，%CALLNAME:A%突然造访
+            PRINTFORML %PLAYER_NAME()%疑惑地问%CALLNAME:A%有什么事
+            PRINTFORMW %CALLNAME:A%回答说准备了特制的饮料
+            PRINTFORML 事出突然，%PLAYER_NAME()%吓了一跳
+            PRINTFORMW 不过正好也口渴了，就欣然受用了
+		    PRINTFORMW %CALLNAME:A%调配的饮料非常可口，正好合%PLAYER_NAME()%的口味
+            PRINTFORMW 感动地对%CALLNAME:A%说了谢谢，%CALLNAME:A%微笑着离开了房间
+		ELSE
+			PRINTFORMW 去图书馆找书时，看到了正埋头于书本的%CALLNAME:A%
+			PRINTFORMW 那本书的标题是……『营养饮料的制作方法』……？
+		ENDIF
+	ENDIF
+ENDIF
+EXP:A:爱情经验 += 5
+PRINTFORMW %CALLNAME:A%的爱情经验 ＋５
+
+;-------------------------------------------------
+;听雨，怀念以前的日子
+;-------------------------------------------------
+@DAILY_LIFE_139
+PRINTFORML 外面突然下起雨来
+PRINTFORMW 于是打算将茶具搬到廊下，一边喝茶一边观赏庭院的雨景
+PRINTFORMW 来到缘侧，发现%CALLNAME:A%已经先一步到场
+SIF TALENT:A:吸血鬼
+    PRINTFORMW 因为是阴天，所以不用回避吗？
+PRINTFORMW 走过去坐在%CALLNAME:A%身边，问\@ MALE(TARGET) ? 他 # 她 \@是否也要喝一杯茶
+PRINTFORML %CALLNAME:A%没想到%PLAYER_NAME()%会来，稍微吓了一跳
+PRINTFORMW 不过很快就微笑着点了点头
+PRINTFORMW 想起\@ MALE(TARGET) ? 他 # 她 \@刚才看着雨幕发呆的样子，询问\@ MALE(TARGET) ? 他 # 她 \@是否有心事
+IF TALENT:A:恋慕 || TALENT:A:相亲相爱
+    PRINTFORMW %CALLNAME:A%迟疑了一会儿，坦白说是怀念起以前的日子了
+    PRINTFORMW 之后\@ MALE(TARGET) ? 他 # 她 \@怔愣了一瞬，眉间隐隐有几分彷徨和惆怅
+    PRINTFORMW %PLAYER_NAME()%叹了一口气，揽住%CALLNAME:A%的肩膀
+    PRINTFORMW 虽然想问%CALLNAME:A%是否想回去看看，但出于立场还是什么也没说
+    PRINTFORMW 毕竟造成\@ MALE(TARGET) ? 他 # 她 \@现在这个处境的正是自己
+    PRINTFORMW 最后反倒是%CALLNAME:A%先开口提醒说再不喝的话茶就凉了
+    ;因为很喜欢这个性格所以特殊对待了XD
+    IF CFLAG:A:600 == 8
+        PRINTFORML 看着%PLAYER_NAME()%急哈哈地捧起茶碗
+        PRINTFORMW %CALLNAME:A%像是做下了什么决定一般，凑过来在%PLAYER_NAME()%耳边轻声说道
+        PRINTFORMW 「会一直留下来的…」
+        PRINTFORMW 可能是怕%PLAYER_NAME()%没听懂，又重复了一次
+        PRINTFORMW 「已经不打算离开这里了，这里是…新的家」
+        PRINTFORMW 说完这句话，%CALLNAME:A%把头靠在了%PLAYER_NAME()%的肩上
+    ELSE
+        IF CFLAG:A:600 == 1
+            PRINTFORMW 「而且现在的话，只想陪在%MASTERNAME:A%的身边…」
+        ELSEIF CFLAG:A:600 == 2
+            PRINTFORMW 「相比之下，现在更想陪伴在%MASTERNAME:A%身边」
+        ELSEIF CFLAG:A:600 == 3
+            PRINTFORMW 「不用在意，留在这里…也是%CSTR:A:0%自己做的选择」
+        ELSEIF CFLAG:A:600 == 4
+            PRINTFORMW 「没关系啦，%CSTR:A:0%才没那么脆弱，而且这里也是%CSTR:A:0%的家」
+        ELSEIF CFLAG:A:600 == 5
+            PRINTFORMW 「只说一遍啊…是为了%MASTERNAME:A%留下来的，所以，不准…赶走%CSTR:A:0%」
+        ELSEIF CFLAG:A:600 == 6
+            PRINTFORMW 「%MASTERNAME:A%，偶尔也对自己的魅力更加自信如何？」
+            PRINTFORMW 「如果不是自愿，%CSTR:A:0%会这么安分地留下来吗？」
+        ELSEIF CFLAG:A:600 == 7
+            PRINTFORMW 「只要这里有%CSTR:A:2%在，%CSTR:A:0%就永远…永远不会走」
+        ELSEIF CFLAG:A:600 == 9
+            PRINTFORMW 「别摆出那副表情，%CSTR:A:0%不会凭空消失的」
+            PRINTFORMW 「而且已经决定要一直留下来了」
+        ELSEIF CFLAG:A:600 == 10
+            PRINTFORMW 「%CSTR:A:0%可是…为了%MASTERNAME:A%才留下来的哦」
+        ELSEIF CFLAG:A:600 == 11
+            PRINTFORMW 「有%MASTERNAME:A%的地方就是%CSTR:A:0%的家，%MASTERNAME:A%在哪里，%CSTR:A:0%就在哪里」
+        ELSEIF CFLAG:A:600 == 12
+            PRINTFORMW 「现在的生活也没什么不好，不用内疚哦」
+        ELSEIF CFLAG:A:600 == 13
+            PRINTFORMW 「能遇到%MASTERNAME:A%，是值得%CSTR:A:0%夸耀三天三夜的事哦」
+        ELSE
+            PRINTFORMW 「现在的话，更想要陪在%MASTERNAME:A%的身边」
+        ENDIF
+        PRINTFORMW 悄声在%PLAYER_NAME()%耳边说完这句话，%CALLNAME:A%把头靠在了%PLAYER_NAME()%的肩上
+    ENDIF
+    PRINTFORMW 两人并肩听着雨声，细密的雨点拍打在身上，却一点都不觉得冰凉
+    PRINTFORMW %PLAYER_NAME()%突然很希望时间能停驻在此刻
+    EXP:A:爱情经验 += 5
+    PRINTFORMW %CALLNAME:A%的爱情经验 ＋５
+ELSEIF TALENT:A:淫乱 || TALENT:A:娼妇
+    PRINTFORMW %CALLNAME:A%迟疑了一会儿，比了根手指在唇前
+    IF CFLAG:A:600 == 1
+        PRINTFORMW 「比起那种答案，%MASTERNAME:A%也对雨景更有兴趣吧？」
+    ELSEIF CFLAG:A:600 == 2
+        PRINTFORMW 「不觉得雨滴拍打瓦片的声音很美妙吗？」
+    ELSEIF CFLAG:A:600 == 3
+        PRINTFORMW 「暂且让%CSTR:A:0%保留一点自己的秘密吧」
+    ELSEIF CFLAG:A:600 == 4
+        PRINTFORMW 「有些问题还是不要深入的好，对%CSTR:A:2%对%CSTR:A:0%都是」
+    ELSEIF CFLAG:A:600 == 5
+        PRINTFORMW 「%CSTR:A:0%暂时不是很想回答这样的问题…」
+    ELSEIF CFLAG:A:600 == 6
+        PRINTFORMW 「可以安静一会儿吗，雨渐渐变大了」
+    ELSEIF CFLAG:A:600 == 7
+        PRINTFORMW 「抱歉，唯独这一刻，可以让%CSTR:A:0%一个人独处吗？」
+    ELSEIF CFLAG:A:600 == 8
+        PRINTFORMW 「不觉得今天的雨特别大吗？」
+    ELSEIF CFLAG:A:600 == 9
+        PRINTFORMW 「雨势变大了，所以…答案会被雨声盖过」
+    ELSEIF CFLAG:A:600 == 10
+        PRINTFORMW 「今天禁止问答游戏」
+    ELSEIF CFLAG:A:600 == 11
+        PRINTFORMW 「说话的话，就听不到鲤鱼吐泡泡的声音了」
+    ELSEIF CFLAG:A:600 == 12
+        PRINTFORMW 「一起静静地看一会儿雨吧」
+    ELSEIF CFLAG:A:600 == 13
+        PRINTFORMW 「问这种问题的话，就浪费这么美的风景了」
+    ELSE
+        PRINTFORMW 「煞风景的问题，就留到雨停之后吧」
+    ENDIF
+    PRINTFORMW 悄声说完这句话，%CALLNAME:A%把头别了过去，望向天空
+    PRINTFORMW 总觉得…\@ MALE(TARGET) ? 他 # 她 \@的背影十分寂寥……
+ELSEIF TALENT:A:服从 || TALENT:A:隶属
+    PRINTFORMW %CALLNAME:A%迟疑了一会儿，坦白说是想起了以前的事
+    PRINTFORMW 之后\@ MALE(TARGET) ? 他 # 她 \@怔愣了一瞬，眉间隐隐有几分惆怅
+    PRINTFORMW 虽然想问%CALLNAME:A%是否想回去看看，但出于立场还是什么也没说
+    PRINTFORMW 毕竟造成\@ MALE(TARGET) ? 他 # 她 \@现在这个处境的正是自己
+    PRINTFORMW 最后反倒是%CALLNAME:A%先开口提醒说再不喝的话茶就凉了
+    IF CFLAG:A:600 == 1
+        PRINTFORML 「不用介意哦，那些事都快忘得差不多了，所以没关系的」
+    ELSEIF CFLAG:A:600 == 2
+        PRINTFORML 「不用介意…%CSTR:A:0%已经是%CSTR:A:3%的东西了，已经不想回到从前了」
+    ELSEIF CFLAG:A:600 == 3
+        PRINTFORML 「别在意，都是过去的事了，沉浸在回忆里也没什么意义」
+    ELSEIF CFLAG:A:600 == 4
+        PRINTFORML 「不用内疚哦，现在%CSTR:A:0%想待的地方只有%CSTR:A:3%的身边」
+    ELSEIF CFLAG:A:600 == 5
+        PRINTFORML 「不管怎么说%CSTR:A:0%已经在这里了，跟%CSTR:A:2%半点关系也没有，是自愿留下来」
+    ELSEIF CFLAG:A:600 == 6
+        PRINTFORML 「而且早就不可能回去了…%CSTR:A:0%也没有回去的念头」
+    ELSEIF CFLAG:A:600 == 7
+        PRINTFORML 「不管怎么说，就算回去，%CSTR:A:0%也不是%CSTR:A:0%了哦？」
+    ELSEIF CFLAG:A:600 == 8
+        PRINTFORML 「反正那些事对%CSTR:A:0%而言已经遥远如天际的星星了」
+    ELSEIF CFLAG:A:600 == 9
+        PRINTFORML 「…这里是%CSTR:A:0%唯一的容身之所，现在是，未来也是」
+    ELSEIF CFLAG:A:600 == 10
+        PRINTFORML 「完全不用自责哦，想起以前只会难过和伤心，相比之下在这里只有快乐哦？」
+    ELSEIF CFLAG:A:600 == 11
+        PRINTFORML 「%CSTR:A:0%已经一点都不想回去了，真的哦」
+    ELSEIF CFLAG:A:600 == 12
+        PRINTFORML 「而且，%MASTERNAME:A%不想%CSTR:A:0%回去吧，那%CSTR:A:0%就不会回去」
+    ELSEIF CFLAG:A:600 == 13
+        PRINTFORML 「反正，%CSTR:A:0%已经一点都不想走了」
+    ELSE
+        PRINTFORML 「而且，这里已经是%CSTR:A:0%的家了」
+    ENDIF
+    PRINTFORMW 说完这句话，%CALLNAME:A%略微低下了头
+    PRINTFORMW 虽然这么宣称着，%PLAYER_NAME()%还是觉得%CALLNAME:A%的神情有些落寞
+    PRINTFORMW 两人并肩听着雨声，细密的雨点拍打在身上，时间静静流淌……
+    JUEL:A:恭顺 += 50
+    PRINTL
+    PRINTFORMW %CALLNAME:A%的恭顺之珠+50
+ENDIF
+
+;-------------------------------------------------
+;嫁との一時/妊婦を労わる
+;-------------------------------------------------
+@DAILY_LIFE_140
+IF ABL:A:歌唱技能 >= 3
+	PRINTFORMW 经过%CALLNAME:A%的房间时，听到了%CALLNAME:A%嗓音柔和的歌声
+ELSE
+	PRINTFORMW 经过%CALLNAME:A%的房间时，听到了%CALLNAME:A%用鼻音哼的欢快小调
+ENDIF
+PRINTFORML 悄悄地走过去偷看，%CALLNAME:A%正一边唱歌一边温柔地抚摸着肚子
+PRINTFORMW 仅仅只是在门口听着也能感受到一阵温馨的氛围
+IF !RAND:2
+	PRINTFORML 一曲终了，%PLAYER_NAME()%出声打了招呼
+	PRINTFORMW %CALLNAME:A%吓了一跳，红着脸小声抱怨了一句
+	PRINTFORMW 不过似乎只是因为唱歌的样子被看见，并不在意%PLAYER_NAME()%擅自进入房间的事
+	PRINTFORMW 赞美了几句后，%CALLNAME:A%的脸变得更红了
+ELSE
+	PRINTFORML 静静地听了一会儿，%CALLNAME:A%忽然抬起头来，发现了%PLAYER_NAME()%的存在
+	PRINTFORMW \@ MALE(A) ? 他 # 她 \@有些吃惊，但还是笑着请%PLAYER_NAME()%进去
+ENDIF
+PRINTFORML 走近%CALLNAME:A%身边，轻轻地摸了摸\@ MALE(A) ? 他 # 她 \@的肚子
+PRINTFORMW 两人围绕着肚子里的孩子闲聊起来，度过了一段幸福的时间
+IF !MALE(A)
+	PRINTFORML …话说回来，可能是因为怀孕的关系，%CALLNAME:A%的言行和性格都越来越女性化了
+	PRINTFORMW 或许什么时候会连心都完全变成女性吧
+ENDIF
+EXP:A:爱情经验 += 5
+PRINTFORMW %CALLNAME:A%的爱情经验 ＋５
+
+;-------------------------------------------------
+;嫁との一時/写真
+;-------------------------------------------------
+@DAILY_LIFE_141
+B = DAILYLIFE_GETCHARA(1)
+PRINTFORML 在房间里摆弄相机的时候，%CALLNAME:A%突然造访了
+PRINTFORMW 看起来好像是想和%PLAYER_NAME()%一起度过休息时间
+IF ITEM:胶卷 >= 2 && TALENT:A:相亲相爱
+	PRINTFORMW 看到%PLAYER_NAME()%拿着照相机，%CALLNAME:A%表示想要%PLAYER_NAME()%的照片
+	PRINTFORML %PLAYER_NAME()%也一样想要%CALLNAME:A%的照片
+	PRINTFORMW 调教时没怎么拍过%CALLNAME:A%真的很遗憾
+	PRINTFORMW 于是就这么开始为%CALLNAME:A%拍照，用相机记录下了%CALLNAME:A%的笑颜
+	PRINTFORMW 冲洗完毕后，%CALLNAME:A%迫不及待地拿起相机将%PLAYER_NAME()%收入胶卷
+	PRINTFORMW 高兴地凝视着洗好的两张相片，%CALLNAME:A%像是捧着珍宝一样跑回了房间
+	ITEM:胶卷 -= 2
+ELSE
+	PRINTFORML 突然想到%CALLNAME:A%平时基本不拍照，真是很可惜
+	PRINTFORMW 既然如此不如现在就拍一张
+	PRINTFORMW 最初%CALLNAME:A%以为是要拍那种很害羞的照片，不由感到困惑
+	PRINTFORM 在听到只是拍普通的相片后，%CALLNAME:A%
+	IF TALENT:A:无动于衷 || TALENT:A:缺乏感情
+		PRINTW 放下心来答应了拍摄请求
+		PRINTFORM 于是，%CALLNAME:A%和往常一样淡漠的表情
+	ELSEIF TALENT:A:反抗 || TALENT:A:高傲 || TALENT:A:傲娇
+		PRINTW 勉强地同意了拍摄请求
+		PRINTFORM 于是，%CALLNAME:A%稍微有些僵硬的表情
+	ELSEIF TALENT:A:直率 || TALENT:A:喜欢引人注目
+		PRINTW 很开心地接受了拍摄请求
+		PRINTFORM 于是，%CALLNAME:A%灿烂的笑容
+	ELSE
+		PRINTW 放下心来答应了拍摄请求
+		PRINTFORM 于是，%CALLNAME:A%害羞的表情
+	ENDIF
+	PRINTFORML 被记录在胶卷上了
+	ITEM:胶卷 -= 1
+ENDIF
+IF KANRAKU(A) == 1
+	EXP:A:爱情经验 += 5
+	PRINTFORMW %CALLNAME:A%的爱情经验 ＋５
+ENDIF
+;-------------------------------------------------
+;嫁との一時/差し入れ
+;-------------------------------------------------
+@DAILY_LIFE_142
+PRINTFORML 今天要处理堆积的杂务，所以特意从调教的日程里抽出了时间
+PRINTFORMW 正忙得团团转的时候，门外响起敲门声和%CALLNAME:A%的问候
+PRINTFORMW 允许其进屋后，%CALLNAME:A%端着盘子走了进来
+IF (ABL:A:料理技能 >= 4 || (TALENT:A:学得快 && ABL:A:料理技能 >= 3))
+	PRINTFORMW 好像是准备了茶水和手制茶包，想要犒劳%PLAYER_NAME()%一番
+	PRINTFORMW %PLAYER_NAME()%心怀感激地领受了
+	PRINTFORML …尝了一口，%CALLNAME:A%泡的茶非常好喝
+	IF TALENT:A:不擅料理
+		PRINTFORML 对于不擅长料理的%CALLNAME:A%来说一定是努力准备的吧……不由得心生感慨
+	ELSE
+		PRINTFORML 果然手工制茶才是绝品啊
+	ENDIF
+	PRINTFORMW 看来%CALLNAME:A%已经掌握了%PLAYER_NAME()%的喜好
+ELSE
+	PRINTFORML 好像是准备了茶水和茶叶，想要犒劳%PLAYER_NAME()%一番
+	PRINTFORMW %PLAYER_NAME()%心怀感激地领受了
+	PRINTFORMW 一盏茶水入喉，浸透了身心，将体内的疲劳一扫而空
+ENDIF
+;真面目or理屈タイプ､
+IF (CFLAG:A:600 == 3 || CFLAG:A:600 == 9) && !TALENT:A:冒冒失失 && !RAND:2
+	PRINTFORMW 喝过茶后，%CALLNAME:A%提议帮忙做点杂务
+	PRINTFORMW 难得%CALLNAME:A%主动提出要帮忙，自然没有拒绝的道理
+	PRINTFORMW ………不如说能得到\@ MALE(A) ? 他 # 她 \@的帮助真是让人受宠若惊
+	PRINTFORMW 平时就已经发现了，%CALLNAME:A%做事总是井井有条，干脆利落，效率很高
+	PRINTFORMW 而且还总是能注意到%PLAYER_NAME()%忽略掉的细节
+	PRINTFORMW 果然有了%CALLNAME:A%的助攻可谓如虎添翼，比预定的时间还要提早完成任务
+	IF TALENT:A:服从 || TALENT:A:隶属
+		PRINTFORML 向\@ MALE(A) ? 他 # 她 \@道谢的时候，\@ MALE(A) ? 他 # 她 \@说只要%PLAYER_NAME()%满意就好
+		PRINTFORMW 真是奴隶的典范啊…
+	ELSE
+		PRINTFORML 向\@ MALE(A) ? 他 # 她 \@道谢的时候，\@ MALE(A) ? 他 # 她 \@说作为交换想和%PLAYER_NAME()%一起度过剩下的时间
+		PRINTFORMW 很简单的愿望，所以毫不犹豫地满足\@ MALE(A) ? 他 # 她 \@了
+	ENDIF
+;真面目or理屈タイプ 观察眼
+ELSEIF  (CFLAG:A:600 == 3 || CFLAG:A:600 == 9) && TALENT:A:观察眼 && !TALENT:A:冒冒失失 && !RAND:3
+	PRINTFORMW 喝过茶后，%CALLNAME:A%提议帮忙做点杂务
+	PRINTFORML 如果是%CALLNAME:A%的话，想必能一针见血地指出各种各样的错误吧
+	PRINTFORMW 这么想着立刻点头同意了
+	PRINTFORMW ………果然，有了%CALLNAME:A%的帮助可谓是如虎添翼
+	PRINTFORML 仅凭一人就将%PLAYER_NAME()%所犯的错误一一罗列出来消灭掉
+	PRINTFORMW 这样的话，就避免日后重做了
+	PRINTFORML 托%CALLNAME:A%的福，一下子就把手头的事务处理完了
+	PRINTFORMW 作为答谢，剩下的时间就与%CALLNAME:A%一起和睦地度过了
+;理屈タイプ 观察眼
+ELSEIF CFLAG:A:600 == 9 && !TALENT:A:冒冒失失 && !RAND:2
+	PRINTFORMW 喝过茶后，%CALLNAME:A%提议帮忙做点杂务
+	PRINTFORML 能得到脑子灵活思维敏捷的%CALLNAME:A%的帮助，一定如虎添翼
+	PRINTFORMW %PLAYER_NAME()%想都没想就直接答应了
+	PRINTFORML ………果然，再一次地刷新了认知，%CALLNAME:A%的形象愈加高大起来
+	PRINTFORML %CALLNAME:A%处理事务的效率极高，是%PLAYER_NAME()%的两…不，三倍有余
+	PRINTFORMW 等注意到的时候…发现有六成以上都是%CALLNAME:A%一个人完成的
+	PRINTFORMW 总觉得，没有%PLAYER_NAME()%添乱的话还可以更快…
+	PRINTFORMW 作为答谢，剩下的时间就与%CALLNAME:A%一起和睦地度过了
+;自我奉献
+ELSEIF TALENT:A:自我奉献 && !RAND:2
+	PRINTFORMW 喝茶的时候，%CALLNAME:A%提议帮忙做点杂务
+	PRINTFORML 本身就是个很有奉献精神的人，可能没法放着堆积如山的杂务不管吧…
+	PRINTFORMW 说实话一个人做也的确很累，%PLAYER_NAME()%决定让%CALLNAME:A%来帮忙
+	PRINTFORML ……………
+	PRINTFORMW 两人一起处理了积累下来的杂务
+	PRINTFORMW 托%CALLNAME:A%的福，现在可以一边悠闲地喝茶一边干活儿
+	PRINTFORML 果然有\@ MALE(A) ? 他 # 她 \@在的话，精神上的疲劳感就大相径庭了
+	PRINTFORMW 多亏了%CALLNAME:A%，%PLAYER_NAME()%才能在预定时间前把事务全部处理完
+;性好奇
+ELSEIF TALENT:A:性好奇 && !RAND:2
+	PRINTFORMW 享用%CALLNAME:A%泡的茶的时候，\@ MALE(A) ? 他 # 她 \@一直在旁边兴致勃勃地窥视着什么
+	PRINTFORMW 接着，\@ MALE(A) ? 他 # 她 \@表示想要帮忙做%PLAYER_NAME()%手上的事
+	PRINTFORMW 既然主动这么说的话，也没有拒绝的理由就是了
+	PRINTW ……
+	PRINTW …………
+	PRINTW …………总、总算是处理完了
+	PRINTFORMW %CALLNAME:A%只帮忙完成了\@ MALE(A) ? 他 # 她 \@感兴趣的部分，不过还是相当感谢…
+ELSEIF (TALENT:A:自我奉献 || TALENT:A:学得快) && !RAND:3
+	PRINTFORML 喝茶的时候，%CALLNAME:A%提议帮忙做点杂务
+	PRINTFORMW 难得\@ MALE(A) ? 他 # 她 \@主动提出帮忙，当然没有拒绝的理由
+	PRINTFORML ……………
+	PRINTFORML …说实话，%CALLNAME:A%的确帮了个大忙
+	IF TALENT:A:学得快
+		PRINTFORMW 多亏了%CALLNAME:A%的高效率，在预定的时间前搞定了一切
+	ELSE
+		PRINTFORML 多亏%CALLNAME:A%接手了%PLAYER_NAME()%苦手的部分
+		PRINTFORMW 比预定的时间还要提早完成
+	ENDIF
+	PRINTFORMW 作为答谢，剩下的时间就与%CALLNAME:A%一起在谈笑间度过了
+ELSE
+	PRINTFORMW 喝完茶休息了一会儿，继续处理起剩下的食物
+	PRINTFORMW 从%CALLNAME:A%那里收获了元气的%PLAYER_NAME()%比预定的时间还早完成任务
+ENDIF
+
+;-------------------------------------------------
+;嫁との一時/点心作り
+;-------------------------------------------------
+@DAILY_LIFE_143
+;[恋慕][相亲相爱]持ちを検索
+B = DAILYLIFE_GETTALENT_1(3,6)
+;へたくそ　[不擅料理]を持っているか、[擅长料理]が無く料理技能０
+;擅长料理　[擅长料理]を持っているか、[不擅料理]が無く料理技能４以上
+;そこそこ　[不擅料理]も[擅长料理]もなく料理技能１～３
+
+;二人で点心作り　AとBが主人に对して恋慕陷落
+IF B > 0
+	;二人とも料理が上手な場合
+	IF (TALENT:A:擅长料理 || (ABL:A:料理技能 >= 4 && !TALENT:A:不擅料理)) && (TALENT:B:擅长料理 || (ABL:B:料理技能 >= 4 && !TALENT:B:不擅料理))
+		LOCAL:2 = 0
+	;二人とも料理がヘタな場合
+	ELSEIF (TALENT:A:不擅料理 || (!ABL:A:料理技能 && !TALENT:A:擅长料理)) && (TALENT:B:不擅料理 || (!ABL:B:料理技能 && !TALENT:A:擅长料理))
+		LOCAL:2 = 1
+	;ふたりともそこそこな場合
+	ELSEIF (!TALENT:A:不擅料理 && !TALENT:A:擅长料理 && ABL:A:料理技能 >= 1 && ABL:A:料理技能 <= 3) && (!TALENT:B:不擅料理 && !TALENT:B:擅长料理 && ABL:B:料理技能 >= 1 && ABL:B:料理技能 <= 3)
+		LOCAL:2 = 2
+	;片方が片方に教えながら
+	ELSE
+		;Aが上手＆Bがそこそこ
+		IF (TALENT:A:擅长料理 || (ABL:A:料理技能 >= 4 && !TALENT:A:不擅料理)) && (!TALENT:B:不擅料理 && !TALENT:B:擅长料理 && ABL:B:料理技能 >= 1 && ABL:B:料理技能 <= 3)
+			LOCAL = A
+			LOCAL:1 = B
+			LOCAL:2 = 3
+		;Aが上手＆Bがヘタ
+		ELSEIF (TALENT:A:擅长料理 || (ABL:A:料理技能 >= 4 && !TALENT:A:不擅料理)) && (TALENT:B:不擅料理 || (!ABL:B:料理技能 && !TALENT:A:擅长料理))
+			LOCAL = A
+			LOCAL:1 = B
+			LOCAL:2 = 4
+		;Aがそこそこ＆Bが上手
+		ELSEIF (!TALENT:A:不擅料理 && !TALENT:A:擅长料理 && ABL:A:料理技能 >= 1 && ABL:A:料理技能 <= 3) && (TALENT:B:擅长料理 || (ABL:B:料理技能 >= 4 && !TALENT:B:不擅料理))
+			LOCAL = B
+			LOCAL:1 = A
+			LOCAL:2 = 3
+		;Aがそこそこ＆Bがヘタ
+		ELSEIF (!TALENT:A:不擅料理 && !TALENT:A:擅长料理 && ABL:A:料理技能 >= 1 && ABL:A:料理技能 <= 3) && (TALENT:B:不擅料理 || (!ABL:B:料理技能 && !TALENT:A:擅长料理))
+			LOCAL = A
+			LOCAL = B
+			LOCAL:2 = 5
+		;Aがヘタ＆Bが上手
+		ELSEIF (TALENT:A:不擅料理 || (!ABL:A:料理技能 && !TALENT:A:擅长料理)) && (TALENT:B:擅长料理 || (ABL:B:料理技能 >= 4 && !TALENT:B:不擅料理))
+			LOCAL = B
+			LOCAL:1 = A
+			LOCAL:2 = 4
+		;Aがヘタ＆Bがそこそこ
+		ELSE
+			LOCAL = B
+			LOCAL:1 = A
+			LOCAL:2 = 5
+		ENDIF
+	ENDIF
+	;パターン０　両方上手
+	IF !LOCAL:2
+		PRINTFORMW 经过厨房时闻到了一股香味，不由停下了脚步
+		PRINTFORMW 偷偷往里面打量，%CALLNAME:A%和%CALLNAME:B%好像正在做点心
+		PRINTFORML 擅长料理的两个人正交流着各自拿手的点心做法
+		PRINTFORMW 看来是想进一步磨练技术
+		PRINTFORMW 正看得出神的时候，点心已经做好了，两人端出盘子招呼门边的%PLAYER_NAME()%来品尝
+		PRINTFORMW ………
+		PRINTFORMW ……
+		PRINTFORMW …
+		PRINTFORMW 真好吃…
+		PRINTFORM 这么说着的%CALLNAME:A%
+		IF TALENT:A:无动于衷 || TALENT:A:缺乏感情
+			PRINTL 在一如既往的平淡表情下隐藏有淡淡的喜悦
+		ELSEIF TALENT:A:反抗 || TALENT:A:高傲 || TALENT:A:自大
+			PRINTL 得意洋洋地笑着
+		ELSE
+			PRINTL 因愉悦的心情而双颊泛红
+		ENDIF
+		PRINTFORM %CALLNAME:B%
+		IF TALENT:B:无动于衷 || TALENT:B:缺乏感情
+			PRINTW 也少见地笑逐颜开
+		ELSEIF TALENT:B:直率 || TALENT:B:幼稚 || TALENT:B:幼儿／幼儿退行
+			PRINTFORMW 欢呼着抱紧了%PLAYER_NAME()%
+		ELSE
+			PRINTW 兴高采烈地推荐起剩下的点心
+		ENDIF
+		PRINTFORMW 三个人愉快地谈笑着，吃完了剩下的点心…
+	;パターン１　両方ヘタ
+	ELSEIF LOCAL:2 == 1
+		PRINTFORMW 经过厨房时闻到了一股奇怪的味道，不由停下了脚步
+		PRINTFORMW 偷偷往里面打量，%CALLNAME:A%和%CALLNAME:B%好像在做着什么料理
+		PRINTFORML 不过…这两人都不是会做饭的类型……
+		PRINTFORMW 老实说，当这两个人同时出现在厨房，就会给人一种极不好的预感…
+		IF !RAND:2
+			PRINTFORMW 接近这个地方还是太危险了，%PLAYER_NAME()%悄悄地离开了
+			PRINTFORMW ……几小时后，%CALLNAME:A%和%CALLNAME:B%造访了%PLAYER_NAME()%的房间
+		ELSE
+			PRINTFORMW 就这么放着不管也不太好…
+			PRINTFORML 下定决心后朝两人打了招呼，%CALLNAME:A%和%CALLNAME:B%惊讶地转过头来
+			PRINTFORMW 看见是%PLAYER_NAME()%后不约而同露出了笑容
+		ENDIF
+		PRINTFORM 所以，这就是所谓的成品吗？这盘
+		IF !RAND:3
+			PRINTW 烤得焦黑的疙瘩…
+		ELSEIF !RAND:2
+			PRINTW 散发着腐鱼腥臭的半固体…
+		ELSE
+			PRINTW 散发着砂糖味道的彩虹色固体…
+		ENDIF
+		IF !RAND:3
+			PRINTW 黏糊糊软绵绵的绿色块状物…
+		ELSEIF !RAND:2
+			PRINTW 混杂着生菜和其他浑浊物的玩意儿…
+		ELSE
+			PRINTW 蓝色粉色相间的块状物…
+		ENDIF
+		PRINTFORMW ………看着递过来的餐具，一边承受那两人凝视下的无言压力，一边豁出去般把“料理”放进嘴里
+		PRINTFORMW ………
+		PRINTFORMW ……
+		PRINTFORMW …
+		PRINTFORMW ………………………………。
+	;パターン２　両方そこそこ
+	ELSEIF LOCAL:2 == 2
+		PRINTFORMW 经过厨房时看到了%CALLNAME:A%
+		PRINTFORML 进去一看，原来%CALLNAME:B%也在
+		PRINTFORMW 这两人似乎为了研制新的点心而反复试验着
+		PRINTFORML 出声朝%CALLNAME:A%和%CALLNAME:B%打了招呼，两人吃惊地转过头来
+		PRINTFORM 看见是%PLAYER_NAME()%，
+		IF !TALENT:A:男性 && !TALENT:A:双性 && !TALENT:B:男性 && !TALENT:B:双性
+                PRINT 她们
+            ELSE
+                PRINT 他们
+            ENDIF
+        PRINTFORML 不约而同露出笑容
+		PRINTFORMW 并且推荐%PLAYER_NAME()%来试吃各自制作的点心
+		PRINTFORML %CALLNAME:A%的点心有着漂亮的外表
+		PRINTFORMW %CALLNAME:B%的点心卖相不太好，但甜度倒是正%PLAYER_NAME()%的合口味
+		PRINTFORMW 将真实想法告知二人后，%CALLNAME:A%和%CALLNAME:B%为了改进味道，继续干劲十足地忙活起来…
+	;パターン３　片方上手で片方そこそこ
+	ELSEIF LOCAL:2 == 3
+		PRINTFORML 经过厨房时闻到了一股香味，不由停下了脚步
+		PRINTFORMW 偷偷往里面打量，%CALLNAME:LOCAL%好像在教%CALLNAME:(LOCAL:1)%做各种各样的点心
+		PRINTFORML %CALLNAME:(LOCAL:1)%的料理水平并不差，可能是想吸收新的技巧吧
+		PRINTFORMW 为了制作出更加优秀的作品，%CALLNAME:(LOCAL:1)%认真地倾听着%CALLNAME:LOCAL%的建议
+		PRINTFORML 出声朝%CALLNAME:LOCAL%和%CALLNAME:(LOCAL:1)%打了招呼，两人吃惊地转过头来
+		PRINTFORMW 看见是%PLAYER_NAME()%，这才不约而同地微笑着，开始向%PLAYER_NAME()%推荐各自做好的点心
+		PRINTFORMW %PLAYER_NAME()%心怀感激地接受了
+		PRINTFORMW ………
+		PRINTFORMW ……
+		PRINTFORMW …
+		PRINTFORMW 真好吃…
+		PRINTFORM 这么说着的%CALLNAME:(LOCAL:1)%
+		IF TALENT:B:无动于衷 || TALENT:B:缺乏感情
+			PRINTL 罕见地勾起了嘴角
+		ELSEIF TALENT:B:直率 || TALENT:B:幼稚 || TALENT:B:幼儿／幼儿退行
+			PRINTFORML 欢呼着抱紧了%PLAYER_NAME()%
+		ELSE
+			PRINTL 展现出最灿烂的笑容
+		ENDIF
+		PRINTFORM 而%CALLNAME:LOCAL%也
+		IF TALENT:A:无动于衷 || TALENT:A:缺乏感情
+			PRINTW 在一如既往的平淡表情下隐藏有淡淡的喜悦
+		ELSEIF TALENT:A:反抗 || TALENT:A:高傲 || TALENT:A:自大
+			PRINTW 得意洋洋地笑着
+		ELSE
+			PRINTFORMW 高兴地和%CALLNAME:(LOCAL:1)%共同分享喜悦
+		ENDIF
+		PRINTFORMW 之后%CALLNAME:(LOCAL:1)%在%CALLNAME:LOCAL%的引导下开始研制其他种类的点心
+		PRINTFORMW %PLAYER_NAME()%在一旁期待地等待%CALLNAME:(LOCAL:1)%和%CALLNAME:LOCAL%做完剩下的点心
+		PRINTFORMW 等全部完成后，三个人一边谈笑着一边把点心吃完了
+	;パターン４　片方上手で片方ヘタ
+	ELSEIF LOCAL:2 == 4
+		PRINTFORMW 经过厨房时闻到了一股香味，不由停下了脚步
+		PRINTFORMW 偷偷往里面打量，%CALLNAME:LOCAL%好像在教%CALLNAME:(LOCAL:1)%做各式各样的点心
+		PRINTFORMW 不太擅长料理的%CALLNAME:(LOCAL:1)%正认真聆听%CALLNAME:LOCAL%的教导，积极地实践着
+		PRINTFORML 出声朝%CALLNAME:LOCAL%和%CALLNAME:(LOCAL:1)%打了招呼，两人吃惊地转过头来
+		PRINTFORMW 看见是%PLAYER_NAME()%，这才不约而同地笑了
+		PRINTFORMW %CALLNAME:LOCAL%率先向%PLAYER_NAME()%推荐自己做好的点心
+		PRINTFORML ……%CALLNAME:LOCAL%做的点心非常好吃
+		PRINTFORMW 这么传达后，%CALLNAME:LOCAL%高兴而腼腆地红了脸
+		PRINTFORMW 看%CALLNAME:(LOCAL:1)%一脸羡慕的样子，%CALLNAME:LOCAL%拜托%PLAYER_NAME()%也尝尝%CALLNAME:(LOCAL:1)%做的
+		PRINTFORMW %CALLNAME:(LOCAL:1)%似乎也因此下定了决心，端出了外形稍微有点走样的作品
+		PRINTFORMW 被两人这样拜托，实在无法推辞，于是观察起面前这盘点心
+		PRINTFORMW 不能光看外表就下结论…
+		PRINTFORMW 可是……真的没问题吗…
+		PRINTFORMW 被两人期待的视线刺痛了肌肤，最终闭上眼睛心一横吃了一口
+		PRINTFORMW ………
+		PRINTFORMW ……
+		PRINTFORMW …
+		PRINTFORMW 真好吃…
+		PRINTFORMW 情不自禁地说出了真实感想，%CALLNAME:(LOCAL:1)%立刻绽放出灿烂的笑容
+		PRINTFORML 或许是因受到%PLAYER_NAME()%的褒奖而产生了斗志
+		PRINTFORMW %CALLNAME:(LOCAL:1)%兴致勃勃地研究起新种类的点心了
+		PRINTFORMW %PLAYER_NAME()%在一旁期待地等待%CALLNAME:(LOCAL:1)%和%CALLNAME:LOCAL%做完剩下的点心
+		PRINTFORMW 等全部完成后，三个人一边谈笑着一边把点心吃完了
+	;パターン５　片方そこそこで片方ヘタ
+	ELSE
+		PRINTFORML 经过厨房时看到了%CALLNAME:LOCAL%和%CALLNAME:(LOCAL:1)%的身影
+		PRINTFORMW 偷偷往里面打量，两个人好像在做点心
+		PRINTFORML %CALLNAME:LOCAL%并不是很擅长料理
+		PRINTFORMW 但与之相比更具有毁灭级破坏力的%CALLNAME:(LOCAL:1)%似乎想寻求正常人的建议以图一点进步
+		PRINTFORML 出声朝%CALLNAME:LOCAL%和%CALLNAME:(LOCAL:1)%打了招呼，两人吃惊地转过头来
+		PRINTFORMW 看见是%PLAYER_NAME()%，这才不约而同地笑了，%CALLNAME:LOCAL%率先推荐起已经做好的点心
+		PRINTFORML ……味道还不错
+		PRINTFORMW 这么说了后，%CALLNAME:LOCAL%表示下次一定要做出大家都认同的点心，就这么燃起了斗志
+		PRINTFORML 然后，%CALLNAME:(LOCAL:1)%也有些紧张地恳请%PLAYER_NAME()%试吃自己做的那份
+		PRINTFORMW %CALLNAME:(LOCAL:1)%的点心…说实话有些不安，但被拜托了的话也不好无视
+		PRINTFORMW 不能光看外表就下结论…
+		PRINTFORMW 可是……真的没问题吗…
+		PRINTFORMW 被两人期待的视线刺痛了肌肤，最终鼓起勇气尝了一口面前形状崩坏的点心
+		PRINTFORMW ………
+		PRINTFORMW ……
+		PRINTFORMW …
+		PRINTFORMW 没有预想的那样糟糕…
+		PRINTFORMW 情不自禁地说出心声，%CALLNAME:(LOCAL:1)%腼腆地笑了
+		PRINTFORML 虽然并不是赞扬，但好像也因此满足了…
+		PRINTFORMW 随后%CALLNAME:(LOCAL:1)%继续拜托%CALLNAME:LOCAL%指导自己，一起研制起其他种类的点心
+		PRINTFORMW 对两人说了声加油，%PLAYER_NAME()%离开了厨房
+	ENDIF
+	EXP:A:爱情经验 += 5
+	EXP:B:爱情经验 += 5
+	PRINTFORML %CALLNAME:B%和%CALLNAME:A%的爱情经验 ＋５
+	EXP:A:家务经验 += 5
+	EXP:B:家务经验 += 5
+	PRINTFORMW %CALLNAME:B%和%CALLNAME:A%的家务经验 ＋５
+;１人で点心作り
+ELSE
+	;擅长料理
+	IF TALENT:A:擅长料理 || (ABL:A:料理技能 >= 4 && !TALENT:A:不擅料理)
+		PRINTFORMW 经过厨房时闻到了一股香味，不由停下了脚步
+		PRINTFORML 偷偷往里面打量，%CALLNAME:A%好像正在做点心
+		PRINTFORMW 那股香味的正体就是这个吗？
+		PRINTFORMW 注意到%PLAYER_NAME()%的%CALLNAME:A%有些害羞地邀请%PLAYER_NAME()%试吃
+		PRINTFORML ……%CALLNAME:A%做的点心非常美味
+		PRINTFORMW 由衷说出心声后，%CALLNAME:A%满足地点点头，重新投身于“战场”
+	;ヘタ
+	ELSEIF TALENT:A:不擅料理 || (!ABL:A:料理技能 && !TALENT:A:擅长料理)
+		PRINTFORMW 经过厨房时看到了%CALLNAME:A%的身影
+		PRINTFORMW 走进去一看，%CALLNAME:A%正认真地准备着点心
+		PRINTFORMW 注意到%PLAYER_NAME()%在旁边，%CALLNAME:A%出言邀请%PLAYER_NAME()%试吃
+		PRINTFORML 因为对%CALLNAME:A%的料理水准心知肚明，%PLAYER_NAME()%稍微有些不安
+		PRINTFORMW 不过今天厨房没有爆炸，外形来看也很美味，而且还有很甜的香味…
+		PRINTFORMW 心一横，索性直接放进了嘴里
+		PRINTFORMW ……还不错
+		PRINTFORML 这么说了后，%CALLNAME:A%高兴得双颊泛红，握拳表示下次一定要做出大家都认同的点心
+		PRINTFORMW 就这么继续投身于“战场”了
+	;そこそこ
+	ELSE
+		PRINTFORMW 经过厨房时看到了%CALLNAME:A%的身影
+		PRINTFORMW 走进去一看，%CALLNAME:A%正认真地准备着点心
+		PRINTFORMW 注意到%PLAYER_NAME()%在旁边，%CALLNAME:A%害羞地笑了笑，询问是否可以帮忙试吃
+		PRINTFORMW 可能是由于外形有点崩坏的缘故，%CALLNAME:A%颇为局促不安
+		PRINTFORMW 做好了心理准备尝了一口
+		PRINTFORMW ……还算不错
+		PRINTFORML 这么说了后，%CALLNAME:A%松了口气，笑意更深了
+		PRINTFORMW \@ MALE(TARGET) ? 他 # 她 \@握着拳表示下次一定要做出大家都认同的点心，就这么继续投身于“战场”了
+	ENDIF
+	PRINTFORML 听说做完剩下的点心后会送到%PLAYER_NAME()%的房里来
+	PRINTFORMW 因此兴奋地回房间等待了
+	PRINTFORML 过了会儿，%CALLNAME:A%端着点心走进了房间
+	PRINTFORMW 两人品尝着点心，度过了一段愉快的时光…
+	EXP:A:爱情经验 += 5
+	PRINTFORML %PLAYER_NAME()%和%CALLNAME:A%的爱情经验 ＋５
+	EXP:A:家务经验 += 3
+	PRINTFORMW %CALLNAME:A%的家务经验 ＋３
+ENDIF
+
+;-------------------------------------------------
+;嫁との一時/仮眠
+;-------------------------------------------------
+@DAILY_LIFE_144
+PRINTFORML 今天并不打算调教，所以做好了小憩的准备
+PRINTFORMW 正在这时%CALLNAME:A%造访了房间
+PRINTFORMW 好像是想和%PLAYER_NAME()%一起度过这段时间…
+IF !RAND:2 && !MALE(A)
+	PRINTFORML 说着想要小睡一会儿
+	PRINTFORMW %CALLNAME:A%自荐说可以用\@ MALE(TARGET) ? 他 # 她 \@的膝枕
+	PRINTFORMW 难得%CALLNAME:A%主动提出，于是靠着\@ MALE(TARGET) ? 他 # 她 \@的膝盖闭上了双眼
+	PRINTFORML ………%CALLNAME:A%的膝枕比预想的要舒服得多
+	PRINTFORMW 自然而然的，内心平静了下来
+	PRINTFORMW 充当膝枕的%CALLNAME:A%也一脸恬淡安定的神情
+	IF ABL:A:歌唱技能 >= 3 && !RAND:2
+		PRINTFORML 也许是想给%PLAYER_NAME()%更好的体验
+		PRINTFORMW %CALLNAME:A%用柔和的嗓音轻轻吟唱起舒缓温柔的摇篮曲
+		PRINTFORMW 整个房间渐渐充满温馨的氛围，眼皮越来越重，最终完全落下了
+		PRINTFORMW ………数小时后，被%CALLNAME:A%温柔地叫醒了
+	ELSE
+		PRINTFORMW 因为实在是太舒服，迷迷糊糊的，不知什么时候就睡着了
+		PRINTFORML 数小时后睁开双眼，发现%CALLNAME:A%也睡了过去，身体微微起伏着
+		PRINTFORML 未免弄醒%CALLNAME:A%，%PLAYER_NAME()%苦笑着小心翼翼地把头从%CALLNAME:A%的膝盖上移开
+		PRINTFORMW 随后，温柔地把%CALLNAME:A%抱在了怀里
+	ENDIF
+ELSE
+	PRINTFORML 说着想要小睡一会儿
+	PRINTFORMW %CALLNAME:A%表示想要一起睡
+	PRINTFORML 没什么拒绝的必要所以同意了
+	PRINTFORMW %CALLNAME:A%听罢喊着“稍等一会儿”，就那么跑出去了
+	PRINTFORMW 几分钟后，准备完毕的%CALLNAME:A%抱着棉被过来，两人一起躺下了…
+	IF !RAND:2 && (CFLAG:A:600 == 10 || CFLAG:A:600 == 11)
+		PRINTFORML 身边多了个大活人，所以迟迟没有睡意，只能闭目养神
+		PRINTFORMW 不一会儿，身边早就熟睡的%CALLNAME:A%说起了梦话
+		PRINTFORML 用平时根本听不到的软糯语气呼唤着%PLAYER_NAME()%的名字
+		PRINTFORMW 连声喊着“喜欢…喜欢…”的%CALLNAME:A%实在是太可爱了，忍不住就扑过去抱紧了
+		PRINTFORML 看着因为被抱在怀里而神情舒缓的%CALLNAME:A%
+		PRINTFORMW %PLAYER_NAME()%也渐渐地沉入了黑甜的梦乡…
+	ELSE
+		PRINTFORMW %CALLNAME:A%的体温非常舒服
+		PRINTFORMW 感受着来自%CALLNAME:A%的温暖，突然就被睡得迷迷糊糊的\@ MALE(TARGET) ? 他 # 她 \@抱住了
+		PRINTFORMW 虽然因为被抱着而动弹不得，但并没有感到不快
+		PRINTFORMW 鼻间萦绕着%CALLNAME:A%独特的清爽的味道，眼皮开始打架
+		PRINTFORMW 心情渐渐平静下来，于是慢慢地闭上了双眼…
+	ENDIF
+ENDIF
+EXP:A:爱情经验 += 5
+PRINTFORMW %CALLNAME:A%的爱情经验 ＋５
+
+;-------------------------------------------------
+;嫁との一時/くつろぎ
+;-------------------------------------------------
+@DAILY_LIFE_145
+PRINTFORMW 在房间里放松的时候，%CALLNAME:A%突然进来了
+IF !RAND:3
+	PRINTFORML \@ MALE(A) ? 他 # 她 \@自然而然地坐在%PLAYER_NAME()%旁边
+	PRINTFORMW 抱住%PLAYER_NAME()%的手，头也靠过来，心情很好似的微眯起眼睛
+ELSEIF !RAND:2
+	IF CFLAG:605 || CFLAG:604
+		PRINTFORML 询问\@ MALE(A) ? 他 # 她 \@有什么事，%CALLNAME:A%吞吞吐吐地说什么也没有
+	ELSE
+		PRINTFORML 询问\@ MALE(A) ? 他 # 她 \@有什么事，%CALLNAME:A%言辞含糊地回答没什么特别的
+	ENDIF
+	PRINTFORMW 可能只是纯粹地想和%PLAYER_NAME()%待在一起
+	PRINTFORMW 反正都是放松，和%CALLNAME:A%一起也不错，于是伸手将\@ MALE(A) ? 他 # 她 \@拉进了怀里
+ELSE
+	PRINTFORML 说着想要一起待会儿，%CALLNAME:A%走过来靠上了%PLAYER_NAME()%的肩膀
+	PRINTFORMW \@ MALE(A) ? 他 # 她 \@的眼里闪烁着光辉，依恋地看向%PLAYER_NAME()%
+	PRINTFORMW 两人在沙发上紧紧相拥……
+
+ENDIF
+IF !TIME
+	PRINTFORMW 午饭前为止，就这样和%CALLNAME:A%谈笑着度过了
+ELSE
+	PRINTFORMW 晚饭前为止，就这样和%CALLNAME:A%闲聊着有的没的一起度过了
+ENDIF
+EXP:A:爱情经验 += 5
+PRINTFORMW %CALLNAME:A%的爱情经验 ＋５
+
+;-------------------------------------------------
+;奴隶同士、アプローチ
+;-------------------------------------------------
+@DAILY_LIFE_180
+;对象の思慕对象をBに入れる
+REPEAT CHARANUM
+	SIF CFLAG:A:(2000 + NO:COUNT) == 22
+		B = COUNT
+REND
+PRINTFORML 从%CALLNAME:B%的房间前经过时听到了%CALLNAME:A%的声音
+IF TALENT:B:3 || TALENT:B:6
+	PRINTFORMW 好像正为了让%CALLNAME:B%回心转意而拼命努力着
+ELSE
+	PRINTFORMW 好像正在努力地侍奉着%CALLNAME:B%
+ENDIF
+LOCAL = 1
+SIF TALENT:A:直率 || TALENT:A:小恶魔 || TALENT:A:喜欢身体接触
+	LOCAL += 1
+SIF TALENT:A:自我奉献 || TALENT:A:母性
+	LOCAL += 1
+SIF TALENT:A:高傲 || TALENT:A:傲娇 || TALENT:A:厌恶身体接触
+	LOCAL += 1
+SIF TALENT:A:擅长料理 || ABL:A:料理技能 >= 4
+	LOCAL += 1
+
+PRINTFORM 相比
+IF (TALENT:A:直率 || TALENT:A:小恶魔 || TALENT:A:喜欢身体接触) && LOCAL >= 2
+	IF RAND:LOCAL == 0
+		PRINT 积极的，
+		LOCAL = 0
+	ELSE
+		LOCAL -= 1
+	ENDIF
+ENDIF
+IF (TALENT:A:自我奉献 || TALENT:A:母性) && LOCAL >= 2
+	IF RAND:LOCAL == 0
+		PRINT 不辞辛劳的，
+		LOCAL = 0
+	ELSE
+		LOCAL -= 1
+	ENDIF
+ENDIF
+IF (TALENT:A:高傲 || TALENT:A:傲娇 || TALENT:A:厌恶身体接触) && LOCAL >= 2
+	IF RAND:LOCAL == 0
+		PRINT 比以往更加坦率的，
+		LOCAL = 0
+	ELSE
+		LOCAL -= 1
+	ENDIF
+ENDIF
+IF (TALENT:A:擅长料理 || ABL:A:料理技能 >= 4) && LOCAL >= 2
+	IF RAND:LOCAL == 0
+		PRINT 用自己引以为豪的厨艺来讨好，
+		LOCAL = 0
+	ELSE
+		LOCAL -= 1
+	ENDIF
+ENDIF
+SIF LOCAL == 1
+	PRINT 极为拼命，
+PRINTFORM 仿佛有着破釜沉舟之决心的
+PRINTFORMW %CALLNAME:A%，%CALLNAME:B%的反响却很是平淡…
+;-------------------------------------------------
+;奴隶同士、二人でいちゃいちゃ
+;-------------------------------------------------
+@DAILY_LIFE_181
+;对象の思慕对象をBに入れる
+REPEAT CHARANUM
+	SIF CFLAG:A:(2000 + NO:COUNT) == 29
+		B = COUNT
+REND
+IF RAND:6 == 0
+	PRINTFORML 经过%CALLNAME:A%的房间时
+	PRINTFORMW 看到了屋里正枕着%CALLNAME:A%的膝枕睡觉的%CALLNAME:B%……
+	PRINTFORML 可能是担心不小心弄醒%CALLNAME:B%
+	PRINTFORMW %CALLNAME:A%一动也不敢动，只是静静看着%CALLNAME:B%的睡颜
+	PRINTW 眼前所见的，是一副无法用语言描述的美好光景……
+ELSEIF RAND:5 == 0
+    PRINTFORMW 来到图书室的时候，里面已经有人在了
+	PRINTFORMW 不远处的窗下，%CALLNAME:A%和%CALLNAME:B%正依偎在一起读同一本书
+	PRINTFORMW 两人挤在一起应该不怎么舒服，阅读的速度也会变慢
+	PRINTFORM 但
+	IF !TALENT:A:男性 && !TALENT:A:双性 && !TALENT:B:男性 && !TALENT:B:双性
+            PRINT 她们
+        ELSE
+            PRINT 他们
+        ENDIF
+    PRINTFORMW 似乎完全不在意
+	PRINTFORMW 每次两人一起翻动书页，都能感受到一股暧昧的氛围……
+	PRINTFORMW 这种时候去打扰就太煞风景了，%PLAYER_NAME()%悄悄地离开了
+ELSEIF !RAND:4
+	PRINTFORMW 去浴室洗澡的时候，里面已经有人在了
+	PRINTFORMW 听声音应该是%CALLNAME:A%，嘴里还哼着极为欢快的曲调
+	PRINTFORML 本来想进去感谢\@ MALE(TARGET) ? 他 # 她 \@帮忙做家务的事
+	PRINTFORMW ……然而，%CALLNAME:A%一从浴场出来就跑去呼唤了%CALLNAME:B%的名字
+	PRINTFORMW 原来如此、是这样啊……
+	PRINTFORMW ……在浴室里说话，外面能听得一清二楚，这一点还是下次再告诉\@ MALE(TARGET) ? 他 # 她 \@吧……
+ELSEIF !RAND:3
+	PRINTFORMW 看向窗外时，发现%CALLNAME:A%和%CALLNAME:B%正在庭院里你侬我侬
+	PRINTFORMW 虽然听不到声音，但那副恩爱的样子着实有点晃眼
+	PRINTW 总之还是希望这两人能自重一点……
+ELSEIF !RAND:2
+	PRINTFORMW 远远看去，%CALLNAME:B%好像在教%CALLNAME:A%什么东西
+	PRINTFORMW 两人面对面牵着手，一边有节奏地踏着步
+	PRINTFORMW 是华尔兹的舞步，还是说，是探戈的呢…
+	PRINTFORMW 可是，为什么要练舞……？
+	PRINTW 不过看着挺乐在其中的，还是不要管了
+ELSE
+	PRINTFORMW %CALLNAME:A%和%CALLNAME:B%正要外出，似乎是要一起去散步的样子
+	PRINTW …………… 
+	PRINTFORMW %CALLNAME:A%和%CALLNAME:B%回来了
+	PRINTFORMW 只是逛了一个小时左右就满足了吗？
+	PRINTW 不过话说回来，从出门时就一直牵着的手打算什么时候才放开啊……
+ENDIF
+CALL RELATION_UP(A,B,(20))
+;LOCAL = RAND:3 + 3
+;EXP:A:爱情经验 += LOCAL
+;EXP:B:爱情经验 += LOCAL
+;PRINTL 
+;PRINTFORML %CALLNAME:A%的爱情经验＋{LOCAL}
+;PRINTFORMW %CALLNAME:B%的爱情经验＋{LOCAL}
+
+

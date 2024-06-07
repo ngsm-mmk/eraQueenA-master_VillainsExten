@@ -1,0 +1,234 @@
+﻿;男同成瘾の可否
+@ISABLUP21
+;恋慕、相亲相爱、淫乱、娼妇はMAXLV10
+IF ABL:21 >= 10
+	RETURN 0
+ELSEIF ABL:21 >= 5 && TALENT:3 == 0 && TALENT:6 == 0 && TALENT:4 == 0 && TALENT:7 == 0
+	RETURN 0
+ENDIF
+
+CALL DECIDE_ABLUP21
+
+IF Z == 0
+	RETURN 0
+ELSE
+	RETURN 1
+ENDIF
+
+;男同成瘾
+@ABLUP21
+DRAWLINE
+;恋慕、相亲相爱、淫乱、娼妇はMAXLV10
+IF ABL:21 >= 10
+	PRINTW 已达MAX
+	RETURN 0
+ELSEIF ABL:21 >= 5 && TALENT:3 == 0 && TALENT:6 == 0 && TALENT:4 == 0 && TALENT:7 == 0
+	PRINTW 已达MAX
+	RETURN 0
+ENDIF
+
+CALL DECIDE_ABLUP21
+
+;ＬＶ２から３に上げるときは异常经验必要（素質：[男女通吃][容易上瘾]なら無視できる）
+IF ABL:21 == 2 && TALENT:81 == 0 && TALENT:72 == 0
+	PRINTS EXPNAME:50
+	PRINTL 取得后才能继续升级
+;ＬＶ３から４に上げるときは异常经验2以上必要（素質：[男女通吃][容易上瘾]なら無視できる）
+ELSEIF ABL:21 == 3 && TALENT:81 == 0 && TALENT:72 == 0
+	PRINTS EXPNAME:50
+	PRINTL 2以上才能继续升级
+;ＬＶ４から５に上げるときは异常经验3以上必要（素質：[男女通吃][容易上瘾]なら無視できる）
+ELSEIF ABL:21 == 4 && TALENT:81 == 0 && TALENT:72 == 0
+	PRINTS EXPNAME:50
+	PRINTL 3以上才能继续升级
+;ＬＶ８から９に上げるときは异常经验7以上必要（素質：[男女通吃][容易上瘾]なら無視できる）
+ELSEIF ABL:21 == 8 && TALENT:81 == 0 && TALENT:72 == 0
+	PRINTS EXPNAME:50
+	PRINTL 7以上才能继续升级
+ENDIF
+
+IF ABL:21 < 5 || KANRAKU(TARGET) == 1
+	;侍奉精神が必要
+	PRINTS ABLNAME:7
+	PRINT LV
+	PRINTV ABL:21 + 1
+	PRINTL 以上才能继续升级
+ENDIF
+
+
+PRINT [0] - 
+PRINTS PALAMNAME:0
+PRINT 之珠×
+PRINTV B
+PRINT 、
+PRINTS PALAMNAME:6
+PRINT 之珠×
+PRINTV A
+PRINT 、
+PRINTS PALAMNAME:7
+PRINT 之珠×
+PRINTV A
+PRINT 、
+PRINTS EXPNAME:41
+PRINTV C
+PRINT 以上
+PRINT ……
+
+IF I == 0
+	PRINT ＯＫ
+ELSE
+	SIF I & 1
+		PRINT 珠子不足 
+	SIF I & 2
+		PRINT 经验不足 
+	SIF I & 4
+		PRINT 能力不足 
+ENDIF
+PRINTL 
+
+
+PRINTL [100] - 放弃
+
+
+INPUT
+IF (RESULT < 0 || RESULT > 0) && RESULT != 100
+	RESTART
+ELSEIF I != 0 && RESULT == 0
+	PRINTL 尚未满足条件
+	RESTART
+ELSEIF RESULT == 100
+	RETURN 0
+ENDIF
+
+ABL:21 += 1
+
+IF RESULT == 0
+	JUEL:0 -= B
+	JUEL:6 -= A
+	JUEL:7 -= A
+ENDIF
+
+PRINTS ABLNAME:21
+PRINT 的等级升到了
+PRINTV ABL:21
+PRINTW ！
+
+
+;男同成瘾LVUP判定
+@DECIDE_ABLUP21
+;条件別にＯＫかダメかを記録する
+I = 0
+;能力アップ可能なら1にする
+Z = 0
+
+IF ABL:21 == 0
+	A = 3000
+	B = 10000
+	C = 1000
+ELSEIF ABL:21 == 1
+	A = 8000
+	B = 25000
+	C = 1500
+ELSEIF ABL:21 == 2
+	A = 15000
+	B = 50000
+	C = 2000
+ELSEIF ABL:21 == 3
+	A = 30000
+	B = 100000
+	C = 4500
+ELSEIF ABL:21 == 4
+	A = 55000
+	B = 300000
+	C = 6000
+ELSEIF ABL:21 == 5
+	A = 60000
+	B = 350000
+	C = 6500
+ELSEIF ABL:21 == 6
+	A = 65000
+	B = 400000
+	C = 7000
+ELSEIF ABL:21 == 7
+	A = 70000
+	B = 450000
+	C = 7500
+ELSEIF ABL:21 == 8
+	A = 75000
+	B = 500000
+	C = 8000
+ELSEIF ABL:21 == 9
+	A = 80000
+	B = 550000
+	C = 9000
+ENDIF
+
+;难以越过的底线
+IF TALENT:27 && (TALENT:3 == 0 && TALENT:4 == 0 && TALENT:5 == 0 && TALENT:6 == 0 && TALENT:7 == 0 && TALENT:8 == 0)
+	TIMES A , 2.00
+	TIMES B , 2.00
+	TIMES C , 2.00
+ENDIF
+;容易上瘾
+IF TALENT:72
+	TIMES A , 0.50
+	TIMES B , 0.50
+	TIMES C , 0.50
+ENDIF
+
+;ＬＶ２から３に上げるときは异常经验必要（素質：[男女通吃][容易上瘾]なら無視できる）
+IF ABL:21 == 2 && TALENT:81 == 0 && TALENT:72 == 0
+	IF EXP:50 == 0
+		;异常经验が不足
+		I |= 2
+		J |= 2
+	ENDIF
+;ＬＶ３から４に上げるときは异常经验2以上必要（素質：[男女通吃][容易上瘾]なら無視できる）
+ELSEIF ABL:21 == 3 && TALENT:81 == 0 && TALENT:72 == 0
+	IF EXP:50 < 2
+		;异常经验が不足
+		I |= 2
+		J |= 2
+	ENDIF
+;ＬＶ４から５に上げるときは异常经验3以上必要（素質：[男女通吃][容易上瘾]なら無視できる）
+ELSEIF ABL:21 == 4 && TALENT:81 == 0 && TALENT:72 == 0
+	IF EXP:50 < 3
+		;异常经验が不足
+		I |= 2
+		J |= 2
+	ENDIF
+;ＬＶ８から９に上げるときは异常经验7以上必要（素質：[男女通吃][容易上瘾]なら無視できる）
+ELSEIF ABL:21 == 8 && TALENT:81 == 0 && TALENT:72 == 0
+	IF EXP:50 < 7
+		;异常经验が不足
+		I |= 2
+		J |= 2
+	ENDIF
+ENDIF
+
+IF ABL:21 < 5 || KANRAKU(TARGET) == 1
+	;侍奉精神が必要
+	IF ABL:7 < ABL:21 + 1
+		I |= 4
+		J |= 4
+	ENDIF
+ENDIF
+
+;快C之珠で上げる
+SIF JUEL:0 < B
+	I |= 1
+;情欲之珠で上げる
+SIF JUEL:6 < A
+	I |= 1
+;屈服之珠で上げる
+SIF JUEL:7 < A
+	I |= 1
+;蔷薇经验が必要
+SIF EXP:41 < C
+	I |= 2
+
+IF I == 0
+	Z = 1
+ENDIF
+
+

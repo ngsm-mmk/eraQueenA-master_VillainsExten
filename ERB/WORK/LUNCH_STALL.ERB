@@ -1,0 +1,1200 @@
+﻿;LUNCH_STALL.ERB　屋台で定食を売って回る労役指令
+;奴隶の料理の腕だけでなく、奴隶の能力が高いとフェロモンで売り上げが上がる
+;ただし、基本的には厳しい
+@LUNCH_STALL
+;使用する一時変数の初期化
+A = 0
+B = 0
+S = 0
+V = 0
+C = 0
+D = 0
+
+;屋台代が$100,000必要。ただし、借金が可能
+$INPUT_LOOP
+IF FLAG:23 == 0
+	PRINTL 配备售餐棚一共需要$100000
+	PRINTL 要为该项设备投资吗？
+	PRINTL [0] - 借钱进行设备投资
+	SIF MONEY >= 100000
+		PRINTL [1] - 一次性付清设备投资
+	PRINTL [100] - 放弃
+	INPUT
+	IF RESULT == 100
+		RETURN 0
+	ELSEIF RESULT == 0
+		FLAG:23 = 1
+	ELSEIF RESULT == 1 && MONEY >= 100000
+		FLAG:23 = -1
+		MONEY -= 100000
+	ELSE
+		GOTO INPUT_LOOP
+	ENDIF
+ENDIF
+
+;一緒に屋台に出る奴隶を選択
+PRINTL 请确定一起在售餐棚工作的奴隶人选
+REPEAT CHARANUM
+	SIF COUNT == MASTER
+		CONTINUE
+	SIF CFLAG:COUNT:1 < 2
+		CONTINUE
+	SIF CFLAG:COUNT:12 > 0
+		CONTINUE
+	C = COUNT
+	CALL CHECK_CHILD_CARE
+	SIF RESULT == 1
+		CONTINUE
+	SIF (TALENT:COUNT:3 || TALENT:COUNT:6) && BASE:COUNT:0 > 800
+		PRINTFORML [{COUNT}] - %CALLNAME:COUNT%
+REND
+PRINTL [100] - 返回
+$INPUT_LOOP_2
+INPUT
+IF RESULT == 100
+	RETURN 0
+ELSEIF RESULT < 0 || RESULT >= CHARANUM
+	GOTO INPUT_LOOP_2
+ELSEIF RESULT == MASTER
+	GOTO INPUT_LOOP_2
+ELSEIF CFLAG:RESULT:1 < 2
+	GOTO INPUT_LOOP_2
+ELSEIF CFLAG:RESULT:12 > 0
+	GOTO INPUT_LOOP_2
+ELSEIF (TALENT:RESULT:3 == 0 && TALENT:RESULT:6 == 0) || BASE:RESULT:0 <= 800
+	GOTO INPUT_LOOP_2
+ELSE
+	A = RESULT
+ENDIF
+
+;奴隶の料理技能と家务经验のレベルによって、料理の内容と値段の基礎値が上昇
+;ABL:料理技能をみる
+IF ABL:A:12 == 0
+	S += 0
+ELSEIF ABL:A:12 == 1
+	S += 600
+ELSEIF ABL:A:12 == 2
+	S += 1000
+ELSEIF ABL:A:12 == 3
+	S += 1500
+ELSEIF ABL:A:12 == 4
+	S += 2100
+ELSEIF ABL:A:12 == 5
+	S += 2800
+ELSEIF ABL:A:12 == 6
+	S += 3600
+ELSEIF ABL:A:12 == 7
+	S += 4500
+ELSEIF ABL:A:12 == 8
+	S += 5500
+ELSEIF ABL:A:12 == 9
+	S += 6600
+ELSE
+	S += 7800
+ENDIF
+SIF S
+	PRINTFORML %ABLNAME:12%LV{ABL:A:12} +{S}
+
+;家务经验による補正
+IF EXP:A:61 < EXPLV:1
+	D += 10
+ELSEIF EXP:A:61 < EXPLV:2
+	D += 200
+ELSEIF EXP:A:61 < EXPLV:3
+	D += 800
+ELSEIF EXP:A:61 < EXPLV:4
+	D += 1800
+ELSEIF EXP:A:61 < EXPLV:5
+	D += 3000
+ELSE
+	D += 5000
+ENDIF
+	PRINTFORML %EXPNAME:61%{EXP:A:61} +{D}
+S += D
+
+;奴隶の能力、素質による倍率計算（料理技能は前項で見ているので省略）
+V = 100
+;ABL:顺从をみる
+IF ABL:A:0 == 0
+	C = 0
+ELSEIF ABL:A:0 == 1
+	C = 10
+ELSEIF ABL:A:0 == 2
+	C = 20
+ELSEIF ABL:A:0 == 3
+	C = 30
+ELSEIF ABL:A:0 == 4
+	C = 40
+ELSEIF ABL:A:0 == 5
+	C = 50
+ELSEIF ABL:A:0 == 6
+	C = 60
+ELSEIF ABL:A:0 == 7
+	C = 70
+ELSEIF ABL:A:0 == 8
+	C = 80
+ELSEIF ABL:A:0 == 9
+	C = 90
+ELSE
+	C = 100
+ENDIF
+SIF C > 0
+	PRINTFORML %ABLNAME:0%LV{ABL:A:0} +{C}％
+V += C
+
+
+;ABL:欲望をみる
+IF ABL:A:1 == 0
+	C = 0
+ELSEIF ABL:A:1 == 1
+	C = 10
+ELSEIF ABL:A:1 == 2
+	C = 20
+ELSEIF ABL:A:1 == 3
+	C = 30
+ELSEIF ABL:A:1 == 4
+	C = 40
+ELSEIF ABL:A:1 == 5
+	C = 50
+ELSEIF ABL:A:1 == 6
+	C = 60
+ELSEIF ABL:A:1 == 7
+	C = 70
+ELSEIF ABL:A:1 == 8
+	C = 80
+ELSEIF ABL:A:1 == 9
+	C = 90
+ELSE
+	C = 100
+ENDIF
+SIF C > 0
+	PRINTFORML %ABLNAME:1%LV{ABL:A:1} +{C}％
+V += C
+
+
+;ABL:技巧をみる
+IF ABL:A:2 == 0
+	C = 0
+ELSEIF ABL:A:2 == 1
+	C = 5
+ELSEIF ABL:A:2 == 2
+	C = 10
+ELSEIF ABL:A:2 == 3
+	C = 15
+ELSEIF ABL:A:2 == 4
+	C = 20
+ELSEIF ABL:A:2 == 5
+	C = 25
+ELSEIF ABL:A:2 == 6
+	C = 30
+ELSEIF ABL:A:2 == 7
+	C = 35
+ELSEIF ABL:A:2 == 8
+	C = 40
+ELSEIF ABL:A:2 == 9
+	C = 45
+ELSE
+	C = 50
+ENDIF
+SIF C > 0
+	PRINTFORML %ABLNAME:2%LV{ABL:A:2} +{C}％
+V += C
+
+
+;ABL:Ｖ感觉をみる
+IF ABL:A:4 == 0
+	C = 0
+ELSEIF ABL:A:4 == 1
+	C = 5
+ELSEIF ABL:A:4 == 2
+	C = 10
+ELSEIF ABL:A:4 == 3
+	C = 15
+ELSEIF ABL:A:4 == 4
+	C = 20
+ELSEIF ABL:A:4 == 5
+	C = 25
+ELSEIF ABL:A:4 == 6
+	C = 30
+ELSEIF ABL:A:4 == 7
+	C = 35
+ELSEIF ABL:A:4 == 8
+	C = 40
+ELSEIF ABL:A:4 == 9
+	C = 45
+ELSE
+	C = 50
+ENDIF
+SIF C > 0
+	PRINTFORML %ABLNAME:4%LV{ABL:A:4} +{C}％
+V += C
+
+
+;ABL:侍奉精神をみる
+IF ABL:A:7 == 0
+	C = 0
+ELSEIF ABL:A:7 == 1
+	C = 5
+ELSEIF ABL:A:7 == 2
+	C = 10
+ELSEIF ABL:A:7 == 3
+	C = 15
+ELSEIF ABL:A:7 == 4
+	C = 20
+ELSEIF ABL:A:7 == 5
+	C = 25
+ELSEIF ABL:A:7 == 6
+	C = 30
+ELSEIF ABL:A:7 == 7
+	C = 35
+ELSEIF ABL:A:7 == 8
+	C = 40
+ELSEIF ABL:A:7 == 9
+	C = 45
+ELSE
+	C = 50
+ENDIF
+SIF C > 0
+	PRINTFORML %ABLNAME:7%LV{ABL:A:7} +{C}％
+V += C
+
+
+;ABL:露出癖をみる
+IF ABL:A:8 == 0
+	C = 0
+ELSEIF ABL:A:8 == 1
+	C = 5
+ELSEIF ABL:A:8 == 2
+	C = 10
+ELSEIF ABL:A:8 == 3
+	C = 15
+ELSEIF ABL:A:8 == 4
+	C = 20
+ELSEIF ABL:A:8 == 5
+	C = 25
+ELSEIF ABL:A:8 == 6
+	C = 30
+ELSEIF ABL:A:8 == 7
+	C = 35
+ELSEIF ABL:A:8 == 8
+	C = 40
+ELSEIF ABL:A:8 == 9
+	C = 45
+ELSE
+	C = 50
+ENDIF
+SIF C > 0
+	PRINTFORML %ABLNAME:8%LV{ABL:A:8} +{C}％
+V += C
+
+
+;ABL:受虐属性をみる
+IF ABL:A:9 == 0
+	C = 0
+ELSEIF ABL:A:9 == 1
+	C = 5
+ELSEIF ABL:A:9 == 2
+	C = 10
+ELSEIF ABL:A:9 == 3
+	C = 15
+ELSEIF ABL:A:9 == 4
+	C = 20
+ELSEIF ABL:A:9 == 5
+	C = 25
+ELSEIF ABL:A:9 == 6
+	C = 30
+ELSEIF ABL:A:9 == 7
+	C = 35
+ELSEIF ABL:A:9 == 8
+	C = 40
+ELSEIF ABL:A:9 == 9
+	C = 45
+ELSE
+	C = 50
+ENDIF
+SIF C > 0
+	PRINTFORML %ABLNAME:9%LV{ABL:A:9} +{C}％
+V += C
+
+
+;ABL:嗜虐属性をみる
+IF ABL:A:10 == 0
+	C = 0
+ELSEIF ABL:A:10 == 1
+	C = 5
+ELSEIF ABL:A:10 == 2
+	C = 10
+ELSEIF ABL:A:10 == 3
+	C = 15
+ELSEIF ABL:A:10 == 4
+	C = 20
+ELSEIF ABL:A:10 == 5
+	C = 25
+ELSEIF ABL:A:10 == 6
+	C = 30
+ELSEIF ABL:A:10 == 7
+	C = 35
+ELSEIF ABL:A:10 == 8
+	C = 40
+ELSEIF ABL:A:10 == 9
+	C = 45
+ELSE
+	C = 50
+ENDIF
+SIF C > 0
+	PRINTFORML %ABLNAME:10%LV{ABL:A:10} +{C}％
+V += C
+
+
+;ABL:歌唱技能をみる
+IF ABL:A:14 == 0
+	C = 0
+ELSEIF ABL:A:14 == 1
+	C = 5
+ELSEIF ABL:A:14 == 2
+	C = 10
+ELSEIF ABL:A:14 == 3
+	C = 15
+ELSEIF ABL:A:14 == 4
+	C = 20
+ELSEIF ABL:A:14 == 5
+	C = 25
+ELSEIF ABL:A:14 == 6
+	C = 30
+ELSEIF ABL:A:14 == 7
+	C = 35
+ELSEIF ABL:A:14 == 8
+	C = 40
+ELSEIF ABL:A:14 == 9
+	C = 45
+ELSE
+	C = 50
+ENDIF
+SIF C > 0
+	PRINTFORML %ABLNAME:14%LV{ABL:A:14} +{C}％
+V += C
+
+
+;ABL:性成瘾をみる
+IF ABL:A:18 == 0
+	C = 0
+ELSEIF ABL:A:18 == 1
+	C = 10
+ELSEIF ABL:A:18 == 2
+	C = 20
+ELSEIF ABL:A:18 == 3
+	C = 30
+ELSEIF ABL:A:18 == 4
+	C = 40
+ELSEIF ABL:A:18 == 5
+	C = 50
+ELSEIF ABL:A:18 == 6
+	C = 60
+ELSEIF ABL:A:18 == 7
+	C = 70
+ELSEIF ABL:A:18 == 8
+	C = 80
+ELSEIF ABL:A:18 == 9
+	C = 90
+ELSE
+	C = 100
+ENDIF
+SIF C > 0
+	PRINTFORML %ABLNAME:18%LV{ABL:A:18} +{C}％
+V += C
+
+
+;陷落素質
+;恋慕
+IF TALENT:A:3
+	C = 100
+	V += 100
+	PRINTFORML %TALENTNAME:3% ＋{C}％
+ENDIF
+;淫乱
+IF TALENT:A:4
+	C = 30
+	V -= 30
+	PRINTFORML %TALENTNAME:4% －{C}％
+ENDIF
+;服从
+IF TALENT:A:5
+	C = 50
+	V -= 50
+	PRINTFORML %TALENTNAME:5% ＋{C}％
+ENDIF
+;相亲相爱
+IF TALENT:A:6
+	C = 200
+	V += 200
+	PRINTFORML %TALENTNAME:6% ＋{C}％
+ENDIF
+;娼妇
+IF TALENT:A:7
+	C = 60
+	V -= 60
+	PRINTFORML %TALENTNAME:7% －{C}％
+ENDIF
+;隶属
+IF TALENT:A:8
+	C = 100
+	V -= 100
+	PRINTFORML %TALENTNAME:8% ＋{C}％
+ENDIF
+
+
+
+;其他素質
+;胆怯
+IF TALENT:A:10
+	C = 10
+	V += 10
+	PRINTFORML %TALENTNAME:10% ＋{C}％
+ENDIF
+;反抗
+IF TALENT:A:11
+	C = 10
+	V -= 10
+	PRINTFORML %TALENTNAME:11% －{C}％
+ENDIF
+;刚强
+IF TALENT:A:12
+	C = 20
+	V += 20
+	PRINTFORML %TALENTNAME:12% ＋{C}％
+ENDIF
+;直率
+IF TALENT:A:13
+	C = 10
+	V += 10
+	PRINTFORML %TALENTNAME:13% ＋{C}％
+ENDIF
+;老实
+IF TALENT:A:14
+	C = 10
+	V += 10
+	PRINTFORML %TALENTNAME:14% ＋{C}％
+ENDIF
+;高傲
+IF TALENT:A:15
+	C = 10
+	V -= 10
+	PRINTFORML %TALENTNAME:15% －{C}％
+ENDIF
+;自大
+IF TALENT:A:16
+	C = 10
+	V -= 10
+	PRINTFORML %TALENTNAME:16% －{C}％
+ENDIF
+;自卑
+IF TALENT:A:17
+	C = 10
+	V += 10
+	PRINTFORML %TALENTNAME:17% ＋{C}％
+ENDIF
+;傲娇
+IF TALENT:A:18
+	C = 20
+	V += 20
+	PRINTFORML %TALENTNAME:18% ＋{C}％
+ENDIF
+;自制力
+IF TALENT:A:20
+	C = 10
+	V += 10
+	PRINTFORML %TALENTNAME:20% ＋{C}％
+ENDIF
+;无动于衷
+IF TALENT:A:21
+	C = 10
+	V -= 10
+	PRINTFORML %TALENTNAME:21% －{C}％
+ENDIF
+;缺乏感情
+IF TALENT:A:22
+	C = 10
+	V -= 10
+	PRINTFORML %TALENTNAME:22% －{C}％
+ENDIF
+;难以越过的底线
+IF TALENT:A:27
+	C = 15
+	V += 15
+	PRINTFORML %TALENTNAME:27% ＋{C}％
+ENDIF
+;喜欢引人注目
+IF TALENT:A:28
+	C = 10
+	V += 10
+	PRINTFORML %TALENTNAME:28% ＋{C}％
+ENDIF
+;贞操重视
+IF TALENT:A:30
+	C = 10
+	V += 10
+	PRINTFORML %TALENTNAME:30% ＋{C}％
+ENDIF
+;贞操淡漠
+IF TALENT:A:31
+	C = 10
+	V -= 10
+	PRINTFORML %TALENTNAME:31% －{C}％
+ENDIF
+;メシマズ
+IF TALENT:A:44
+	C = 50
+	V -= 50
+	PRINTFORML %TALENTNAME:44% －{C}％
+ENDIF
+;学得快
+IF TALENT:A:50
+	C = 10
+	V += 10
+	PRINTFORML %TALENTNAME:50% ＋{C}％
+ENDIF
+;学得慢
+IF TALENT:A:51
+	C = 10
+	V -= 10
+	PRINTFORML %TALENTNAME:51% －{C}％
+ENDIF
+;擅长料理
+IF TALENT:A:59
+	C = 40
+	V += 40
+	PRINTFORML %TALENTNAME:59% ＋{C}％
+ENDIF
+;自我奉献
+IF TALENT:A:63
+	C = 15
+	V += 15
+	PRINTFORML %TALENTNAME:63% ＋{C}％
+ENDIF
+;讨厌男人
+IF TALENT:A:82
+	C = 20
+	V -= 20
+	PRINTFORML %TALENTNAME:82% －{C}％
+ENDIF
+;盲信
+IF TALENT:A:86
+	C = 15
+	V += 15
+	PRINTFORML %TALENTNAME:86% ＋{C}％
+ENDIF
+;小恶魔
+IF TALENT:A:87
+	C = 10
+	V += 10
+	PRINTFORML %TALENTNAME:87% ＋{C}％
+ENDIF
+;讨厌女人
+IF TALENT:A:88
+	C = 20
+	V -= 20
+	PRINTFORML %TALENTNAME:88% －{C}％
+ENDIF
+;妖狐
+IF TALENT:A:91
+	C = 10
+	V += 10
+	PRINTFORML %TALENTNAME:91% ＋{C}％
+ENDIF
+;魅力
+IF TALENT:A:92
+	C = 10
+	V += 10
+	PRINTFORML %TALENTNAME:92% ＋{C}％
+ENDIF
+;谜之魅力
+IF TALENT:A:94
+	C = 50
+	V += 50
+	PRINTFORML %TALENTNAME:94% ＋{C}％
+ENDIF
+;贫乳
+IF TALENT:A:109
+	C = 10
+	V -= 10
+	PRINTFORML %TALENTNAME:109% －{C}％
+ENDIF
+;绝壁
+IF TALENT:A:110
+	C = 20
+	V -= 20
+	PRINTFORML %TALENTNAME:110% －{C}％
+ENDIF
+;巨乳
+IF TALENT:A:111
+	C = 20
+	V += 20
+	PRINTFORML %TALENTNAME:111% ＋{C}％
+ENDIF
+;爆乳
+IF TALENT:A:112
+	C = 10
+	V += 10
+	PRINTFORML %TALENTNAME:112% ＋{C}％
+ENDIF
+;吸血鬼
+IF TALENT:A:132
+	C = 10
+	V -= 10
+	PRINTFORML %TALENTNAME:132% －{C}％
+ENDIF
+;兽耳
+IF TALENT:A:143
+	C = 10
+	V += 10
+	PRINTFORML %TALENTNAME:143% ＋{C}％
+ENDIF
+;人气
+IF TALENT:A:145
+	C = 25
+	V += 25
+	PRINTFORML %TALENTNAME:145% ＋{C}％
+ENDIF
+;人外
+IF TALENT:A:147
+	C = 70
+	V += 70
+	PRINTFORML %TALENTNAME:147% ＋{C}％
+ENDIF
+;天使
+IF TALENT:A:166
+	C = 50
+	V += 50
+	PRINTFORML %TALENTNAME:166% ＋{C}％
+ENDIF
+;堕天使
+IF TALENT:A:167
+	C = 50
+	V += 50
+	PRINTFORML %TALENTNAME:167% ＋{C}％
+ENDIF
+;恶魔
+IF TALENT:A:168
+	C = 50
+	V += 50
+	PRINTFORML %TALENTNAME:168% ＋{C}％
+ENDIF
+;幽灵
+IF TALENT:A:183
+	C = 30
+	V += 30
+	PRINTFORML %TALENTNAME:183% ＋{C}％
+ENDIF
+;可怕的种族会减价格，无形体也有debuff
+;无头
+IF TALENT:A:237
+	C = 30
+	V -= 30
+	PRINTFORML %TALENTNAME:237% －{C}％
+ENDIF
+;僵尸
+IF TALENT:A:181
+	C = 30
+	V -= 30
+	PRINTFORML %TALENTNAME:181% －{C}％
+ENDIF
+;无形体
+IF TALENT:A:177
+	C = 30
+	V -= 30
+	PRINTFORML %TALENTNAME:177% －{C}％
+ENDIF
+;异形
+IF TALENT:A:178
+	C = 30
+	V -= 30
+	PRINTFORML %TALENTNAME:178% －{C}％
+ENDIF
+
+;多尾
+IF TALENT:A:210
+	C = 30
+	V += 30
+	PRINTFORML %TALENTNAME:210% ＋{C}％
+ENDIF
+;巨大体型
+IF TALENT:A:224
+	C = 30
+	V -= 30
+	PRINTFORML %TALENTNAME:224% －{C}％
+ENDIF
+;怀孕
+IF TALENT:A:153
+	C = 30
+	V += 30
+	PRINTFORML %TALENTNAME:153% ＋{C}％
+ENDIF
+;母性
+IF TALENT:A:155
+	C = 60
+	V += 60
+	PRINTFORML %TALENTNAME:155% ＋{C}％
+ENDIF
+
+
+;補正値が0以下の場合は1にする
+SIF V < 0
+	V = 1
+
+PRINTFORML 最終倍率 {V}％
+
+;補正値の適用
+S *= V
+S /= 100
+
+;崩溃,疯癫は利潤をかなり低くする（顺从によって、80％まで回復）
+IF TALENT:A:9 || TALENT:A:141
+PRINTL 
+	IF TALENT:A:9
+		S *= ABL:A:0
+		TIMES S , 0.08
+		Z = ABL:A:0
+		Z *= 8
+		PRINTFORML %TALENTNAME:9% ×{Z}％
+	ELSEIF TALENT:A:141
+		S *= ABL:A:0
+		TIMES S , 0.08
+		Z = ABL:A:0
+		Z *= 8
+		PRINTFORML %TALENTNAME:141% ×{Z}％
+	ENDIF
+PRINTL 
+ENDIF
+
+
+;困难度処理
+;EASY
+IF FLAG:4 == 1
+	PRINTFORML 困难度:EASY ×120％
+	TIMES S , 1.20
+;NORMAL
+ELSEIF FLAG:4 == 2
+	TIMES S , 1.00
+;HARD
+ELSEIF FLAG:4 == 3
+	PRINTFORML 困难度:HARD ×80％
+	TIMES S , 0.80
+ENDIF
+
+;他の恋慕相亲相爱キャラによるお手伝い
+CALL LUNCH_STALL_SUP
+
+;定食屋台を実行するか？
+IF S > 0
+	PRINTFORMW 大概能获得${S}左右的利润
+ELSE
+	PRINTFORMW 无法预估利润，中止行为
+	RETURN 0
+ENDIF
+PRINTFORML 要和%CALLNAME:A%一起经营售餐棚吗？
+PRINTL [0] -   经营
+PRINTL [100] - 放弃
+$INPUT_LOOP_3
+INPUT
+IF RESULT == 0
+    IF CFLAG:A:2404 == 1
+        CFLAG:A:2404 = 0
+    ELSEIF CFLAG:A:2414 == 1
+        C = 0
+        REPEAT CHARANUM
+            SIF CFLAG:COUNT:(NO:A+3000) == 1
+                C = COUNT
+        REND
+        CFLAG:A:2414 = 0
+        CFLAG:C:(NO:A+3000) = 0
+        CFLAG:C:2404 = 0
+    ENDIF
+    IF CFLAG:E:2404 == 1
+        CFLAG:E:2404 = 0
+    ELSEIF CFLAG:E:2414 == 1
+        C = 0
+        REPEAT CHARANUM
+            SIF CFLAG:COUNT:(NO:E+3000) == 1
+                C = COUNT
+        REND
+        CFLAG:E:2414 = 0
+        CFLAG:C:(NO:E+3000) = 0
+        CFLAG:C:2404 = 0
+    ENDIF
+	;调教者变更の演出強化
+
+	PRINTFORML 和%CALLNAME:A%一起经营了售餐棚
+	;評判判定
+	IF ABL:A:12 == 0
+		IF RAND:5 == 0
+			F = 1
+			Z = S
+			TIMES Z , 0.05
+			S += Z
+		ELSE
+			F = 0
+			Z = S
+			TIMES Z , 0.05
+			S -= Z
+		ENDIF
+	ELSEIF ABL:A:12 < 4
+		IF RAND:3 == 0
+			F = 1
+			Z = S
+			TIMES Z , 0.05
+			S += Z
+		ELSE
+			F = 0
+			Z = S
+			TIMES Z , 0.05
+			S -= Z
+		ENDIF
+	ELSE
+		IF RAND:5 == 0
+			F = 0
+			Z = S
+			TIMES Z , 0.05
+			S -= Z
+		ELSE
+			F = 1
+			Z = S
+			TIMES Z , 0.05
+			S += Z
+		ENDIF
+	ENDIF
+	;イベント口上呼び出し
+	U = 0
+	IF ASSI >= 0
+		SIF ASSI == A
+			U = 1
+	ENDIF
+	T = TARGET
+	TARGET = A
+	TFLAG:13 = 15
+	CALL KOJO_MESSAGE_EVENT
+	TARGET = T
+	SIF U
+		ASSI = A
+	;奴隶の经验、能力処理
+	IF ABL:A:12 == 0
+		R = 8
+		Q = 5
+	ELSEIF ABL:A:12 == 1
+		R = 50
+		Q = 5
+	ELSEIF ABL:A:12 == 2
+		R = 300
+		Q = 5
+	ELSEIF ABL:A:12 == 3
+		R = 900
+		Q = 5
+	ELSEIF ABL:A:12 == 4
+		R = 2400
+		Q = 10
+	ELSEIF ABL:A:12 == 5
+		R = 3000
+		Q = 20
+	ELSEIF ABL:A:12 == 6
+		R = 3500
+		Q = 30
+	ELSEIF ABL:A:12 == 7
+		R = 4000
+		Q = 40
+	ELSEIF ABL:A:12 == 8
+		R = 4500
+		Q = 50
+	ELSEIF ABL:A:12 == 9
+		R = 5000
+		Q = 60
+	ELSEIF ABL:A:12 >= 10
+		R = 6000
+		Q = 80
+	ENDIF
+	BASE:A:0 -= 200
+	EXP:A:61 += Q
+	JUEL:A:8 += R
+	CFLAG:A:10 -= 1
+	;调教者变更の演出強化(哀情经验の増加制御)
+	IF CFLAG:A:41 == NO:MASTER || (E != 0 && CFLAG:A:41 == NO:E)
+		EXP:A:23 += 5
+		PRINTFORML %EXPNAME:23%＋5
+	ENDIF
+	PRINTFORML %EXPNAME:61%＋{Q}
+	PRINTFORML %PALAMNAME:8%＋{R}
+	PRINTFORMW 在售餐棚贩卖料理，一共获得了${S}的收益
+	MONEY += S
+	DRAWLINE
+	;休憩フラグを立てる
+	FLAG:0 = 1
+	BEGIN TURNEND
+ELSEIF RESULT == 100
+	RETURN 0
+ELSE
+	GOTO INPUT_LOOP_3
+ENDIF
+
+
+
+@RETURN_LOAN
+PRINTFORML 好像可以返还售餐棚的投资借款了
+PRINTFORML 要付清借款吗？
+PRINTL [0] - 付清
+PRINTL [1] - 今天还是算了
+$INPUT_LOOP
+INPUT
+IF RESULT == 0
+	PRINTFORML 借款还清了
+	FLAG:23 = -1
+	MONEY -= 100000
+ELSEIF RESULT == 1
+	PRINTFORML 暂不还款
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+
+;料理技巧に応じた料理名関数
+@LUNCH_NAME
+IF ABL:12 == 0
+	PRINT 不知如何评价的料理
+ELSEIF ABL:12 == 1
+	PRINT 勉强能吃的料理
+ELSEIF ABL:12 == 2
+	PRINT 卖相还不错的料理
+ELSEIF ABL:12 == 3
+	PRINT 五味俱全的料理
+ELSEIF ABL:12 == 4
+	PRINT 美味的料理
+ELSEIF ABL:12 >= 5
+	PRINTFORM %LUNCH_NAME_SP(TARGET)%
+ENDIF
+
+;特定の料理名関数
+@LUNCH_NAME_SP(ARG)
+#FUNCTIONS
+IF TALENT:ARG:西洋风
+	P = RAND:11
+	IF P == 0
+		;イタリア
+		P = RAND:15
+		IF P == 0
+			RETURNF "鹅肝酱煎鲜贝"
+		ELSEIF P == 1
+			RETURNF "玛格丽特披萨"
+		ELSEIF P == 2
+			RETURNF "面包棍＆生火腿套餐"
+		ELSEIF P == 3
+			RETURNF "米兰风味烩饭"
+		ELSEIF P == 4
+			RETURNF "浓郁蔬菜汤"
+		ELSEIF P == 5
+			RETURNF "白酒法国田螺"
+		ELSEIF P == 6
+			RETURNF "提拉米苏"
+		ELSEIF P == 7
+			RETURNF "枫糖浆土司"
+		ELSEIF P == 8
+			RETURNF "蛋黄酱意面"
+		ELSEIF P == 9
+			RETURNF "火焰薄饼"
+		ELSEIF P == 10
+			RETURNF "奶酪套餐"
+		ELSEIF P == 11
+			RETURNF "黑胡椒牛排"
+		ELSEIF P == 12
+			RETURNF "那不勒斯风味奶油意面"
+		ELSEIF P == 13
+			RETURNF "冰淇淋"
+		ELSE
+			RETURNF "红烩肉杂拌"
+		ENDIF
+	ELSEIF P == 2
+		P = RAND:5
+		IF P == 0
+			RETURNF "德式烩土豆"
+		ELSEIF P == 1
+			RETURNF "枫叶黄油蛋糕"
+		ELSEIF P == 2
+			RETURNF "牛乳年轮蛋糕"
+		ELSEIF P == 3
+			RETURNF "汉堡肉饼"
+		ELSE
+			RETURNF "德国香肠＆啤酒套餐"
+		ENDIF
+	ELSEIF P == 3
+		P = RAND:4
+		IF P == 0
+			RETURNF "维也纳猪排"
+		ELSEIF P == 1
+			RETURNF "洋葱奶汁菜汤"
+		ELSEIF P == 2
+			RETURNF "德式炸肉排＆辣椒肠"
+		ELSE
+			RETURNF "酸洋白菜"
+		ENDIF
+	ELSEIF P == 5
+		P = RAND:11
+		IF P == 0
+			RETURNF "冷制奶油汤"
+		ELSEIF P == 1
+			RETURNF "苹果馅饼"
+		ELSEIF P == 2
+			RETURNF "腌鲱鱼"
+		ELSEIF P == 3
+			RETURNF "德式什锦面包篮"
+		ELSEIF P == 4
+			RETURNF "甜椒芝士面包"
+		ELSEIF P == 5
+			RETURNF "普罗旺斯杂烩"
+		ELSEIF P == 6
+			RETURNF "香浓奶油蘑菇汤"
+		ELSEIF P == 7
+			RETURNF "葡萄酒＆奶酪"
+		ELSEIF P == 8
+			RETURNF "马卡龙"
+		ELSEIF P == 9
+			RETURNF "巧克力蛋糕"
+		ELSE
+			RETURNF "西式全餐"
+		ENDIF
+	ELSEIF P == 6
+		;イヴァン、にょしあ
+		P = RAND:5
+		IF P == 0
+			RETURNF "俄罗斯甜菜汤"
+		ELSEIF P == 1
+			RETURNF "俄式烤牛肉"
+		ELSEIF P == 2
+			RETURNF "金枪鱼拼盘"
+		ELSEIF P == 3
+			RETURNF "罗宋汤"
+		ELSE
+			RETURNF "伏特加"
+		ENDIF
+	ELSEIF P == 7
+		;アル、にょめりか
+		P = RAND:6
+		IF P == 0
+			RETURNF "百吉饼三明治"
+		ELSEIF P == 1
+			RETURNF "甜甜圈"
+		ELSEIF P == 2
+			RETURNF "加利福尼亚卷"
+		ELSEIF P == 3
+			RETURNF "苹果派"
+		ELSEIF P == 4
+			RETURNF "彩虹蛋糕"
+		ELSE
+			RETURNF "汉堡"
+		ENDIF
+	ELSEIF P == 8
+		;ティノ
+		P = RAND:4
+		IF P == 0
+			RETURNF "甘草茶"
+		ELSEIF P >= 1 &&  P < 4
+			RETURNF "可丽饼"
+		ELSEIF P >= 4 &&  P < 8
+			RETURNF "三文鱼料理"
+		ELSEIF P >= 8 &&  P < 12
+			RETURNF "咖啡＆扇贝套餐"
+		ELSE
+			RETURNF "蘑菇蛋卷"
+		ENDIF
+	ELSEIF P == 9
+		;ナターリヤ
+		P = RAND:4
+		IF P == 0
+			RETURNF "红菜汤"
+		ELSEIF P == 1
+			RETURNF "鲟鱼冻"
+		ELSEIF P == 2
+			RETURNF "芥末仔猪"
+			;豚のあぶらみ
+		ELSE
+			RETURNF "白俄罗斯风味汉堡肉饼"
+		ENDIF
+	ELSE
+		;ジャンヌ
+		;野菜中心の家庭院料理にしてみた
+		P = RAND:3
+		IF P == 0
+			RETURNF "蛋挞"
+		ELSEIF P == 1
+			RETURNF "黄油蒸蔬菜"
+		ELSE
+			RETURNF "萝卜浓汤"
+		ENDIF
+	ENDIF
+ELSEIF TALENT:ARG:和风
+	P = RAND:12
+	IF P == 0
+		RETURNF "淡味套餐"
+	ELSEIF P == 1
+		RETURNF "土豆炖肉"
+	ELSEIF P == 2
+		RETURNF "寿司"
+	ELSEIF P == 3
+		RETURNF "关东煮"
+	ELSEIF P == 4
+		RETURNF "寿喜烧"
+	ELSEIF P == 5
+		RETURNF "咖喱饭"
+	ELSEIF P == 6
+		RETURNF "关东煮"
+	ELSEIF P == 7
+		RETURNF "铜锣烧＆浓茶套餐"
+	ELSEIF P == 8
+		RETURNF "咸饭团＆味增汤"
+	ELSEIF P == 9
+		RETURNF "茶泡饭"
+	ELSEIF P == 10
+		RETURNF "荞麦面"
+	ELSE
+		RETURNF "乌冬面"
+	ENDIF
+ELSEIF TALENT:ARG:中国风
+	P = RAND:10
+	IF P == 0
+		RETURNF "烧汁炒饭"
+	ELSEIF P == 1
+		RETURNF "麻婆豆腐"
+	ELSEIF P == 2
+		RETURNF "白菜猪肉饺子"
+	ELSEIF P == 3
+		RETURNF "青椒肉丝"
+	ELSEIF P == 4
+		RETURNF "油淋鸡"
+	ELSEIF P == 5
+		RETURNF "八宝菜"
+	ELSEIF P == 6
+		RETURNF "红烧肉"
+	ELSEIF P == 7
+		RETURNF "绍兴酒"
+	ELSEIF P == 8
+		RETURNF "糖醋里脊"
+	ELSE
+		RETURNF "天津饭"
+	ENDIF
+ELSE
+	P = RAND:9
+	IF P == 0
+		RETURNF "辣酱炒虾仁"
+	ELSEIF P == 1
+		RETURNF "鲜虾培根披萨"
+	ELSEIF P == 2
+		RETURNF "香草啤酒鱼"
+	ELSEIF P == 3
+		RETURNF "韩式辣白菜汤"
+	ELSEIF P == 4
+		RETURNF "泰式酸辣鱿鱼"
+	ELSEIF P == 5
+		RETURNF "佛跳墙"
+	ELSEIF P == 6
+		RETURNF "牛油果沙拉"
+	ELSEIF P == 7
+		RETURNF "红酒沙朗牛排"
+	ELSE
+		RETURNF "韩式烤五花肉"
+	ENDIF
+ENDIF
+

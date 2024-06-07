@@ -1,0 +1,114 @@
+﻿;-------------------------------------------------
+;化形
+;人外限定指令
+;-------------------------------------------------
+@COM31
+PRINTL 化形
+STR:0 = 化形
+
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 80
+LOSEBASE:1 += 80
+
+SOURCE:14 = 80
+SOURCE:17 = 50
+SOURCE:18 = 50
+
+
+;-------------------------------------------------
+;变身！
+;-------------------------------------------------
+IF TALENT:羽翅 && CFLAG:620 == 0
+    CFLAG:620 = 1
+    TALENT:羽翅 = 0
+ELSEIF CFLAG:620 == 1
+    TALENT:羽翅 = 1
+    CFLAG:620 = 0
+ENDIF
+IF TALENT:骨翅 && CFLAG:621 == 0
+    CFLAG:621 = 1
+    TALENT:骨翅 = 0
+ELSEIF CFLAG:621 == 1
+    TALENT:骨翅 = 1
+    CFLAG:621 = 0
+ENDIF
+IF TALENT:蝠翼 && CFLAG:622 == 0
+    CFLAG:622 = 1
+    TALENT:蝠翼 = 0
+ELSEIF CFLAG:622 == 1
+    TALENT:蝠翼 = 1
+    CFLAG:622 = 0
+ENDIF
+IF TALENT:虫翼 && CFLAG:623 == 0
+    CFLAG:623 = 1
+    TALENT:虫翼 = 0
+ELSEIF CFLAG:623 == 1
+    TALENT:虫翼 = 1
+    CFLAG:623 = 0
+ENDIF
+IF TALENT:鱼尾 && CFLAG:624 == 0
+    CFLAG:624 = 1
+    TALENT:鱼尾 = 0
+ELSEIF CFLAG:624 == 1
+    TALENT:鱼尾 = 1
+    CFLAG:624 = 0
+ENDIF
+IF TALENT:蛇尾 && CFLAG:625 == 0
+    CFLAG:625 = 1
+    TALENT:蛇尾 = 0
+ELSEIF CFLAG:625 == 1
+    TALENT:蛇尾 = 1
+    CFLAG:625 = 0
+ENDIF
+IF TALENT:手爪 && CFLAG:626 == 0
+    CFLAG:626 = 1
+    TALENT:手爪 = 0
+ELSEIF CFLAG:626 == 1
+    TALENT:手爪 = 1
+    CFLAG:626 = 0
+ENDIF
+IF TALENT:足爪 && CFLAG:627 == 0
+    CFLAG:627 = 1
+    TALENT:足爪 = 0
+ELSEIF CFLAG:627 == 1
+    TALENT:足爪 = 1
+    CFLAG:627 = 0
+ENDIF
+IF TALENT:多足 && CFLAG:628 == 0
+    CFLAG:628 = 1
+    TALENT:多足 = 0
+ELSEIF CFLAG:628 == 1
+    TALENT:多足 = 1
+    CFLAG:628 = 0
+ENDIF
+IF TALENT:触手 && CFLAG:629 == 0
+    CFLAG:629 = 1
+    TALENT:触手 = 0
+ELSEIF CFLAG:629 == 1
+    TALENT:触手 = 1
+    CFLAG:629 = 0
+ENDIF
+IF TALENT:马身 && CFLAG:630 == 0
+    CFLAG:630 = 1
+    TALENT:马身 = 0
+ELSEIF CFLAG:630 == 1
+    TALENT:马身 = 1
+    CFLAG:630 = 0
+ENDIF
+IF TALENT:无形体 && CFLAG:633 == 0
+    CFLAG:633 = 1
+    TALENT:无形体 = 0
+ELSEIF CFLAG:633 == 1
+    TALENT:无形体 = 1
+    CFLAG:633 = 0
+ENDIF
+
+
+;依赖度ベクトル
+TFLAG:33 = 0
+
+RETURN 1

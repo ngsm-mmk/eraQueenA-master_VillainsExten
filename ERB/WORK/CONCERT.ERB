@@ -1,0 +1,2895 @@
+﻿;CONSERT.ERB　演唱会を開いてチケットなどを売る労役指令
+;奴隶の歌唱力だけでなく、奴隶の能力が高いとフェロモンで売り上げが上がる
+;やはり、基本的には厳しい
+@CONCERT
+;使用する一時変数の初期化
+A = 0
+B = 0
+S = 0
+V = 0
+C = 0
+D = 0
+;ユニット用一時変数も初期化
+X = 0
+Y = 0
+W = -1
+
+;演唱会で歌う奴隶を選択
+PRINTL 请选择在演唱会上歌唱的奴隶
+REPEAT CHARANUM
+	SIF CHECK_UNIT_X(COUNT)
+		PRINTFORML [{COUNT}] - %CALLNAME:COUNT%
+REND
+PRINTL [999] - 返回
+$INPUT_LOOP_2
+INPUT
+IF RESULT == 999
+	RETURN 0
+ELSEIF RESULT < 0 || RESULT >= CHARANUM
+	GOTO INPUT_LOOP_2
+ELSEIF RESULT == MASTER
+	GOTO INPUT_LOOP_2
+ELSEIF CFLAG:RESULT:1 < 2
+	GOTO INPUT_LOOP_2
+ELSEIF CFLAG:RESULT:12 > 0
+	GOTO INPUT_LOOP_2
+ELSEIF BASE:RESULT:0 <= 800
+	GOTO INPUT_LOOP_2
+ELSE
+	A = RESULT
+	U = 0
+	;変数初期化
+	REPEAT 100
+		Y:COUNT = 0
+		J:COUNT = 0
+	REND
+	SIF CHARANUM > 2
+		CALL CHECK_UNIT
+	;グループ組めるかどうか
+	LOCAL = 0
+	IF CSTR:A:24 == "" 
+		REPEAT CHARANUM
+			IF KANRAKU(COUNT) && CFLAG:COUNT:1 == 2 && (CSTR:COUNT:24 == "" || CSTR:COUNT:24 == CSTR:A:24) && COUNT != A && DOUSEI(A, COUNT)
+				LOCAL = 1
+				BREAK
+			ENDIF
+		REND
+	ENDIF
+	IF U:3 == 1 || U > 0 || LOCAL || (CSTR:A:24 != "" && U:3 == 0)
+		PRINTL 要组合出道吗？
+		IF U:3 > 0
+			PRINTFORM [200] - %CSTR:A:24%（
+			U:1 = 0
+			REPEAT CHARANUM
+				IF CSTR:A:24 == CSTR:COUNT:24
+					PRINTFORM %CALLNAME:COUNT%
+					U:1 += 1
+					SIF U:1 < U:2
+						PRINT ＆
+				ENDIF
+			REND
+			PRINTL ）
+		ENDIF
+		SIF CSTR:A:24 != "" && U:3 == 0
+			PRINTFORML 　　　※%CSTR:A:24%的成员不齐
+		SIF Y:0 > 0
+			PRINTFORML [  0] - 眼镜组合（%CALLNAME:A%＆%CALLNAME:(Y:0)%）
+		SIF J:0 > 0
+			PRINTFORML [100] - 眼镜组合（%CALLNAME:A%＆%CALLNAME:(J:0)%）
+		SIF Y:1 > 0
+			PRINTFORML [  1] - 正太组合（%CALLNAME:A%＆%CALLNAME:(Y:1)%）
+		SIF J:1 > 0
+			PRINTFORML [101] - 正太组合（%CALLNAME:A%＆%CALLNAME:(J:1)%）
+		SIF Y:2 > 0
+			PRINTFORML [  2] - 萝莉组合（%CALLNAME:A%＆%CALLNAME:(Y:2)%）
+		SIF J:2 > 0
+			PRINTFORML [102] - 萝莉组合（%CALLNAME:A%＆%CALLNAME:(J:2)%）
+		SIF Y:3 > 0
+			PRINTFORML [  3] - 向后看组合（%CALLNAME:A%＆%CALLNAME:(Y:3)%）
+		SIF J:3 > 0
+			PRINTFORML [103] - 向后看组合（%CALLNAME:A%＆%CALLNAME:(J:3)%）
+		SIF Y:4 > 0
+			PRINTFORML [  4] - 和风美男组合（%CALLNAME:A%＆%CALLNAME:(Y:4)%）
+		SIF J:4 > 0
+			PRINTFORML [104] - 和风美男组合（%CALLNAME:A%＆%CALLNAME:(J:4)%）
+		SIF Y:5 > 0
+			PRINTFORML [  5] - 伪娘组合（%CALLNAME:A%＆%CALLNAME:(Y:5)%）
+		SIF J:5 > 0
+			PRINTFORML [105] - 伪娘组合（%CALLNAME:A%＆%CALLNAME:(J:5)%）
+		SIF Y:6 > 0
+			PRINTFORML [  6] - 肌肉组合（%CALLNAME:A%＆%CALLNAME:(Y:6)%）
+		SIF J:6 > 0
+			PRINTFORML [106] - 肌肉组合（%CALLNAME:A%＆%CALLNAME:(J:6)%）
+		SIF Y:7 > 0
+			PRINTFORML [  7] - 艺术家组合（%CALLNAME:A%＆%CALLNAME:(Y:7)%）
+		SIF J:7 > 0
+			PRINTFORML [107] - 艺术家组合（%CALLNAME:A%＆%CALLNAME:(J:7)%）
+		SIF Y:8 > 0
+			PRINTFORML [  8] - 音乐人组合（%CALLNAME:A%＆%CALLNAME:(Y:8)%）
+		SIF J:8 > 0
+			PRINTFORML [108] - 音乐人组合（%CALLNAME:A%＆%CALLNAME:(J:8)%）
+		SIF Y:9 > 0
+			PRINTFORML [  9] - 僧职系男子组合（%CALLNAME:A%＆%CALLNAME:(Y:9)%）
+		SIF J:9 > 0
+			PRINTFORML [109] - 僧职系男子组合（%CALLNAME:A%＆%CALLNAME:(J:9)%）
+		SIF Y:10 > 0
+			PRINTFORML [ 10] - 草食系男子组合（%CALLNAME:A%＆%CALLNAME:(Y:10)%）
+		SIF J:10 > 0
+			PRINTFORML [110] - 草食系男子组合（%CALLNAME:A%＆%CALLNAME:(J:10)%）
+		SIF Y:11 > 0
+			PRINTFORML [ 11] - 兄弟组合（%CALLNAME:A%＆%CALLNAME:(Y:11)%）
+		SIF J:11 > 0
+			PRINTFORML [111] - 兄弟组合（%CALLNAME:A%＆%CALLNAME:(J:11)%）
+		SIF Y:12 > 0
+			PRINTFORML [ 12] - 师徒组合（%CALLNAME:A%＆%CALLNAME:(Y:12)%）
+		SIF J:12 > 0
+			PRINTFORML [112] - 师徒组合（%CALLNAME:A%＆%CALLNAME:(J:12)%）
+		SIF Y:13 > 0
+			PRINTFORML [ 13] - 小恶魔组合（%CALLNAME:A%＆%CALLNAME:(Y:13)%）
+		SIF J:13 > 0
+			PRINTFORML [113] - 小恶魔组合（%CALLNAME:A%＆%CALLNAME:(J:13)%）
+		SIF Y:14 > 0
+			PRINTFORML [ 14] - 魔乳组合（%CALLNAME:A%＆%CALLNAME:(Y:14)%）
+		SIF J:14 > 0
+			PRINTFORML [114] - 魔乳组合（%CALLNAME:A%＆%CALLNAME:(J:14)%）
+		SIF Y:15 > 0
+			PRINTFORML [ 15] - 傲娇组合（%CALLNAME:A%＆%CALLNAME:(Y:15)%）
+		SIF J:15 > 0
+			PRINTFORML [115] - 傲娇组合（%CALLNAME:A%＆%CALLNAME:(J:15)%）
+		SIF Y:16 > 0
+			PRINTFORML [ 16] - 鬼畜眼镜组合 （%CALLNAME:A%＆%CALLNAME:(Y:16)%）
+		SIF J:16 > 0
+			PRINTFORML [116] - 鬼畜眼镜组合 （%CALLNAME:A%＆%CALLNAME:(J:16)%）
+		SIF Y:17 > 0
+			PRINTFORML [ 17] - 兽耳组合（%CALLNAME:A%＆%CALLNAME:(Y:17)%）
+		SIF J:17 > 0
+			PRINTFORML [117] - 兽耳组合（%CALLNAME:A%＆%CALLNAME:(J:17)%）
+		SIF Y:18 > 0
+			PRINTFORML [ 18] - 白衣男子组合（%CALLNAME:A%＆%CALLNAME:(Y:18)%）
+		SIF J:18 > 0
+			PRINTFORML [118] - 白衣男子组合（%CALLNAME:A%＆%CALLNAME:(J:18)%）
+		SIF Y:19 > 0
+			PRINTFORML [ 19] - 理系男子组合（%CALLNAME:A%＆%CALLNAME:(Y:19)%）
+		SIF J:19 > 0
+			PRINTFORML [119] - 理系男子组合（%CALLNAME:A%＆%CALLNAME:(J:19)%）
+		SIF Y:20 > 0
+			PRINTFORML [ 20] - 文系男子组合（%CALLNAME:A%＆%CALLNAME:(Y:20)%）
+		SIF J:20 > 0
+			PRINTFORML [120] - 文系男子组合（%CALLNAME:A%＆%CALLNAME:(J:20)%）
+		SIF Y:21 > 0
+			PRINTFORML [ 21] - 神秘组合（%CALLNAME:A%＆%CALLNAME:(Y:21)%）
+		SIF J:21 > 0
+			PRINTFORML [121] - 神秘组合（%CALLNAME:A%＆%CALLNAME:(J:21)%）
+		SIF Y:22 > 0
+			PRINTFORML [ 22] - 少年组合（%CALLNAME:A%＆%CALLNAME:(Y:22)%）
+		SIF J:22 > 0
+			PRINTFORML [122] - 少年组合（%CALLNAME:A%＆%CALLNAME:(J:22)%）
+		SIF Y:23 > 0
+			PRINTFORML [ 23] - 女装组合（%CALLNAME:A%＆%CALLNAME:(Y:23)%）
+		SIF J:23 > 0
+			PRINTFORML [123] - 女装组合（%CALLNAME:A%＆%CALLNAME:(J:23)%）
+		PRINTFORML [900] %CALLNAME:A%一个人就够了
+		IF CSTR:A:24 == "" 
+			REPEAT CHARANUM
+				IF KANRAKU(COUNT) && CFLAG:COUNT:1 == 2 && (CSTR:COUNT:24 == "" || CSTR:COUNT:24 == CSTR:A:24) && COUNT != A && DOUSEI(A, COUNT)
+					PRINTFORML [800] 组建新的团队
+					BREAK
+				ENDIF
+			REND
+		ELSE
+			PRINTFORML [850] 解散%CSTR:A:24%
+		ENDIF
+		PRINTL [999] - 返回
+		$INPUT_LOOP_UNIT
+		INPUT
+		IF RESULT == 900
+			W = -1
+		ELSEIF RESULT == 999
+			RETURN 0
+		ELSEIF RESULT == 800
+			$INPUTS_LOOP_UNITNAME0
+			PRINTL ★请输入组合的名称★
+			INPUTS
+			SIF RESULTS == ""
+				RETURN 0
+			STR:2 = %RESULTS%
+			PRINTFORML 组合名是「%STR:2%」，可以吗？
+			PRINTL
+			PRINTL 　[0] 是
+			PRINTL 　[1] 否
+			PRINTL
+			$INPUT_LOOP_UNITNAME2
+			INPUT
+			SIF RESULT != 0 && RESULT != 1
+				GOTO INPUT_LOOP_UNITNAME2
+			SIF RESULT == 1
+				GOTO INPUTS_LOOP_UNITNAME0
+			
+			CSTR:A:24 = %STR:2%
+			$INPUT_LOOP_MEMBERSELE
+			PRINTL 
+			PRINTFORML 请为「%CSTR:A:24%」挑选%CALLNAME:A%以外的成员
+			PRINTL （条件：已陷落、满足助手资质、同性等，已组建其他团队的不可以）
+			REPEAT CHARANUM
+				IF KANRAKU(COUNT) && CFLAG:COUNT:1 == 2 && (CSTR:COUNT:24 == "" || CSTR:COUNT:24 == CSTR:A:24) && COUNT != A && DOUSEI(A, COUNT)
+					PRINTFORM [{COUNT}] - %CALLNAME:COUNT%
+					IF CSTR:COUNT:24 == CSTR:A:24
+						PRINTFORML 　○
+					ELSE
+						PRINTL
+					ENDIF
+				ENDIF
+			REND
+			PRINTL [100] ■设定结束■
+			INPUT
+			IF RESULT == 100
+				U:1 = 0
+				U:2 = 0
+				REPEAT CHARANUM
+					SIF CSTR:A:24 == CSTR:COUNT:24
+						U:2 += 1
+				REND
+				IF U:2 > 1
+					PRINTFORM 「%CSTR:A:24%」的成员决定为
+					REPEAT CHARANUM
+						IF CSTR:A:24 == CSTR:COUNT:24
+							PRINTFORM %NAME:COUNT%
+							U:1 += 1
+						SIF U:1 < U:2
+							PRINT 、
+						ENDIF
+					REND
+					PRINTFORMW 以上{U:2}名。
+					CALL KAIGYO
+					RESTART
+				ENDIF
+				PRINTFORMW ※人数不够。至少要选1人。
+			ELSEIF RESULT > 0 && RESULT < CHARANUM && KANRAKU(RESULT) && (CSTR:RESULT:24 == "" || CSTR:RESULT:24 == CSTR:A:24) && RESULT != A
+				IF CSTR:RESULT:24 == ""
+					CSTR:RESULT:24 = %CSTR:A:24%
+				ELSE
+					CSTR:RESULT:24 = 
+				ENDIF
+			ENDIF
+			CALL KAIGYO
+			GOTO INPUT_LOOP_MEMBERSELE
+		ELSEIF RESULT == 850
+			PRINTL 确定吗？
+			PRINTL
+			PRINTL 　[0] 是
+			PRINTL 　[1] 否
+			PRINTL
+			$INPUT_LOOP_KAISAN
+			INPUT
+			SIF RESULT != 0 && RESULT != 1
+				GOTO INPUT_LOOP_KAISAN
+			SIF RESULT == 1
+				RETURN 0
+			PRINTFORMW ※把%CSTR:A:24%解散了
+			REPEAT CHARANUM
+				SIF CSTR:A:24 == CSTR:COUNT:24 && A != COUNT
+					CSTR:COUNT:24 = 
+			REND
+			CSTR:A:24 = 
+			RETURN 0
+		ELSEIF RESULT == 200
+			W = 200
+		ELSEIF RESULT >= 0 && RESULT < 200
+			IF Y:RESULT > 0 && RESULT < 100
+				B = Y:RESULT
+				W = RESULT
+			ELSEIF J:(RESULT-100) > 0 && RESULT >= 100
+				B = J:(RESULT-100)
+				W = RESULT - 100
+			ELSE
+				GOTO INPUT_LOOP_UNIT
+			ENDIF
+		ELSE
+			GOTO INPUT_LOOP_UNIT
+		ENDIF
+	ENDIF
+ENDIF
+
+;奴隶の歌唱技能と歌唱经验のレベルによって値段の基礎値が上昇
+
+;一人
+IF W == -1
+	;ABL:歌唱技能をみる
+	IF ABL:A:14 == 0
+		S += 0
+	ELSEIF ABL:A:14 == 1
+		S += 600
+	ELSEIF ABL:A:14 == 2
+		S += 1000
+	ELSEIF ABL:A:14 == 3
+		S += 1500
+	ELSEIF ABL:A:14 == 4
+		S += 2100
+	ELSEIF ABL:A:14 == 5
+		S += 2800
+	ELSEIF ABL:A:14 == 6
+		S += 3600
+	ELSEIF ABL:A:14 == 7
+		S += 4500
+	ELSEIF ABL:A:14 == 8
+		S += 5500
+	ELSEIF ABL:A:14 == 9
+		S += 6600
+	ELSE
+		S += 7800
+	ENDIF
+	SIF S
+		PRINTFORML %ABLNAME:14%LV{ABL:A:歌唱技能} +{S}
+	;歌唱经验による補正
+	IF EXP:A:64 < EXPLV:1
+		D += 10
+	ELSEIF EXP:A:64 < EXPLV:2
+		D += 200
+	ELSEIF EXP:A:64 < EXPLV:3
+		D += 800
+	ELSEIF EXP:A:64 < EXPLV:4
+		D += 1800
+	ELSEIF EXP:A:64 < EXPLV:5
+		D += 3000
+	ELSE
+		D += 5000
+	ENDIF
+		PRINTFORML %EXPNAME:64%{EXP:A:64} +{D}
+	S += D
+
+	;奴隶の能力、素質による倍率計算（歌唱技能は前項で見ているので省略）
+	V = 100
+	;ABL:顺从をみる
+	C = CONCERT_ABL_BAIRITSU(10, A, 0)
+	SIF C > 0
+		PRINTFORML %ABLNAME:0%LV{ABL:A:0} +{C}％
+	V += C
+	;ABL:欲望をみる
+	C = CONCERT_ABL_BAIRITSU(10, A, 1)
+	SIF C > 0
+		PRINTFORML %ABLNAME:1%LV{ABL:A:1} +{C}％
+	V += C
+	;ABL:技巧をみる
+	C = CONCERT_ABL_BAIRITSU(5, A, 2)
+	SIF C > 0
+		PRINTFORML %ABLNAME:2%LV{ABL:A:2} +{C}％
+	V += C
+	;ABL:侍奉精神をみる
+	C = CONCERT_ABL_BAIRITSU(10, A, 7)
+	SIF C > 0
+		PRINTFORML %ABLNAME:7%LV{ABL:A:7} +{C}％
+	V += C
+	;ABL:露出癖をみる
+	C = CONCERT_ABL_BAIRITSU(5, A, 8)
+	SIF C > 0
+		PRINTFORML %ABLNAME:8%LV{ABL:A:8} +{C}％
+	V += C
+	;ABL:受虐属性をみる
+	C = CONCERT_ABL_BAIRITSU(5, A, 9)
+	SIF C > 0
+		PRINTFORML %ABLNAME:9%LV{ABL:A:9} +{C}％
+	V += C
+	;ABL:嗜虐属性をみる
+	C = CONCERT_ABL_BAIRITSU(5, A, 10)
+	SIF C > 0
+		PRINTFORML %ABLNAME:10%LV{ABL:A:10} +{C}％
+	V += C
+	IF MALE(A)
+		;ABL:同性倾向をみる
+		C = CONCERT_ABL_BAIRITSU(5, A, 20)
+		SIF C > 0
+			PRINTFORML %ABLNAME:20%LV{ABL:A:20} +{C}％
+		V += C
+	ELSE
+		;ABL:百合属性をみる
+		C = CONCERT_ABL_BAIRITSU(5, A, 11)
+		SIF C > 0
+			PRINTFORML %ABLNAME:11%LV{ABL:A:11} +{C}％
+		V += C
+	ENDIF
+	;素質による倍率補正
+	U = 0
+	CALL CONCERT_TALENT_BAIRITSU1(A)
+	V += U
+;即席组合
+ELSEIF W >= 0 && W <= 23
+	;ABL:歌唱技能をみる
+	IF ABL:A:14 == 0
+		S += 0
+	ELSEIF ABL:A:14 == 1
+		S += 600
+	ELSEIF ABL:A:14 == 2
+		S += 1000
+	ELSEIF ABL:A:14 == 3
+		S += 1500
+	ELSEIF ABL:A:14 == 4
+		S += 2100
+	ELSEIF ABL:A:14 == 5
+		S += 2800
+	ELSEIF ABL:A:14 == 6
+		S += 3600
+	ELSEIF ABL:A:14 == 7
+		S += 4500
+	ELSEIF ABL:A:14 == 8
+		S += 5500
+	ELSEIF ABL:A:14 == 9
+		S += 6600
+	ELSE
+		S += 7800
+	ENDIF
+	SIF S
+		PRINTFORML %CALLNAME:A%的%ABLNAME:14%LV{ABL:A:歌唱技能} +{S}
+	Z = 0
+	IF ABL:B:歌唱技能 == 0
+		Z += 0
+	ELSEIF ABL:B:歌唱技能 == 1
+		Z += 600
+	ELSEIF ABL:B:歌唱技能 == 2
+		Z += 1000
+	ELSEIF ABL:B:歌唱技能 == 3
+		Z += 1500
+	ELSEIF ABL:B:歌唱技能 == 4
+		Z += 2100
+	ELSEIF ABL:B:歌唱技能 == 5
+		Z += 2800
+	ELSEIF ABL:B:歌唱技能 == 6
+		Z += 3600
+	ELSEIF ABL:B:歌唱技能 == 7
+		Z += 4500
+	ELSEIF ABL:B:歌唱技能 == 8
+		Z += 5500
+	ELSEIF ABL:B:歌唱技能 == 9
+		Z += 6600
+	ELSE
+		Z += 7800
+	ENDIF
+	SIF Z
+		PRINTFORML %CALLNAME:B%的%ABLNAME:14%LV{ABL:B:歌唱技能} +{Z}
+	S += Z
+	;歌唱经验による補正
+	IF EXP:A:64 < EXPLV:1
+		D += 10
+	ELSEIF EXP:A:64 < EXPLV:2
+		D += 200
+	ELSEIF EXP:A:64 < EXPLV:3
+		D += 800
+	ELSEIF EXP:A:64 < EXPLV:4
+		D += 1800
+	ELSEIF EXP:A:64 < EXPLV:5
+		D += 3000
+	ELSE
+		D += 5000
+	ENDIF
+		PRINTFORML %CALLNAME:A%的%EXPNAME:64%{EXP:A:64} +{D}
+	S += D
+	D = 0
+	IF EXP:B:64 < EXPLV:1
+		D += 10
+	ELSEIF EXP:B:64 < EXPLV:2
+		D += 200
+	ELSEIF EXP:B:64 < EXPLV:3
+		D += 800
+	ELSEIF EXP:B:64 < EXPLV:4
+		D += 1800
+	ELSEIF EXP:B:64 < EXPLV:5
+		D += 3000
+	ELSE
+		D += 5000
+	ENDIF
+		PRINTFORML %CALLNAME:B%的%EXPNAME:64%{EXP:B:64} +{D}
+	S += D
+
+	;奴隶の能力、素質による倍率計算（歌唱技能は前項で見ているので省略）
+	V = 100
+	;ABL:低い方の顺从をみる
+	D = 0
+	CALL CONCERT_ABL_BAIRITSU_CONBI_WORSE
+	;ABL:高い方の欲望をみる
+	D = 1
+	CALL CONCERT_ABL_BAIRITSU_CONBI_BETTER
+	;ABL:低い方の顺从をみる
+	D = 2
+	CALL CONCERT_ABL_BAIRITSU_CONBI_WORSE
+	;ABL:低い方の侍奉精神をみる
+	D = 7
+	CALL CONCERT_ABL_BAIRITSU_CONBI_WORSE
+	;ABL:低い方の露出癖をみる
+	D = 8
+	CALL CONCERT_ABL_BAIRITSU_CONBI_WORSE
+	;ABL:高い方の受虐属性をみる
+	D = 9
+	CALL CONCERT_ABL_BAIRITSU_CONBI_BETTER
+	;ABL:高い方の嗜虐属性をみる
+	D = 10
+	CALL CONCERT_ABL_BAIRITSU_CONBI_BETTER
+	IF MALE(A)
+		;ABL:高い方の同性倾向をみる
+		D = 20
+		CALL CONCERT_ABL_BAIRITSU_CONBI_BETTER
+	ELSE
+		;ABL:高い方の百合属性をみる
+		D = 11
+		CALL CONCERT_ABL_BAIRITSU_CONBI_BETTER
+	ENDIF
+	
+	;素質による倍率補正
+	U = 0
+	;PRINTL ------------------------------------
+	;PRINTFORML %CALLNAME:A%的素质…
+	CALL CONCERT_TALENT_BAIRITSU1(A)
+	LOCAL = U
+	;PRINTL -------------------------
+	;PRINTFORML %CALLNAME:B%的素质…
+	CALL CONCERT_TALENT_BAIRITSU1(B)
+	LOCAL:1 = U - LOCAL
+	;PRINTL -------------------------
+	PRINTFORM 个人人气倍率补正：（%CALLNAME:A%{LOCAL}％＋%CALLNAME:B%{LOCAL:1}％）÷２＝
+	LOCAL:2 = U/2
+	SIF LOCAL:2 < 0
+		LOCAL:2 = -(LOCAL:2)
+	IF U >= 0
+		PRINTFORML ＋{LOCAL:2}％
+	ELSE
+		PRINTFORML －{LOCAL:2}％
+	ENDIF
+	PRINTW ------------------------------------
+	V += U/2
+;ユニット
+ELSEIF W == 200
+	;ABL:歌唱技能をみる
+	;歌唱技能の一番高いメンバーをBに
+	C = 14
+	CALL UNIT_COMPARE_ABL_MAX
+	Z = 0
+	IF ABL:B:14 == 0
+		Z += 0
+	ELSEIF ABL:B:14 == 1
+		Z += 600
+	ELSEIF ABL:B:14 == 2
+		Z += 1000
+	ELSEIF ABL:B:14 == 3
+		Z += 1500
+	ELSEIF ABL:B:14 == 4
+		Z += 2100
+	ELSEIF ABL:B:14 == 5
+		Z += 2800
+	ELSEIF ABL:B:14 == 6
+		Z += 3600
+	ELSEIF ABL:B:14 == 7
+		Z += 4500
+	ELSEIF ABL:B:14 == 8
+		Z += 5500
+	ELSEIF ABL:B:14 == 9
+		Z += 6600
+	ELSE
+		Z += 7800
+	ENDIF
+	SIF Z
+		PRINTFORML %CSTR:A:24%的%ABLNAME:14%上限LV{ABL:B:14} +{Z}
+	S += Z
+	;歌唱技能の一番低いメンバーをBに
+	C = 14
+	CALL UNIT_COMPARE_ABL_MIN
+	Z = 0
+	IF ABL:B:14 == 0
+		Z += 0
+	ELSEIF ABL:B:14 == 1
+		Z += 600
+	ELSEIF ABL:B:14 == 2
+		Z += 1000
+	ELSEIF ABL:B:14 == 3
+		Z += 1500
+	ELSEIF ABL:B:14 == 4
+		Z += 2100
+	ELSEIF ABL:B:14 == 5
+		Z += 2800
+	ELSEIF ABL:B:14 == 6
+		Z += 3600
+	ELSEIF ABL:B:14 == 7
+		Z += 4500
+	ELSEIF ABL:B:14 == 8
+		Z += 5500
+	ELSEIF ABL:B:14 == 9
+		Z += 6600
+	ELSE
+		Z += 7800
+	ENDIF
+	SIF Z
+		PRINTFORML %CSTR:A:24%的%ABLNAME:14%下限LV{ABL:B:14} +{Z}
+	S += Z
+	;歌唱经验による補正
+	;歌唱经验の一番高いメンバーをBに
+	REPEAT CHARANUM
+		;メンバーを見つける
+		IF CSTR:A:24 == CSTR:COUNT:24
+			B = COUNT
+			BREAK
+		ENDIF
+	REND
+	REPEAT CHARANUM
+		;次々と比べて歌唱经验の高いのをBに
+		SIF CSTR:A:24 == CSTR:COUNT:24 && EXP:COUNT:64 >= EXP:B:64
+			B = COUNT
+	REND
+	D = 0
+	IF EXP:B:64 < EXPLV:1
+		D += 10
+	ELSEIF EXP:B:64 < EXPLV:2
+		D += 200
+	ELSEIF EXP:B:64 < EXPLV:3
+		D += 800
+	ELSEIF EXP:B:64 < EXPLV:4
+		D += 1800
+	ELSEIF EXP:B:64 < EXPLV:5
+		D += 3000
+	ELSE
+		D += 5000
+	ENDIF
+		PRINTFORML %CSTR:A:24%的%EXPNAME:64%上限{EXP:B:64} +{D}
+	S += D
+	;歌唱经验の一番低いメンバーをBに
+	REPEAT CHARANUM
+		;メンバーを見つける
+		IF CSTR:A:24 == CSTR:COUNT:24
+			B = COUNT
+			BREAK
+		ENDIF
+	REND
+	REPEAT CHARANUM
+		;次々と比べて歌唱经验の低いのをBに
+		SIF CSTR:A:24 == CSTR:COUNT:24 && EXP:COUNT:64 <= EXP:B:64
+			B = COUNT
+	REND
+	D = 0
+	IF EXP:B:64 < EXPLV:1
+		D += 10
+	ELSEIF EXP:B:64 < EXPLV:2
+		D += 200
+	ELSEIF EXP:B:64 < EXPLV:3
+		D += 800
+	ELSEIF EXP:B:64 < EXPLV:4
+		D += 1800
+	ELSEIF EXP:B:64 < EXPLV:5
+		D += 3000
+	ELSE
+		D += 5000
+	ENDIF
+		PRINTFORML %CSTR:A:24%的%EXPNAME:64%下限{EXP:B:64} +{D}
+	S += D
+	
+	;奴隶の能力、素質による倍率計算（歌唱技能は前項で見ているので省略）
+	V = 100
+	;ABL:一番低い顺从をみる
+	D = 0
+	CALL CONCERT_ABL_BAIRITSU_UNIT_WORST
+	;ABL:一番高い欲望をみる
+	D = 1
+	CALL CONCERT_ABL_BAIRITSU_UNIT_BEST
+	;ABL:一番低い顺从をみる
+	D = 2
+	CALL CONCERT_ABL_BAIRITSU_UNIT_WORST
+	;ABL:一番低い侍奉精神をみる
+	D = 7
+	CALL CONCERT_ABL_BAIRITSU_UNIT_WORST
+	;ABL:一番低い露出癖をみる
+	D = 8
+	CALL CONCERT_ABL_BAIRITSU_UNIT_WORST
+	;ABL:一番高い受虐属性をみる
+	D = 9
+	CALL CONCERT_ABL_BAIRITSU_UNIT_BEST
+	;ABL:一番高い嗜虐属性をみる
+	D = 10
+	CALL CONCERT_ABL_BAIRITSU_UNIT_BEST
+	IF MALE(A)
+		;ABL:一番高い同性倾向をみる
+		D = 20
+		CALL CONCERT_ABL_BAIRITSU_UNIT_BEST
+	ELSE
+		;ABL:一番高い百合属性をみる
+		D = 11
+		CALL CONCERT_ABL_BAIRITSU_UNIT_BEST
+	ENDIF
+	
+	;素質による倍率補正
+	VARSET LOCAL
+	;PRINTL ------------------------------------
+	REPEAT CHARANUM
+		IF CSTR:A:24 == CSTR:COUNT:24
+			B = COUNT
+			;PRINTFORML %CALLNAME:B%的素质…
+			U = 0
+			CALL CONCERT_TALENT_BAIRITSU1(B)
+			LOCAL:B = U
+			;PRINTL -------------------------
+		ENDIF
+	REND
+	PRINTFORML 个人人气倍率补正：
+	PRINTFORM （
+	U:1 = 0
+	REPEAT CHARANUM
+		IF CSTR:A:24 == CSTR:COUNT:24
+			PRINTFORM %CALLNAME:COUNT%{LOCAL:COUNT}％
+			U:1 += 1
+			SIF U:1 < U:2
+				PRINT ＋
+		ENDIF
+	REND
+	PRINTFORM ）÷{U:2}＝
+	U = 0
+	REPEAT CHARANUM
+		SIF CSTR:A:24 == CSTR:COUNT:24
+			U += LOCAL:COUNT
+	REND
+	U = U / (U:2)
+	LOCAL = U
+	SIF LOCAL < 0
+		LOCAL = -(LOCAL)
+	IF U >= 0
+		PRINTFORML ＋{LOCAL}％
+	ELSE
+		PRINTFORML －{LOCAL}％
+	ENDIF
+	PRINTW ------------------------------------
+	V += U
+ENDIF
+
+;ユニット補正
+;IF W >= 0
+;	TIMES V , 1.20
+;ENDIF
+
+;補正値が0以下の場合は1にする
+SIF V <= 0
+	V = 1
+
+PRINTFORML 最终倍率 {V}％
+
+;補正値の適用
+S *= V
+S /= 100
+
+
+;困难度処理
+;EASY
+IF FLAG:4 == 1
+	PRINTFORML 困难度:EASY ×120％
+	TIMES S , 1.20
+;NORMAL
+ELSEIF FLAG:4 == 2
+	TIMES S , 1.00
+;HARD
+ELSEIF FLAG:4 == 3
+	PRINTFORML 困难度:HARD ×80％
+	TIMES S , 0.80
+ENDIF
+
+;ユニット補正
+IF W >= 0
+	TIMES S , 1.50
+	PRINTL 组合补正 ×150%
+ENDIF
+
+
+;演唱会を実行するか？
+IF S > 0
+	PRINTFORMW 大概能获得${S}左右的利润
+ELSE
+	PRINTFORMW 无法预估利润，中止行为
+	RETURN 0
+ENDIF
+PRINTFORML 要举办演唱会吗？
+PRINTL [0] -   举办
+PRINTL [100] - 放弃
+$INPUT_LOOP_3
+INPUT
+IF RESULT == 0
+	PRINTL 
+	PRINTL 
+	PRINTL 
+	PRINTL =====================================================
+	PRINTL 
+	IF W == 0
+		PRINT 眼镜组合
+	ELSEIF W == 1
+		PRINT 正太组合
+	ELSEIF W == 2
+		PRINT 萝莉组合
+	ELSEIF W == 3
+		PRINT 向后看组合
+	ELSEIF W == 4
+		PRINT 和风美男组合
+	ELSEIF W == 5
+		PRINT 伪娘组合
+	ELSEIF W == 6
+		PRINT 肌肉组合
+	ELSEIF W == 7
+		PRINT 艺术家组合
+	ELSEIF W == 8
+		PRINT 音乐人组合
+	ELSEIF W == 9
+		PRINT 僧职系男子组合
+	ELSEIF W == 10
+		PRINT 草食系男子组合
+	ELSEIF W == 11
+		PRINT 兄弟组合
+	ELSEIF W == 12
+		PRINT 师徒组合
+	ELSEIF W == 13
+		PRINT 小恶魔组合
+	ELSEIF W == 14
+		PRINT 魔乳组合
+	ELSEIF W == 15
+		PRINT 傲娇组合
+	ELSEIF W == 16
+		PRINT 鬼畜眼镜组合
+	ELSEIF W == 17
+		PRINT 兽耳组合
+	ELSEIF W == 18
+		PRINT 白衣男子组合
+	ELSEIF W == 19
+		PRINT 理系男子组合
+	ELSEIF W == 20
+		PRINT 文系男子组合
+	ELSEIF W == 21
+		PRINT 神秘组合
+	ELSEIF W == 22
+		PRINT 少年组合
+	ELSEIF W == 23
+		PRINT 女装组合
+	ELSEIF W == 200
+		PRINTFORM %CSTR:A:24%
+	ELSE
+		PRINTS NAME:A
+	ENDIF
+	PRINTL 的演唱会开始了
+	IF W == 200
+	;Bを選出
+		REPEAT CHARANUM
+			IF CSTR:A:24 == CSTR:COUNT:24 && A != COUNT
+				B = COUNT
+				SIF !RAND:2
+					BREAK
+			ENDIF
+		REND
+	ELSEIF W == -1
+		B = A
+	ENDIF
+	;評判判定
+	;ユニットを組んでいても、判定に関わるのはメインの歌唱力と運
+	IF ABL:A:14 + ABL:B:14 < 2
+		IF RAND:5 == 0
+			F = 1
+			Z = S
+			TIMES Z , 0.05
+			S += Z
+		ELSE
+			F = 0
+			Z = S
+			TIMES Z , 0.05
+			S -= Z
+		ENDIF
+	ELSEIF ABL:A:14 + ABL:B:14 < 5
+		IF RAND:3 == 0
+			F = 1
+			Z = S
+			TIMES Z , 0.05
+			S += Z
+		ELSE
+			F = 0
+			Z = S
+			TIMES Z , 0.05
+			S -= Z
+		ENDIF
+	ELSE
+		IF RAND:5 == 0
+			F = 0
+			Z = S
+			TIMES Z , 0.05
+			S -= Z
+		ELSE
+			F = 1
+			Z = S
+			TIMES Z , 0.05
+			S += Z
+		ENDIF
+	ENDIF
+	;イベント口上呼び出し
+	T = TARGET
+	TARGET = A
+	TFLAG:13 = 20
+	PRINTL 
+	CALL KOJO_MESSAGE_EVENT
+	PRINTL
+	TARGET = T
+	PRINTL =====================================================
+	PRINTFORMW 演唱会的周边和门票加起来一共赚取了${S}的收益
+	PRINTL
+	PRINTL
+	PRINTL
+	MONEY += S
+	;奴隶の经验、能力処理　　相性の処理も…
+	;一人
+	IF W >= 0 && W <= 23
+
+		CALL AFTER_CONCERT_SHORI(A)
+		CALL AFTER_CONCERT_SHORI(B)
+		;失敗時
+		IF F == 0
+			CALL RELATION_UP(A,B, -3)
+		ELSEIF S >= 150000
+			CALL RELATION_UP(A,B,2)
+		;成功
+		ELSEIF S >= 80000
+			CALL RELATION_UP(A,B,1)
+		ENDIF
+	ELSEIF W == 200
+		VARSET LOCAL
+		;LOCAL: 今の番号、その番号の奴隶登录番号
+		;LOCAL:100 計何人
+		REPEAT CHARANUM
+			IF CSTR:A:24 == CSTR:COUNT:24
+				LOCAL:(LOCAL:100) = COUNT
+				LOCAL:100 += 1
+				CALL AFTER_CONCERT_SHORI(COUNT)
+			ENDIF
+		REND
+		IF F == 0
+			PRINTL 成员间的相性值下降
+		ELSEIF S >= 80000
+			PRINTL 成员间的相性值上升
+		ENDIF
+		FOR N, 0, LOCAL:100
+			FOR M, N+1, (LOCAL:100)
+				;失敗時
+				IF F == 0
+					RELATION:(LOCAL:N):(NO:(LOCAL:M)) -= 1
+					RELATION:(LOCAL:M):(NO:(LOCAL:N)) -= 1
+					SIF RELATION:(LOCAL:N):(NO:(LOCAL:M)) < 0
+						RELATION:(LOCAL:N):(NO:(LOCAL:M)) = 0
+					SIF RELATION:(LOCAL:M):(NO:(LOCAL:N)) < 0
+						RELATION:(LOCAL:M):(NO:(LOCAL:N)) = 0
+				ELSEIF S >= 80000
+					RELATION:(LOCAL:N):(NO:(LOCAL:M)) += 1
+					RELATION:(LOCAL:M):(NO:(LOCAL:N)) += 1
+					SIF RELATION:(LOCAL:N):(NO:(LOCAL:M)) > 200
+						RELATION:(LOCAL:N):(NO:(LOCAL:M)) = 200
+					SIF RELATION:(LOCAL:M):(NO:(LOCAL:N)) > 200
+						RELATION:(LOCAL:M):(NO:(LOCAL:N)) = 200
+				ENDIF
+			NEXT
+		NEXT
+	ELSE
+		CALL AFTER_CONCERT_SHORI(A)
+	ENDIF
+	PRINTW
+	DRAWLINE
+	;休憩フラグを立てる
+	FLAG:0 = 1
+	BEGIN TURNEND
+ELSEIF RESULT == 100
+	RETURN 0
+ELSE
+	GOTO INPUT_LOOP_3
+ENDIF
+
+
+;歌唱技巧に応じた歌唱名関数
+@SONG_NAME_TOHO
+PRINT 『
+;性格によって随机。曲名は適当に。
+;ユニット曲
+IF W == 0
+	P = RAND:12
+	SELECTCASE P
+		CASE 0
+			PRINT Go!Go! 眼镜's
+		CASE 1
+			PRINT 摘下眼镜的夜晚
+		CASE 2
+			PRINT 透过镜框所见之物
+		CASE 3
+			PRINT 窥探不到的内心
+		CASE 4
+			PRINT 迷雾之下，不可名状之物
+		CASE 5
+			PRINT 相对性理论
+		CASE 6
+			PRINT 地狱先生
+		CASE 7
+			PRINT 碎裂的镜片
+		CASE 8
+			PRINT 歪斜的视野
+		CASE 9
+			PRINT 世界倒映在你眼眸
+		CASE 10
+			PRINT 模糊不清，触不可及
+		CASEELSE
+			PRINT 眼镜祭
+	ENDSELECT
+ELSEIF W == 1
+;ショタユニット
+	P = RAND:12
+	SELECTCASE P
+		CASE 0
+			PRINT 夜间飞行魔法
+		CASE 1
+			PRINT 我们的暑假
+		CASE 2
+			PRINT 一半一半
+		CASE 3
+			PRINT 妖怪的祭典
+		CASE 4
+			PRINT 圣少年游戏
+		CASE 5
+			PRINT 飞往彼方的勇者
+		CASE 6
+			PRINT 摩天轮大厦
+		CASE 7
+			PRINT 星光灿烂
+		CASE 8
+			PRINT 星之所在
+		CASE 9
+			PRINT Scarborough Fair
+		CASE 10
+			PRINT 蓝色记忆
+		CASEELSE
+			PRINT 数字歌
+	ENDSELECT
+ELSEIF W == 2
+;ロリユニット
+	P = RAND:12
+	SELECTCASE P
+		CASE 0
+			PRINT 香蕉不是点心哦
+		CASE 1
+			PRINT 勾指起誓
+		CASE 2
+			PRINT 圣少女领域
+		CASE 3
+			PRINT 吃掉我的蔷薇吧
+		CASE 4
+			PRINT 禁断的游戏
+		CASE 5
+			PRINT 点心时间到了☆
+		CASE 6
+			PRINT 原宿IYAHOI
+		CASE 7
+			PRINT Ice Cream 少女
+		CASE 8
+			PRINT KPP ON STAGE
+		CASE 9
+			PRINT Crazy Party Night
+		CASE 10
+			PRINT 漆黑的艾达
+		CASEELSE
+			PRINT 熊先生今天很烦恼
+	ENDSELECT
+ELSEIF W == 3
+;後ろ向きじれっ隊
+	P = RAND:12
+	SELECTCASE P
+		CASE 0
+			PRINT 奇迹的礼物
+		CASE 1
+			PRINT 别低头面包会掉
+		CASE 2
+			PRINT 共感觉学习小组
+		CASE 3
+			PRINT 晴天好心情
+		CASE 4
+			PRINT 绝对废柴的大革命
+		CASE 5
+			PRINT 迷迷糊糊起床Time
+		CASE 6
+			PRINT 忍者棒棒
+		CASE 7
+			PRINT Candy☆Candy
+		CASE 8
+			PRINT 1,2 Fan Club
+		CASE 9
+			PRINT PONPONPON
+		CASE 10
+			PRINT 全部传递给你
+		CASEELSE
+			PRINT 慢吞吞战队
+	ENDSELECT
+ELSEIF W == 4
+	P = RAND:12
+	SELECTCASE P
+		CASE 0
+			PRINT 风鸟花月
+		CASE 1
+			PRINT 樱华绚烂
+		CASE 2
+			PRINT 梦萤
+		CASE 3
+			PRINT 月千一夜
+		CASE 4
+			PRINT 在共月亭相会吧
+		CASE 5
+			PRINT 百花缭乱、红月夜
+		CASE 6
+			PRINT 讴歌绚烂青春华
+		CASE 7
+			PRINT 今宵月夜
+		CASE 8
+			PRINT 二者穿一
+		CASE 9
+			PRINT 一刀缭乱
+		CASE 10
+			PRINT 梦使之歌
+		CASEELSE
+			PRINT 月见酒
+	ENDSELECT
+ELSEIF W == 5
+	P = RAND:12
+	SELECTCASE P
+		CASE 0
+			PRINT 我的小屁股
+		CASE 1
+			PRINT 因为是男孩子呀！
+		CASE 2
+			PRINT 那里不可以哦
+		CASE 3
+			PRINT 性别倒错的世界
+		CASE 4
+			PRINT 这颗属于女孩的心
+		CASE 5
+			PRINT 乙女心男子
+		CASE 6
+			PRINT 那种事是不行的哦
+		CASE 7
+			PRINT 请跳起舞来吧！
+		CASE 8
+			PRINT DOKIDOKI❤旋转裙摆
+		CASE 9
+			PRINT 遥仰凰华
+		CASE 10
+			PRINT SUMMER DAYS
+		CASEELSE
+			PRINT 裙下的秘密
+	ENDSELECT
+ELSEIF W == 6
+	P = RAND:12
+	SELECTCASE P
+		CASE 0
+			PRINT 男人的美学
+		CASE 1
+			PRINT 我有我的仁义之道
+		CASE 2
+			PRINT 疾风的战士
+		CASE 3
+			PRINT 武士精神传说
+		CASE 4
+			PRINT 切腹、立斩决！
+		CASE 5
+			PRINT 此乃筋肉男子是也
+		CASE 6
+			PRINT GOLDFINGER'99～GO！GO！
+		CASE 7
+			PRINT 绝体绝命
+		CASE 8
+			PRINT 征服的夜晚
+		CASE 9
+			PRINT 最后的决斗
+		CASE 10
+			PRINT 肌肉的号哭
+		CASEELSE
+			PRINT 从不歪斜的道路
+	ENDSELECT
+ELSEIF W == 7
+	P = RAND:12
+	SELECTCASE P
+		CASE 0
+			PRINT 爱之雕刻
+		CASE 1
+			PRINT Je t'aime
+		CASE 2
+			PRINT Reincarnation
+		CASE 3
+			PRINT 狄奥尼索斯崇拜
+		CASE 4
+			PRINT G小调协奏曲
+		CASE 5
+			PRINT 交响乐之雨
+		CASE 6
+			PRINT 秽翼的尤斯蒂娅
+		CASE 7
+			PRINT 无罪的维纳斯
+		CASE 8
+			PRINT 克罗地亚狂想曲
+		CASE 9
+			PRINT VOLT-AGE
+		CASE 10
+			PRINT U.S.A.
+		CASEELSE
+			PRINT 人体绘画
+	ENDSELECT
+ELSEIF W == 8
+	P = RAND:12
+	SELECTCASE P
+		CASE 0
+			PRINT LOVE＆情热
+		CASE 1
+			PRINT 我的爱人
+		CASE 2
+			PRINT A Fond Wish
+		CASE 3
+			PRINT Flesvelka
+		CASE 4
+			PRINT 再见二丁目
+		CASE 5
+			PRINT 低垂的发丝乃别离之意味
+		CASE 6
+			PRINT 竹取飞翔
+		CASE 7
+			PRINT 打碎玻璃
+		CASE 8
+			PRINT 打上花火
+		CASE 9
+			PRINT 你的名字
+		CASE 10
+			PRINT Gifts
+		CASEELSE
+			PRINT ONLY YOU
+	ENDSELECT
+ELSEIF W == 9
+	P = RAND:12
+	SELECTCASE P
+		CASE 0
+			PRINT 所相皆虚
+		CASE 1
+			PRINT 阴阳之道
+		CASE 2
+			PRINT 极乐净土
+		CASE 3
+			PRINT 彼方镇魂曲
+		CASE 4
+			PRINT 异教徒
+		CASE 5
+			PRINT 蓬莱传说
+		CASE 6
+			PRINT 圣魔之血
+		CASE 7
+			PRINT 佛音
+		CASE 8
+			PRINT 揭谛——
+		CASE 9
+			PRINT 欢喜禅
+		CASE 10
+			PRINT 坐莲
+		CASEELSE
+			PRINT EVANGELION
+	ENDSELECT
+ELSEIF W == 10
+	P = RAND:12
+	SELECTCASE P
+		CASE 0
+			PRINT 爱人
+		CASE 1
+			PRINT 虽然只是第一次
+		CASE 2
+			PRINT 星星和雨的夜
+		CASE 3
+			PRINT 地球最后的告白
+		CASE 4
+			PRINT 18℃的温柔
+		CASE 5
+			PRINT LOVE PLUS
+		CASE 6
+			PRINT 时间的魔法
+		CASE 7
+			PRINT 永夜指轮
+		CASE 8
+			PRINT 十三番目彼女
+		CASE 9
+			PRINT 救心
+		CASE 10
+			PRINT 辰巳侦探
+		CASEELSE
+			PRINT 想要和你在一起
+	ENDSELECT
+ELSEIF W == 11
+;兄弟ユニット
+	P = RAND:12
+	SELECTCASE P
+		CASE 0
+			PRINT Soul Brothers
+		CASE 1
+			PRINT WE ARE BROTHOR
+		CASE 2
+			PRINT 十面相
+		CASE 3
+			PRINT 马赛克
+		CASE 4
+			PRINT 另一个我
+		CASE 5
+			PRINT Another Infinity
+		CASE 6
+			PRINT 镜中世界
+		CASE 7
+			PRINT 有丝分裂
+		CASE 8
+			PRINT 双重节奏
+		CASE 9
+			PRINT 与你的默契无人能及
+		CASE 10
+			PRINT GO！GO！GO！阳光少年！
+		CASEELSE
+			PRINT 一心同体
+	ENDSELECT
+ELSEIF W == 12
+;師弟ユニット
+	P = RAND:12
+	SELECTCASE P
+		CASE 0
+			PRINT 山道
+		CASE 1
+			PRINT 绝美师徒爱
+		CASE 2
+			PRINT ebullient future
+		CASE 3
+			PRINT Light coloers
+		CASE 4
+			PRINT 到此为止
+		CASE 5
+			PRINT 最后的比试
+		CASE 6
+			PRINT 目送
+		CASE 7
+			PRINT 小学馆
+		CASE 8
+			PRINT 继承的意志
+		CASE 9
+			PRINT R.Y.U.S.E.I.
+		CASE 10
+			PRINT 永无止境的八月
+		CASEELSE
+			PRINT 划痕
+	ENDSELECT
+ELSEIF W == 13
+;小恶魔ユニット
+	P = RAND:12
+	SELECTCASE P
+		CASE 0
+			PRINT 今夜，是只属于你的恶魔
+		CASE 1
+			PRINT 月之媚药
+		CASE 2
+			PRINT 情热吐息
+		CASE 3
+			PRINT 恶作剧的吸血鬼
+		CASE 4
+			PRINT 甜蜜酒液
+		CASE 5
+			PRINT 妖怪之町
+		CASE 6
+			PRINT 遗蛛
+		CASE 7
+			PRINT 街上的喧嚣
+		CASE 8
+			PRINT 新宿夜行
+		CASE 9
+			PRINT 只属于我的果实
+		CASE 10
+			PRINT 沙耶之歌
+		CASEELSE
+			PRINT 躲着我的话可不行哦
+	ENDSELECT
+ELSEIF W == 14
+;魔乳ユニット
+	P = RAND:12
+	SELECTCASE P
+		CASE 0
+			PRINT I WANT YOU
+		CASE 1
+			PRINT I NEED YOU
+		CASE 2
+			PRINT 不，不用了哦
+		CASE 3
+			PRINT Darling
+		CASE 4
+			PRINT 少女的幻想曲
+		CASE 5
+			PRINT circle of fifth
+		CASE 6
+			PRINT 深爱
+		CASE 7
+			PRINT HesitationSnow
+		CASE 8
+			PRINT and I’m home
+		CASE 9
+			PRINT The Everlasting Guilty Crown
+		CASE 10
+			PRINT 初雪樱
+		CASEELSE
+			PRINT Strawberry
+	ENDSELECT
+ELSEIF W == 15
+;傲娇ユニット
+	P = RAND:12
+	SELECTCASE P
+		CASE 0
+			PRINT 我、我才不是为了你唱的
+		CASE 1
+			PRINT 摇曳的思念
+		CASE 2
+			PRINT 动摇的Heart
+		CASE 3
+			PRINT 真正的心情
+		CASE 4
+			PRINT ROLEPLAYING
+		CASE 5
+			PRINT 全力偶像
+		CASE 6
+			PRINT 99 Nights
+		CASE 7
+			PRINT ONLY MY NOTE
+		CASE 8
+			PRINT Snow Storm
+		CASE 9
+			PRINT 香草冰淇淋
+		CASE 10
+			PRINT Orange
+		CASEELSE
+			PRINT 无法说出口
+	ENDSELECT
+ELSEIF W == 16
+;鬼畜眼镜’ｓ
+	P = RAND:12
+	SELECTCASE P
+		CASE 0
+			PRINT UNDER THE DARKNESS
+		CASE 1
+			PRINT inside Black
+		CASE 2
+			PRINT endless之吻
+		CASE 3
+			PRINT 胯下野兽暴行
+		CASE 4
+			PRINT 若梦境来袭
+		CASE 5
+			PRINT 思想悼亡者
+		CASE 6
+			PRINT 完美暴君
+		CASE 7
+			PRINT 人偶群戏
+		CASE 8
+			PRINT 午夜的探戈
+		CASE 9
+			PRINT 爱慕虚荣
+		CASE 10
+			PRINT 99℃溺亡
+		CASEELSE
+			PRINT GAMBit
+	ENDSELECT
+ELSEIF W == 17
+;兽耳ユニット
+	P = RAND:12
+	SELECTCASE P
+		CASE 0
+			PRINT 一起喵喵叫吧
+		CASE 1
+			PRINT 兽耳开关
+		CASE 2
+			PRINT 呜呼、美妙喵生
+		CASE 3
+			PRINT YOU＆IDOL
+		CASE 4
+			PRINT 喵呜～摇晃的尾巴
+		CASE 5
+			PRINT 安娜的橱窗
+		CASE 6
+			PRINT 月圆之夜
+		CASE 7
+			PRINT 人狼村冒险
+		CASE 8
+			PRINT 阳光灿烂之日
+		CASE 9
+			PRINT 通往童话的路径
+		CASE 10
+			PRINT 水桶里跳跃的鱼
+		CASEELSE
+			PRINT 尾巴的秘密
+	ENDSELECT
+ELSEIF W == 18
+;白衣男子ユニット
+	P = RAND:12
+	SELECTCASE P
+		CASE 0
+			PRINT 一起来做实验吧！
+		CASE 1
+			PRINT 恋爱化学式
+		CASE 2
+			PRINT 惩罚游戏
+		CASE 3
+			PRINT 拿去吧，白大褂！
+		CASE 4
+			PRINT 水溶液的性质
+		CASE 5
+			PRINT 对二氯苯x反氯化苯
+		CASE 6
+			PRINT DNA溶解
+		CASE 7
+			PRINT 元素纪行
+		CASE 8
+			PRINT 生物标本
+		CASE 9
+			PRINT 蝴蝶残片
+		CASE 10
+			PRINT 窃尸贼
+		CASEELSE
+			PRINT 非典型性反应
+	ENDSELECT
+ELSEIF W == 19
+;理系男子ユニット
+	P = RAND:12
+	SELECTCASE P
+		CASE 0
+			PRINT 我们的理科室
+		CASE 1
+			PRINT 理系男子Switch On！
+		CASE 2
+			PRINT 82.99 F.M
+		CASE 3
+			PRINT 生命的连续性
+		CASE 4
+			PRINT 理科! 科学! 理系! 学术!
+		CASE 5
+			PRINT 国语算术理科社会
+		CASE 6
+			PRINT 摇晃试剂
+		CASE 7
+			PRINT 危险扳机
+		CASE 8
+			PRINT 人体黄金比
+		CASE 9
+			PRINT 蒸发都市
+		CASE 10
+			PRINT 白色摇篮曲
+		CASEELSE
+			PRINT 危险人体实验
+	ENDSELECT
+ELSEIF W == 20
+;文系男子ユニット
+	P = RAND:12
+	SELECTCASE P
+		CASE 0
+			PRINT 湿透的雨伞
+		CASE 1
+			PRINT 交换日记
+		CASE 2
+			PRINT 无法传达的爱恋
+		CASE 3
+			PRINT Lemon
+		CASE 4
+			PRINT 眼眸所及之处
+		CASE 5
+			PRINT 青色书签
+		CASE 6
+			PRINT 夏夜星辉
+		CASE 7
+			PRINT 昭和恋爱循环
+		CASE 8
+			PRINT 青空下的约定
+		CASE 9
+			PRINT 初夏的味道
+		CASE 10
+			PRINT 夜明前的琉璃色
+		CASEELSE
+			PRINT 放课后的图书室
+	ENDSELECT
+ELSEIF W == 21
+;ミステリアスユニット
+	P = RAND:12
+	SELECTCASE P
+		CASE 0
+			PRINT 水晶球它知道
+		CASE 1
+			PRINT 神秘・骑士
+		CASE 2
+			PRINT oblivious
+		CASE 3
+			PRINT 恋爱勇者
+		CASE 4
+			PRINT 今天也不想毁灭世界
+		CASE 5
+			PRINT THIS ILLUSION
+		CASE 6
+			PRINT 冒险启程
+		CASE 7
+			PRINT 悠久的蒸汽机关
+		CASE 8
+			PRINT 新手村物语
+		CASE 9
+			PRINT 赤铜色月下
+		CASE 10
+			PRINT 神代魔法使
+		CASEELSE
+			PRINT 星象
+	ENDSELECT
+ELSEIF W == 22
+;少年ユニット
+	P = RAND:12
+	SELECTCASE P
+		CASE 0
+			PRINT 童贞毕业式
+		CASE 1
+			PRINT 反抗期
+		CASE 2
+			PRINT 七转八起☆至上主义!
+		CASE 3
+			PRINT 恋爱BOOTCAMP★
+		CASE 4
+			PRINT 见习偶像
+		CASE 5
+			PRINT 思念的碎片
+		CASE 6
+			PRINT 春宵情歌
+		CASE 7
+			PRINT dark cherry mystery
+		CASE 8
+			PRINT 不过是从头再来
+		CASE 9
+			PRINT 最后的现在
+		CASE 10
+			PRINT 男子高中的日常
+		CASEELSE
+			PRINT 青春永不停歇
+	ENDSELECT
+ELSEIF W == 23
+;女装ユニット
+	P = RAND:12
+	SELECTCASE P
+		CASE 0
+			PRINT 蝴蝶效应
+		CASE 1
+			PRINT 想要变得漂亮
+		CASE 2
+			PRINT 初恋娼女
+		CASE 3
+			PRINT 乙女解剖
+		CASE 4
+			PRINT 瓦尔哈拉乙女之丘
+		CASE 5
+			PRINT 心拍数＃0822
+		CASE 6
+			PRINT 易燃易爆炸
+		CASE 7
+			PRINT STYX HELIX
+		CASE 8
+			PRINT RE:CREATE
+		CASE 9
+			PRINT 恋乃百年战争
+		CASE 10
+			PRINT endless之吻
+		CASEELSE
+			PRINT 是为了你们吧！
+	ENDSELECT
+ELSE
+	;元気タイプ
+	IF CFLAG:600 == 1
+		P = RAND:12
+		SELECTCASE P
+			CASE 0
+				PRINT 元气☆满满！
+			CASE 1
+				PRINT 少年的巡礼
+			CASE 2
+				PRINT 恋爱的暴乱
+			CASE 3
+				PRINT 真的勇气1000％
+			CASE 4
+				PRINT Round ZERO~BLADE BRAVE~
+			CASE 5
+				PRINT W-B-X ~W-Boiled Extreme~
+			CASE 6
+				PRINT EXCITE
+			CASE 7
+				PRINT Destiny~太阳之花~
+			CASE 8
+				PRINT 日日是好日
+			CASE 9
+				PRINT 亚麻色头发的少女
+			CASE 10
+				PRINT 30％日落
+			CASEELSE
+				PRINT 乌拉～乌拉乌拉～
+		ENDSELECT
+	;温和タイプ
+	ELSEIF CFLAG:600 == 2
+		P = RAND:12
+		SELECTCASE P
+			CASE 0
+				PRINT 这是我的荣幸
+			CASE 1
+				PRINT 隔壁的太太
+			CASE 2
+				PRINT 何其温柔
+			CASE 3
+				PRINT 春风恋文
+			CASE 4
+				PRINT 霜雪千年
+			CASE 5
+				PRINT 心跳同步的时光
+			CASE 6
+				PRINT 虹色季节
+			CASE 7
+				PRINT 像花一样
+			CASE 8
+				PRINT Opus
+			CASE 9
+				PRINT 这里是、幸福安心委员会
+			CASE 10
+				PRINT Silent Oath
+			CASEELSE
+				PRINT 美味的家伙
+		ENDSELECT
+	;堅物タイプ
+	ELSEIF CFLAG:600 == 3
+		P = RAND:12
+		SELECTCASE P
+			CASE 0
+				PRINT 心道之光
+			CASE 1
+				PRINT 道
+			CASE 2
+				PRINT 武士美学
+			CASE 3
+				PRINT 骑士道
+			CASE 4
+				PRINT 请予我回应
+			CASE 5
+				PRINT Answers
+			CASE 6
+				PRINT EDEN
+			CASE 7
+				PRINT A Far Song
+			CASE 8
+				PRINT 成人的童话
+			CASE 9
+				PRINT 罪欲阿索德
+			CASE 10
+				PRINT 等待终焉
+			CASEELSE
+				PRINT 寒暄的礼节
+		ENDSELECT
+	;軟派タイプ
+	ELSEIF CFLAG:600 == 4
+		P = RAND:12
+		SELECTCASE P
+			CASE 0
+				PRINT SHINING KISS
+			CASE 1
+				PRINT ONLY GIRL
+			CASE 2
+				PRINT GOING MY WAY
+			CASE 3
+				PRINT 永无止境的爱
+			CASE 4
+				PRINT 有你在即可化成水
+			CASE 5
+				PRINT 不如与我虚度时光
+			CASE 6
+				PRINT 揪心的玩笑与漫长的白日梦
+			CASE 7
+				PRINT 第2098位机器人女朋友
+			CASE 8
+				PRINT 花吃了那女孩
+			CASE 9
+				PRINT 动物园里逃跑的鹿
+			CASE 10
+				PRINT 异乡流浪
+			CASEELSE
+				PRINT 请不要弄坏我的吉他
+		ENDSELECT
+	;屈折タイプ
+	ELSEIF CFLAG:600 == 5
+		P = RAND:12
+		SELECTCASE P
+			CASE 0
+				PRINT 唯有你…
+			CASE 1
+				PRINT KISS禁止
+			CASE 2
+				PRINT 阴暗角落
+			CASE 3
+				PRINT 暗之眷属
+			CASE 4
+				PRINT 妄想感伤代偿联盟
+			CASE 5
+				PRINT Fight for Judge
+			CASE 6
+				PRINT 抑郁十二月
+			CASE 7
+				PRINT 孑然妒火
+			CASE 8
+				PRINT 梦见之药
+			CASE 9
+				PRINT God Knows
+			CASE 10
+				PRINT Clair de lune
+			CASEELSE
+				PRINT 微妙情感
+		ENDSELECT
+	;俺様タイプ
+	ELSEIF CFLAG:600 == 6
+		P = RAND:12
+		SELECTCASE P
+			CASE 0
+				PRINT 你的东西就是我的东西
+			CASE 1
+				PRINT 风暴橡胶
+			CASE 2
+				PRINT 狂月
+			CASE 3
+				PRINT ＣＨＡＯＳ
+			CASE 4
+				PRINT 愚者的情书
+			CASE 5
+				PRINT 拟剧论
+			CASE 6
+				PRINT aLIEz
+			CASE 7
+				PRINT Never Say Never
+			CASE 8
+				PRINT 苍青色月光
+			CASE 9
+				PRINT 绝对沉醉迷宫
+			CASE 10
+				PRINT 枯干的画笔
+			CASEELSE
+				PRINT 骤起之风
+		ENDSELECT
+	;腹黒タイプ
+	ELSEIF CFLAG:600 == 7
+		P = RAND:12
+		SELECTCASE P
+			CASE 0
+				PRINT 独断的微笑
+			CASE 1
+				PRINT ＴＷＯ
+			CASE 2
+				PRINT 开始夜晚的追逐吧
+			CASE 3
+				PRINT 活力十足・狄安娜
+			CASE 4
+				PRINT Over "Quartzer"
+			CASE 5
+				PRINT 请问有内脏吗
+			CASE 6
+				PRINT DEAD OR LIE
+			CASE 7
+				PRINT 人偶师·得意之作
+			CASE 8
+				PRINT I beg your hate
+			CASE 9
+				PRINT undelete
+			CASE 10
+				PRINT Broken Wings
+			CASEELSE
+				PRINT 追梦者
+		ENDSELECT
+	;冷静タイプ
+	ELSEIF CFLAG:600 == 8
+		P = RAND:12
+		SELECTCASE P
+			CASE 0
+				PRINT 星眠之所
+			CASE 1
+				PRINT CLUMSY LOVE
+			CASE 2
+				PRINT ３人的坂道
+			CASE 3
+				PRINT 无论何时，无论何地
+			CASE 4
+				PRINT 病名为爱
+			CASE 5
+				PRINT 向内生长
+			CASE 6
+				PRINT 绝望性：英雄治愈药
+			CASE 7
+				PRINT 粘着系男子的15年纠缠不休
+			CASE 8
+				PRINT 右肩的蝶
+			CASE 9
+				PRINT 炉心融解
+			CASE 10
+				PRINT comment te dire adieu...
+			CASEELSE
+				PRINT 晚霞所向之处
+		ENDSELECT
+	;理屈タイプ
+	ELSEIF CFLAG:600 == 9
+		P = RAND:12
+		SELECTCASE P
+			CASE 0
+				PRINT 梦想的钥匙孔
+			CASE 1
+				PRINT 赤裸的心
+			CASE 2
+				PRINT 恋爱方程式
+			CASE 3
+				PRINT 毫无理由
+			CASE 4
+				PRINT 正解？不正解？
+			CASE 5
+				PRINT Be The One
+			CASE 6
+				PRINT 再见，地球
+			CASE 7
+				PRINT 宇宙的第一个足印
+			CASE 8
+				PRINT Salome
+			CASE 9
+				PRINT 告别曲
+			CASE 10
+				PRINT 菌裂
+			CASEELSE
+				PRINT 透镜的对面
+		ENDSELECT
+	;わがままタイプ
+	ELSEIF CFLAG:600 == 10
+		P = RAND:12
+		SELECTCASE P
+			CASE 0
+				PRINT 不想长大
+			CASE 1
+				PRINT 欢愉之爱乃池中鲤鱼
+			CASE 2
+				PRINT Sweet Princess
+			CASE 3
+				PRINT 任性Action
+			CASE 4
+				PRINT 灰色的水曜日
+			CASE 5
+				PRINT 仲夏夜之梦
+			CASE 6
+				PRINT 黑色的卡桑德拉
+			CASE 7
+				PRINT 任性也没关系吗
+			CASE 8
+				PRINT 夜未央与夜之恶魔
+			CASE 9
+				PRINT 偷看你的睡颜
+			CASE 10
+				PRINT 罗密欧与灰姑娘
+			CASEELSE
+				PRINT 恋之暴乱少爷
+		ENDSELECT
+	;ショタ子タイプ
+	ELSEIF CFLAG:600 == 11
+		P = RAND:12
+		SELECTCASE P
+			CASE 0
+				PRINT 摔倒一万次
+			CASE 1
+				PRINT 咚、哐当
+			CASE 2
+				PRINT 墙上的小孔
+			CASE 3
+				PRINT 唯有我知的道路
+			CASE 4
+				PRINT 银河少年物语
+			CASE 5
+				PRINT 二律背反
+			CASE 6
+				PRINT 马卡龙
+			CASE 7
+				PRINT 人生开关
+			CASE 8
+				PRINT 心跳雪山密室
+			CASE 9
+				PRINT Calling
+			CASE 10
+				PRINT 梦回1994
+			CASEELSE
+				PRINT 我们的秘密午休
+		ENDSELECT
+	;ナルシータイプ
+	ELSEIF CFLAG:600 == 12
+		P = RAND:12
+		SELECTCASE P
+			CASE 0
+				PRINT 美即为罪
+			CASE 1
+				PRINT BEAUTIFUL LOVE
+			CASE 2
+				PRINT 非常识与非常口
+			CASE 3
+				PRINT 色气满满
+			CASE 4
+				PRINT 脑浆炸裂女孩
+			CASE 5
+				PRINT 妄想税
+			CASE 6
+				PRINT 二息步行
+			CASE 7
+				PRINT ECHO
+			CASE 8
+				PRINT 线香花火
+			CASE 9
+				PRINT  Face of Fact
+			CASE 10
+				PRINT  Asphodelus
+			CASEELSE
+				PRINT 镜中恋人
+		ENDSELECT
+	;不思議子タイプ
+	ELSEIF CFLAG:600 == 13
+		P = RAND:12
+		SELECTCASE P
+			CASE 0
+				PRINT 羊角面包
+			CASE 1
+				PRINT 叩咻~咕咻~
+			CASE 2
+				PRINT 飞翔的平底锅
+			CASE 3
+				PRINT 深海水母之梦
+			CASE 4
+				PRINT 海胆与栗子
+			CASE 5
+				PRINT 末日时在做什么呢
+			CASE 6
+				PRINT 雪、无音、忍
+			CASE 7
+				PRINT 转生升天抄
+			CASE 8
+				PRINT 四角革命
+			CASE 9
+				PRINT 太阳
+			CASE 10
+				PRINT 乱暴＆待机
+			CASEELSE
+				PRINT 恋爱是天然纪念物
+		ENDSELECT
+	ELSE
+		P = RAND:10
+		SELECTCASE P
+			CASE 0
+				PRINT 谢谢你
+			CASE 1
+				PRINT 约定
+			CASE 2
+				PRINT TOMORROW
+			CASE 3
+				PRINT ＹＯＵ
+			CASE 4
+				PRINT Story of Your Life
+			CASE 5
+				PRINT 永别味道的吻
+			CASE 6
+				PRINT 遥远的约定
+			CASE 7
+				PRINT 天使不在的十二月
+			CASE 8
+				PRINT 夏日大三角
+			CASEELSE
+				PRINT 樱
+		ENDSELECT
+	ENDIF
+ENDIF
+PRINT 』
+
+
+
+
+;-------------------------------------------------
+;二人組のユニット自動結成判定処理
+;-------------------------------------------------
+@CHECK_UNIT
+VARSET LOCAL
+
+;メガネーズ
+IF TALENT:A:眼镜
+	;条件に合うキャラがいて、且つ演唱会に出れるキャラで、Aと同性なら、そのキャラの登录番号をY:0に記録
+	REPEAT CHARANUM
+		IF TALENT:COUNT:眼镜 && DOUSEI(A, COUNT) && CHECK_UNIT_X(COUNT)
+			IF !Y:0
+				Y:0 = COUNT
+			ELSEIF !J:0
+				J:0 = COUNT
+			ELSE
+				SIF !RAND:2
+					Y:0 = COUNT
+				SIF !RAND:2
+					J:0 = COUNT
+			ENDIF
+		ENDIF
+	REND
+ENDIF
+;--以下同様--
+;ショタユニット
+IF TALENT:A:幼稚 && MALE(A)
+	REPEAT CHARANUM
+		IF TALENT:COUNT:幼稚 && DOUSEI(A, COUNT) && CHECK_UNIT_X(COUNT)
+			IF !Y:1
+				Y:1 = COUNT
+			ELSEIF !J:1
+				J:1 = COUNT
+			ELSE
+				SIF !RAND:2
+					Y:1 = COUNT
+				SIF !RAND:2
+					J:1 = COUNT
+			ENDIF
+		ENDIF
+	REND
+ENDIF
+;ロリユニット
+IF TALENT:A:幼稚 && !MALE(A)
+	REPEAT CHARANUM
+		IF TALENT:COUNT:幼稚 && DOUSEI(A, COUNT) && CHECK_UNIT_X(COUNT)
+			IF !Y:2
+				Y:2 = COUNT
+			ELSEIF !J:2
+				J:2 = COUNT
+			ELSE
+				SIF !RAND:2
+					Y:2 = COUNT
+				SIF !RAND:2
+					J:2 = COUNT
+			ENDIF
+		ENDIF
+	REND
+ENDIF
+;後ろ向きじれっ隊
+IF TALENT:A:悲观 && TALENT:A:老实
+	REPEAT CHARANUM
+		IF TALENT:COUNT:悲观 && TALENT:COUNT:老实 && DOUSEI(A, COUNT) && CHECK_UNIT_X(COUNT)
+			IF !Y:3
+				Y:3 = COUNT
+			ELSEIF !J:3
+				J:3 = COUNT
+			ELSE
+				SIF !RAND:2
+					Y:3 = COUNT
+				SIF !RAND:2
+					J:3 = COUNT
+			ENDIF
+		ENDIF
+	REND
+ENDIF
+;和风美男ユニット
+IF TALENT:A:和风 && TALENT:A:美人 && MALE(A)
+	REPEAT CHARANUM
+		IF TALENT:COUNT:和风 && TALENT:COUNT:美人 && DOUSEI(A, COUNT) && CHECK_UNIT_X(COUNT)
+			IF !Y:4
+				Y:4 = COUNT
+			ELSEIF !J:4
+				J:4 = COUNT
+			ELSE
+				SIF !RAND:2
+					Y:4 = COUNT
+				SIF !RAND:2
+					J:4 = COUNT
+			ENDIF
+		ENDIF
+	REND
+ENDIF
+;伪娘ユニット
+IF TALENT:A:伪娘
+	REPEAT CHARANUM
+		IF TALENT:COUNT:伪娘 && DOUSEI(A, COUNT) && CHECK_UNIT_X(COUNT) 
+			IF !Y:5
+				Y:5 = COUNT
+			ELSEIF !J:5
+				J:5 = COUNT
+			ELSE
+				SIF !RAND:2
+					Y:5 = COUNT
+				SIF !RAND:2
+					J:5 = COUNT
+			ENDIF
+		ENDIF
+	REND
+ENDIF
+;ガチムチユニット
+IF TALENT:A:高大体型 && TALENT:A:喜欢运动 && MALE(A)
+	REPEAT CHARANUM
+		IF TALENT:COUNT:高大体型 && TALENT:COUNT:喜欢运动 && DOUSEI(A, COUNT) && CHECK_UNIT_X(COUNT)
+			IF !Y:6
+				Y:6 = COUNT
+			ELSEIF !J:6
+				J:6 = COUNT
+			ELSE
+				SIF !RAND:2
+					Y:6 = COUNT
+				SIF !RAND:2
+					J:6 = COUNT
+			ENDIF
+		ENDIF
+	REND
+ENDIF
+;芸术家ユニット
+IF TALENT:A:美术属性
+	REPEAT CHARANUM
+		IF TALENT:COUNT:美术属性 && DOUSEI(A, COUNT) && CHECK_UNIT_X(COUNT)
+			IF !Y:7
+				Y:7 = COUNT
+			ELSEIF !J:7
+				J:7 = COUNT
+			ELSE
+				SIF !RAND:2
+					Y:7 = COUNT
+				SIF !RAND:2
+					J:7 = COUNT
+			ENDIF
+		ENDIF
+	REND
+ENDIF
+;ミュージシャンユニット
+IF TALENT:A:音乐属性
+	REPEAT CHARANUM
+		IF TALENT:COUNT:音乐属性 && DOUSEI(A, COUNT) && CHECK_UNIT_X(COUNT)
+			IF !Y:8
+				Y:8 = COUNT
+			ELSEIF !J:8
+				J:8 = COUNT
+			ELSE
+				SIF !RAND:2
+					Y:8 = COUNT
+				SIF !RAND:2
+					J:8 = COUNT
+			ENDIF
+		ENDIF
+	REND
+ENDIF
+;僧職系男子ユニット
+IF TALENT:A:信仰虔诚 && MALE(A)
+	REPEAT CHARANUM
+		IF TALENT:COUNT:信仰虔诚 && DOUSEI(A, COUNT) && CHECK_UNIT_X(COUNT)
+			IF !Y:9
+				Y:9 = COUNT
+			ELSEIF !J:9
+				J:9 = COUNT
+			ELSE
+				SIF !RAND:2
+					Y:9 = COUNT
+				SIF !RAND:2
+					J:9 = COUNT
+			ENDIF
+		ENDIF
+	REND
+ENDIF
+;草食系男子ユニット
+IF TALENT:A:害羞 && TALENT:A:胆怯 && TALENT:A:老实 && MALE(A)
+	REPEAT CHARANUM
+		IF TALENT:COUNT:害羞 && TALENT:COUNT:胆怯 && TALENT:COUNT:老实 && DOUSEI(A, COUNT) && CHECK_UNIT_X(COUNT)
+			IF !Y:10
+				Y:10 = COUNT
+			ELSEIF !J:10
+				J:10 = COUNT
+			ELSE
+				SIF !RAND:2
+					Y:10 = COUNT
+				SIF !RAND:2
+					J:10 = COUNT
+			ENDIF
+		ENDIF
+	REND
+ENDIF
+;兄弟ユニット
+REPEAT CHARANUM
+	D = 2000 + NO:COUNT
+	IF (CFLAG:A:D == 1 || CFLAG:A:D == 2) && COUNT > 0 && CHECK_UNIT_X(COUNT) && DOUSEI(A, COUNT) && MALE(A)
+		IF !Y:11
+			Y:11 = COUNT
+		ELSEIF !J:11
+			J:11 = COUNT
+		ELSE
+			SIF !RAND:2
+				Y:11 = COUNT
+			SIF !RAND:2
+				J:11 = COUNT
+		ENDIF
+	ENDIF
+REND
+;師弟ユニット
+REPEAT CHARANUM
+	D = 2000 + NO:COUNT
+	IF (CFLAG:A:D == 17 || CFLAG:A:D == 18) && COUNT > 0 && CHECK_UNIT_X(COUNT) && DOUSEI(A, COUNT) && MALE(A)
+		IF !Y:12
+			Y:12 = COUNT
+		ELSEIF !J:12
+			J:12 = COUNT
+		ELSE
+			SIF !RAND:2
+				Y:12 = COUNT
+			SIF !RAND:2
+				J:12 = COUNT
+		ENDIF
+	ENDIF
+REND
+;小恶魔ユニット
+IF TALENT:A:小恶魔
+	REPEAT CHARANUM
+		IF TALENT:COUNT:小恶魔 && DOUSEI(A, COUNT) && CHECK_UNIT_X(COUNT)
+			IF !Y:13
+				Y:13 = COUNT
+			ELSEIF !J:13
+				J:13 = COUNT
+			ELSE
+				SIF !RAND:2
+					Y:13 = COUNT
+				SIF !RAND:2
+					J:13 = COUNT
+			ENDIF
+		ENDIF
+	REND
+ENDIF
+;魔乳ユニット
+IF TALENT:A:巨乳 || TALENT:A:爆乳
+	REPEAT CHARANUM
+		IF (TALENT:COUNT:巨乳 || TALENT:COUNT:爆乳) && DOUSEI(A, COUNT) && CHECK_UNIT_X(COUNT)
+			IF !Y:14
+				Y:14 = COUNT
+			ELSEIF !J:14
+				J:14 = COUNT
+			ELSE
+				SIF !RAND:2
+					Y:14 = COUNT
+				SIF !RAND:2
+					J:14 = COUNT
+			ENDIF
+		ENDIF
+	REND
+ENDIF
+;傲娇ユニット
+IF TALENT:A:傲娇
+	REPEAT CHARANUM
+		IF TALENT:COUNT:傲娇 && DOUSEI(A, COUNT) && CHECK_UNIT_X(COUNT)
+			IF !Y:15
+				Y:15 = COUNT
+			ELSEIF !J:15
+				J:15 = COUNT
+			ELSE
+				SIF !RAND:2
+					Y:15 = COUNT
+				SIF !RAND:2
+					J:15 = COUNT
+			ENDIF
+		ENDIF
+	REND
+ENDIF
+;鬼畜眼镜’ｓ
+IF TALENT:A:施虐狂 && TALENT:A:眼镜
+	REPEAT CHARANUM
+		IF TALENT:COUNT:施虐狂 && TALENT:COUNT:眼镜 && DOUSEI(A, COUNT) && CHECK_UNIT_X(COUNT)
+			IF !Y:16
+				Y:16 = COUNT
+			ELSEIF !J:16
+				J:16 = COUNT
+			ELSE
+				SIF !RAND:2
+					Y:16 = COUNT
+				SIF !RAND:2
+					J:16 = COUNT
+			ENDIF
+		ENDIF
+	REND
+ENDIF
+;兽耳ユニット
+IF TALENT:A:兽耳
+	REPEAT CHARANUM
+		IF TALENT:COUNT:兽耳 && DOUSEI(A, COUNT) && CHECK_UNIT_X(COUNT)
+			IF !Y:17
+				Y:17 = COUNT
+			ELSEIF !J:17
+				J:17 = COUNT
+			ELSE
+				SIF !RAND:2
+					Y:17 = COUNT
+				SIF !RAND:2
+					J:17 = COUNT
+			ENDIF
+		ENDIF
+	REND
+ENDIF
+;白衣男子ユニット
+IF TALENT:A:化学属性 && MALE(A)
+	REPEAT CHARANUM
+		IF TALENT:COUNT:化学属性 && DOUSEI(A, COUNT) && CHECK_UNIT_X(COUNT)
+			IF !Y:18
+				Y:18 = COUNT
+			ELSEIF !J:18
+				J:18 = COUNT
+			ELSE
+				SIF !RAND:2
+					Y:18 = COUNT
+				SIF !RAND:2
+					J:18 = COUNT
+			ENDIF
+		ENDIF
+	REND
+ENDIF
+;理系男子ユニット
+IF TALENT:A:理系 && MALE(A)
+	REPEAT CHARANUM
+		IF TALENT:COUNT:理系 && DOUSEI(A, COUNT) && CHECK_UNIT_X(COUNT)
+			IF !Y:19
+				Y:19 = COUNT
+			ELSEIF !J:19
+				J:19 = COUNT
+			ELSE
+				SIF !RAND:2
+					Y:19 = COUNT
+				SIF !RAND:2
+					J:19 = COUNT
+			ENDIF
+		ENDIF
+	REND
+ENDIF
+;文系男子ユニット
+IF TALENT:A:文系 && MALE(A)
+	REPEAT CHARANUM
+		IF TALENT:COUNT:文系 && DOUSEI(A, COUNT) && CHECK_UNIT_X(COUNT)
+			IF !Y:20
+				Y:20 = COUNT
+			ELSEIF !J:20
+				J:20 = COUNT
+			ELSE
+				SIF !RAND:2
+					Y:20 = COUNT
+				SIF !RAND:2
+					J:20 = COUNT
+			ENDIF
+		ENDIF
+	REND
+ENDIF
+;ミステリアスユニット
+IF TALENT:A:魔法／占卜属性
+	REPEAT CHARANUM
+		IF TALENT:COUNT:魔法／占卜属性 && DOUSEI(A, COUNT) && CHECK_UNIT_X(COUNT)
+			IF !Y:21
+				Y:21 = COUNT
+			ELSEIF !J:21
+				J:21 = COUNT
+			ELSE
+				SIF !RAND:2
+					Y:21 = COUNT
+				SIF !RAND:2
+					J:21 = COUNT
+			ENDIF
+		ENDIF
+	REND
+ENDIF
+;少年ユニット
+IF TALENT:A:矮小体型 && !TALENT:A:大人 && MALE(A)
+	REPEAT CHARANUM
+		IF TALENT:COUNT:矮小体型 && !TALENT:COUNT:大人 && MALE(COUNT) && CHECK_UNIT_X(COUNT)
+			IF !Y:22
+				Y:22 = COUNT
+			ELSEIF !J:22
+				J:22 = COUNT
+			ELSE
+				SIF !RAND:2
+					Y:22 = COUNT
+				SIF !RAND:2
+					J:22 = COUNT
+			ENDIF
+		ENDIF
+	REND
+ENDIF
+;女装ユニット
+IF TALENT:A:女装癖 && MALE(A)
+	REPEAT CHARANUM
+		IF TALENT:COUNT:女装癖 && MALE(COUNT) && DOUSEI(A, COUNT) && CHECK_UNIT_X(COUNT)
+			IF !Y:23
+				Y:23 = COUNT
+			ELSEIF !J:23
+				J:23 = COUNT
+			ELSE
+				SIF !RAND:2
+					Y:23 = COUNT
+				SIF !RAND:2
+					J:23 = COUNT
+			ENDIF
+		ENDIF
+	REND
+ENDIF
+U:1 = 0
+U:2 = 0
+U:3 = 0
+;Aが入ってるカスタムユニット
+IF CSTR:A:24 != ""
+	REPEAT CHARANUM
+		;メンバーを探す
+		IF CSTR:A:24 == CSTR:COUNT:24
+			U:2 += 1
+			;そのメンバーが参加できるかチェック
+			SIF CHECK_UNIT_X(COUNT)
+				U:1 += 1
+		ENDIF
+	REND
+	;全員揃っているか、ほかにメンバーがいるかチェック
+	SIF U:1 == U:2 - 1 && U:1 > 0
+		U:3 = 1
+ENDIF
+
+REPEAT 100
+	U += Y:COUNT
+REND
+
+@CHECK_UNIT_X(ARG)
+;だめなら0、ＯＫなら1を返す
+#FUNCTION
+;育児部屋にいるキャラは除外
+SIF (TALENT:ARG:153 && CFLAG:ARG:110 - 3 <= DAY) || TALENT:ARG:154
+	RETURNF 0
+;助手可能でないキャラを除外
+SIF CFLAG:ARG:1 < 2
+	RETURNF 0
+;主人を除外
+SIF ARG == MASTER
+	RETURNF 0
+;今選んでる人を除外
+SIF ARG == A
+	RETURNF 0
+;反抗３もちを除外
+SIF MARK:ARG:反抗刻印 >= 3
+	RETURNF 0
+;陷落していないキャラを除外
+SIF !KANRAKU(ARG)
+	RETURNF 0
+;体力800未満を除外
+SIF BASE:ARG:0 < 800
+	RETURNF 0
+;労役中のキャラを除外
+SIF CFLAG:ARG:12 > 0
+	RETURNF 0
+RETURNF 1
+;-------------------------------------------------
+;登录番号抽出関数2（関数NOの機能＋その場にいないのを排除)
+@NO_ALIVE
+Y = -1
+REPEAT CHARANUM
+	IF NO:COUNT == R
+		;労役中のキャラは参加できない
+		SIF CFLAG:COUNT:12 == 0
+			Y = COUNT
+		;助手可能でないキャラ・反抗刻印3持ちを排除する
+		SIF COUNT == MASTER || CFLAG:COUNT:1 <= 1
+			Y = -1
+	ENDIF
+REND
+RETURN 0
+
+;----------------------------------------------------------------------
+;奴隶の能力による倍率計算 演唱会用
+;ARG:ワンレベルの倍率, ARG:1奴隶の登录番号, ARG:2どの能力
+;----------------------------------------------------------------------
+@CONCERT_ABL_BAIRITSU(ARG, ARG:1, ARG:2)
+#FUNCTION
+IF ABL:(ARG:1):(ARG:2) == 0
+	LOCAL = 0
+ELSEIF ABL:(ARG:1):(ARG:2) == 1
+	LOCAL = ARG
+ELSEIF ABL:(ARG:1):(ARG:2) == 2
+	LOCAL = ARG*2
+ELSEIF ABL:(ARG:1):(ARG:2) == 3
+	LOCAL = ARG*3
+ELSEIF ABL:(ARG:1):(ARG:2) == 4
+	LOCAL = ARG*4
+ELSEIF ABL:(ARG:1):(ARG:2) == 5
+	LOCAL = ARG*5
+ELSEIF ABL:(ARG:1):(ARG:2) == 6
+	LOCAL = ARG*6
+ELSEIF ABL:(ARG:1):(ARG:2) == 7
+	LOCAL = ARG*7
+ELSEIF ABL:(ARG:1):(ARG:2) == 8
+	LOCAL = ARG*8
+ELSEIF ABL:(ARG:1):(ARG:2) == 9
+	LOCAL = ARG*9
+ELSE
+	LOCAL = ARG*10
+ENDIF
+RETURNF LOCAL
+
+@CONCERT_ABL_BAIRITSU_CONBI_BETTER
+IF ABL:A:D >= ABL:B:D
+	IF D == 0 || D == 1 ||  D == 7
+		C = CONCERT_ABL_BAIRITSU(10, A, D)
+	ELSE
+		C = CONCERT_ABL_BAIRITSU(5, A, D)
+	ENDIF
+	SIF C > 0
+		PRINTFORML 组合的%ABLNAME:D%上限LV{ABL:A:D} +{C}％
+ELSE
+	IF D == 0 || D == 1 ||  D == 7
+		C = CONCERT_ABL_BAIRITSU(10, B, D)
+	ELSE
+		C = CONCERT_ABL_BAIRITSU(5, B, D)
+	ENDIF
+	SIF C > 0
+		PRINTFORML 组合的%ABLNAME:D%上限LV{ABL:B:D} +{C}％
+ENDIF
+V += C
+
+@CONCERT_ABL_BAIRITSU_CONBI_WORSE
+IF ABL:A:D <= ABL:B:D
+	IF D == 0 || D == 1 ||  D == 7
+		C = CONCERT_ABL_BAIRITSU(10, A, D)
+	ELSE
+		C = CONCERT_ABL_BAIRITSU(5, A, D)
+	ENDIF
+	SIF C > 0
+		PRINTFORML 组合的%ABLNAME:D%下限LV{ABL:A:D} +{C}％
+ELSE
+	IF D == 0 || D == 1 ||  D == 7
+		C = CONCERT_ABL_BAIRITSU(10, B, D)
+	ELSE
+		C = CONCERT_ABL_BAIRITSU(5, B, D)
+	ENDIF
+	SIF C > 0
+		PRINTFORML 组合的%ABLNAME:D%下限LV{ABL:B:D} +{C}％
+ENDIF
+V += C
+
+
+@UNIT_COMPARE_ABL_MAX
+REPEAT CHARANUM
+	;メンバーを見つける
+	IF CSTR:A:24 == CSTR:COUNT:24
+		B = COUNT
+		BREAK
+	ENDIF
+REND
+REPEAT CHARANUM
+	;次々と比べてC技能の高いのをBに
+	SIF CSTR:A:24 == CSTR:COUNT:24 && ABL:COUNT:C >= ABL:B:C
+		B = COUNT
+REND
+
+
+@UNIT_COMPARE_ABL_MIN
+REPEAT CHARANUM
+	;メンバーを見つける
+	IF CSTR:A:24 == CSTR:COUNT:24
+		B = COUNT
+		BREAK
+	ENDIF
+REND
+REPEAT CHARANUM
+	;次々と比べてC技能の高いのをBに
+	SIF CSTR:A:24 == CSTR:COUNT:24 && ABL:COUNT:C <= ABL:B:C
+		B = COUNT
+REND
+
+@CONCERT_ABL_BAIRITSU_UNIT_BEST
+C = D
+CALL UNIT_COMPARE_ABL_MAX
+IF D == 0 || D == 1 ||  D == 7
+	C = CONCERT_ABL_BAIRITSU(10, B, D)
+ELSE
+	C = CONCERT_ABL_BAIRITSU(5, B, D)
+ENDIF
+SIF C > 0
+	PRINTFORML %CSTR:A:24%的%ABLNAME:D%上限LV{ABL:B:D} +{C}％
+V += C
+
+@CONCERT_ABL_BAIRITSU_UNIT_WORST
+C = D
+CALL UNIT_COMPARE_ABL_MIN
+IF D == 0 || D == 1 ||  D == 7
+	C = CONCERT_ABL_BAIRITSU(10, B, D)
+ELSE
+	C = CONCERT_ABL_BAIRITSU(5, B, D)
+ENDIF
+SIF C > 0
+	PRINTFORML %CSTR:A:24%的%ABLNAME:D%下限LV{ABL:B:D} +{C}％
+V += C
+;----------------------------------------------------------------------
+;奴隶の素質による倍率計算 演唱会用
+;ARG:ワンレベルの倍率, ARG:1奴隶の登录番号, ARG:2どの素質
+;----------------------------------------------------------------------
+@CONCERT_TALENT_BAIRITSU2(ARG, ARG:1, ARG:2)
+IF TALENT:(ARG:1):(ARG:2)
+	IF ARG < 0
+		C = -(ARG)
+		;PRINTFORML %TALENTNAME:(ARG:2)% －{C}％
+	ELSE
+		C = ARG
+		;PRINTFORML %TALENTNAME:(ARG:2)% ＋{C}％
+	ENDIF
+	U += ARG
+
+ENDIF
+
+@CONCERT_TALENT_BAIRITSU1(ARG)
+;ARG:奴隶の登录番号
+;恋慕
+CALL CONCERT_TALENT_BAIRITSU2(10, ARG, 3)
+;淫乱
+CALL CONCERT_TALENT_BAIRITSU2(10, ARG, 4)
+;服从
+CALL CONCERT_TALENT_BAIRITSU2(20, ARG, 5)
+;相亲相爱
+CALL CONCERT_TALENT_BAIRITSU2(-20, ARG, 6)
+;娼妇
+CALL CONCERT_TALENT_BAIRITSU2(-30, ARG, 7)
+;隶属
+CALL CONCERT_TALENT_BAIRITSU2(-20, ARG, 8)
+;胆怯
+CALL CONCERT_TALENT_BAIRITSU2(-10, ARG, 10)
+;反抗
+CALL CONCERT_TALENT_BAIRITSU2(-10, ARG, 11)
+;刚强
+CALL CONCERT_TALENT_BAIRITSU2(20, ARG, 12)
+;直率
+CALL CONCERT_TALENT_BAIRITSU2(10, ARG, 13)
+;老实
+CALL CONCERT_TALENT_BAIRITSU2(10, ARG, 14)
+;高傲
+CALL CONCERT_TALENT_BAIRITSU2(-10, ARG, 15)
+;自大
+CALL CONCERT_TALENT_BAIRITSU2(-10, ARG, 16)
+;自卑
+CALL CONCERT_TALENT_BAIRITSU2(10, ARG, 17)
+;傲娇
+CALL CONCERT_TALENT_BAIRITSU2(20, ARG, 18)
+;自制力
+CALL CONCERT_TALENT_BAIRITSU2(10, ARG, 20)
+;无动于衷
+CALL CONCERT_TALENT_BAIRITSU2(-10, ARG, 21)
+;缺乏感情
+CALL CONCERT_TALENT_BAIRITSU2(-10, ARG, 22)
+;难以越过的底线
+CALL CONCERT_TALENT_BAIRITSU2(10, ARG, 27)
+;喜欢引人注目
+CALL CONCERT_TALENT_BAIRITSU2(20, ARG, 28)
+;贞操重视
+CALL CONCERT_TALENT_BAIRITSU2(10, ARG, 30)
+;贞操淡漠
+CALL CONCERT_TALENT_BAIRITSU2(-10, ARG, 31)
+;害羞
+CALL CONCERT_TALENT_BAIRITSU2(20, ARG, 35)
+;学得快
+CALL CONCERT_TALENT_BAIRITSU2(10, ARG, 50)
+;学得慢
+CALL CONCERT_TALENT_BAIRITSU2(-20, ARG, 51)
+;自我奉献
+CALL CONCERT_TALENT_BAIRITSU2(10, ARG, 63)
+;喜欢身体接触
+CALL CONCERT_TALENT_BAIRITSU2(20, ARG, 65)
+;厌恶身体接触
+CALL CONCERT_TALENT_BAIRITSU2(-10, ARG, 66)
+;讨厌男人
+CALL CONCERT_TALENT_BAIRITSU2(-20, ARG, 82)
+;小恶魔
+CALL CONCERT_TALENT_BAIRITSU2(10, ARG, 87)
+;讨厌女人
+CALL CONCERT_TALENT_BAIRITSU2(-20, ARG, 88)
+;妖狐
+CALL CONCERT_TALENT_BAIRITSU2(10, ARG, 91)
+;魅力
+CALL CONCERT_TALENT_BAIRITSU2(30, ARG, 92)
+;魅惑
+CALL CONCERT_TALENT_BAIRITSU2(30, ARG, 93)
+;谜之魅力
+CALL CONCERT_TALENT_BAIRITSU2(30, ARG, 94)
+;贫乳
+CALL CONCERT_TALENT_BAIRITSU2(-10, ARG, 109)
+;绝壁
+CALL CONCERT_TALENT_BAIRITSU2(-20, ARG, 110)
+;巨乳
+CALL CONCERT_TALENT_BAIRITSU2(20, ARG, 111)
+;爆乳
+CALL CONCERT_TALENT_BAIRITSU2(10, ARG, 112)
+;兽耳
+CALL CONCERT_TALENT_BAIRITSU2(10, ARG, 143)
+;人气
+CALL CONCERT_TALENT_BAIRITSU2(30, ARG, 145)
+;人外
+CALL CONCERT_TALENT_BAIRITSU2(20, ARG, 147)
+;幼稚
+CALL CONCERT_TALENT_BAIRITSU2(30, ARG, 151)
+;怀孕
+CALL CONCERT_TALENT_BAIRITSU2(-100, ARG, 153)
+;天使
+CALL CONCERT_TALENT_BAIRITSU2(30, ARG, 166)
+;堕天使
+CALL CONCERT_TALENT_BAIRITSU2(30, ARG, 167)
+;恶魔
+CALL CONCERT_TALENT_BAIRITSU2(30, ARG, 168)
+;幽灵
+CALL CONCERT_TALENT_BAIRITSU2(30, ARG, 183)
+;无头
+CALL CONCERT_TALENT_BAIRITSU2(-30, ARG, 237)
+;僵尸
+CALL CONCERT_TALENT_BAIRITSU2(-30, ARG, 181)
+;无形体
+CALL CONCERT_TALENT_BAIRITSU2(-30, ARG, 177)
+;异形
+CALL CONCERT_TALENT_BAIRITSU2(-30, ARG, 178)
+;多尾
+CALL CONCERT_TALENT_BAIRITSU2(30, ARG, 210)
+;巨大体型
+CALL CONCERT_TALENT_BAIRITSU2(20, ARG, 224)
+;美人
+CALL CONCERT_TALENT_BAIRITSU2(30, ARG, 310)
+;伪娘,
+CALL CONCERT_TALENT_BAIRITSU2(30, ARG, 311)
+;美术属性
+CALL CONCERT_TALENT_BAIRITSU2(10, ARG, 319)
+;冒冒失失
+CALL CONCERT_TALENT_BAIRITSU2(10, ARG, 331)
+;大叔
+CALL CONCERT_TALENT_BAIRITSU2(-30, ARG, 332)
+;擅长歌唱
+CALL CONCERT_TALENT_BAIRITSU2(30, ARG, 333)
+;ダンス得意,
+IF CSTR:ARG:11 == "舞蹈"
+	C = 50
+	U += 50
+	;PRINTFORML 擅长舞蹈 ＋{C}％
+ENDIF
+;女装癖
+CALL CONCERT_TALENT_BAIRITSU2(20, ARG, 944)
+;崩溃,疯癫は利潤をかなり低くする
+CALL CONCERT_TALENT_BAIRITSU2(-200, ARG, 9)
+CALL CONCERT_TALENT_BAIRITSU2(-100, ARG, 141)
+
+
+
+@AFTER_CONCERT_SHORI(ARG)
+PRINTFORML --%CALLNAME:ARG%--
+IF ABL:ARG:14 == 0
+	R = 8
+	Q = 5
+ELSEIF ABL:ARG:14 == 1
+	R = 50
+	Q = 5
+ELSEIF ABL:ARG:14 == 2
+	R = 300
+	Q = 5
+ELSEIF ABL:ARG:14 == 3
+	R = 900
+	Q = 5
+ELSEIF ABL:ARG:14 == 4
+	R = 2400
+	Q = 10
+ELSEIF ABL:ARG:14 == 5
+	R = 3000
+	Q = 20
+ELSEIF ABL:ARG:14 == 6
+	R = 3500
+	Q = 30
+ELSEIF ABL:ARG:14 == 7
+	R = 4000
+	Q = 40
+ELSEIF ABL:ARG:14 == 8
+	R = 4500
+	Q = 50
+ELSEIF ABL:ARG:14 == 9
+	R = 5000
+	Q = 60
+ELSEIF ABL:ARG:14 >= 10
+	R = 6000
+	Q = 80
+ENDIF
+BASE:ARG:0 -= 300
+EXP:ARG:23 += 5
+EXP:ARG:64 += Q
+JUEL:ARG:8 += R
+CFLAG:ARG:10 -= 1
+;爱情经验
+PRINTFORML %EXPNAME:23%＋5
+;歌唱经验
+PRINTFORML %EXPNAME:64%＋{Q}
+;学习
+PRINTFORML %PALAMNAME:8%＋{R}
+
+IF CFLAG:ARG:2404 == 1
+    CFLAG:ARG:2404 = 0
+ELSEIF CFLAG:ARG:2414 == 1
+    C = 0
+    REPEAT CHARANUM
+        SIF CFLAG:COUNT:(NO:ARG+3000) == 1
+            C = COUNT
+    REND
+    CFLAG:ARG:2414 = 0
+    CFLAG:C:(NO:ARG+3000) = 0
+    CFLAG:C:2404 = 0
+ENDIF

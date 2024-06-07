@@ -1,0 +1,201 @@
+﻿@STATUS
+;表示条件が満たされた時にD = 1とし、先に一度判定を行う。
+D = 0
+U = 0
+REPEAT CHARANUM
+	C = COUNT
+	;労役中のキャラ
+	IF CFLAG:C:12
+		D = 1
+	ELSE
+		;育児部屋に移动しているキャラ
+		CALL CHECK_CHILD_CARE
+		IF RESULT == 1
+			D = 1
+		ELSEIF TALENT:COUNT:153 && (CFLAG:C:110 - DAY) < 7
+			D = 1
+		ELSEIF TALENT:COUNT:153 && COUNT != MASTER
+			D = 1
+		ENDIF
+	ENDIF
+REND
+SIF FLAG:23 == 1
+	D = 1
+
+IF D == 1 && (FLAG:26 & 1) == 0
+	DRAWLINE
+	REPEAT CHARANUM
+		C = COUNT
+		;労役中のキャラ
+		IF CFLAG:C:12
+			IF CFLAG:C:12 == 1
+				PRINTFORM  · %NAME:COUNT%被出租出去了
+			ELSEIF CFLAG:C:12 == 2
+				PRINTFORM  · %NAME:COUNT%正在娼馆工作
+			ELSEIF CFLAG:C:12 == 3 ||  CFLAG:C:12 == 4
+				PRINTFORM  · %NAME:COUNT%正在画室打工
+			ENDIF
+		ELSE
+			;育児部屋に移动しているキャラ
+			CALL CHECK_CHILD_CARE
+			IF RESULT == 1
+				PRINTFORM  · %NAME:COUNT%正在育儿室里
+			ELSEIF TALENT:COUNT:153 && (CFLAG:C:110 - DAY) < 7
+				PRINTFORM  · %NAME:COUNT%处于临盆状态
+			ELSEIF TALENT:COUNT:153 && COUNT != MASTER
+				PRINTFORM  · %NAME:COUNT%处于怀孕状态
+			ENDIF
+		ENDIF
+		;換行
+		U += 1
+		SIF U%4 == 0
+		PRINTL
+	REND
+	SIF FLAG:23 == 1
+		PRINTL  · 售餐棚的维持费用未上缴
+ENDIF
+PRINTL
+D = 0
+;C = MASTER
+;REPEAT CHARANUM
+;	MASTER = COUNT
+;	CALL MASTERBIRTHDAY
+;	SIF B:1 == 1
+;		D = 1
+;	SIF B:1 == 2
+;		D = 1
+;REND
+;MASTER = C
+
+IF FLAG:80 == 12
+	IF FLAG:81 >= 17 && FLAG:81 <= 25
+		D = 1
+	ENDIF
+ENDIF
+IF FLAG:80 == 1 && FLAG:81 == 1
+		D = 1
+ELSEIF FLAG:80 == 12
+	IF FLAG:81 >= 26
+		D = 1
+	ENDIF
+ENDIF
+;旧暦圏の子のために春節計算するよ！　各国一緒にする
+IF (FLAG:80 == 1 && FLAG:81 >= 22) || (FLAG:80 == 2 && FLAG:81 <= 19)
+	CALL LUNAR_AGE
+	SIF X == 0
+		D = 1
+ENDIF
+IF (FLAG:80 == 1 && FLAG:81 >= 15) || (FLAG:80 == 2 && FLAG:81 <= 12)
+	CALL LUNAR_AGE
+	SIF X >= 24
+		D = 1
+ENDIF
+
+IF FLAG:80 == 11 && FLAG:81 == 1
+		D = 1
+ELSEIF FLAG:80 == 10
+	IF FLAG:81 >= 26
+		D = 1
+	ENDIF
+ENDIF
+
+;IF D == 1 && (FLAG:26 & 2) == 0
+;	PRINTL
+;	PRINTL [日程]
+;	C = MASTER
+;	REPEAT CHARANUM
+;		MASTER = COUNT
+;		CALL MASTERBIRTHDAY
+;		SIF B:1 == 1
+;			PRINTFORML 今天是%NAME:COUNT%的生日
+;		SIF B:1 == 2
+;			PRINTFORML 马上就是%NAME:COUNT%的生日了
+;	REND
+;	MASTER = C
+
+;	IF FLAG:80 == 2
+;		IF FLAG:81 >= 11 && FLAG:81 <= 12
+;			PRINTL 马上就是情人节了
+;		ELSEIF FLAG:81 == 13
+;			PRINTL 明天就是情人节了哦，准备好巧克力了吗？
+;		ELSEIF FLAG:81 == 14
+;			PRINTL 今天是情人节，请和心爱的ＴＡ一起度过吧
+;		ENDIF
+;	ENDIF
+
+;	IF FLAG:80 == 12
+;		IF FLAG:81 == 25
+;			PRINTL 今天是圣诞节
+;		ELSEIF FLAG:81 == 24
+;			PRINTL 今天是平安夜
+;		ELSEIF FLAG:81 >= 17 && FLAG:81 <= 23
+;			PRINTL 马上就是圣诞节了
+;		ENDIF
+;	ENDIF
+;	IF FLAG:80 == 1 && FLAG:81 == 1
+;		PRINTL 今天是新年哦
+;	ELSEIF FLAG:80 == 12
+;		IF FLAG:81 == 31
+;			PRINTL 今天是除夕
+;		ELSEIF FLAG:81 >= 26
+;			PRINTL 马上就是新年了
+;		ENDIF
+;	ENDIF
+;	IF (FLAG:80 == 1 && FLAG:81 >= 22) || (FLAG:80 == 2 && FLAG:81 <= 19)
+;		CALL LUNAR_AGE
+;		SIF X == 0
+;			PRINTL 今天是春节
+;	ENDIF
+;	IF (FLAG:80 == 1 && FLAG:81 >= 15) || (FLAG:80 == 2 && FLAG:81 <= 12)
+;		CALL LUNAR_AGE
+;		SIF X >= 24
+;			PRINTL 马上就是春节了
+;	ENDIF
+;	IF FLAG:80 == 11 && FLAG:81 == 1
+;		PRINTL 今天是万圣节
+;	ELSEIF FLAG:80 == 10
+;		IF FLAG:81 == 31
+;			PRINTL 今天是万圣节
+;		ELSEIF FLAG:81 >= 26
+;			PRINTL 马上就是万圣节了
+;		ENDIF
+;	ENDIF
+;ENDIF
+
+@LUNAR_AGE
+;西暦A年B月C日の月齢X
+;仕様上2025年を起点として算出する
+;どう考えても無駄機能だろこれ……
+IF  FLAG:83 < 4
+	A = 2025 + FLAG:83
+	B = FLAG:80
+	IF B < 3
+		B += 12
+		A -= 1
+	ENDIF
+	Y = A / 4
+	Z = ((13 * B) + 8) / 5
+	X = (A + Y - 15 + Z + FLAG:81) % 7
+	FLAG:82 = X
+	SIF FLAG:80 < 3
+		A += 1
+	FLAG:83 = A
+ELSE
+	A =  FLAG:83
+ENDIF
+;何に使えるのか分からないんですが満月(X = 14)の時に「今日は月が綺麗ですね」とか
+;新月(X = 0)のときに「真っ暗なんてトゥースキュアリーすぎるよ！」とか……ダメだ役に立たない。
+;大人しく旧暦イベント算出に使うしかないのか……アイディア募集中。
+X = 0
+IF FLAG:80 == 1 || FLAG:80 == 3
+	B = 0
+ELSEIF FLAG:80 == 2 || FLAG:80 == 4 || FLAG:80 == 5
+	B = 2
+ELSE
+	B = FLAG:80 - 2
+ENDIF
+C = FLAG:81
+X = (((A - 11) % 19) * 11 + B + C) % 30
+
+
+

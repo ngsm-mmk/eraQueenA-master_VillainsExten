@@ -1,0 +1,7 @@
+stages:
+  - deploy
+
+include:
+  - project: 'era-games-zh/meta/era-download'
+    ref: master
+    file: 'templates/Deploy.gitlab-ci.yml'

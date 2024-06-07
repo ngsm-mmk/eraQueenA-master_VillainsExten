@@ -1,0 +1,802 @@
+﻿;@ARRANGE_CHARANAME
+;名前の表示の後の文字を揃えるための空白調整、Str.csvにて処理している
+;IF COUNT == 0
+;	PRINTS NAME:MASTER
+;	PRINT 　　　　　　
+;ENDIF
+;C = NO:COUNT + 200 - 1
+;PRINTS STR:C
+;PRINTL 
+
+@SHOW_INFO_PALAM
+REPEAT 25
+
+;パラメータを显示順番を並べ替える
+;男性の場合｡見やすくするために順番を変える。
+IF COUNT == 0
+;快Ｃ
+	A = 0
+ELSEIF COUNT == 1
+;润滑
+	A = 4
+ELSEIF COUNT == 2
+;耻情
+	A = 9
+ELSEIF COUNT == 3
+	IF TALENT:140
+	;快Ａ
+		A = 2
+	ELSE
+	;快Ｖ
+		A = 1
+	ENDIF
+ELSEIF COUNT == 4
+;情欲
+	A = 6
+ELSEIF COUNT == 5
+;恭顺
+	A = 5
+ELSEIF COUNT == 6
+	IF TALENT:140
+	;快Ｂ
+		A = 3
+	ELSE
+	;快Ａ
+		A = 2
+	ENDIF
+ELSEIF COUNT == 7
+;屈服
+	A = 7
+ELSEIF COUNT == 8
+;学习
+	A = 8
+ELSEIF COUNT == 9
+	IF TALENT:140
+	;快Ｖ
+		A = 1
+	ELSE
+	;快Ｂ
+		A = 3
+	ENDIF
+ELSEIF COUNT == 10
+;痛苦
+	A = 10
+ELSEIF COUNT == 11
+;恐怖
+	A = 11
+ELSEIF COUNT == 12
+;反感
+	A = 12
+ELSEIF COUNT == 13
+;不快
+	A = 13
+ELSEIF COUNT == 14
+;抑郁
+	A = 14
+ELSEIF COUNT >= 15 && COUNT <= 21
+    CONTINUE
+ELSEIF COUNT == 22
+;翅膀
+	A = 22
+ELSEIF COUNT == 23
+;尾巴
+	A = 23
+ELSEIF COUNT == 24
+;兽耳
+	A = 24
+ENDIF
+
+
+;現在のパラメータレベルをBに代入
+IF PALAM:A < PALAMLV:1
+	B = 0
+ELSEIF PALAM:A < PALAMLV:2
+	B = 1
+ELSEIF PALAM:A < PALAMLV:3
+	B = 2
+ELSEIF PALAM:A < PALAMLV:4
+	B = 3
+ELSEIF PALAM:A < PALAMLV:5
+	B = 4
+ELSEIF PALAM:A < PALAMLV:6
+	B = 5
+ELSEIF PALAM:A < PALAMLV:7
+	B = 6
+ELSEIF PALAM:A < PALAMLV:8
+	B = 7
+ELSEIF PALAM:A < PALAMLV:9
+	B = 8
+ELSE
+	B = 9
+ENDIF
+
+;パラメータの名前・パラメータレベル・ゲージを表示
+;男性の場合、快Ⅴの表示を空白に
+IF TALENT:140 && COUNT == 9
+	PRINTFORM
+ELSEIF !TALENT:羽翅 && !TALENT:骨翅 && !TALENT:蝠翼 && !TALENT:虫翼 && COUNT == 22
+	PRINTFORM
+ELSEIF !TALENT:兽尾 && !TALENT:鱼尾 && !TALENT:蛇尾 && COUNT == 23
+	PRINTFORM
+ELSEIF !TALENT:兽耳 && !TALENT:尖耳 && COUNT == 24
+	PRINTFORM
+ELSE
+	PRINTFORM 　%PALAMNAME:A%Lv{B}[
+
+	;パラメータレベルが9以上なら余計な処理は飛ばす
+	IF B >= 9
+		PRINT ********
+		GOTO SHOW_INFO_PALAM_END
+	ENDIF
+
+	;パラメータレベルごとの閾値の8分の1を1メモリとする
+	;C = PALAM:A/(PALAMLV:(B+1)/8)
+	E = B+1
+	C = PALAM:A/(PALAMLV:E/8)
+
+	;↓のコメントアウトした部分を戻すと、パラメータ表示のゲージが
+	;↓パラメータの総量を基準にしたものから、
+	;↓現在のレベル→次のレベルに必要な量を基準としたものになります。
+	;↓例えば、パラメータが5000（レベル３）のときはこんな感じに。
+	;↓　従来 [****>>>>] Now:5000 / Next:10000 （総量として必要な10000が基準）
+	;↓　これ [**>>>>>>] Now:2000 / Next: 7000 （LV3→LV4に必要な7000が基準）
+
+	;C = (PALAM:A-PALAMLV:B)/((PALAMLV:E-PALAMLV:B)/8)
+
+	D = 8-C
+
+	;パラメータレベルに応じて溜まっている部分に記号を表示
+	$SHOW_INFO_PALAM_C
+	SIF C == 0
+		GOTO SHOW_INFO_PALAM_D
+	SIF B >= 0
+		PRINT *
+	C -= 1
+	GOTO SHOW_INFO_PALAM_C
+
+	;溜まっていない部分に1Lv下の記号を表示
+	$SHOW_INFO_PALAM_D
+	SIF D == 0
+		GOTO SHOW_INFO_PALAM_END
+	SIF B >= 0
+		PRINT .
+	D -= 1
+	GOTO SHOW_INFO_PALAM_D
+
+	$SHOW_INFO_PALAM_END
+	PRINT ]
+
+	;これだけ特殊
+	IF A == 4 && PALAM:A >= 20000
+		PRINT 摩擦 0
+		GOTO SHOW_INFO_PALAM_NUM_END
+	ENDIF
+
+	;↓↓↓↓kMGT表示↓↓↓↓
+	A = PALAM:A
+	B = 0
+	;6桁までノーマル
+	IF A > 999999
+		;kキロ(1000)
+		A /= 1000
+		B += 1
+		IF A > 99999
+			;Mメガ(百万)
+			A /= 1000
+			B += 1
+			;2^31 ≒ 21億 = 2100M = 2.1G
+			;eramakerの32ビット整数ならメガまでで十分
+			IF A > 99999
+				;Gギガ(十億)
+				A /= 1000
+				B += 1
+				IF A > 99999
+					;Tテラ(兆)
+					A /= 1000
+					B += 1
+					IF A > 99999
+						;Pペタ(千兆)
+						A /= 1000
+						B += 1
+						;2^63 ≒ 920京 = 9200P = 9.2E
+						;Emueraの64ビット整数でもペタまでで十分
+					ENDIF
+				ENDIF
+			ENDIF
+		ENDIF
+	ENDIF
+
+	;数値の桁数に応じて間隔を調整
+	SIF A < 10
+		PRINT  
+	SIF A < 100
+		PRINT  
+	SIF A < 1000
+		PRINT  
+	SIF A < 10000
+		PRINT  
+	;接尾語が入るなら1つ減らす
+	SIF A < 100000 && B == 0
+		PRINT  
+
+	PRINTFORM {A}
+	IF B == 1
+		PRINT k
+	ELSEIF B == 2
+		PRINT M
+	ELSEIF B == 3
+		PRINT G
+	ELSEIF B == 4
+		PRINT T
+	ELSEIF B == 5
+		PRINT P
+	ENDIF
+	;↑↑↑↑kMGT表示↑↑↑↑
+
+	;↓↓↓↓通常表示↓↓↓↓
+	;
+	;	;数値の桁数に応じて間隔を調整
+	;	SIF PALAM:A < 10
+	;		PRINT  
+	;	SIF PALAM:A < 100
+	;		PRINT  
+	;	SIF PALAM:A < 1000
+	;		PRINT  
+	;	SIF PALAM:A < 10000
+	;		PRINT  
+	;	SIF PALAM:A < 100000
+	;		PRINT  
+	;	;数値を表示・999999を超えたら999999
+	;	IF PALAM:A > 999999
+	;		PRINT 999999
+	;	ELSE
+	;		PRINTFORM {PALAM:A}
+	;	ENDIF
+	;
+	;↑↑↑↑通常表示↑↑↑↑
+ENDIF
+
+
+
+
+$SHOW_INFO_PALAM_NUM_END
+
+;3回ごとに改行
+SIF COUNT%3 == 2
+	PRINTL 
+
+REND
+
+@SHOW_INFO_ABL
+S = 0
+REPEAT 25
+	;表示概要
+	;　　　　 0,顺从 　　　　 1,欲望 　　　　 2,技巧 　　　 3,Ｃ感觉
+	;　　　 4,Ｖ感觉 　　　 5,Ａ感觉 　　　 6,Ｂ感觉 　　 7,侍奉精神
+	;　　　 8,露出癖 　　 9,受虐属性 　　10,嗜虐属性 　　11,百合属性
+	;　　12,料理技能 　　13,摄影技能 　　14,歌唱技能 　　15,自慰成瘾
+	;　　16,精液成瘾 　　17,百合成瘾 18,性成瘾 　　19,喷乳成瘾
+	;　　20,同性倾向 　　21,男同成瘾  22，W感觉 23，T感觉 24，E感觉
+	
+	IF ABL:T:COUNT > 0
+		;表示位置あわせ
+		IF COUNT == 7 || COUNT == 9 || COUNT == 10 || COUNT == 11 || COUNT == 12 || COUNT == 13 || COUNT == 14 || COUNT == 15 || COUNT == 16 || COUNT == 17 || COUNT == 19 || COUNT == 20 || COUNT == 21
+			PRINT 　　
+		ELSEIF COUNT == 3 || COUNT == 4 || COUNT == 5 || COUNT == 6 || COUNT == 8 || COUNT == 18 || COUNT == 22 || COUNT == 23 || COUNT == 24
+			PRINT 　　　
+		ELSEIF COUNT == 0 || COUNT == 1 || COUNT == 2
+			PRINT 　　　　
+		ENDIF
+		
+		;表示
+		PRINTFORM %ABLNAME:COUNT%:LV
+		;数字の表示位置をそろえる
+		SIF ABL:T:COUNT < 10
+			PRINT  
+		PRINTFORM {ABL:T:COUNT}
+		S += 1
+		;改行するのか？ 続けて出力するのか？
+		IF S == 3
+			PRINTL 
+			S = 0
+		ELSE
+			PRINT 　
+		ENDIF
+	ENDIF
+REND
+SIF S != 4
+	PRINTL 
+
+;=============================================================================
+;PRINT_TALENT （素質）との入れ替え
+@SHOW_INFO_TALENT
+U = 0
+;リピート回数-1 の番号までの素質が表示される
+;リピート回数をあらかじめ大きめに设定（最大1000）しておくと、
+;素質の最大番号が増えたときに書き換える手間が減るが、
+;増やしすぎると処理速度に影響するので要注意
+IF TALENT:T:白肤
+    PRINT   [白肤]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:黑皮
+    PRINT   [黑皮]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+REPEAT 165
+	IF TALENT:T:COUNT && COUNT != 140 && COUNT != 90 && COUNT != 91 && COUNT != 132 && COUNT != 142 && COUNT != 143 && COUNT != 147
+		IF COUNT == 111 && TALENT:T:男性
+				PRINTFORM   [胸肌结实]
+		ELSEIF COUNT == 112 && TALENT:T:男性
+				PRINTFORM   [胸肌发达]
+		ELSE
+				PRINTFORM   [%TALENTNAME:COUNT%]
+		ENDIF
+		CALL CHECK_NEWLINE_NINGAI
+	ENDIF
+REND
+;最後のループで改行してなかったら、ここで改行しておく
+SIF U%5 != 0
+	PRINTL
+;=============================================================================
+@CHECK_NEWLINE_NINGAI
+U += 1
+SIF U%5 == 0
+    PRINTL
+
+@SHOW_NINGAI_TALENT
+X = 0
+U = 0
+;人外素质的显示
+IF TALENT:T:人外
+    PRINT   [人外]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:天使
+    PRINT   [天使]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:堕天使
+    PRINT   [堕天使]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:恶魔
+    PRINT   [恶魔]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:精灵
+    PRINT   [精灵]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:走兽
+    PRINT   [走兽]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:飞禽
+    PRINT   [飞禽]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:爬虫
+    PRINT   [爬虫]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:水生
+    PRINT   [水生]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:植物
+    PRINT   [植物]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:类人
+    PRINT   [类人]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:不定形
+    PRINT   [不定形]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:无形体
+    PRINT   [无形体]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:异形
+    PRINT   [异形]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:无头骑士
+    PRINT   [无头骑士]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:人偶
+    PRINT   [人偶]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:机器人
+    PRINT   [机器人]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:吸血鬼
+    PRINT   [吸血鬼]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:僵尸
+    PRINT   [僵尸]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:史莱姆
+    PRINT   [史莱姆]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:幽灵
+    PRINT   [幽灵]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:数据体
+    PRINT   [数据体]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:人工智能
+    PRINT   [人工智能]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:狐狸
+    PRINT   [狐狸]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:妖狐
+    PRINT   [妖狐]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:不死系
+    PRINT   [不死系]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:化形
+    PRINT   [化形]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:青肤
+    PRINT   [青肤]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:猫舌
+    PRINT   [猫舌]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+REPEAT 17
+    X = COUNT + 201
+	IF TALENT:T:X
+		PRINTFORM   [%TALENTNAME:X%]
+	    CALL CHECK_NEWLINE_NINGAI
+	ENDIF
+REND
+IF TALENT:T:兽耳
+    PRINT   [兽耳]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:无头
+    PRINT   [无头]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:马身
+    PRINT   [马身]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:小人体型
+    PRINT   [小人体型]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:巨大体型
+    PRINT   [巨大体型]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:变化体型
+    PRINT   [变化体型]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:恒温体质
+    PRINT   [恒温体质]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:变温体质
+    PRINT   [变温体质]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+IF TALENT:T:无体温
+    PRINT   [无体温]
+    CALL CHECK_NEWLINE_NINGAI
+ENDIF
+X = 0
+REPEAT 6
+    X = COUNT + 218
+	IF TALENT:T:X
+		PRINTFORM   [%TALENTNAME:X%]
+		CALL CHECK_NEWLINE_NINGAI
+	ENDIF
+REND
+X = 0
+REPEAT 6
+    X = COUNT + 230
+	IF TALENT:T:X
+		PRINTFORM   [%TALENTNAME:X%]
+		CALL CHECK_NEWLINE_NINGAI
+	ENDIF
+REND
+SIF U%5 != 0
+	PRINTL
+;=============================================================================
+;称号
+@SHOW_INFO_TALENT2
+U = 0
+X = 0
+;リピート回数-1 の番号までの素質が表示される
+;リピート回数をあらかじめ大きめに设定（最大1000）しておくと、
+;素質の最大番号が増えたときに書き換える手間が減るが、
+;増やしすぎると処理速度に影響するので要注意
+REPEAT 100
+	X = COUNT + 900
+	IF TALENT:T:X
+		PRINTFORM   [%TALENTNAME:X%]
+
+		;改行するのか？ 続けて出力するのか？
+		U += 1
+		SIF U%5 == 0
+			PRINTL
+	ENDIF
+REND
+;最後のループで改行してなかったら、ここで改行しておく
+SIF U%5 != 0
+	PRINTL 
+;=============================================================================
+;PRINT_MARK （刻印）との入れ替え
+@SHOW_INFO_MARK
+Z = 0
+REPEAT 4
+	PRINTFORM   %MARKNAME:COUNT%:LV{MARK:T:COUNT}
+	BAR MARK:T:COUNT, 3, 3
+	;最後のループ以外では間隔をあける
+	SIF COUNT < 3
+		PRINT     
+	CALL CHECK_NEWLINE2
+REND
+
+@CHECK_NEWLINE2
+Z += 1
+IF Z == 2
+	PRINTL
+	Z = 0
+ENDIF
+
+;=============================================================================
+;PRINT_EXP （经验）との入れ替え
+@SHOW_INFO_EXP
+X = 0
+S = 0
+REPEAT 38
+	;表示概要
+	;　　　 0.Ｖ经验　　　 1.Ａ经验　　 　6.Ｕ经验　　　 7.Ｍ经验
+	;　　 2.绝顶经验　 　3.射精经验　　 4.性交经验　　 5.内射经验
+	;　　10.自慰经验11.调教自慰经验　　20.精液经验24.精液绝顶经验
+	;21.侍奉快乐经验　25.舔阴经验          22.口交经验　　23.爱情经验　　 50.异常经验
+	;30.痛苦快乐经验32.嗜虐快乐经验　　31.放尿经验　　33.スカ经验
+	;　　40.百合经验　　41.蔷薇经验　　62.摄影经验　　63.被摄经验
+	;　52.Ｖ扩张经验　53.Ａ扩张经验　49.Ｕ拡張经验　　51,紧缚经验
+	;　　54.喷乳经验　　55.触手经验　　59.产卵经验　　60.生育经验
+	;　　61.家务经验　　64.歌唱经验　　56.吸血经验　　70.调教经验
+	IF COUNT == 0
+		X = 0
+	ELSEIF COUNT == 1
+		X = 1
+	ELSEIF COUNT == 2
+		X = 6
+	ELSEIF COUNT == 3
+		X = 7
+		
+	ELSEIF COUNT == 4
+		X = 2
+	ELSEIF COUNT == 5
+		X = 3
+	ELSEIF COUNT == 6
+		X = 4
+	ELSEIF COUNT == 7
+		X = 5
+	ELSEIF COUNT == 8
+		X = 8
+	ELSEIF COUNT == 9
+		X = 10
+	ELSEIF COUNT == 10
+		X = 11
+	ELSEIF COUNT == 11
+		X = 20
+	ELSEIF COUNT == 12
+		X = 24
+	ELSEIF COUNT == 13
+		X = 21
+	ELSEIF COUNT == 14
+		X = 25
+	ELSEIF COUNT == 15
+		X = 22
+	ELSEIF COUNT == 16
+		X = 23
+	ELSEIF COUNT == 17
+		X = 50
+	ELSEIF COUNT == 18
+		X = 30
+	ELSEIF COUNT == 19
+		X = 32
+	ELSEIF COUNT == 20
+		X = 31
+	ELSEIF COUNT == 21
+		X = 33
+	ELSEIF COUNT == 22
+		X = 40
+	ELSEIF COUNT == 23
+		X = 41
+	ELSEIF COUNT == 24
+		X = 62
+	ELSEIF COUNT == 25
+		X = 63
+	ELSEIF COUNT == 26
+		X = 52
+	ELSEIF COUNT == 27
+		X = 53
+	ELSEIF COUNT == 28
+		X = 49
+	ELSEIF COUNT == 29
+		X = 51
+	ELSEIF COUNT == 30
+		X = 54
+	ELSEIF COUNT == 31
+		X = 55
+	ELSEIF COUNT == 32
+		X = 59
+	ELSEIF COUNT == 33
+		X = 60
+	ELSEIF COUNT == 34
+		X = 61
+	ELSEIF COUNT == 35
+		X = 64
+	ELSEIF COUNT == 36
+		X = 56
+	ELSEIF COUNT == 37
+		X = 70
+
+	ENDIF
+	
+	IF EXP:T:X > 0
+		;表示位置あわせ
+		IF X == 52 || X == 53 || X == 49
+			PRINT 　
+		ELSEIF X == 2 || X == 3 || X == 4 || X == 5 || X == 8 || X == 10 || X == 20 || X == 22 || X == 23 || X == 25 ||  X == 31 || X == 33 || X == 40 || X == 41 || X == 50 || X == 51 || X == 52 || X == 54 || X == 55 || X == 56 || X == 59 || X == 60 || X == 61 || X == 62 || X == 63 || X == 64 || X == 70
+			PRINT 　　
+		ELSEIF X == 0 || X == 1 || X == 6 || X == 7 
+			PRINT 　　  
+		ENDIF
+		
+		PRINTFORM %EXPNAME:X%:
+		;表示位置そろえる
+		IF EXP:T:X < 10
+			PRINT    
+		ELSEIF EXP:T:X < 100
+			PRINT   
+		ELSEIF EXP:T:X < 1000
+			PRINT  
+		ENDIF
+		PRINTFORM {EXP:T:X}
+		S += 1
+		
+		;改行するのか？ 続けて出力するのか？
+		IF S == 3
+			PRINTL 
+			S = 0
+		ELSE
+			PRINT 　
+		ENDIF
+	ENDIF
+REND
+SIF S != 4
+	PRINTL 
+;=============================================================================
+;SHOW_JUEL 之珠表示部分を独立した関数に
+@SHOW_INFO_JUEL
+U = 0
+X = 0
+REPEAT 25
+	;表示順
+	; 0,快Ｃ　 1,快Ｖ　 2,快Ａ　 3,快Ｂ
+	; 5,恭顺　 6,情欲　 7,屈服　 8,学习
+	; 9,耻情　10,痛苦　11,恐怖 100,否定
+	;男性の場合、快Ｖ之珠を省略
+	IF COUNT == 0
+		IF TALENT:T:140
+		ELSE
+			X = 0
+		ENDIF
+	ELSEIF COUNT == 1
+		IF TALENT:T:140
+			X = 0
+		ELSE
+			X = 1
+		ENDIF
+	ELSEIF COUNT == 2
+		X = 2
+	ELSEIF COUNT == 3
+		X = 3
+		
+	ELSEIF COUNT == 4
+		X = 5
+	ELSEIF COUNT == 5
+		X = 6
+	ELSEIF COUNT == 6
+		X = 7
+	ELSEIF COUNT == 7
+		X = 8
+		
+	ELSEIF COUNT == 8
+		X = 9
+	ELSEIF COUNT == 9
+		X = 10
+	ELSEIF COUNT == 10
+		X = 11
+	ELSEIF COUNT == 11
+		X = 100
+	ELSEIF COUNT >= 12 && COUNT <= 21
+		CONTINUE
+	ELSEIF COUNT == 22
+		X = 22
+	ELSEIF COUNT == 23
+		X = 23
+	ELSEIF COUNT == 24
+		X = 24
+	ENDIF
+
+
+	IF TALENT:T:140 && COUNT == 0
+		PRINTFORM 　　　　　 
+		;表示位置そろえる
+		PRINT       
+	ELSEIF !TALENT:T:羽翅 && !TALENT:T:骨翅 && !TALENT:T:蝠翼 && !TALENT:T:虫翼 && COUNT == 22
+		PRINTFORM 　　　　　 
+		;表示位置そろえる
+		PRINT       
+	ELSEIF !TALENT:T:鱼尾 && !TALENT:T:兽尾 && !TALENT:T:蛇尾 && COUNT == 23
+		PRINTFORM 　　　　　 
+		;表示位置そろえる
+		PRINT       
+	ELSEIF !TALENT:T:兽耳 && !TALENT:T:尖耳 && COUNT == 24
+		PRINTFORM 　　　　　 
+		;表示位置そろえる
+		PRINT       
+	ELSE
+		PRINTFORM 　%PALAMNAME:X%之珠:
+
+		;表示位置そろえる
+		IF JUEL:T:X < 10
+			PRINT      
+		ELSEIF JUEL:T:X < 100
+			PRINT     
+		ELSEIF JUEL:T:X < 1000
+			PRINT    
+		ELSEIF JUEL:T:X < 10000
+			PRINT   
+		ELSEIF JUEL:T:X < 100000
+			PRINT  
+		ENDIF
+
+		PRINTV JUEL:T:X
+	ENDIF
+
+	;改行or表示位置あけ
+	U += 1
+	IF U%3 == 0
+		PRINTL 
+	ELSE
+		PRINT  
+	ENDIF
+REND
+
+;最後のループで改行してなかったら、ここで改行しておく
+SIF U%3 != 0
+	PRINTL 
+

@@ -1,0 +1,384 @@
+﻿;-------------------------------------------------
+;強制舔阴
+;助手による指令、及び百合プ雷、レベル1
+;-------------------------------------------------
+@COM120
+;-------------------------------------------------
+;特殊派生処理
+;-------------------------------------------------
+;舔阴时自慰
+IF  (PREVCOM == 10 || PREVCOM == 11 || PREVCOM == 14) && TEQUIP:19 == 0
+		CALL COM_ABLE531
+		SIF RESULT == 1
+			JUMP COM531
+ENDIF
+;前回と今回の调教者が同じ
+IF (ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0)
+	;绳子使用中でなく、前回の调教が舔阴か口交か６９式だと６９式に
+	IF (PREVCOM == 1 || PREVCOM == 2 || PREVCOM == 501) && TEQUIP:19 == 0
+		CALL COM_ABLE501
+		SIF RESULT == 1
+			JUMP COM501
+	ENDIF
+ENDIF
+
+PRINTL 命其舔阴
+;-------------------------------------------------
+;実行判定処理
+;-------------------------------------------------
+A = 0
+S = 0
+
+;すべての命令に共通の要素を考慮
+;(顺从が高いと命令に従いやすいなど)
+CALL COM_ORDER
+
+;ABL:欲望
+IF ABL:1
+	SIF S
+		PRINT  + 
+	A += ABL:1 * 1
+	PRINTS ABLNAME:1
+	PRINTV 'LV,ABL:1,'(,ABL:1 * 1,')
+	S = 1
+ENDIF
+;ABL:侍奉精神
+IF ABL:7
+	SIF S
+		PRINT  + 
+	A += ABL:7 * 4
+	PRINTS ABLNAME:7
+	PRINTV 'LV,ABL:7,'(,ABL:7 * 4,')
+	S = 1
+ENDIF
+
+
+
+IF MARK:1
+	SIF S
+		PRINT  + 
+	A += MARK:1 * 2
+	PRINTS MARKNAME:1
+	PRINTV 'LV,MARK:1,'(,MARK:1 * 2,')
+	S = 1
+ENDIF
+
+
+;PALAM:情欲
+IF PALAM:6 < PALAMLV:1
+	L = 0
+ELSEIF PALAM:6 < PALAMLV:2
+	L = 1
+ELSEIF PALAM:6 < PALAMLV:3
+	L = 2
+ELSEIF PALAM:6 < PALAMLV:4
+	L = 3
+ELSEIF PALAM:6 < PALAMLV:5
+	L = 4
+ELSE
+	L = 5
+ENDIF
+IF L
+	SIF S
+		PRINT  + 
+	A += L * 1
+	PRINTS PALAMNAME:6
+	PRINTV 'LV,L,'(,L * 1,')
+	S = 1
+ENDIF
+
+;害羞
+IF TALENT:35
+	PRINT  - 
+	A -= 1
+	PRINTS TALENTNAME:35
+	PRINTV '(,1,')
+	S = 1
+ENDIF
+;污臭钝感
+IF TALENT:61
+	SIF S
+		PRINT  + 
+	A += 3
+	PRINTS TALENTNAME:61
+	PRINTV '(,3,')
+	S = 1
+ENDIF
+;污臭敏感
+IF TALENT:62
+	PRINT  - 
+	A -= 3
+	PRINTS TALENTNAME:62
+	PRINTV '(,3,')
+	S = 1
+ENDIF
+;自我奉献
+IF TALENT:63
+	SIF S
+		PRINT  + 
+	A += 6
+	PRINTS TALENTNAME:63
+	PRINTV '(,6,')
+	S = 1
+ENDIF
+;否定快感（淫乱、娼妇で无效）
+IF TALENT:71 && (TALENT:4 == 0 && TALENT:7 == 0)
+	PRINT  - 
+	A -= 1
+	PRINTS TALENTNAME:71
+	PRINTV '(,1,')
+	S = 1
+ENDIF
+;淫乱
+IF TALENT:4 && ASSIPLAY == 0
+	SIF S
+		PRINT  + 
+	A += 5
+	PRINTS TALENTNAME:4
+	PRINTV '(,5,')
+	S = 5
+ENDIF
+;娼妇
+IF TALENT:7 && ASSIPLAY == 0
+	SIF S
+		PRINT  + 
+	A += 10
+	PRINTS TALENTNAME:7
+	PRINTV '(,10,')
+	S = 10
+ENDIF
+
+Y = 0
+;愛液の汚れ
+SIF STAIN:PLAYER:3 & 1
+	Y += 1
+;精液の汚れ
+SIF STAIN:PLAYER:3 & 4
+	Y += 3
+;肛の汚れ
+SIF STAIN:PLAYER:3 & 8
+	Y += 7
+SIF STAIN:PLAYER:3 & 16
+	Y += 15
+
+SIF TALENT:61
+	Y /= 3
+SIF TALENT:62
+	Y *= 2
+
+;汚れあり
+IF Y
+	PRINT  - 
+	A -= Y
+	;污臭钝感
+	IF TALENT:61
+		PRINT 有污物、
+		PRINTS TALENTNAME:61
+	ELSEIF TALENT:62
+		PRINT 有污物、
+		PRINTS TALENTNAME:62
+	ELSE
+		PRINT 有污物
+	ENDIF
+	PRINTV '(,Y,')
+	S = 1
+ENDIF
+
+
+;合計を表示(23以上で実行)
+PRINT  = 
+PRINTV A
+
+V = 23
+SIF A < V
+	PRINT  < 
+SIF A == V
+	PRINT  = 
+SIF A > V
+	PRINT  > 
+PRINT 实行值
+PRINTV V
+;実行不可口上/実行判定操作
+IF A < V
+	CALL KOJO_DENIAL
+	WAIT
+	RETURN 0
+ELSE
+	PRINTL
+ENDIF
+;-------------------------------------------------
+;実行決定
+;-------------------------------------------------
+STR:0 = 命其舔阴
+
+
+;実行者が奴隶であるフラグ
+TFLAG:28 = 1
+
+;-------------------------------------------------
+;射精槽チェック（扶她の場合）
+;-------------------------------------------------
+B = 1000
+
+;ABL:技巧をみる
+IF ABL:2 == 0
+	TIMES B , 1.00
+ELSEIF ABL:2 == 1
+	TIMES B , 1.20
+ELSEIF ABL:2 == 2
+	TIMES B , 1.40
+ELSE
+	TIMES B , 1.60
+ENDIF
+
+;ABL:顺从をみる
+IF ABL:0 == 0
+	TIMES B , 0.80
+ELSEIF ABL:0 == 1
+	TIMES B , 0.90
+ELSEIF ABL:0 == 2
+	TIMES B , 1.00
+ELSE
+	TIMES B , 1.10
+ENDIF
+
+;ABL:侍奉精神をみる
+IF ABL:7 == 0
+	TIMES B , 0.50
+ELSEIF ABL:7 == 1
+	TIMES B , 0.80
+ELSEIF ABL:7 == 2
+	TIMES B , 1.20
+ELSE
+	TIMES B , 1.50
+ENDIF
+
+;TALENT:善用舌头、猫舌をみる
+SIF TALENT:52 || TALENT:54
+	TIMES B , 2.00
+
+;プ雷ヤーのABL:Ｃ感觉をみる
+IF ABL:PLAYER:3 == 0
+	TIMES B , 1.00
+ELSEIF ABL:PLAYER:3 == 1
+	TIMES B , 1.50
+ELSEIF ABL:PLAYER:3 == 2
+	TIMES B , 2.00
+ELSEIF ABL:PLAYER:3 == 3
+	TIMES B , 2.50
+ELSEIF ABL:PLAYER:3 == 4
+	TIMES B , 3.50
+ELSE
+	TIMES B , 5.00
+ENDIF
+
+;再装填処理中は射精槽は20分の1に
+;SIF CFLAG:PLAYER:9 > 0
+;	B /= 20
+
+
+IF TALENT:PLAYER:137 || TALENT:PLAYER:139 || TALENT:PLAYER:140
+	BASE:PLAYER:2 += B
+ELSE
+	B = B/4
+	BASE:PLAYER:2 += B
+ENDIF
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 10
+LOSEBASE:1 += 100
+
+;奴隶男で、调教者女の場合
+IF MALE(TARGET) && !MALE(PLAYER)
+	SOURCE:4 = 100
+	SOURCE:11 = 100
+ENDIF
+
+SOURCE:5 = 300
+SOURCE:6 = 150
+SOURCE:14 = 500
+SOURCE:17 = 200
+SOURCE:18 = 200
+
+;上のほうで計算した汚れデータ
+SOURCE:15 = Y*80 + 50
+
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 400
+
+
+;-------------------------------------------------
+;射精绝顶チェック
+;-------------------------------------------------
+CALL SAMEN_CHECK
+
+;射精時の処理
+IF E >= 1
+	;射精先タイプの设定
+	;TFLAG:703 = 4
+	TFLAG:703 = 7
+	;射精先選択の可・不可
+	TFLAG:704 = 1
+	;汎用的な処理はこの関数で行う
+	;（射精槽の再計算や射精经验の上昇と共通部分の表示）
+	CALL SAMEN_SHOOT
+ENDIF
+
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;奴隶の口⇔调教者のＶの汚れが移动
+STAIN:0 |= STAIN:PLAYER:3
+STAIN:PLAYER:3 |= STAIN:0
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;舔阴经验
+PRINTFORML %EXPNAME:25%＋１
+EXP:25 += 1
+
+
+;蔷薇经验とか加算
+CALL COM_EXP(6)
+
+
+
+;奴隶が猫舌持ちの場合は、调教者に嗜虐快乐经验を追加
+IF TALENT:TARGET:54
+	EXP:32 += 1
+	PRINTFORML %EXPNAME:32%＋１
+ENDIF
+
+;依赖度ベクトル
+P = NO:PLAYER
+IF RELATION:P > 100
+	TFLAG:33 = 2
+ELSEIF RELATION:P < 100
+	TFLAG:33 = 3
+ELSE
+	TFLAG:33 = 1
+ENDIF
+
+;依赖度補正値(相性100↑かつ淫乱で1、娼妇で2）
+P = NO:PLAYER
+IF TALENT:4 && RELATION:P > 100
+	TFLAG:30 += 1
+ELSEIF TALENT:7 && RELATION:P > 100
+	TFLAG:30 += 2
+ENDIF
+
+;侍奉快乐フラグ
+TFLAG:100 = 1
+
+
+RETURN 1
+

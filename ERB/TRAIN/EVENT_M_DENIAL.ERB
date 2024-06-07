@@ -1,0 +1,128 @@
+﻿;指令実行判定をトリガーにした口上
+@KOJO_DENIAL
+SIF !TEQUIP:PLAYER:60
+CALL DENIAL_MESSAGE
+RETURN 0
+;実行判定不可のときのテ接吻ト
+;-------------------------------------------------
+;地の文呼び出し コメントアウト　まだ汎用のみ　
+;-------------------------------------------------
+@DENIAL_MESSAGE
+;RESULT = 0
+;TRYCALLFORM DENIAL_MESSAGE_{SELECTCOM}
+;SIF !RESULT
+;	CALL DENIAL_MESSAGE_EX
+;
+;-------------------------------------------------
+;汎用
+;-------------------------------------------------
+;@DENIAL_MESSAGE_EX
+LOCALS = 
+LOCAL = 0
+PRINTL
+SELECTCASE SELECTCOM
+	CASE 10, 11, 505, 592
+		LOCALS = 让自己自慰
+		LOCAL = 1
+	CASE 14
+		LOCALS = 让自己玩弄后穴
+		LOCAL = 1
+	CASE 20
+		LOCALS = 接吻
+	CASE 60, 61, 68, 69, 72, 74, 76
+		LOCALS = 性交
+	CASE 62, 63, 70, 71, 73, 75, 77
+		LOCALS = 肛交
+	CASE 66, 67
+		LOCALS = 骑乘位
+		LOCAL = 1
+	CASE 80
+		LOCALS = 手交
+		LOCAL = 1
+	CASE 81
+		LOCALS = 口交
+		LOCAL = 1
+	CASE 82
+		LOCALS = 乳交
+		LOCAL = 1
+	CASE 83
+		LOCALS = 素股
+		LOCAL = 1
+	CASE 85
+		LOCALS = 足交
+		LOCAL = 1
+	CASE 86
+		LOCALS = 舔足
+		LOCAL = 1
+	CASE 91
+		LOCALS = 舔手指
+		LOCAL = 1
+	CASE 93
+		LOCALS = 喝奶
+		LOCAL = 1
+	CASE 112
+		LOCALS = 被掐脖子
+	CASE 113
+		LOCALS = 颜面骑乘
+	CASE 114
+		LOCALS = %CALLNAME:PLAYER%一脚踢向%CALLNAME%的睾丸，由于对方抵抗太过激烈，竟然失手了
+	CASE 115
+		LOCALS = 电气按摩
+	CASE 120
+		LOCALS = 舔阴
+		LOCAL = 1
+	CASE 122
+		LOCALS = 让自己侵犯%CALLNAME:ASSI%
+		LOCAL = 1
+	CASE 123
+		LOCALS = 足交
+	CASE 126
+		LOCALS = 胸部互蹭
+	CASE 145
+		LOCALS = 让自己用舌头侍奉肛门
+		LOCAL = 1
+	CASE 157
+		LOCALS = 饮尿
+		LOCAL = 1
+	CASE 201
+		LOCALS = 揉弄胸部
+		LOCAL = 1
+	CASE 202
+		LOCALS = 爱抚
+		LOCAL = 1
+	CASE 203
+		LOCALS = 辱骂
+		LOCAL = 1
+	CASE 207
+		LOCALS = 打屁股
+		LOCAL = 1
+	CASE 208
+		LOCALS = 鞭打
+		LOCAL = 1
+	CASE 205, 206
+		SIF TALENT:TARGET:140 || TALENT:TARGET:139 || TALENT:TARGET:137
+			LOCALS = 让自己插入
+	CASE 211
+		LOCALS = 强迫自己插入
+	CASE 212
+		LOCALS = 强迫自己插入
+	CASE 213, 214
+		SIF TALENT:TARGET:140 || TALENT:TARGET:139 || TALENT:TARGET:137
+		LOCALS = 让自己插入
+ENDSELECT
+
+
+IF STRLENS(LOCALS) 
+	PRINTL 
+	IF SELECTCOM == 114
+		PRINTFORML %LOCALS%
+	ELSEIF LOCAL
+		PRINTFORML %CALLNAME%对于%LOCALS%的命令置若罔闻
+	ELSE
+		PRINTFORML %CALLNAME%对于%LOCALS%的命令非常抵抗
+	ENDIF
+ELSE
+	PRINTL 
+	PRINTFORML %CALLNAME%抵抗服从命令
+ENDIF
+

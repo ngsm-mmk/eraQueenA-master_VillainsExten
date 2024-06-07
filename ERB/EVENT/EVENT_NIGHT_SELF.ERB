@@ -1,0 +1,1123 @@
+﻿;-------------------------------------------------
+;夜に起こるイベント
+;eratohoYMからの移植と调教者变更機能・受攻フィルタ等に对応した改造です
+;-------------------------------------------------
+@EVENT_NIGHT_SELF
+;夜に起こるイベント。
+;使う変数を０にしておく
+REPEAT FLAG:44
+	W:COUNT = 0
+REND
+G = -1
+D = -1
+I = 0
+;0|主人以外と夜イベント 1|主人によるNTRイベント 2|覗き見好きな人 3|酒宴随机値4|淫乱３ｐフラグ
+K:0 = 0
+K:1 = 0
+K:2 = 0
+K:3 = 0
+K:4 = 0
+;Ｍ、Ｓのプ雷の種類
+K:5 = 0
+;NTRイベントで好きな人
+U = -1
+
+;MASTER、TARGET、ASSIを退避
+TFLAG:402 = MASTER
+TFLAG:403 = TARGET
+TFLAG:404 = ASSI
+;発生したイベントを記録
+TFLAG:405 = 0
+
+ASSI = -1
+
+;所持キャラ全員に発動チェック
+X = 0
+
+;基礎値10から判定開始
+B = 10
+
+;主人による判定値ボー茄子計算
+;谜之魅力
+SIF TALENT:MASTER:谜之魅力
+	B += 10
+;魅惑
+SIF TALENT:MASTER:魅惑
+	B += 5
+
+;キャラ登录数が1以下の時は引き返す
+SIF CHARANUM < 1
+	RETURN 0
+CALL NIGHT_CHECK2
+
+;8%の確率で強制的に誰も来ない。
+SIF R >= 92
+	RETURN 0
+;全員チェックして実行者0人なら終了
+SIF X == 0
+	RETURN 0
+
+;実行对象者が２人以上だったら２人選択 Gがメインターゲット、Dがサブターゲット
+IF X >= 2
+	REPEAT 2
+		E = RAND:X
+		TARGET = W:E
+		;サブターゲット
+		IF COUNT == 0
+			D = TARGET
+		;メインターゲット
+		ELSE
+			G = TARGET
+		ENDIF
+	REND
+ELSEIF X == 1
+	TARGET = W:0
+ENDIF
+;メインとサブが別だったらサブを助手に突っこむ、同じだったらDを消しておく
+IF TARGET != D
+	ASSI = D
+ELSE
+	D = -1
+	ASSI = -1
+ENDIF
+
+CALL NIGHT_CHECK
+
+;もしEが0になってしまっている場合は強制終了
+SIF E == 0
+	RETURN 0
+
+;この数値でメインターゲットの積極値がわかる
+;SIF TALENT:MASTER:观察眼
+;	PRINTFORML ＜观察眼＞　%CALLNAME%的积极值：{E}
+R = TARGET
+
+;@EVENT_MESSAGE_40用
+IF ASSI > 0
+	SIF KANRAKU(ASSI) == 1 || KANRAKU(ASSI) == 3
+		K:2 = 1
+	;３Ｐフラグ
+	SIF TALENT:ASSI:淫乱 || TALENT:ASSI:娼妇
+		K:4 += 1
+ENDIF
+V = 0
+;バー镇尼判定(一応后庭处子、童贞も勝手に失わないようにしてみた)
+SIF (!TALENT:140 && (TALENT:0 || TALENT:1) && TALENT:161) || (TALENT:140 && TALENT:161)
+	V = 1
+M = 0
+;主人バー镇尼判定
+SIF (!TALENT:MASTER:140 && (TALENT:MASTER:0 || TALENT:MASTER:1) && TALENT:MASTER:161) || (TALENT:MASTER:140 && TALENT:MASTER:161)
+	M = 1
+P = 0
+;主人の精力判定　女でペニバン持ちでもOK
+SIF (CFLAG:MASTER:11 && (TALENT:MASTER:双性 || TALENT:MASTER:扶她 || TALENT:MASTER:男性)) || (!PENIS(MASTER) && ITEM:PBAND)
+	P = 1
+S = 0
+;奴隶の精力判定　女でペニバン持ちでもOK
+SIF (CFLAG:TARGET:11 && (TALENT:双性 || TALENT:扶她 || TALENT:男性)) || (!PENIS(TARGET) && ITEM:PBAND)
+	S = 1
+IF ASSI > -1
+	;助手の精力判定　女でペニバン持ちでもOK
+	SIF (CFLAG:ASSI:11 && (TALENT:ASSI:双性 || TALENT:ASSI:扶她 || TALENT:ASSI:男性)) || (!PENIS(ASSI) && ITEM:PBAND)
+		V:12 = 1
+ENDIF
+
+;小人体型・幼稚・幼儿退行だと添い寝しやすくなる
+SIF TALENT:小人体型 || TALENT:幼儿／幼儿退行 || TALENT:幼稚
+	K:3 = 4
+
+I = RAND:8
+
+;八分の一で主人が寝ている
+IF I < 1
+	CALL NIGHT_SELF_睡眠
+;陷落している
+ELSEIF E >= 40
+	;体力が低いときは添い寝に
+	IF BASE:0 < 500
+		CALL NIGHT_SELF_SOINE
+	;恋慕のとき酒宴と添い寝、子供だと添い寝になりやすい
+	ELSEIF (TALENT:恋慕 || TALENT:相亲相爱) && RAND:3 == 0
+		IF I < (3+K:3)
+			CALL NIGHT_SELF_SOINE
+		;大人でないと酒は飲めない
+		ELSEIF TALENT:大人
+			CALL NIGHT_SELF_DRINK
+		ENDIF
+	;受虐狂持ちか受虐属性高いか服从
+	ELSEIF (TALENT:受虐狂 || ABL:受虐属性 >= 4 || TALENT:服从 || TALENT:隶属) && RAND:4 == 0
+		CALL NIGHT_SELF_MPLAY
+	;施虐狂持ちか嗜虐属性高い
+	ELSEIF (TALENT:施虐狂 || ABL:嗜虐属性 >= 4) && RAND:4 == 0
+		CALL NIGHT_SELF_SPLAY
+	;百合プ雷
+	ELSEIF !PENIS(TARGET) && !PENIS(MASTER) && RAND:2 == 0
+		CALL NIGHT_SELF_LES
+	ENDIF
+ENDIF
+IF ASSI > 0
+	ASSI = TARGET
+	TARGET = D
+	CALL NIGHT_CHECK
+	;覗き見
+	SIF TFLAG:405 && E >= 40 && RAND:2 == 0
+		CALL NIGHT_SELF_PEEP
+ENDIF
+DRAWLINE
+
+;-----------------------------------------------
+;積極性のチェック関数。随机検索しない場合は下ではなくこちらの関数を使います
+@NIGHT_CHECK
+E = 20
+
+;恋慕
+SIF TALENT:恋慕
+	E += 10
+;相亲相爱
+SIF TALENT:相亲相爱
+	E += 20
+;淫乱
+SIF TALENT:淫乱
+	E += 20
+;娼妇
+SIF TALENT:娼妇
+	E += 30
+;服从
+SIF TALENT:服从
+	E += 5
+;隶属
+SIF TALENT:隶属
+	E += 10
+;顺从
+	E += (ABL:嗜虐属性*ABL:嗜虐属性)
+;顺从5以上でボー茄子
+SIF ABL:顺从 >= 5
+	E += 15
+;顺从8以上でボー茄子
+SIF ABL:顺从 >= 8
+	E += 5
+;顺从10でボー茄子
+SIF ABL:嗜虐属性 == 10
+	E += 10
+;欲望
+	E += (ABL:百合属性*ABL:百合属性)
+;欲望5以上でボー茄子
+SIF ABL:欲望 >= 5
+	E += 15
+;欲望8以上でボー茄子
+SIF ABL:欲望 >= 8
+	E += 10
+;欲望10でボー茄子
+SIF ABL:欲望 == 10
+	E += 15
+;胆怯
+SIF TALENT:胆怯
+	TIMES E , 0.85
+;反抗
+SIF TALENT:反抗
+	TIMES E , 0.80
+;直率
+SIF TALENT:直率
+	TIMES E , 1.15
+;老实
+SIF TALENT:老实
+	TIMES E , 0.90
+;缺乏感情
+SIF TALENT:缺乏感情
+	TIMES E , 0.60
+;性好奇
+SIF TALENT:性好奇
+	TIMES E , 1.10
+;性保守
+SIF TALENT:性保守
+	TIMES E , 0.90
+;乐观
+SIF TALENT:乐观
+	TIMES E , 1.10
+;难以越过的底线
+SIF TALENT:难以越过的底线
+	TIMES E , 0.80
+;贞操重视（陷落前のみ）
+SIF TALENT:贞操重视 && TALENT:恋慕 == 0 && TALENT:淫乱 == 0 && TALENT:服从 == 0 && TALENT:相亲相爱 == 0 && TALENT:娼妇 == 0 && TALENT:隶属 == 0
+	TIMES E , 0.50
+;贞操淡漠（陷落前のみ）
+SIF TALENT:贞操淡漠 && TALENT:恋慕 == 0 && TALENT:淫乱 == 0 && TALENT:服从 == 0 && TALENT:相亲相爱 == 0 && TALENT:娼妇 == 0 && TALENT:隶属 == 0
+	TIMES E , 1.20
+;性压抑
+SIF TALENT:性压抑
+	TIMES E , 0.75
+;性开放
+SIF TALENT:性开放
+	TIMES E , 1.10
+;害羞
+SIF TALENT:害羞
+	TIMES E , 0.85
+;不知羞耻
+SIF TALENT:不知羞耻
+	TIMES E , 1.10
+;接受快感
+SIF TALENT:接受快感
+	TIMES E , 1.20
+;否定快感
+SIF TALENT:否定快感
+	TIMES E , 0.60
+;讨厌男人（陷落前のみ）
+SIF TALENT:讨厌男人 && TALENT:恋慕 == 0 && TALENT:淫乱 == 0 && TALENT:服从 == 0 && TALENT:相亲相爱 == 0 && TALENT:娼妇 == 0 && TALENT:隶属 == 0 && (TALENT:MASTER:男性 || TALENT:MASTER:双性)
+	TIMES E , 0.50
+;反抗刻印２以上
+SIF MARK:反抗刻印 >= 2
+	TIMES E , 0.50
+
+;对象が欲望LV3未満、顺从LV0だとダメ
+SIF ABL:欲望 < 3 || ABL:顺从 < 1
+	E = 0
+;调教した事がない＋好感度が0のキャラはダメ(反抗あっても許さない)
+SIF CFLAG:201 == 0 && CFLAG:2 == 0
+	E = 0
+;イベント取消フラグが立ってるときはだめ
+SIF CFLAG:42
+	E = 0
+;对象が欲望LV3未満、顺从LV0だとダメ
+;反抗刻印3も駄目
+SIF MARK:9 == 3
+	E = 0
+;对象が”あなた”だとだめ
+SIF NO:TARGET == 0
+	E = 0
+
+
+;積極性のチェック関数2
+@NIGHT_CHECK2
+REPEAT CHARANUM
+	;実行者が100人に達したらREPEAT脱出
+	SIF X == 100
+		BREAK
+	;对象が未陷落ならダメ
+	SIF !KANRAKU(COUNT)
+		CONTINUE
+	;对象が主人ならスキップ
+	SIF COUNT == MASTER
+		CONTINUE
+	;对象が"あなた"だとだめ
+	SIF NO:COUNT == 0
+		CONTINUE
+	;对象が共犯者ならスキップ
+	SIF CFLAG:COUNT:1 == 3
+		CONTINUE
+	;イベント取消フラグが立ってるときスキップ
+	SIF CFLAG:COUNT:42
+		CONTINUE
+	;对象が労役中ならスキップ
+	SIF CFLAG:COUNT:12 > 0
+		CONTINUE
+	;调教した事がない＋好感度が0のキャラはスキップ
+	SIF CFLAG:COUNT:201 == 0 && CFLAG:COUNT:2 == 0
+		CONTINUE
+	;育儿中はダメ
+	SIF TALENT:COUNT:育儿中
+		CONTINUE
+	;对象が欲望LV3未満、顺从LV0だとダメ
+	;反抗刻印3も駄目
+	IF MARK:COUNT:9 == 3
+		CONTINUE
+	ELSEIF ABL:COUNT:1 < 3 || ABL:COUNT:0 < 1 
+		CONTINUE
+	ENDIF
+
+	;発動判定値計算
+	E = B
+	
+	;顺从
+	E += (ABL:COUNT:0*ABL:COUNT:0)
+	;顺从５以上でボー茄子
+	SIF ABL:COUNT:0 >= 5
+		E += 10
+	;欲望
+	E += (ABL:COUNT:1*ABL:COUNT:1)
+	;欲望５以上でボー茄子
+	SIF ABL:COUNT:1 >= 5
+		E += 10
+	;欲望１０でボー茄子
+	SIF ABL:COUNT:1 == 10
+		E += 15
+	;恋慕
+	SIF TALENT:COUNT:3
+		TIMES E , 1.20
+	;相亲相爱
+	SIF TALENT:COUNT:6
+		TIMES E , 1.30
+	;淫乱
+	SIF TALENT:COUNT:4
+		TIMES E , 1.40
+	;娼妇
+	SIF TALENT:COUNT:7
+		TIMES E , 1.50
+	;服从
+	SIF TALENT:COUNT:5
+		TIMES E , 1.05
+	;隶属
+	SIF TALENT:COUNT:8
+		TIMES E , 1.10
+	;胆怯
+	SIF TALENT:COUNT:10
+		TIMES E , 0.85
+	;反抗
+	SIF TALENT:COUNT:11
+		TIMES E , 0.80
+	;直率
+	SIF TALENT:COUNT:13
+		TIMES E , 1.15
+	;老实
+	SIF TALENT:COUNT:14
+		TIMES E , 0.90
+	;缺乏感情
+	SIF TALENT:COUNT:22
+		TIMES E , 0.60
+	;性好奇
+	SIF TALENT:COUNT:23
+		TIMES E , 1.10
+	;性保守
+	SIF TALENT:COUNT:24
+		TIMES E , 0.90
+	;乐观
+	SIF TALENT:COUNT:25
+		TIMES E , 1.10
+	;难以越过的底线
+	SIF TALENT:COUNT:27
+		TIMES E , 0.80
+	;贞操重视（陷落前のみ）
+	SIF TALENT:COUNT:30 && TALENT:COUNT:3 == 0 && TALENT:COUNT:4 == 0 && TALENT:COUNT:5 == 0 && TALENT:COUNT:6 == 0 && TALENT:COUNT:7 == 0 && TALENT:COUNT:8 == 0
+		TIMES E , 0.50
+	;贞操淡漠（陷落前・淫乱ルートのみ）
+	SIF TALENT:COUNT:31 && TALENT:COUNT:3 == 0 && TALENT:COUNT:5 == 0 && TALENT:COUNT:6 == 0 && TALENT:COUNT:8 == 0
+		TIMES E , 1.20
+	;性压抑
+	SIF TALENT:COUNT:32
+		TIMES E , 0.75
+	;性开放
+	SIF TALENT:COUNT:33
+		TIMES E , 1.10
+	;害羞
+	SIF TALENT:COUNT:35
+		TIMES E , 0.85
+	;不知羞耻
+	SIF TALENT:COUNT:36
+		TIMES E , 1.10
+	;接受快感
+	SIF TALENT:COUNT:70
+		TIMES E , 1.20
+	;否定快感
+	SIF TALENT:COUNT:71
+		TIMES E , 0.60
+	;讨厌男人（陷落前のみ）
+	SIF TALENT:COUNT:82 && TALENT:COUNT:3 == 0 && TALENT:COUNT:4 == 0 && TALENT:COUNT:5 == 0 && TALENT:COUNT:6 == 0 && TALENT:COUNT:7 == 0 && TALENT:COUNT:8 == 0 && (TALENT:MASTER:男性 || TALENT:MASTER:双性)
+		TIMES E , 0.50
+	;讨厌女人（陷落前ルートのみ）
+	SIF TALENT:COUNT:88 && TALENT:COUNT:3 == 0 && TALENT:COUNT:4 == 0 && TALENT:COUNT:5 == 0 && TALENT:COUNT:6 == 0 && TALENT:COUNT:7 == 0 && TALENT:COUNT:8 == 0 && TALENT:MASTER:男性 == 0 && TALENT:MASTER:双性 == 0
+		TIMES E , 0.50
+	;反抗刻印２以上
+	SIF MARK:COUNT:3 >= 2
+		TIMES E , 0.50
+
+	;どれだけ高くなっても、その人が行动を起こす可能性は90%
+	SIF E > 90
+		E = 90
+
+	;この処理があると、どのキャラがどれくらいの確率なのか見ることができます
+	;SIF TALENT:MASTER:观察眼
+	;	PRINTFORML ＜观察眼＞　%CALLNAME:COUNT%的行动概率：{E}％
+
+	;実行判定
+	R = RAND:100
+	IF R < E
+		W:X = COUNT
+		X += 1
+	ENDIF
+REND
+
+;------------------------------------------------------
+;退避していた调教者等、调教者变更機能を戻す
+@EVENT_NIGHT_AFTER
+MASTER = TFLAG:402
+TARGET = TFLAG:403
+ASSI = TFLAG:404
+
+;------------------------------------------------------
+;お酒に誘われる
+@NIGHT_SELF_DRINK
+;随机でほろ醉酒・エッチにもつれ込み、醉酒つぶれて添い寝
+L:2 = RAND:100
+IF L:2 < 10 || ((TALENT:小人体型 || TALENT:幼儿／幼儿退行 || TALENT:幼稚) && L:2 < 40) || CFLAG:600 == 11 || CFLAG:600 == 10
+	TFLAG:405 = 2
+ELSEIF L:2 > 89 || ((TALENT:淫乱 || TALENT:娼妇) && L:2 > 59)
+	IF ((M == 0 && S) && ((TALENT:MASTER:受 || TALENT:MASTER:攻 == 0) || (TALENT:攻 || TALENT:受 == 0))) || ((V == 0 && P) && ((TALENT:MASTER:攻 || TALENT:MASTER:受 == 0) || (TALENT:受 || TALENT:攻 == 0)))
+		;奴隶が攻又は主人が受
+		IF TALENT:攻 || TALENT:MASTER:受
+			;かつ主人が攻又は奴隶が受
+			;主人バー镇尼判定、奴隶の精力判定
+			IF M == 0 && S && PENIS(TARGET)
+				;夜這い主人受
+				TFLAG:405 = 9
+			ENDIF
+		ELSEIF TALENT:受 || TALENT:MASTER:攻
+			IF V == 0 && P
+				;夜這い
+				TFLAG:405 = 8
+			ENDIF
+		ELSE
+			L:1 = RAND:5
+			IF L:1 == 0 && M == 0 && S && PENIS(TARGET)
+				;夜這い主人受
+				TFLAG:405 = 9
+			ELSEIF V == 0 && P
+				;夜這い
+				TFLAG:405 = 8
+			ENDIF
+		ENDIF
+	ELSE
+		;百合プ雷
+		TFLAG:405 = 5
+	ENDIF
+ENDIF
+;イベント口上呼び出し  
+DRAWLINE
+TFLAG:13 = 35
+CALL KOJO_MESSAGE_EVENT
+PRINTW 
+IF TFLAG:405 == 2
+	CALL NIGHT_SELF_UP_SOINE
+ELSEIF TFLAG:405 == 5
+	CALL NIGHT_SELF_UP_RES
+ELSEIF TFLAG:405 == 8
+	CALL NIGHT_SELF_UP_SEME
+ELSEIF TFLAG:405 == 9
+	CALL NIGHT_SELF_UP_UKE
+ELSE
+	;大体上がるパラメータは同じっぽいので使い回し
+	CALL NIGHT_SELF_UP_SOINE
+ENDIF
+
+PRINTW 
+;------------------------------------------------------
+;添い寝
+@NIGHT_SELF_SOINE
+;イベント口上呼び出し  
+DRAWLINE
+TFLAG:13 = 36
+CALL KOJO_MESSAGE_EVENT
+PRINTW 
+;覗き見用フラグ
+TFLAG:405 = 2
+;添い寝经验取得呼び出し
+CALL NIGHT_SELF_UP_SOINE
+PRINTW 
+
+;------------------------------------------------------
+;受虐狂プ雷
+@NIGHT_SELF_MPLAY
+;行うプ雷の種類、K:5に記録
+L:2 = RAND:100
+IF (TALENT:MASTER:受虐狂 || ABL:MASTER:受虐属性 >= 4) && RAND:2 == 0
+	K:5 = 4
+ELSEIF L:2 > 66 || (ITEM:13 && L:2 > 49)
+	K:5 = 2
+ELSEIF (L:2 > 33 || (ITEM:13 == 0)) && ABL:嗜虐属性 >= 3
+	K:5 = 1
+ELSE
+	K:5 = 3
+ENDIF
+;イベント口上呼び出し  
+DRAWLINE
+TFLAG:13 = 37
+CALL KOJO_MESSAGE_EVENT
+PRINTW 
+;覗き見用フラグ
+TFLAG:405 = 3
+
+S = 1
+;受虐属性
+IF ABL:受虐属性 >= 9
+	S += 5
+ELSEIF ABL:受虐属性 >= 7
+	S += 4
+ELSEIF ABL:受虐属性 >= 5
+	S += 3
+ELSEIF ABL:受虐属性 >= 3
+	S += 2
+ELSEIF ABL:受虐属性 >= 1
+	S += 1
+ENDIF
+;主人の嗜虐属性
+IF ABL:MASTER:嗜虐属性 >= 9
+	S += 5
+ELSEIF ABL:MASTER:嗜虐属性 >= 7
+	S += 4
+ELSEIF ABL:MASTER:嗜虐属性 >= 5
+	S += 3
+ELSEIF ABL:MASTER:嗜虐属性 >= 3
+	S += 2
+ELSEIF ABL:MASTER:嗜虐属性 >= 1
+	S += 1
+ENDIF
+;受虐狂
+SIF TALENT:受虐狂
+	S += 5
+;主人の施虐狂
+SIF TALENT:MASTER:施虐狂
+	S += 5
+;痛苦快乐经验、情欲、屈服、痛苦
+PRINTFORML %EXPNAME:30% ＋ {S}
+EXP:痛苦快乐经验 += S
+JUEL:6 += S*100
+JUEL:7 += S*100
+JUEL:10 += S*100
+PRINTFORML %PALAMNAME:6%之珠＋{S*100}
+PRINTFORML %PALAMNAME:7%之珠＋{S*100}
+;鞭子打ちのとき痛苦追加
+IF K:5 == 2
+	JUEL:10 += S*50
+PRINTFORML %PALAMNAME:10%之珠＋{S*150}
+;足舐め・反撃のとき耻情追加
+ELSEIF K:5 == 3 || K:5 == 4
+	JUEL:9 += S*50
+PRINTFORML %PALAMNAME:9%之珠＋{S*50}
+ELSE
+PRINTFORML %PALAMNAME:10%之珠＋{S*100}
+ENDIF
+PRINTW 
+
+;------------------------------------------------------
+;施虐狂プ雷
+@NIGHT_SELF_SPLAY
+;行うプ雷の種類、K:5に記録
+IF ITEM:13 && RAND:2 == 0
+	K:5 = 2
+ELSEIF RAND:4 == 0 && !MALE(TALENT)
+	K:5 = 3
+ELSEIF (TALENT:MASTER:受虐狂 || ABL:MASTER:受虐属性 > 2) && !RAND:2
+	K:5 = 1
+ELSE
+	K:5 = 4
+ENDIF
+;イベント口上呼び出し  
+DRAWLINE
+TFLAG:13 = 38
+CALL KOJO_MESSAGE_EVENT
+PRINTW 
+;覗き見用フラグ
+TFLAG:405 = 4
+
+S = 1
+;嗜虐属性
+IF ABL:嗜虐属性 >= 9
+	S += 5
+ELSEIF ABL:嗜虐属性 >= 7
+	S += 4
+ELSEIF ABL:嗜虐属性 >= 5
+	S += 3
+ELSEIF ABL:嗜虐属性 >= 3
+	S += 2
+ELSEIF ABL:嗜虐属性 >= 1
+	S += 1
+ENDIF
+;技巧
+IF ABL:顺从 >= 9
+	S += 5
+ELSEIF ABL:顺从 >= 7
+	S += 4
+ELSEIF ABL:顺从 >= 5
+	S += 3
+ELSEIF ABL:顺从 >= 3
+	S += 2
+ELSEIF ABL:顺从 >= 1
+	S += 1
+ENDIF
+;主人の受虐属性
+IF ABL:MASTER:受虐属性 >= 9
+	S += 5
+ELSEIF ABL:MASTER:受虐属性 >= 7
+	S += 4
+ELSEIF ABL:MASTER:受虐属性 >= 5
+	S += 3
+ELSEIF ABL:MASTER:受虐属性 >= 3
+	S += 2
+ELSEIF ABL:MASTER:受虐属性 >= 1
+	S += 1
+ENDIF
+;施虐狂
+SIF TALENT:施虐狂
+	S += 5
+;主人の受虐狂
+SIF TALENT:MASTER:受虐狂
+	S += 5
+;嗜虐快乐经验、情欲、学习
+PRINTFORML %EXPNAME:32% ＋ {S}
+EXP:嗜虐快乐经验 += S
+JUEL:6 += S*200
+JUEL:8 += S*100
+PRINTFORML %PALAMNAME:6%之珠＋{S*200}
+PRINTFORML %PALAMNAME:8%之珠＋{S*100}
+PRINTW 
+
+;------------------------------------------------------
+;百合プ雷 突っこまずに乳繰り合うプ雷
+@NIGHT_SELF_LES
+;イベント口上呼び出し  
+DRAWLINE
+TFLAG:13 = 39
+CALL KOJO_MESSAGE_EVENT
+PRINTW 
+;贞操带でガード
+SIF TEQUIP:下身内衣 == 5
+	RETURN 0
+
+;覗き見用フラグ
+TFLAG:405 = 5
+;百合プ雷经验取得呼び出し
+CALL NIGHT_SELF_UP_RES
+PRINTW 
+;------------------------------------------------------
+;覗き見
+@NIGHT_SELF_PEEP
+;イベント口上呼び出し  
+DRAWLINE
+TFLAG:13 = 40
+CALL KOJO_MESSAGE_EVENT
+PRINTW 
+;贞操带でガード
+SIF TEQUIP:下身内衣 == 5
+	RETURN 0
+;添い寝覗き
+SIF TFLAG:405 == 2
+	RETURN 0
+;自慰经验取得呼び出し
+CALL NIGHT_SELF_UP_SELF
+
+PRINTW 
+
+;------------------------------------------------------
+;主人睡眠中
+@NIGHT_SELF_睡眠
+;イベント口上呼び出し  
+DRAWLINE
+TFLAG:13 = 41
+CALL KOJO_MESSAGE_EVENT
+PRINTW 
+;恋慕：勝手に添い寝、淫乱：勝手にご侍奉(と自慰)、服从：足もとで寝る
+IF TALENT:相亲相爱
+	CALL NIGHT_SELF_UP_SOINE
+	TFLAG:405 = 2
+ELSEIF TALENT:淫乱 || TALENT:娼妇
+	IF (TALENT:MASTER:男性 || TALENT:MASTER:扶她 || TALENT:MASTER:双性)
+		EXP:口交经验 += 2
+		IF CFLAG:MASTER:11 >= 3 && (TALENT:MASTER:男性 || TALENT:MASTER:扶她 || TALENT:MASTER:双性) && TALENT:MASTER:孩童尺寸== 0
+			EXP:MASTER:射精经验 += 2
+			EXP:MASTER:绝顶经验 += 2
+			EXP:精液经验 += 2
+			PRINTFORML %CALLNAME:MASTER%的%EXPNAME:3%＋２
+			PRINTFORML %EXPNAME:20%＋２
+			CFLAG:MASTER:11 -= 2
+		ENDIF
+	ELSE
+		EXP:舔阴经验 += 2
+		PRINTFORML %EXPNAME:25%＋２
+	ENDIF
+	;贞操带でガード
+	SIF TEQUIP:下身内衣 == 5
+		RETURN 0
+	CALL NIGHT_SELF_UP_SELF
+	TFLAG:405 = 1
+ELSEIF TALENT:服从 || TALENT:隶属
+	S = 1
+	IF CFLAG:2 >= 3000 || CFLAG:2 <= -3000
+		S = 15
+	ELSEIF CFLAG:2 >= 2000 || CFLAG:2 <= -2000
+		S = 10
+	ELSEIF CFLAG:2 >= 1000 || CFLAG:2 <= -1000
+		S = 5
+	ELSEIF CFLAG:2 >= 500 || CFLAG:2 <= -500
+		S = 3
+	ELSEIF CFLAG:2 >= 300 || CFLAG:2 <= -300
+		S = 2
+	ENDIF
+	;恭顺、屈服
+	PRINTFORML %PALAMNAME:5%之珠＋{S*100}
+	PRINTFORML %PALAMNAME:7%之珠＋{S*100}
+	JUEL:5 += S*100
+	JUEL:7 += S*100
+ENDIF
+
+PRINTW 
+;-------------------------------------------------------
+;自慰经验取得
+@NIGHT_SELF_UP_SELF
+;自慰成瘾による自慰チェック
+A = 1
+;自慰成瘾を見る
+IF ABL:自慰成瘾 == 1
+	A += 1
+ELSEIF ABL:自慰成瘾 == 2
+	A += 2
+ELSEIF ABL:自慰成瘾 == 3
+	A += 3
+ELSEIF ABL:自慰成瘾 == 4
+	A += 5
+ELSEIF ABL:自慰成瘾 >= 5
+	A += 7
+ENDIF
+
+;欲望とＣ感觉によるボー茄子
+IF ABL:欲望 >= 5 && ABL:Ｃ感觉 >= 5 && PALAM:6 >= PALAMLV:5
+	A += 3
+ELSEIF ABL:欲望 >= 4 && ABL:Ｃ感觉 >= 4 && PALAM:6 >= PALAMLV:4
+	A += 2
+ELSEIF ABL:欲望 >= 3 && ABL:Ｃ感觉 >= 3 && PALAM:6 >= PALAMLV:3
+	A += 1
+ENDIF
+
+;容易自慰
+SIF TALENT:容易自慰
+	A += 2
+;自慰狂
+SIF TALENT:自慰狂
+	A += 3
+
+;自慰、アナニー判定。pointが同じ場合は自慰優先(Ｃ感觉が０の場合はアナニーのみ)
+;Ａ感觉見る
+IF ABL:Ａ感觉 == 0
+	B = 0
+ELSEIF ABL:Ａ感觉 == 1
+	B = 1
+ELSEIF ABL:Ａ感觉 == 2
+	B = 2
+ELSEIF ABL:Ａ感觉 == 3
+	B = 3
+ELSEIF ABL:Ａ感觉 == 4
+	B = 4
+ELSEIF ABL:Ａ感觉 >= 5
+	B = 5
+ENDIF
+;Ｃ感觉見る
+IF ABL:Ｃ感觉 == 0
+	C = 0
+ELSEIF ABL:Ｃ感觉 == 1
+	C = 1
+ELSEIF ABL:Ｃ感觉 == 2
+	C = 2
+ELSEIF ABL:Ｃ感觉 == 3
+	C = 3
+ELSEIF ABL:Ｃ感觉 == 4
+	C = 4
+ELSEIF ABL:Ｃ感觉 >= 5
+	C = 5
+ENDIF
+
+;调教時にＡ快乐、Ｃ快乐をより稼いだほうに+1
+IF PALAM:2 > PALAM:0
+	B += 1
+ELSEIF PALAM:0 > PALAM:2
+	C += 1
+ENDIF
+
+;尻穴狂だとアナニーしやすい+
+IF TALENT:尻穴狂
+	B += 1
+ENDIF
+
+;攻だとアナニーしないよ
+IF TALENT:攻
+	B -= 10
+ENDIF
+
+IF A > 0 && (C >= B)
+	PRINTFORM %CALLNAME%似乎自慰了
+	PRINTV A
+	PRINTL 回。
+	TFLAG:13 = 1
+	PRINTFORML %EXPNAME:10%＋{A}
+	PRINTFORML %PALAMNAME:0%之珠＋{A*500}
+	PRINTFORML %PALAMNAME:5%之珠＋{A*100}
+	PRINTFORML %PALAMNAME:6%之珠＋{A*250}
+	EXP:自慰经验 += A
+	JUEL:0 += A*500
+	JUEL:5 += A*100
+	JUEL:6 += A*250
+ELSEIF A > 0 && (B > C)
+	PRINTFORM %CALLNAME%回去后好像自慰了
+	PRINTV A
+	PRINTL 回。
+	TFLAG:13 = 1
+	PRINTFORML %EXPNAME:10%＋{A}
+	PRINTFORML %EXPNAME:1%＋{A}
+	PRINTFORML %PALAMNAME:2%之珠＋{A*500}
+	PRINTFORML %PALAMNAME:6%之珠＋{A*100}
+	PRINTFORML %PALAMNAME:7%之珠＋{A*250}
+	EXP:自慰经验 += A
+	EXP:Ａ经验 += A
+	CFLAG:53 += A
+	JUEL:2 += A*500
+	JUEL:6 += A*100
+	JUEL:7 += A*250
+ENDIF
+IF ABL:顺从+ABL:侍奉精神+ABL:露出癖 >= 10 && TIME == 0
+		PRINTFORML %PALAMNAME:9%之珠＋{A*200}
+		JUEL:9 += A*200
+ENDIF
+
+;-------------------------------------------------------
+;主人攻做爱经验取得
+@NIGHT_SELF_UP_SEME
+PRINTW 
+S = 1
+;男性の場合はAを上げる
+IF TALENT:男性 || (ABL:Ｖ感觉 < ABL:Ａ感觉)
+	IF ABL:Ａ感觉 == 1
+		S += 1
+	ELSEIF ABL:Ａ感觉 == 2
+		S += 2
+	ELSEIF ABL:Ａ感觉 == 3
+		S += 3
+	ELSEIF ABL:Ａ感觉 == 4
+		S += 4
+	ELSEIF ABL:Ａ感觉 >= 5
+		S += 5
+	ENDIF
+
+ELSE
+;V感覚
+	IF ABL:Ｖ感觉 == 1
+		S += 1
+	ELSEIF ABL:Ｖ感觉 == 2
+		S += 2
+	ELSEIF ABL:Ｖ感觉 == 3
+		S += 3
+	ELSEIF ABL:Ｖ感觉 == 4
+		S += 4
+	ELSEIF ABL:Ｖ感觉 >= 5
+		S += 5
+	ENDIF
+ENDIF
+
+;淫壶
+SIF TALENT:淫壶
+	S += 3
+;尻穴狂
+SIF TALENT:尻穴狂
+	S += 3
+
+;主人の射精制限
+SIF S > CFLAG:MASTER:11
+	S = CFLAG:MASTER:11
+SIF S < 1
+	S = 1
+
+IF TALENT:男性 || (ABL:Ｖ感觉 < ABL:Ａ感觉)
+	PRINTFORML %EXPNAME:1%＋{S}
+	EXP:Ａ经验 += S
+ELSE
+	PRINTFORML %EXPNAME:0%＋{S}
+	EXP:Ｖ经验 += S
+ENDIF
+PRINTFORML %EXPNAME:4%＋{S}
+
+SIF CFLAG:101 > 0 && CFLAG:108 == 0
+	PRINTFORML %EXPNAME:5%＋{S/2}
+;孩童尺寸で無い
+SIF TALENT:MASTER:孩童尺寸== 0
+	PRINTFORML %EXPNAME:20%＋{S/2}
+IF TALENT:男性 || (ABL:Ｖ感觉 < ABL:Ａ感觉)
+	PRINTFORML %PALAMNAME:2%之珠＋{S*400}
+	JUEL:2 += S*400
+	IF PENIS(MASTER) && TALENT:MASTER:孩童尺寸== 0
+		EXP:肛射经验 += S/2
+		PRINTFORML %EXPNAME:8%＋{S/2}
+	ENDIF
+ELSE
+	PRINTFORML %PALAMNAME:1%之珠＋{S*400}
+	JUEL:1 += S*400
+	IF CFLAG:101 > 0 && CFLAG:108 == 0 && PENIS(MASTER) && TALENT:MASTER:孩童尺寸== 0
+		EXP:内射经验 += S/2
+		CFLAG:101 += S/2
+	ENDIF
+ENDIF
+PRINTFORML %PALAMNAME:5%之珠＋{S*400}
+PRINTFORML %PALAMNAME:6%之珠＋{S*400}
+EXP:性交经验 += S
+SIF PENIS(MASTER)
+	EXP:MASTER:性交经验 += S
+;孩童尺寸で無い
+SIF TALENT:MASTER:孩童尺寸== 0
+	EXP:精液经验 += S/2
+JUEL:5 += S*400
+JUEL:6 += S*400
+CFLAG:MASTER:11 -= S
+
+;-------------------------------------------------------
+;主人受做爱经验取得
+@NIGHT_SELF_UP_UKE
+PRINTW 
+S = 1
+
+;Ｃ感觉
+IF ABL:Ｃ感觉 == 1
+	S += 1
+ELSEIF ABL:Ｃ感觉 == 2
+	S += 2
+ELSEIF ABL:Ｃ感觉 == 3
+	S += 3
+ELSEIF ABL:Ｃ感觉 == 4
+	S += 4
+ELSEIF ABL:Ｃ感觉 >= 5
+	S += 5
+ENDIF
+
+;性爱狂
+SIF TALENT:性爱狂
+	S += 4
+
+;奴隶の射精制限
+SIF S > CFLAG:TARGET:11
+	S = CFLAG:TARGET:11
+SIF S < 1
+	S = 1
+;性交经验・射精经验
+PRINTFORML %CALLNAME%和%CALLNAME:MASTER%的%EXPNAME:4%＋{S}
+;主人が男性でなくＡ能力よりＶ能力が高く、奴隶が孩童尺寸でないとき内射经验
+IF TALENT:孩童尺寸== 0 && PENIS(TARGET) && TALENT:MASTER:男性 == 0 && (ABL:MASTER:Ｖ感觉 >= ABL:MASTER:Ａ感觉)
+	PRINTFORML %CALLNAME:MASTER%的%EXPNAME:5%＋{S/2}
+	EXP:MASTER:内射经验 += S/2
+ELSEIF TALENT:孩童尺寸== 0 && PENIS(TARGET)
+	PRINTFORML %CALLNAME:MASTER%的%EXPNAME:8%＋{S/2}
+	EXP:MASTER:肛射经验 += S/2
+ENDIF
+;孩童尺寸で無い
+SIF TALENT:孩童尺寸== 0
+	PRINTFORML %EXPNAME:3%＋{S/2}
+PRINTFORML %PALAMNAME:0%之珠＋{S*400}
+PRINTFORML %PALAMNAME:5%之珠＋{S*400}
+PRINTFORML %PALAMNAME:6%之珠＋{S*400}
+EXP:性交经验 += S
+;孩童尺寸で無い
+SIF TALENT:孩童尺寸== 0
+	EXP:射精经验 += S/2
+JUEL:0 += S*400
+JUEL:5 += S*400
+JUEL:6 += S*400
+CFLAG:TARGET:11 -= S
+;主人に性交经验
+EXP:MASTER:性交经验 += S
+
+;-------------------------------------------------------
+;添い寝经验取得
+@NIGHT_SELF_UP_SOINE
+S = 1
+IF CFLAG:2 >= 3000 || CFLAG:2 <= -3000
+	S = 15
+ELSEIF CFLAG:2 >= 2000 || CFLAG:2 <= -2000
+	S = 10
+ELSEIF CFLAG:2 >= 1000 || CFLAG:2 <= -1000
+	S = 5
+ELSEIF CFLAG:2 >= 500 || CFLAG:2 <= -500
+	S = 3
+ELSEIF CFLAG:2 >= 300 || CFLAG:2 <= -300
+	S = 2
+ENDIF
+;喜欢身体接触
+SIF TALENT:喜欢身体接触
+	S += 2
+;厌恶身体接触
+IF TALENT:厌恶身体接触
+	IF S == 2
+		S = 1
+	ELSEIF S > 2
+		S -= 2
+	ENDIF
+ENDIF
+;小人体型、幼稚、幼儿退行
+SIF TALENT:小人体型 || TALENT:幼儿／幼儿退行 || TALENT:幼稚
+	S += 1
+;爱情经验
+EXP:爱情经验 += S
+;恭顺
+JUEL:5 += S*100
+PRINTFORML %EXPNAME:23%＋{S}
+PRINTFORML %PALAMNAME:5%之珠＋{S*100}
+
+;漏尿癖
+IF TALENT:漏尿癖
+	PRINTW 
+	DRAWLINE
+	PRINTFORML 第二天早上，床上出现了淡黄色的湿渍……
+	PRINTFORML %PALAMNAME:9%之珠＋500
+	JUEL:9 += 500
+	IF TALENT:漏尿癖
+		EXP:放尿经验 += 2
+		PRINTFORML %CALLNAME%的%EXPNAME:31%＋2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------------
+;百合プ雷经验取得
+@NIGHT_SELF_UP_RES
+S = 1
+;Ｃ感觉、Ｂ感觉
+IF ABL:Ｃ感觉 >= 5 || ABL:Ｂ感觉 >= 5 
+	S += 5
+ELSEIF ABL:Ｃ感觉 >= 4 || ABL:Ｂ感觉 >= 4
+	S += 4
+ELSEIF ABL:Ｃ感觉 >= 3 || ABL:Ｂ感觉 >= 3
+	S += 3
+ELSEIF ABL:Ｃ感觉 >= 2 || ABL:Ｂ感觉 >= 2
+	S += 2
+ELSEIF ABL:Ｃ感觉 >= 1 || ABL:Ｂ感觉 >= 1
+	S += 1
+ENDIF
+
+;淫乳
+SIF TALENT:淫乳
+	S += 2
+;奴隶の射精制限
+;SIF S > CFLAG:TARGET:11
+;	S = CFLAG:TARGET:11
+;绝顶经验
+EXP:绝顶经验 += S
+PRINTFORML %EXPNAME:2%＋{S}
+;奴隶が射精できれば、奴隶に射精经验、主人に精液经验
+IF (TALENT:男性 || TALENT:扶她 || TALENT:双性) && TALENT:孩童尺寸== 0
+	EXP:射精经验 += S/2
+	EXP:MASTER:精液经验 += S/2
+	PRINTFORML %EXPNAME:3%＋{S/2}
+	PRINTFORML %CALLNAME:MASTER%的%EXPNAME:20%＋{S/2}
+	CFLAG:TARGET:11 -= S/2
+ENDIF
+;主人が射精できれば、主人に射精经验、奴隶に精液经验
+IF (TALENT:MASTER:男性 || TALENT:MASTER:扶她 || TALENT:MASTER:双性) && TALENT:MASTER:孩童尺寸== 0
+	EXP:MASTER:射精经验 += S/2
+	EXP:精液经验 += S/2
+	PRINTFORML %CALLNAME:MASTER%的%EXPNAME:3%＋{S/2}
+	PRINTFORML %EXPNAME:20%＋{S/2}
+	CFLAG:MASTER:11 -= S/2
+ENDIF
+;同性同士なら百合经验・蔷薇经验
+IF TALENT:男性 && TALENT:MASTER:男性
+	EXP:蔷薇经验 += S
+	EXP:MASTER:蔷薇经验 += S
+	PRINTFORML %CALLNAME:MASTER%和%CALLNAME%的%EXPNAME:41%＋{S}
+ENDIF
+IF TALENT:男性 == 0 && TALENT:扶她 == 0 && TALENT:双性 == 0 && TALENT:MASTER:男性 == 0 && TALENT:MASTER:扶她 == 0 && TALENT:MASTER:双性 == 0
+	EXP:百合经验 += S
+	EXP:MASTER:百合经验 += S
+	PRINTFORML %CALLNAME:MASTER%和%CALLNAME%的%EXPNAME:40%＋{S}
+ENDIF
+;快Ｃ、快Ｂ、恭顺、情欲
+PRINTFORML %PALAMNAME:0%之珠＋{S*200}
+PRINTFORML %PALAMNAME:3%之珠＋{S*200}
+PRINTFORML %PALAMNAME:5%之珠＋{S*200}
+PRINTFORML %PALAMNAME:6%之珠＋{S*200}
+JUEL:0 += S*200
+JUEL:3 += S*200
+JUEL:5 += S*200
+JUEL:6 += S*200
+
+
+

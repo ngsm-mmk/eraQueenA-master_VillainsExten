@@ -1,0 +1,443 @@
+﻿;-------------------------------------------------
+;イベント口上集 CFLAG 261～299を使用
+;-------------------------------------------------
+@KOJO_MESSAGE_EVENT_K191
+;書きかえたい場所の「（基本の地の文を显示）」を消して変えてもいいです
+;表示される基本の地の文はEVENT_M_EVENT.ERB、を参照して下さい
+;TFLAG:13に入ってる数字イコール@EVENT_MESSAGE_XXのXXです。
+;まだテンプレが無いイベントの口上を書く場合は最初に　IF TFLAG:13 == XX　というように書いてください
+;-------------------------------------------------
+;调教後百合プ雷
+;-------------------------------------------------
+IF TFLAG:13 == 4
+
+	;贞操对和服腰带あり
+	IF TEQUIP:2 == 5
+		;PRINTFORML 
+	ELSE
+		;初めて
+		IF CFLAG:264 == 0
+			;PRINTFORMW 
+			;CFLAG:264 = 1
+		;それ以外
+		ELSEIF CFLAG:264 < 1 || FLAG:7 == 2
+			;PRINTFORMW 
+			;CFLAG:264 = 1
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;强精神药の反動
+;-------------------------------------------------
+IF TFLAG:13 == 6
+
+	IF CFLAG:266 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:266 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;调教後搾乳
+;-------------------------------------------------
+IF TFLAG:13 == 7
+
+	IF CFLAG:267 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:267 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;调教後自慰
+;-------------------------------------------------
+IF TFLAG:13 == 8
+
+	;贞操对和服腰带あり
+	IF TEQUIP:2 == 5
+		;PRINTFORML 
+	ELSE
+		IF CFLAG:268 < 1 || FLAG:7 == 2
+			;PRINTFORMW 
+			;CFLAG:268 = 1
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;黄色のキャンディ使用時
+;-------------------------------------------------
+IF TFLAG:13 == 10
+
+	IF CFLAG:270 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:270 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;怀孕発覚時
+;-------------------------------------------------
+IF TFLAG:13 == 11
+	SIF CFLAG:271 >= 1 && FLAG:7 != 2
+		RETURN 0
+
+	;PRINTFORMW 
+	;CFLAG:271 = 1
+ENDIF
+
+;-------------------------------------------------
+;分娩時
+;-------------------------------------------------
+IF TFLAG:13 == 12
+
+	IF CFLAG:272 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:272 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;育児室
+;-------------------------------------------------
+IF TFLAG:13 == 13
+
+	;分娩前
+	IF TALENT:153
+		IF CFLAG:273 < 1 || FLAG:7 == 2
+			;PRINTFORMW 
+			;CFLAG:273 = 1
+		ENDIF
+	;分娩後
+	ELSE
+		IF CFLAG:273 < 3 || FLAG:7 == 2
+			;PRINTFORMW 
+			;CFLAG:273 = 3
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;親離れ時
+;-------------------------------------------------
+IF TFLAG:13 == 14
+
+	IF CFLAG:274 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:274 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;拍卖時
+;-------------------------------------------------
+IF TFLAG:13 == 18
+    PRINTL
+    PRINTL
+    PRINTL
+	;反抗刻印Lv3
+	IF MARK:3 == 3
+		PRINTFORMW 「当初那个温柔的%CSTR:2%，只是昙花一现吗？」
+		PRINTFORMW 「是我赌输了呢…」
+		PRINTFORMW %CALLNAME:TARGET%转身离开了
+        PRINTFORMW 今后，想必再也不会与\@ MALE(TARGET) ? 他 # 她 \@相遇了
+        PRINTFORML 神明的寿命是如此漫长
+        PRINTFORML 即便这个人曾给自己留下过特别的回忆
+        PRINTFORMW 也迟早会在岁月的更替中黯然失色吧……
+        PRINTFORMW 神明与凡人的故事，至此终结
+	;それ以外
+	ELSE
+		IF TALENT:病娇
+            PRINTFORMW 「哦呀……到该说再见的时候了吗？」
+            PRINTFORMW %CALLNAME:TARGET%异常平静地起身，最后一次端详起%PLAYER_NAME()%的脸
+            PRINTFORMW 「呵呵…多么英明的神明大人，所以才能做出如此残忍的事」
+            PRINTFORMW 「玩弄我的感情，相当的痛快吧？」
+            PRINTFORMW 「甚至到最后还要压榨掉奴隶的剩余价值，%CSTR:2%说不定能成为一个优秀的商人呢」
+            PRINTFORMW 「不过还请放心，我是不会让心爱的%CSTR:3%失望的」
+            PRINTFORMW 「因为这是%MASTERNAME%的愿望，对吧？所以我会遵循吩咐离开的」
+            PRINTFORMW 说完，%CALLNAME:TARGET%跟着商人离去了
+            PRINTFORML ………………
+            PRINTFORML …………
+            PRINTFORMW ……
+            PRINTFORMW 那之后听说%CALLNAME:TARGET%在新主人那儿如鱼得水，仿佛真的把有关%PLAYER_NAME()%的事全部忘却了
+            PRINTFORMW 本以为这会是自己最后一次听到%CALLNAME:TARGET%的消息，没想到数月后流传起一则骇人耸听的传闻
+            PRINTFORMW 据说…拍下%CALLNAME:TARGET%的那名富商离奇身死，全家老小也被人以极其残忍猎奇的方式杀害
+            PRINTFORML 后来警方又在那家人的地下室里发现了一具无法辨认出身份的尸体
+            PRINTFORMW 因死状过于惨不忍睹，死亡时间已无法推算
+            PRINTFORMW 尸体附近画有奇怪的法阵，还散落着诡异的黑色羽毛，就像是以生命献祭召来了地狱的恶魔一般
+            PRINTFORMW ……
+            PRINTFORMW 不知为何，脊背上窜起了一阵寒意
+            PRINTFORMW 是%CALLNAME:TARGET%干的…%PLAYER_NAME()%莫名地确定
+            PRINTFORMW 那具尸体绝不会是%CALLNAME:TARGET%的，真正的%CALLNAME:TARGET%一定躲藏在哪个地方伺机而动
+            PRINTFORML 这是报复，是诅咒
+            PRINTFORMW 因为自己抛弃了\@ MALE(TARGET) ? 他 # 她 \@，所以\@ MALE(TARGET) ? 他 # 她 \@化身为恶魔了
+            PRINTFORMW 神和恶魔吗…倒也非常相配……
+        ELSEIF TALENT:幼稚
+            PRINTFORMW 「那么，就去%MASTERNAME%的朋友家代为做客吧」
+            IF TALENT:恋慕 || TALENT:相亲相爱
+                PRINTFORMW 「其实我很清楚哦，这一走就不会有机会回来了」
+                PRINTFORMW 「再见，%MASTERNAME%」
+            ELSEIF TALENT:淫乱 || TALENT:娼妇
+                PRINTFORMW 「其实我很清楚哦，这一走就不会有机会回来了」
+                PRINTFORMW 「让我来期待一下那边主人的技术吧」
+            ELSEIF TALENT:服从 || TALENT:隶属
+                PRINTFORMW 「其实我很清楚哦，这一走就不会有机会回来了」
+                PRINTFORMW 「但是%MASTERNAME%的命令，我不得不遵从吧？」
+            ELSE
+                PRINTFORMW 「呵呵，最后也不愿意说再见吗？」
+            ENDIF
+            PRINTFORMW %CALLNAME:TARGET%被商人带走了
+            PRINTFORMW 今后，想必再也不会与\@ MALE(TARGET) ? 他 # 她 \@相遇了
+            PRINTFORML 神明的寿命是如此漫长
+            PRINTFORML 即便这个人曾给自己留下过特别的回忆
+            PRINTFORMW 也迟早会在岁月的更替中黯然失色吧……
+            PRINTFORMW 神明与凡人的故事，至此终结
+        ELSEIF TALENT:崩溃 || TALENT:疯癫
+            PRINTFORMW 「可以出去了？」
+            PRINTFORMW 「呵呵，那真是太好了…」
+            PRINTFORMW %CALLNAME:TARGET%朝拍下自己的商人那边走去
+            PRINTFORML 听说这名奴隶的精神状况不太正常，本来做足了心理准备，现在看来明明没有问题啊
+            PRINTFORMW 商人感到了疑惑
+            PRINTFORMW 正在这时，%CALLNAME:TARGET%抬起头来问了一个问题
+            PRINTFORMW 「对了，可以把我的朋友也带上吗？别看它那样，可是一名优秀的神灵呢」
+            PRINTFORMW \@ MALE(TARGET) ? 他 # 她 \@的视线游移在空中，对着不存在的东西继续说了下去
+            PRINTFORMW 「时间重置，你能做得到吧…让一切回到最开始从头再来怎么样呢……」
+            PRINTFORMW %CALLNAME:TARGET%的笑容令商人毛骨悚然
+            PRINTFORMW 也许拍下这名奴隶是个错误的决定…
+        ELSEIF TALENT:恋慕 || TALENT:相亲相爱
+            PRINTFORMW 「哦呀，已经对我厌倦了吗？」
+            PRINTFORMW %CALLNAME:TARGET%似乎感到很好笑般耸动着肩膀
+            PRINTFORMW 「爱上神明大人什么的，果然是非常荒谬的一件事」
+            PRINTFORMW 「还以为我是不同的呢…原来也只是消遣而已啊」
+            PRINTFORMW 「不，不如说这才对，这才是我所知道的那个你，也是我所深爱的你」
+            PRINTFORMW 「不会为任何人停留，也就不会再出现我那样的悲剧」
+            PRINTFORMW 「…这样就好，神明大人，一直像这样就好」
+            PRINTFORMW %CALLNAME:TARGET%凑近%PLAYER_NAME()%，印下深情缠绵的一吻
+            PRINTFORML 两唇分开，牵连出暧昧的丝线
+            PRINTFORMW %CALLNAME:TARGET%舌尖微卷，回味般舔着自己的嘴角
+            PRINTFORMW 「这个，是诀别的吻。无论如何，感谢您为我所做的一切」
+            PRINTFORMW 「那么，您就送到这里吧」
+            PRINTFORMW %CALLNAME:TARGET%带着一如既往的神秘笑容，消失在%PLAYER_NAME()%的视野里
+            PRINTFORMW 今后，想必再也不会与\@ MALE(TARGET) ? 他 # 她 \@相遇了
+            PRINTFORML 神明的寿命是如此漫长
+            PRINTFORML 即便这个人曾给自己留下过特别的回忆
+            PRINTFORMW 也迟早会在岁月的更替中黯然失色吧……
+            PRINTFORMW 神明与凡人的故事，至此终结
+        ELSEIF TALENT:服从 || TALENT:隶属
+            PRINTFORMW 「哦呀，已经对我厌倦了吗？」
+            PRINTFORMW %CALLNAME:TARGET%似乎感到很好笑般耸动着肩膀
+            PRINTFORMW 「神明大人果然是捉摸不透的存在呢」
+            PRINTFORMW 「还以为我是不同的…原来也只是消遣而已」
+            PRINTFORMW 「不过，您还能找到比我更顺手的奴仆吗？」
+            PRINTFORMW 「我可以肯定，不会再有比我更了解您的人了，这点我可是非常自信」
+            PRINTFORMW 「那么，再见了，我的神明大人」
+            PRINTFORMW %CALLNAME:TARGET%凑近%PLAYER_NAME()%，在%PLAYER_NAME()%的脚上留下一吻
+            PRINTFORMW 「这个，是诀别的吻。无论如何，感谢您为我所做的一切」
+            PRINTFORMW %CALLNAME:TARGET%带着一如既往的神秘笑容，消失在%PLAYER_NAME()%的视野里
+            PRINTFORMW 今后，想必再也不会与\@ MALE(TARGET) ? 他 # 她 \@相遇了
+            PRINTFORML 神明的寿命是如此漫长
+            PRINTFORML 即便这个人曾给自己留下过特别的回忆
+            PRINTFORMW 也迟早会在岁月的更替中黯然失色吧……
+            PRINTFORMW 神明与凡人的故事，至此终结
+        ELSEIF TALENT:淫乱 || TALENT:娼妇
+            PRINTFORMW 「哦呀，已经对我厌倦了吗？」
+            PRINTFORMW %CALLNAME:TARGET%似乎感到很好笑般耸动着肩膀
+            PRINTFORMW 「靠身体来留住神明的心是不可取的啊…」
+            PRINTFORMW 「还以为我至少是不同的…其实也只是和其他人一样的肉便器罢了」
+            PRINTFORMW 「不过，您还能找到比我更合拍的性爱对象吗？」
+            PRINTFORMW 「对您身体的了解，不会有人能够胜过我」
+            PRINTFORMW %CALLNAME:TARGET%凑近%PLAYER_NAME()%，把舌头伸进%PLAYER_NAME()%嘴里
+            PRINTFORMW 今天的%CALLNAME:TARGET%，比任何时候都要热情
+            PRINTFORML 两唇分开，牵连出暧昧的丝线
+            PRINTFORMW %CALLNAME:TARGET%舌尖微卷，回味般舔着自己的嘴角
+            PRINTFORMW 「这个，是诀别的吻。无论如何，感谢您为我所做的一切」
+            PRINTFORMW %CALLNAME:TARGET%带着神秘又性感的笑容，消失在%PLAYER_NAME()%的视野里
+            PRINTFORMW 今后，想必再也不会与\@ MALE(TARGET) ? 他 # 她 \@相遇了
+            PRINTFORML 神明的寿命是如此漫长
+            PRINTFORML 即便这个人曾给自己留下过特别的回忆
+            PRINTFORMW 也迟早会在岁月的更替中黯然失色吧……
+            PRINTFORMW 神明与凡人的故事，至此终结
+        ELSE
+            PRINTFORMW 「已经得到了，就丧失兴趣了吗？」
+            PRINTFORMW %CALLNAME:TARGET%似乎感到很好笑般耸动着肩膀
+            PRINTFORMW 「神明大人果然是捉摸不透的存在呢」
+            PRINTFORMW %CALLNAME:TARGET%带着一如既往的神秘笑容，消失在%PLAYER_NAME()%的视野里
+            PRINTFORMW 今后，想必再也不会与\@ MALE(TARGET) ? 他 # 她 \@相遇了
+            PRINTFORML 神明的寿命是如此漫长
+            PRINTFORML 即便这个人曾给自己留下过特别的回忆
+            PRINTFORMW 也迟早会在岁月的更替中黯然失色吧……
+            PRINTFORMW 神明与凡人的故事，至此终结
+        ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;ビデオ拍卖時
+;-------------------------------------------------
+IF TFLAG:13 == 19
+
+	IF CFLAG:278 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:278 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;衣服变更時 CFLAG:283（を適当に適用） 
+;T:A = Y　　　　着脱する衣服を限定する時
+;A = X　　　　　着脱部位全体を示す時
+;TEQUIP:A = Y　 今何を着ているか（着てない場合は0）
+;を組み合わせます。分かりにくくてスマン。
+;-------------------------------------------------
+IF TFLAG:13 == 25
+
+	;脱がしたときの口上
+	IF  Y == 0 && CFLAG:283 == 0 || FLAG:7 == 2
+		;贞操带取下
+		IF A == 2 && T:2 == 5
+			;PRINTFORMW 
+		;贞操带以外の下着取下
+		ELSEIF A == 2
+			;PRINTFORMW 
+		ENDIF
+		;CFLAG:283 = 1
+	;着せた時の口上
+	ELSEIF CFLAG:283 < 2 || FLAG:7 == 2
+		;女装：男性キャラ
+		IF (TALENT:137 || TALENT:140) && (T:1 == 4 || T:1 == 6 || T:2 == 1 || T:2 == 4 || T:2 == 6 || T:3 == 1 || T:3 == 2 || T:4 == 1 || T:4 == 6 || T:6 == 2 || T:6 == 3 || T:6 == 4 || T:6 == 6 || T:6 == 9 || T:6 == 10 || T:9 == 9)
+			;PRINTFORML 
+		ENDIF
+		;贞操带施錠
+		IF T:2 == 5
+			;PRINTFORML 
+		ENDIF
+		;CFLAG:283 = 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;朝料理イベント時 CFLAG:284 を、使用できるように確保してみる
+;書きかえたい場所の「」を消してごっそり変えてもいいかも
+;表示される基本の地の文はEVENT_M.ERBを参照にして下さい
+;-------------------------------------------------
+IF TFLAG:13 == 26
+	;最初から弁当を食べる時
+	IF K == 1
+
+		PRINTFORM 
+	;売るのをやめて食べる時
+	ELSEIF K == 2
+
+		PRINTFORM 
+	;主人が弁当を作るとき
+	ELSEIF K == 3
+
+		PRINTFORM 
+	;食後の運動(性的な意味で)直前
+	ELSEIF K == 4
+
+		PRINTFORM 
+	;毒を盛られた
+	ELSEIF K == 5
+
+		PRINTFORM 
+	;毒を見抜いたので弱みを握るイベント（相性のいい子に食べさせるver）
+	ELSEIF K == 6
+
+		PRINTFORM 
+	;毒を見抜いたので弱みを握るイベント（問い詰めるver）
+	ELSEIF K == 7
+
+		PRINTFORM 
+	;毒殺された
+	ELSEIF K == 8
+
+		PRINTFORM 
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_ENDING関係
+;-------------------------------------------------
+;-------------------------------------------------
+;条件设定
+;-------------------------------------------------
+@EVENTTURNEND
+#LATER
+SIF TARGET < 0
+	RETURN 0
+SIF NO:TARGET != 200
+	RETURN 0
+;特殊ハーレムエンド用条件判定構文
+;XX内に条件とするキャラの性格タイプ番号を入れてXXXにキャラ数を入れると、好きな組み合わせのハーレムエンドを设定できる
+;ハーレムエンドの条件を満たしたとき、ここの特殊ハーレムエンドの条件も満たしている場合、ハーレムエンドから派生する
+;A = 0
+;B = 0
+;REPEAT CHARANUM
+;	IF NO:COUNT == XX || NO:COUNT == XX || NO:COUNT == XX || NO:COUNT == XX || NO:COUNT == XX
+;		SIF TALENT:COUNT:6 || TALENT:COUNT:7 || TALENT:COUNT:8
+;			A += 1
+;		SIF TALENT:COUNT:3 || TALENT:COUNT:4 || TALENT:COUNT:5 || TALENT:COUNT:6 || TALENT:COUNT:7 || TALENT:COUNT:8
+;			B += 1
+;	ENDIF
+;REND
+;SIF A && A+B >= XXX
+;	CFLAG:21 = 2
+;単体エンド用分岐フラグ、単体エンドのある进阶素质のみコメントアウトを解除する
+;SIF TALENT:相亲相爱
+;	CFLAG:21 = 1
+;SIF TALENT:娼妇
+;	CFLAG:21 = 1
+;SIF TALENT:隶属
+;	CFLAG:21 = 1
+;-------------------------------------------------
+;エンド本文
+;-------------------------------------------------
+@KOJO_MESSAGE_ENDING_K191
+;恋慕単体エンド
+;IF TALENT:相亲相爱 && CFLAG:21 == 1
+	;DRAWLINE
+	;PRINTFORMW …………
+	;PRINTFORMW ………
+	;PRINTFORMW ……
+	;PRINTFORMW 
+
+	;PRINTFORMW 
+	;PRINTFORMW 　　　　　　　　―― Ending No.111A (○○エンド)
+;淫乱単体エンド
+;ELSEIF TALENT:娼妇 && CFLAG:21 == 1
+	;DRAWLINE
+	;PRINTFORMW …………
+	;PRINTFORMW ………
+	;PRINTFORMW ……
+	;PRINTFORMW 
+
+	;PRINTFORMW 
+	;PRINTFORMW 　　　　　　　　―― Ending No.111B (○○エンド)
+;服从単体エンド
+;ELSEIF TALENT:隶属 && CFLAG:21 == 1
+	;DRAWLINE
+	;PRINTFORMW …………
+	;PRINTFORMW ………
+	;PRINTFORMW ……
+	;PRINTFORMW 
+
+	;PRINTFORMW 
+	;PRINTFORMW 　　　　　　　　―― Ending No.111C (○○エンド)
+;ENDIF
+
+;特殊ハーレムエンド
+;IF CFLAG:21 == 2
+	;DRAWLINE
+	;PRINTFORMW …………
+	;PRINTFORMW ………
+	;PRINTFORMW ……
+	;PRINTFORMW 
+
+	;PRINTFORMW 
+	;PRINTFORMW 　　　　　　　　―― Ending No.2X2 (○○エンド)
+;ENDIF
+
+;CALL GAME_CONTINUE
+;RETURN 0

@@ -1,0 +1,243 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:LIST_CHARA.ERB
+;	Facility	:リスト（キャラ）。
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新建
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;===============================================================================
+;  ◇記載関数一覧(記載順)
+;
+;		Module Name						Explanation
+;
+; *- XXXX
+;
+;	・ LIST_CHARA						LIST:キャラリスト
+;
+;===============================================================================
+
+;-------------------------------------------------------------------------------
+;   XXXX
+;-------------------------------------------------------------------------------
+
+;=================================================
+;   sub LIST_CHARA
+;=================================================
+;   LIST:キャラリスト
+;-------------------------------------------------
+; Input:
+;  ARGS:0				説明文
+;  ARG:0				ページ位置
+;  ARGS:1				再帰した際のエラーメッセージ
+; Output:
+;  RESULT:0				キャラ(1000の場合は"返回")
+;  RESULT:1				ページ位置
+;-------------------------------------------------
+@LIST_CHARA2(ARGS:0, ARG:0, ARGS:1)
+#DIM L_INPUT
+#DIM L_I
+#DIM L_PAGE
+#DIM L_CNT_DATA
+#DIM L_CNT_PRINT
+#DIM L_PREV
+#DIM L_NEXT
+#DIMS L_ERR_MSG
+#DIM T_A
+
+;-----------------------------
+;- 初期処理
+;-----------------------------
+Z = 0
+REPEAT CHARANUM
+	SIF COUNT == MASTER
+		CONTINUE
+	Z++
+REND
+IF Z < 1
+PRINTL
+PRINTW 无人可以提升能力
+PRINTL
+RETURN 0
+ENDIF
+
+T_A = 0
+L_INPUT=0
+L_I=0
+L_PAGE=ARG:0
+L_CNT_DATA=0
+L_CNT_PRINT=0
+
+; キャラ総数
+L_CNT_DATA = CHARANUM
+
+; キャラ表示数/P
+L_CNT_PRINT = 20
+
+L_ERR_MSG = %ARGS:1%
+
+SIF !INRANGE(L_PAGE, 0, L_CNT_DATA / L_CNT_PRINT)
+	L_PAGE = 0
+
+;-----------------------------
+;- 処理開始
+;-----------------------------
+T_A = TARGET
+
+$PRINT_LIST
+REDRAW 0
+CALL KAIGYO
+DRAWLINE
+PRINTFORML 要提升谁的能力？ ＜page.{L_PAGE+1}/{L_CNT_DATA / 20 +1}＞ (共{L_CNT_DATA-1}人)
+DRAWLINE
+
+L_I = 0
+WHILE 1
+
+	;SET:開始値
+	SIF L_I < (L_PAGE * L_CNT_PRINT)
+		L_I = (L_PAGE * L_CNT_PRINT)
+
+	;ページ範囲外
+	SIF L_I >= ( (L_PAGE + 1) * L_CNT_PRINT)
+		BREAK
+
+	;- 最大キャラ数超過
+	IF L_I >= L_CNT_DATA
+		;空行
+		PRINTL
+
+	ELSE
+	    SIF L_I == 0
+	        L_I += 1
+		PRINTFORM [%TOSTR(L_I),3%]
+		CALL INFO_TARGET3_DETAIL(L_I)
+		PRINTL
+	ENDIF
+
+	L_I += 1
+
+WEND
+DRAWLINE
+
+L_PREV = (L_PAGE <= 0) ? 0 # 1
+L_NEXT = ( L_PAGE >= (L_CNT_DATA / L_CNT_PRINT) ) ? 0 # 1
+
+PRINTFORMLC \@(!L_PREV) ? %" " * 20% # [1007]上一页　　\@
+PRINTFORMLC [1000]返回
+PRINTFORMLC \@(!L_NEXT) ? %" " * 20% # [1009]下一页　　\@
+
+SIF STRLENS(L_ERR_MSG)
+	REUSELASTLINE （%L_ERR_MSG%）
+
+REDRAW 1
+$INPUT_LOOP_1
+INPUT
+L_INPUT = RESULT
+L_ERR_MSG=
+
+;- 表示:ページ別
+SELECTCASE L_INPUT
+	;- 終了
+	CASE 1000
+	    TARGET = T_A
+		RETURN 0
+	;- キャラ
+	CASE 0 TO L_CNT_DATA -1
+	    IF CFLAG:L_INPUT:119
+                CALL C_INPUT_ERROR("该角色还在成长中")
+                WAIT
+                GOTO PRINT_LIST
+        ELSEIF CFLAG:L_INPUT:12 > 0
+            CALL C_INPUT_ERROR("该角色正在劳役中")
+            WAIT
+            GOTO PRINT_LIST
+        ELSE
+            C = L_INPUT
+            CALL CHECK_CHILD_CARE
+            IF RESULT == 1
+                CALL C_INPUT_ERROR("该角色正在育儿室")
+                WAIT
+                GOTO PRINT_LIST
+            ENDIF
+            TARGET = C
+            $SHOW_LOOP
+            CALL SHOW_JUEL
+            CALL SHOW_ABLUP_SELECT
+            $INPUT_LOOP2
+            INPUT
+            IF RESULT == 100
+                TARGET = T_A
+                RETURN 0
+            ELSE
+                SIF ABLNAME:RESULT == "" && RESULT != 99
+                    GOTO INPUT_LOOP2
+                CLEARLINE 1
+                CALLFORM ABLUP{RESULT}
+                GOTO SHOW_LOOP
+            ENDIF
+        ENDIF
+		RESULT:1 = L_PAGE
+		RETURN L_INPUT
+	;上一页　　
+	CASE 1007
+		SIF !L_PREV
+			GOTO ERROR
+		L_PAGE -= 1
+	;下一页　　
+	CASE 1009
+		SIF !L_NEXT
+			GOTO ERROR
+		L_PAGE += 1
+	;- 其他
+	CASEELSE
+		$ERROR
+		;INPUTエラー対応
+		CALL C_INPUT_ERROR
+		GOTO INPUT_LOOP_1
+ENDSELECT
+GOTO PRINT_LIST
+
+
+
+@INFO_TARGET3_DETAIL(ARG:0, ARG:1=0)
+#DIM L_I
+#DIM L_TMP
+#DIMS L_STR
+
+L_I=ARG
+
+CALL VAR_PRINT_LIST_NAME(L_I)
+
+LOCAL:2 = 0
+	TARGET = ARG
+	FOR LOCAL:1, 0, 22
+		X = LOCAL:1
+		CALLFORM ISABLUP{X}
+		SIF RESULT
+			LOCAL:2 = 1
+	NEXT
+	X = 99
+	CALL ISABLUP99
+	SIF RESULT
+		LOCAL:2 = 1
+	IF LOCAL:2
+		PRINT ＜可以升级了＞
+	ELSE
+		PRINT               
+	ENDIF
+
+    ;労役中のキャラ
+    SIF CFLAG:ARG:12 > 0
+        PRINT   <劳役中>
+    ;育児部屋に移动しているキャラは除外
+    C = ARG
+    CALL CHECK_CHILD_CARE
+    SIF R == 1 && RESULT == 1
+        PRINT   <育儿中>

@@ -1,0 +1,444 @@
+﻿;EVENT_S.ERB、EVENT_SUB、追加処理及びサブイベント
+;-------------------------------------------------
+;日付が変わった時のイベント
+;-------------------------------------------------
+@EVENT_NEXTDAY
+$INPUT_LOOP
+;不思議の根持ちで精液经验が300以上
+IF TARGET >= 0
+	IF TALENT:TARGET:137 == 0 &&  TALENT:TARGET:139 == 0 && TALENT:TARGET:138 && EXP:TARGET:20 >= 300
+		DRAWLINE
+		PRINTFORML ……貌似出现了[不可思议的根]的效果
+		PRINTFORM 要让%CALLNAME:TARGET%成为[
+		IF TALENT:TARGET:140
+			PRINT 双性
+		ELSE
+			PRINT 扶她
+		ENDIF
+		PRINTL ]吗？
+		PRINTL [0] - 是
+		PRINTL [1] - 否
+		INPUT
+		IF RESULT == 0
+			C = TARGET
+			CALL FUTANARI
+		ELSEIF RESULT == 1
+			PRINTFORML %NAME:TARGET%失去了[不可思议的根]
+			TALENT:TARGET:138 = 0
+		ELSE
+			GOTO INPUT_LOOP_2
+		ENDIF
+		DRAWLINE
+		WAIT
+	ENDIF
+ENDIF
+
+$INPUT_LOOP_2
+;具现化持ちで百合经验or蔷薇经验2500以上
+IF TARGET >= 0 
+	IF TALENT:TARGET:137 == 0 &&  TALENT:TARGET:139 == 0 && TALENT:TARGET:146 && (EXP:TARGET:40 >= 2500 || EXP:TARGET:41 >= 2500)
+		DRAWLINE
+		PRINTFORML ……貌似出现了[具现化]的效果
+		PRINTFORM 要让%CALLNAME:TARGET%成为[
+		IF TALENT:TARGET:140
+			PRINT 双性
+		ELSE
+			PRINT 扶她
+		ENDIF
+		PRINTL ]吗？
+		PRINTL [0] - 是
+		PRINTL [1] - 否
+		INPUT
+		IF RESULT == 0
+			C = TARGET
+			CALL FUTANARI
+		ELSEIF RESULT == 1
+			PRINTFORML %NAME:TARGET%失去了[具现化]
+			TALENT:TARGET:146 = 0
+		ELSE
+			GOTO INPUT_LOOP_2
+		ENDIF
+		DRAWLINE
+		WAIT
+	ENDIF
+ENDIF
+
+;放尿经验10か３０以上、十分の一の確率で漏尿癖がつく
+IF TARGET >= 0 
+	IF !TALENT:漏尿癖 && !RAND:10
+		IF (TALENT:幼稚 && EXP:放尿经验 >= 10) || (!TALENT:幼稚 && EXP:放尿经验 >= 30)
+			TFLAG:13 = 65
+			CALL KOJO_MESSAGE_EVENT
+			PRINTFORMW %CALLNAME%有了[漏尿癖]的毛病
+			TALENT:漏尿癖 = 1
+		ENDIF
+	ENDIF
+ENDIF
+;幼儿退行イベント　人外でない場合限定　「TALENT:150 == 2」の場合はここで得た幼儿退行、1なら元々孩童尺寸
+IF TARGET >= 0 && !TALENT:TARGET:幼儿／幼儿退行 && !TALENT:TARGET:人外 && !TALENT:TARGET:机器人
+	;反抗刻印３があり、かつ[幼稚]である時に
+	IF TALENT:TARGET:151 && MARK:3 == 3
+	;欲望が5かつ顺从が5かつ受虐属性が5かつ异常经验が５以上になる
+		IF ABL:TARGET:1 >= 5 && ABL:TARGET:0 >= 5 && ABL:TARGET:9 >= 5 && EXP:TARGET:50 >= 5
+			TFLAG:13 = 66
+			CALL KOJO_MESSAGE_EVENT
+			TALENT:TARGET:150 = 2
+			IF !TALENT:TARGET:漏尿癖
+				TALENT:TARGET:漏尿癖 = 1
+				PRINTFORMW %CALLNAME%患上[漏尿癖]了
+			ENDIF
+			SIF TALENT:TARGET:151
+				TALENT:TARGET:151 = 0
+			SIF TALENT:TARGET:27
+				TALENT:TARGET:27 = 0
+			SIF TALENT:TARGET:30
+				TALENT:TARGET:30 = 0
+			SIF TALENT:TARGET:32
+				TALENT:TARGET:32 = 0
+			SIF TALENT:TARGET:34
+				TALENT:TARGET:34 = 0
+			MARK:TARGET:3 = 0
+		ENDIF
+	;反抗刻印３があり、欲望が5かつ顺从が5かつ受虐属性が5かつ异常经验が７以上に加え露出５と漏尿癖がつく
+	ELSEIF MARK:3 == 3 && ABL:TARGET:1 >= 5 && ABL:TARGET:0 >= 5 && ABL:TARGET:9 >= 5 && ABL:TARGET:8 >= 5 && EXP:TARGET:50 >= 7
+		TFLAG:13 = 66
+		CALL KOJO_MESSAGE_EVENT
+		TALENT:TARGET:150 = 2
+		IF !TALENT:TARGET:漏尿癖
+			TALENT:TARGET:漏尿癖 = 1
+			PRINTFORMW %CALLNAME%患上[漏尿癖]了
+		ENDIF
+		SIF TALENT:TARGET:151
+			TALENT:TARGET:151 = 0
+		SIF TALENT:TARGET:27
+			TALENT:TARGET:27 = 0
+		SIF TALENT:TARGET:30
+			TALENT:TARGET:30 = 0
+		SIF TALENT:TARGET:32
+			TALENT:TARGET:32 = 0
+		SIF TALENT:TARGET:34
+			TALENT:TARGET:34 = 0
+		MARK:TARGET:3 = 0
+	ENDIF
+ENDIF
+
+;毛が生えてくる
+REPEAT CHARANUM
+	IF TALENT:COUNT:118 == 2
+		BASE:COUNT:5 += 10
+		IF BASE:COUNT:5 >= 300
+			TALENT:COUNT:118 = 0
+			PRINTFORML %CALLNAME:COUNT%的阴毛长出来了
+		ENDIF
+	ENDIF
+REND
+
+;奴隶と道具の維持費の処理
+;STARTモード限定で（はなくなった）
+;EASYでは20日、NORMALでは15日、HARDでは10日免除
+A = 300
+B = 25-FLAG:4*5
+REPEAT 25
+	SIF ITEM:COUNT
+		A += 50
+REND
+;エン礼服モードでは､３人目以降､道具、奴隶人数による費用が増える
+IF FLAG:5 == 9 && CHARANUM > 3
+	REPEAT 25
+		SIF ITEM:COUNT
+			A += 1500
+	REND
+	A += CHARANUM*5000
+	REPEAT CHARANUM
+		;労役中の奴隶は除く
+		SIF CFLAG:COUNT:12 > 0
+			A -= 2500
+		SIF TALENT:COUNT:人外
+			A += 5000
+		SIF TALENT:COUNT:巨大体型
+			A += 10000
+		;高大は費用がもっとかかる
+		SIF TALENT:COUNT:高大体型
+			A += 5000
+		;矮小は費用が少し減少
+		SIF TALENT:COUNT:矮小体型
+			A -= 2000
+		;小人体型は費用がもっと減少
+		SIF TALENT:COUNT:小人体型
+			A -= 3000
+	REND
+ELSE
+	A += CHARANUM*200
+	A -= 100
+	;労役中の奴隶は除く
+	REPEAT CHARANUM
+		SIF CFLAG:COUNT:12 > 0
+			A -= 200
+	REND
+ENDIF
+IF A && DAY > B
+	PRINTFORML 奴隶和道具的维持费用和生活费用加起来一共是${A}……
+	MONEY -= A
+ENDIF
+
+;催眠天数每日减1，催眠期限到自動解除
+REPEAT CHARANUM
+	IF CFLAG:COUNT:7000
+		CFLAG:COUNT:7000 -= 1
+		SIF !CFLAG:COUNT:7000
+			CALL 催眠解除(COUNT)
+	ELSE
+		CALL 催眠解除(COUNT)
+	ENDIF
+REND
+每日催眠可实行次数 = 催眠技术
+;-------------------------------------------------
+;朝になった時のイベント
+;-------------------------------------------------
+@EVENT_NEWDAY
+;屋台の借金返済イベント
+SIF FLAG:23 == 1 && MONEY >= 100000
+	CALL RETURN_LOAN
+
+;奴隶レンタルの期日が来た場合の奴隶返却処理
+REPEAT CHARANUM
+	IF CFLAG:COUNT:12 == 1 && CFLAG:COUNT:13 <= DAY
+		A = COUNT
+		CALL RETURN_SLAVE
+	ENDIF
+REND
+
+;娼館バイト结束了場合の終了処理
+REPEAT CHARANUM
+	IF CFLAG:COUNT:12 == 2
+		A = COUNT
+		CALL END_PROSTITUTION
+	ENDIF
+REND
+
+;画室打工返还（昼）
+REPEAT CHARANUM
+	IF CFLAG:COUNT:12 == 3
+        A = COUNT
+        CALL END_NUDE_MODEL2
+    ENDIF
+REND
+
+;画室打工返还（夜）
+REPEAT CHARANUM
+	IF CFLAG:COUNT:12 == 4
+        A = COUNT
+        CALL END_NUDE_MODEL
+    ENDIF
+REND
+
+DRAWLINE
+;锁门的开门
+REPEAT CHARANUM
+    SIF COUNT == MASTER
+        CONTINUE
+	IF CFLAG:COUNT:2404 == 1
+	    C = COUNT
+	    CALL DOOR_OPEN
+    ENDIF
+REND
+
+;不在个人房的回房间
+REPEAT CHARANUM
+    IF CFLAG:COUNT:2414 == 1
+        A = COUNT
+        CALL GO_BACK
+    ENDIF
+REND
+PRINTL
+DRAWLINE
+
+;労役中は怀孕発覚しない為、怀孕関連処理を労役終了処理後に移动
+;全体の怀孕判定の処理
+CALL IN_VAGINA_ALL
+
+;全体の怀孕確定時の処理　
+;CALL CONCEPTION_CHECK_ALL　怀孕判定の処理と統合したので使わない
+
+;全体の怀孕発覚時のイベント
+CALL GET_CHILD_ALL
+
+;排卵诱发剂と子宮内避妊結界の効果終了処理
+REPEAT CHARANUM
+	IF CFLAG:COUNT:108
+		PRINTFORMW %CALLNAME:COUNT%的子宫内避孕结界的效果好像终止了
+		CFLAG:COUNT:108 = 0
+	ELSEIF CFLAG:COUNT:109
+		PRINTFORMW %CALLNAME:COUNT%的排卵诱发剂的效果好像终止了
+		CFLAG:COUNT:109 = 0
+	ENDIF
+REND
+;失意解除の処理
+REPEAT CHARANUM
+	SIF CFLAG:COUNT:36
+		CFLAG:COUNT:36 -= 1
+	IF TALENT:COUNT:失意 && CFLAG:COUNT:36 <= 0
+		PRINTL
+		PRINTFORML %CALLNAME:COUNT%似乎从失意状态中恢复了过来
+		PRINTFORMW %NAME:COUNT%解除了[失意]状态
+		TALENT:COUNT:失意 = 0
+		CFLAG:COUNT:36 = 0
+	ENDIF
+REND
+;崩溃解除の処理
+REPEAT CHARANUM
+	IF TALENT:COUNT:崩溃 && CFLAG:COUNT:10 <= 0
+		PRINTL
+		PRINTFORML 经过了漫长的时间，%CALLNAME:COUNT%的心灵创伤终于痊愈了
+		PRINTFORMW %NAME:COUNT%解除了[崩溃]状态
+		TALENT:COUNT:崩溃 = 0
+	ENDIF
+REND
+;幼儿退行解除の処理
+REPEAT CHARANUM
+	IF TALENT:COUNT:幼儿／幼儿退行 == 2 && CFLAG:COUNT:10 <= 0 && !RAND:10
+		PRINTL
+		PRINTFORML %CALLNAME:COUNT%退化成孩童尺寸的状态好像恢复了
+		PRINTFORMW %NAME:COUNT%解除了[幼儿退行]状态
+		TALENT:COUNT:幼儿／幼儿退行 = 0
+	ENDIF
+REND
+;分娩･育児室関連
+$INPUT_LOOP
+REPEAT CHARANUM
+	IF TALENT:COUNT:怀孕 || CFLAG:COUNT:119
+		LOCAL:5 = GETCHARA(CFLAG:COUNT:1000)
+		;分娩3日前からは臨月突入で调教不可に
+		IF (CFLAG:COUNT:110 - 3) == DAY
+			DRAWLINE
+			CALL REACH_FULL_TERM
+		;分娩前日には育児室への訪問を問うイベント発生
+		ELSEIF (CFLAG:COUNT:110 - 1) == DAY && TFLAG:701 != DAY
+			DRAWLINE
+			PRINTFORML %CALLNAME:COUNT%眼看就要分娩了……
+			PRINTFORML 要去看看%CALLNAME:COUNT%的状况吗？
+			PRINTL [0] - 去育儿室
+			SIF LOCAL:5 >= 0 && LOCAL:5 != MASTER && LOCAL:5 != LOCAL:1
+				PRINTFORML [1] - 带上孩子的父亲%CALLNAME:(LOCAL:5)%一起去
+			PRINTL [2] - 不去育儿室
+			INPUT
+			IF RESULT == 0 || (RESULT == 1 && LOCAL:5 >= 0 && LOCAL:5 != MASTER)
+				TFLAG:700 = 1
+				TFLAG:701 = DAY
+				TFLAG:702 = TIME
+				CALL CHILD_CARE_ROOM(LOCAL:5, RESULT)
+			ELSEIF RESULT == 2
+				DRAWLINE
+			ELSE
+				GOTO INPUT_LOOP
+			ENDIF
+		;分娩予定日、または分娩予定日を過ぎて分娩していなければ分娩
+		ELSEIF CFLAG:COUNT:110 == DAY || (CFLAG:COUNT:110 < DAY && TALENT:COUNT:怀孕)
+			DRAWLINE
+			C = COUNT
+			CALL CHILD_BIRTH
+		;育てられている子供がいる
+		ELSEIF CFLAG:COUNT:119
+			LOCAL:1 = -1
+			LOCAL:2 = 0
+			;子育てしているのは誰か
+			FOR LOCAL, 0, CHARANUM
+				SIF CFLAG:COUNT:115 == NO:LOCAL
+					LOCAL:1 = LOCAL
+			NEXT
+			;育てているのは実子か
+			SIF CFLAG:(LOCAL:1):114 == NO:COUNT
+				LOCAL:2 = 1
+			;分娩後3日には育児室への訪問を問うイベント発生
+			IF (CFLAG:COUNT:116 + 3) == DAY && TFLAG:701 != DAY
+				DRAWLINE
+				PRINTFORML 自从%CALLNAME:(LOCAL:1)%产下%CALLNAME:COUNT%已经过了三天了
+				PRINTFORML 要去看看%CALLNAME:(LOCAL:1)%的状况吗？
+				PRINTL [0] - 去育儿室
+				SIF LOCAL:5 >= 0 && LOCAL:5 != MASTER && LOCAL:5 != LOCAL:1
+					PRINTFORML [1] - 带上孩子的父亲%CALLNAME:(LOCAL:5)%一起去
+				PRINTL [2] - 不去育儿室
+				INPUT
+				IF RESULT == 0 || (RESULT == 1 && LOCAL:5 >= 0 && LOCAL:5 != MASTER)
+					TFLAG:700 = 1
+					TFLAG:701 = DAY
+					TFLAG:702 = TIME
+					CALL CHILD_CARE_ROOM(LOCAL:5, RESULT)
+				ELSEIF RESULT == 2
+					DRAWLINE
+				ELSE
+					GOTO INPUT_LOOP
+				ENDIF
+			;分娩後5日には育児室への訪問を問うイベント発生
+			ELSEIF (CFLAG:COUNT:116 + 5) == DAY && TFLAG:701 != DAY
+				DRAWLINE
+				PRINTFORML 自从%CALLNAME:(LOCAL:1)%产下%CALLNAME:COUNT%已经过了五天了
+				PRINTFORML 要去看看%CALLNAME:(LOCAL:1)%的状况吗？
+				PRINTL [0] - 去育儿室
+				SIF LOCAL:5 >= 0 && LOCAL:5 != MASTER && LOCAL:5 != LOCAL:1
+					PRINTFORML [1] - 带上孩子父亲的%CALLNAME:(LOCAL:5)%一起去
+				PRINTL [2] - 不去育儿室
+				INPUT
+				IF RESULT == 0 || (RESULT == 1 && LOCAL:5 >= 0 && LOCAL:5 != MASTER)
+					TFLAG:700 = 1
+					TFLAG:701 = DAY
+					TFLAG:702 = TIME
+					CALL CHILD_CARE_ROOM(LOCAL:5, RESULT)
+				ELSEIF RESULT == 2
+					DRAWLINE
+				ELSE
+					GOTO INPUT_LOOP
+				ENDIF
+			;分娩後10日には育児室への訪問を問うイベント発生
+			ELSEIF (CFLAG:COUNT:116 + 10) == DAY && TFLAG:701 != DAY
+				DRAWLINE
+				PRINTFORML 自从%CALLNAME:(LOCAL:1)%产下%CALLNAME:COUNT%已经过去十天了
+				PRINTFORML 要去看看%CALLNAME:(LOCAL:1)%的状况吗？
+				PRINTL [0] - 去育儿室
+				SIF LOCAL:5 >= 0 && LOCAL:5 != MASTER && LOCAL:5 != LOCAL:1
+					PRINTFORML [1] - 带上孩子父亲的%CALLNAME:(LOCAL:5)%一起去
+				PRINTL [2] - 不去育儿室
+				INPUT
+				IF RESULT == 0 || (RESULT == 1 && LOCAL:5 >= 0 && LOCAL:5 != MASTER)
+					TFLAG:700 = 1
+					TFLAG:701 = DAY
+					TFLAG:702 = TIME
+					CALL CHILD_CARE_ROOM(LOCAL:5, RESULT)
+				ELSEIF RESULT == 2
+					DRAWLINE
+				ELSE
+					GOTO INPUT_LOOP
+				ENDIF
+			;分娩後15日には育児室への訪問を問うイベント発生
+			ELSEIF (CFLAG:COUNT:116 + 15) == DAY && TFLAG:701 != DAY
+				DRAWLINE
+				PRINTFORML 自从%CALLNAME:(LOCAL:1)%产下%CALLNAME:COUNT%已经过去十五天了
+				PRINTFORML 要去看看%CALLNAME:(LOCAL:1)%的状况吗？
+				PRINTL [0] - 去育儿室
+				SIF LOCAL:5 >= 0 && LOCAL:5 != MASTER && LOCAL:5 != LOCAL:1
+					PRINTFORML [1] - 带上孩子父亲的%CALLNAME:(LOCAL:5)%一起去
+				PRINTL [2] - 不去育儿室
+				INPUT
+				IF RESULT == 0 || (RESULT == 1 && LOCAL:5 >= 0 && LOCAL:5 != MASTER)
+					TFLAG:700 = 1
+					TFLAG:701 = DAY
+					TFLAG:702 = TIME
+					CALL CHILD_CARE_ROOM(LOCAL:5, RESULT)
+				ELSEIF RESULT == 2
+					DRAWLINE
+				ELSE
+					GOTO INPUT_LOOP
+				ENDIF
+			;分娩20日で親離れで调教可能に
+			ELSEIF (CFLAG:COUNT:116 + 20) == DAY || ((CFLAG:COUNT:116 + 20) < DAY && TALENT:(LOCAL:1):育儿中)
+				C = COUNT
+				DRAWLINE
+				CALL DEPEARENT
+				LOCAL = CHARANUM
+				GOTO INPUT_LOOP
+			ENDIF
+		ENDIF
+	ENDIF
+REND
+
+

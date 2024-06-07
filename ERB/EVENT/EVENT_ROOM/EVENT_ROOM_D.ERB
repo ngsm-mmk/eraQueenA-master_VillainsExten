@@ -1,0 +1,181 @@
+﻿;依赖度増加処理
+@MASTER_DEPENDENCE_PLUS_ROOM(ARG)
+
+R = 0
+
+;ABL:顺从をみる
+R += ABL:ARG:0*2
+
+;ABL:侍奉精神をみる
+R += ABL:ARG:7
+
+;困难度を見る
+;EASY
+IF FLAG:4 == 1
+	R += 1
+;NORMAL
+ELSEIF FLAG:4 == 2
+	R += 0
+;HARD
+ELSEIF FLAG:4 == 3
+	R -= 1
+ENDIF
+
+;素質による増減
+;陷落素質
+;恋慕
+SIF TALENT:ARG:3
+	R += 5
+;相亲相爱
+SIF TALENT:ARG:6
+	R += 7
+;淫乱
+M = NO:MASTER
+SIF TALENT:ARG:4 && RELATION:M > 100
+	R += 3
+;娼妇
+SIF TALENT:ARG:7 && RELATION:M > 100
+	R += 5
+;服从
+SIF TALENT:ARG:5
+	R += 10
+;隶属
+SIF TALENT:ARG:8
+	R += 20
+
+;其他素質
+;自慰狂
+SIF TALENT:ARG:74
+	R += 1
+;淫壶
+SIF TALENT:ARG:75
+	R += 1
+;尻穴狂
+SIF TALENT:ARG:76
+	R += 1
+;淫乳
+SIF TALENT:ARG:77
+	R += 1
+;性爱狂
+Q = SELECTCOM
+SIF TALENT:ARG:78 && (Q == 60 || Q == 61 || Q == 62 || Q == 63 || Q == 64 || Q == 65 || Q == 66 || Q == 67 || Q == 68 || Q == 69 || Q == 70 || Q == 71 || Q == 72 || Q == 73 || Q == 74 || Q == 75 || Q == 76 || Q == 77 || Q == 122 || Q == 205 || Q == 206 || Q == 211 || Q == 212 || Q == 213 || Q == 214 || Q == 225 || Q == 226 || Q == 500 || Q == 506 || Q == 507 || Q == 512 || Q == 513 || Q == 514 || Q == 515 || Q == 516 || Q == 517 || Q == 518 || Q == 591 || Q == 592 || Q == 593 || Q == 594 || Q == 595)
+	R += 2
+;盲信
+SIF TALENT:ARG:86
+	R += 2
+
+
+;主人の魅力
+SIF TALENT:MASTER:92
+	R += 2
+;主人の魅惑
+SIF TALENT:MASTER:93
+	R += 3
+;主人の谜之魅力
+SIF TALENT:MASTER:94
+	R += 5
+;主人の治疗
+SIF TALENT:MASTER:135
+	R += 2
+;主人の鼓舞
+SIF TALENT:MASTER:136
+	R += 2
+;主人の人气
+SIF TALENT:MASTER:145
+	R += 3
+
+;依赖度補正を加算
+R += TFLAG:30
+    
+;失意で半分になる
+SIF TALENT:ARG:162
+	R /= 2
+
+;結果が0未満の場合は0にする
+SIF R < 0
+	R = 0
+
+IF !(TALENT:ARG:5 || TALENT:ARG:8)
+	CFLAG:ARG:2 += R
+ELSE
+	CFLAG:ARG:2 -= R
+ENDIF
+PRINTW
+PRINTL
+IF R > 0 && !(TALENT:ARG:5 || TALENT:ARG:8)
+	SETCOLOR 252, 131, 167
+	PRINTL <依赖度増加>
+ELSEIF R <= 0
+	SETCOLOR 192, 192, 192
+	PRINTL <依赖度无变化>
+ELSE
+	SETCOLOR 74, 74, 255
+	PRINTL <依赖度减少>
+ENDIF
+RESETCOLOR
+
+R = 0
+
+PRINTL
+PRINTL
+RETURN 0
+
+
+
+@BASE_SHOW_ROOM(ARG)
+
+;-------------------------------------------------
+;痛苦からくる体力・气力の減少
+;-------------------------------------------------
+D = UP:10/20
+;ABL:受虐属性をみる
+IF ABL:ARG:9 == 0
+	TIMES D , 1.00
+ELSEIF ABL:ARG:9 == 1
+	TIMES D , 0.95
+ELSEIF ABL:ARG:9 == 2
+	TIMES D , 0.90
+ELSEIF ABL:ARG:9 == 3
+	TIMES D , 0.80
+ELSEIF ABL:ARG:9 == 4
+	TIMES D , 0.65
+ELSE
+	TIMES D , 0.50
+ENDIF
+;怕痛
+SIF TALENT:ARG:40
+	TIMES D , 1.20
+;耐痛
+SIF TALENT:ARG:41
+	TIMES D , 0.80
+
+LOSEBASE:0 += D
+LOSEBASE:1 += D
+
+;-------------------------------------------------
+;体力・气力の減少
+;-------------------------------------------------
+BASE:ARG:0 -= LOSEBASE:0
+IF BASE:ARG:0 < 0
+	BASE:ARG:0 = 0
+ELSEIF BASE:ARG:0 > MAXBASE:ARG:0
+	BASE:ARG:0 = MAXBASE:ARG:0
+ENDIF
+BASE:ARG:1 -= LOSEBASE:1
+IF BASE:ARG:1 < 0
+	BASE:ARG:1 = 0
+ELSEIF BASE:ARG:1 > MAXBASE:ARG:1
+	BASE:ARG:1 = MAXBASE:ARG:1
+ENDIF
+
+
+;气力０
+SIF BASE:ARG:1 <= 0
+	PRINTL ★气力０★
+
+;体力・气力の減少
+PRINT 体力-
+PRINTV LOSEBASE:0
+PRINT  气力-
+PRINTVL LOSEBASE:1
+PRINTW

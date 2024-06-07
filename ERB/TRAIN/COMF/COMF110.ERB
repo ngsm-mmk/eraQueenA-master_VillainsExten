@@ -1,0 +1,82 @@
+﻿;-------------------------------------------------
+;家具にする
+;-------------------------------------------------
+@COM110
+PRINTL 人体家具
+STR:0 = 人体家具
+
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 120
+LOSEBASE:1 += 80
+
+PALAM:9 += 500
+SOURCE:7 = 1500
+SOURCE:8 = 500
+SOURCE:14 = 500
+SOURCE:17 = 200
+SOURCE:18 = 1000
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 20
+
+;调教者・调教对象の体型により、疼痛・恐惧のソース減少
+S = BUILD2(PLAYER, TARGET)
+IF S > 1
+ELSEIF S > 0
+	TIMES SOURCE:疼痛 , 0.80
+	TIMES SOURCE:恐惧 , 0.80
+ELSEIF S == 0
+	TIMES SOURCE:疼痛 , 0.60
+	TIMES SOURCE:恐惧 , 0.60
+ELSEIF S < -1
+	TIMES SOURCE:疼痛 , 0.40
+	TIMES SOURCE:恐惧 , 0.40
+ELSE
+	TIMES SOURCE:疼痛 , 0.20
+	TIMES SOURCE:恐惧 , 0.20
+ENDIF
+
+;痛苦のパラメータによる痛苦のソース増加は先に処理しておく
+IF PALAM:10 < PALAMLV:1
+	TIMES SOURCE:7 , 1.00
+ELSEIF PALAM:10 < PALAMLV:2
+	TIMES SOURCE:7 , 1.50
+ELSEIF PALAM:10 < PALAMLV:3
+	TIMES SOURCE:7 , 2.00
+ELSEIF PALAM:10 < PALAMLV:4
+	TIMES SOURCE:7 , 2.50
+ELSEIF PALAM:10 >= PALAMLV:4
+	TIMES SOURCE:7 , 3.00
+ENDIF
+
+;调教者が小人体系かつ奴隶に受虐属性が無いとき、疼痛・恐惧・屈从・反抗のソース減少
+IF TALENT:PLAYER:142 && ABL:9 == 0
+	TIMES SOURCE:7 , 0.20
+	TIMES SOURCE:8 , 0.20
+	TIMES SOURCE:14 , 0.20
+	TIMES SOURCE:18 , 0.20
+ENDIF
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;依赖度ベクトル
+TFLAG:33 = 5
+
+;依赖度補正値(服从で1、隶属で2）
+IF TALENT:5 && ASSIPLAY == 0
+	TFLAG:30 += 1
+ELSEIF TALENT:8 && ASSIPLAY == 0
+	TFLAG:30 += 2
+ENDIF
+
+
+RETURN 1
+

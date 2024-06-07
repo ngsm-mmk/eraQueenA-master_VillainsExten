@@ -1,0 +1,1234 @@
+﻿;状況説明の地の文　eraslaveをリスペクト
+;-------------------------------------------------
+;アイテム装着中の地の文
+;現在：飞机杯、肛塞、后庭拉珠、乳头夹对応　（基本男性奴隶なので）
+;-------------------------------------------------
+@ITEM_SOUCHAKUCHUU
+
+;飞机杯装着中
+IF TEQUIP:飞机杯 && SELECTCOM != 43
+	PRINTFORM 　%CALLNAME%
+	IF (PALAM:0 + UP:0) < 100
+		PRINTFORML 似乎还未从飞机杯的玩弄中得到快感，反应平淡
+	ELSEIF (PALAM:0 + UP:0) < 500
+		PRINTFORML 在飞机杯的玩弄下开始有了一些动摇
+	ELSEIF (PALAM:0 + UP:0) < 1500
+		PRINTFORML 在飞机杯的玩弄下似乎渐渐有感觉起来了
+	ELSEIF (PALAM:0 + UP:0) < 3000
+		PRINTFORML 在飞机杯的玩弄下发出舒服的喟叹
+	ELSEIF (PALAM:0 + UP:0) < 6000
+		PRINTFORML 明显被飞机杯玩弄得产生了快感，腰部不自觉扭动起来
+	ELSEIF (PALAM:0 + UP:0) < 8000
+		PRINTFORML 在飞机杯的玩弄下快感愈加强烈，阴茎肿胀起来，气息也紊乱了
+	ELSEIF (PALAM:0 + UP:0) >= 8000
+		PRINTFORML 已不能承受飞机杯的玩弄，身躯剧烈抖动着呻吟声也越发高亢，一副随时蓄势待发的模样
+	ENDIF
+	IF (((TEQUIP:肛塞 && SELECTCOM != 45) || (TEQUIP:后庭拉珠 && SELECTCOM != 46)) && SEXPLAY(TARGET) != 2 && TFLAG:53 == 0) || (TEQUIP:乳头夹 && SELECTCOM != 47)
+		PRINT 　另一方面，
+	ENDIF
+ENDIF
+
+;後ろ和乳头夹両方装着中
+IF ((TEQUIP:肛塞 || TEQUIP:后庭拉珠) && SEXPLAY(TARGET) != 2) && TEQUIP:乳头夹
+	SIF !TEQUIP:飞机杯
+		PRINTFORM 　%CALLNAME%
+	IF TEQUIP:肛塞
+		LOCALS = 肛塞
+	ELSE
+		LOCALS = 后庭拉珠
+	ENDIF
+	IF  EXP:Ａ经验 < 10 && (PALAM:2 + UP:2) < 3000 && PALAM:4 < 10000
+		IF (PALAM:3 + UP:3) < 500
+			PRINTFORML 被塞在肛门中的%LOCALS%折磨得痛苦难耐
+		ELSEIF (PALAM:3 + UP:3) < 1500
+			PRINTFORML 似乎努力忍受着%LOCALS%带来的激烈疼痛，乳尖却在乳头夹的蹂躏下微微挺立起来
+		ELSEIF (PALAM:3 + UP:3) < 3000
+			PRINTFORML 努力忍受着%LOCALS%带来的激烈疼痛，凸起的乳头在乳头夹的蹂躏下愈加红肿，好像有快感了
+		ELSEIF (PALAM:3 + UP:3) < 6000
+			PRINTFORML 努力忍受着%LOCALS%带来的激烈疼痛，乳头在乳头夹的蹂躏下已经肿成黄豆大小，乳晕也扩散了
+		ELSEIF (PALAM:3 + UP:3) < 8000
+			PRINTFORML 努力忍受着%LOCALS%带来的激烈疼痛，脸上交错着情欲与痛苦
+			PRINTFORML  通红肿胀的乳头在乳头夹的蹂躏下高高挺立，就像熟透的果实一般
+		ELSEIF (PALAM:3 + UP:3) >= 8000
+			PRINTFORML 即使屁股里夹着%LOCALS%，却好像好受了一些
+			PRINTFORML  身躯偶尔还轻轻扭动，连带着乳尖上的乳头夹也下流地摇晃起来
+		ENDIF
+	ELSEIF EXP:Ａ经验 < 30 && (PALAM:2 + UP:2) < 1000 && PALAM:4 < 6000
+		IF (PALAM:3 + UP:3) < 500
+			PRINTFORML 被%LOCALS%折磨得痛苦不已
+		ELSEIF (PALAM:3 + UP:3) < 1500
+			PRINTFORML 似乎强迫自己忍受着%LOCALS%带来的疼痛，乳尖却在乳头夹的蹂躏下微微挺立起来
+		ELSEIF (PALAM:3 + UP:3) < 3000
+			PRINTFORML 似乎强迫自己忍受着%LOCALS%带来的疼痛，凸起的乳头在乳头夹的蹂躏下愈加红肿，好像有快感了
+		ELSEIF (PALAM:3 + UP:3) < 6000
+			PRINTFORML 微眯着眼忍受着%LOCALS%带来的疼痛，乳头在乳头夹的蹂躏下已经肿成黄豆大小，乳晕也扩散了
+		ELSEIF (PALAM:3 + UP:3) < 8000
+			PRINTFORML 微眯着眼忍受着%LOCALS%带来的疼痛，脸上交错着情欲与痛苦
+			PRINTFORML  通红肿胀的乳头在乳头夹的蹂躏下高高挺立，就像熟透的果实一般
+		ELSEIF (PALAM:3 + UP:3) >= 8000
+			PRINTFORML 即使屁股里夹着%LOCALS%，却好像不那么难受了
+			PRINTFORML  身躯偶尔轻轻扭动，连带着乳尖上的乳头夹也下流地摇晃起来
+		ENDIF
+	ELSEIF EXP:Ａ经验 < 75 && (PALAM:2 + UP:2) < 500 && PALAM:4 < 3000
+		IF (PALAM:3 + UP:3) < 500
+			PRINTFORML 被%LOCALS%折磨得扭曲面容
+		ELSEIF (PALAM:3 + UP:3) < 1500
+			PRINTFORML 在%LOCALS%的折磨下皱紧眉头，乳尖却在乳头夹的蹂躏下微微挺立起来
+		ELSEIF (PALAM:3 + UP:3) < 3000
+			PRINTFORML 咬着唇忍受%LOCALS%带来的疼痛，凸起的乳头在乳头夹的蹂躏下愈加红肿，好像有快感了
+		ELSEIF (PALAM:3 + UP:3) < 6000
+			PRINTFORML 数次调整呼吸以习惯%LOCALS%带来的疼痛，乳头在乳头夹的蹂躏下已经肿成黄豆大小，乳晕也扩散了
+		ELSEIF (PALAM:3 + UP:3) < 8000
+			PRINTFORML 渐渐开始习惯%LOCALS%带来的疼痛，脸上交错着情欲与痛苦
+			PRINTFORML  通红肿胀的乳头在乳头夹的蹂躏下高高挺立，就像熟透的果实一般
+		ELSEIF (PALAM:3 + UP:3) >= 8000
+			PRINTFORML 即使屁股里夹着%LOCALS%，却好像已经习惯
+			PRINTFORML  为了让自己更舒服而调整姿势，连带着乳尖上的乳头夹下流地摇晃起来
+		ENDIF
+	ELSEIF (PALAM:2 + UP:2) < 1500 && PALAM:4 >= 1000
+		IF (PALAM:3 + UP:3) < 100
+			PRINTFORML 好像对%LOCALS%和乳头夹完全没有产生任何快感，神情异常冷漠
+		ELSEIF (PALAM:3 + UP:3) < 500
+			PRINTFORML 对%LOCALS%和乳头夹似乎渐渐产生感觉了，有些羞耻地咬住了嘴唇
+		ELSEIF (PALAM:3 + UP:3) < 1500
+			PRINTFORML 乳头在乳头夹的蹂躏下肿胀成黄豆大小，看起来渐渐感觉到快感了
+		ELSEIF (PALAM:3 + UP:3) < 3000
+			PRINTFORML 凸起的乳头在乳头夹的蹂躏下愈加红肿，乳晕也扩散开来
+		ELSEIF (PALAM:3 + UP:3) < 6000
+			PRINTFORML 眼角眉梢染上了迷茫和媚色，通红肿胀的乳头在乳头夹的蹂躏下高高挺立，宛如熟透了的果实
+		ELSEIF (PALAM:3 + UP:3) < 8000
+			PRINTFORML 对于渐渐生出的陌生感觉好像非常羞耻，拼命掩饰自己的失态
+			PRINTFORML  然而勃起的乳头跟下身出卖了%CALLNAME%，%CALLNAME%的呼吸越来越紊乱了
+		ELSEIF (PALAM:3 + UP:3) >= 8000
+			PRINTFORML 难耐地扭动着身体，不知是为了追逐快感还是为了驱逐，连带着乳尖上的乳头夹也下流地摇晃起来
+			PRINTFORML  这一事实让%CALLNAME%的脸颊刷的红了
+		ENDIF
+	ELSEIF (PALAM:2 + UP:2) < 3000 && PALAM:4 < 500
+		IF (PALAM:2 + UP:2) < 500
+			IF (PALAM:3 + UP:3) < 100
+				PRINTFORML 在%LOCALS%的折磨下呻吟出声，除了疼痛似乎还隐隐有种别的感觉
+			ELSEIF (PALAM:3 + UP:3) < 500
+				PRINTFORML 在%LOCALS%的折磨下发出丢脸的叫喊，不由得羞愤地咬住了嘴唇，不肯再泄出多余的声音
+			ELSEIF (PALAM:3 + UP:3) < 1500
+				PRINTFORML 脸上神色变幻，有痛苦，也有欢愉
+				PRINTFORML  乳头在乳头夹的蹂躏下已经肿成黄豆大小，乳晕也扩散了，看起来比原来大了一圈
+			ELSEIF (PALAM:3 + UP:3) < 3000
+				PRINTFORML 脸被情欲染成了粉红，肿胀的乳头在乳头夹的蹂躏下高高挺立
+				PRINTFORML  就像熟透的果实一般，泛着诱人的光泽
+			ELSEIF (PALAM:3 + UP:3) < 6000
+				PRINTFORML 可怜的肛穴被%LOCALS%强行撑大，周围的褶皱紧绷着，附近的皮肤都变得红肿不堪了
+				PRINTFORML  就像%CALLNAME%那肿大得皮肤都快破了的乳头一样
+			ELSEIF (PALAM:3 + UP:3) < 8000
+				PRINTFORML 呻吟声越来越凌乱，甚至情不自禁地夹紧了埋在体内的%LOCALS%
+				PRINTFORML  淫靡地扭动着散发出色气的身体，乳尖上的乳头夹随着%CALLNAME%的动作下流地摇晃起来
+			ELSEIF (PALAM:3 + UP:3) >= 8000
+				PRINTFORML 流下生理性眼泪，屁股后的小洞一张一合地吮吸着%LOCALS%，整个人的气质都变得淫乱了
+				PRINTFORML  要是被认识的人看见%CALLNAME%这幅姿态，恐怕只会以为是长得相似的人而已吧
+			ENDIF
+		ELSEIF (PALAM:2 + UP:2) < 1500
+			IF (PALAM:3 + UP:3) < 100
+				PRINTFORML 在%LOCALS%的折磨下，除了疼痛外似乎还产生了别的奇怪的感觉
+			ELSEIF (PALAM:3 + UP:3) < 500
+				PRINTFORML 在%LOCALS%的折磨下发出丢脸的叫喊，不由得羞愤地紧咬牙关，不肯再泄出多余的声音
+			ELSEIF (PALAM:3 + UP:3) < 1500
+				PRINTFORML 可怜的肛穴被%LOCALS%强行撑大，周围的褶皱紧绷着，附近的皮肤都变得红肿不堪了
+				PRINTFORML  另一方面被乳头夹蹂躏的乳尖违背%CALLNAME%的愿望挺立了起来
+			ELSEIF (PALAM:3 + UP:3) < 3000
+				PRINTFORML 像是想要把肛穴里的%LOCALS%排出去一样徒劳地扭动身体
+				PRINTFORML  乳头在乳头夹的蹂躏下已经肿成黄豆大小，乳晕也扩散了，看起来比原来大了一圈
+			ELSEIF (PALAM:3 + UP:3) < 6000
+				PRINTFORML 紧致的肛穴在%LOCALS%的摩擦下好像分泌出了什么晶莹的液体
+				PRINTFORML  肿胀的乳头在乳头夹的蹂躏下高高挺立，就像熟透的果实一般，泛着诱人的光泽
+			ELSEIF (PALAM:3 + UP:3) < 8000
+				PRINTFORML 不适扭动，动作让埋在体内的%LOCALS%被夹得更紧了
+				PRINTFORML  %CALLNAME%焦急得继续努力，乳尖上的乳头夹随着%CALLNAME%的动作下流地摇晃起来
+			ELSEIF (PALAM:3 + UP:3) >= 8000
+				PRINTFORML 可怜的肛穴似乎已经被撑成了%LOCALS%的形状，却还是无法将其排出
+				PRINTFORML  %CALLNAME%只能流下屈辱的泪水，微微颤抖着身形，一边低低地啜泣着
+			ENDIF
+		ELSEIF EXP:Ａ经验 >= 30
+			IF (PALAM:3 + UP:3) < 100
+				PRINTFORML 在%LOCALS%的折磨下，除了疼痛外似乎还产生了别的奇怪的感觉
+			ELSEIF (PALAM:3 + UP:3) < 500
+				PRINTFORML 在%LOCALS%的折磨下发出丢脸的叫喊，不由得羞愤地紧咬牙关，不肯再泄出多余的声音
+			ELSEIF (PALAM:3 + UP:3) < 1500
+				PRINTFORML 脸上神色变幻，有痛苦，也有欢愉
+				PRINTFORML  乳头在乳头夹的蹂躏下已经肿成黄豆大小，乳晕也扩散了，看起来比原来大了一圈
+			ELSEIF (PALAM:3 + UP:3) < 3000
+				PRINTFORML 脸被情欲染成了粉红，肿胀的乳头在乳头夹的蹂躏下高高挺立
+				PRINTFORML  就像熟透的果实一般，泛着诱人的光泽
+			ELSEIF (PALAM:3 + UP:3) < 6000
+				PRINTFORML 可怜的肛穴被%LOCALS%强行撑大，周围的褶皱紧绷着，附近的皮肤都变得红肿不堪了
+				PRINTFORML  就像%CALLNAME%那肿大得皮肤都快破了的乳头一样
+			ELSEIF (PALAM:3 + UP:3) < 8000
+				PRINTFORML 呻吟声越来越凌乱，甚至情不自禁夹紧埋在体内的%LOCALS%，淫靡地扭动着散发出色气的身体
+				PRINTFORML  乳尖上的乳头夹随着%CALLNAME%的动作下流地摇晃起来
+			ELSEIF (PALAM:3 + UP:3) >= 8000
+				PRINTFORML 流下生理性眼泪，屁股后的小洞一张一合地吮吸着%LOCALS%，整个人的气质都变得淫乱了
+				PRINTFORML  要是被认识的人看见%CALLNAME%这幅姿态，恐怕只会以为是长得相似的人而已吧
+			ENDIF
+		ELSE
+			IF (PALAM:3 + UP:3) < 100
+				PRINTFORML 眼神抗拒，目光尖锐，如同在说自己是绝对不会低头的
+				PRINTFORML  然而插着%LOCALS%的后穴除了疼痛似乎还产生了异样的感觉
+			ELSEIF (PALAM:3 + UP:3) < 500
+				PRINTFORML 眉头紧皱，脸色泛红，插着%LOCALS%的后穴一张一合地收缩着，一副有感觉了的样子
+			ELSEIF (PALAM:3 + UP:3) < 1500
+				PRINTFORML 咬着唇忍受%LOCALS%带来的疼痛，两枚乳珠在乳头夹的蹂躏下挺立起来，愈加红肿，乳晕也扩散了
+			ELSEIF (PALAM:3 + UP:3) < 3000
+				PRINTFORML 渐渐开始习惯%LOCALS%带来的疼痛，脸上交错着情欲与痛苦
+				PRINTFORML  通红肿胀的乳头在乳头夹的蹂躏下高高挺立，就像熟透的果实一般
+			ELSEIF (PALAM:3 + UP:3) < 6000
+				PRINTFORML 可怜的肛穴被%LOCALS%强行撑大，周围的褶皱紧绷着，附近的皮肤都变得红肿不堪了
+				PRINTFORML  就像%CALLNAME%那肿大得皮肤都快破了的乳头一样
+			ELSEIF (PALAM:3 + UP:3) < 8000
+				PRINTFORML 对于渐渐生出的陌生感觉好像非常羞耻，拼命掩饰自己的失态
+				PRINTFORML  然而勃起的乳头跟下身出卖了%CALLNAME%，%CALLNAME%的呼吸越来越紊乱了
+			ELSEIF (PALAM:3 + UP:3) >= 8000
+				PRINTFORML 已无法控制住破碎的呻吟，显然对于屈服于欲望这件事极为排斥和羞愤
+				PRINTFORML  %CALLNAME%所有能做的只有拼命忍耐颤动的身体，尽量不去迎合快感的节奏
+				PRINTFORML  然而眼角流下的泪水将其彻底出卖了
+			ENDIF
+		ENDIF
+	ELSEIF (PALAM:2 + UP:2) < 3000
+		IF (PALAM:3 + UP:3) < 100
+			PRINTFORML 好像因为后穴塞着的%LOCALS%产生了微妙的感觉
+		ELSEIF (PALAM:3 + UP:3) < 500
+			PRINTFORML 神情恍惚，目光湿润，似乎在后穴塞着的%LOCALS%上得到了难以启齿的快感
+		ELSEIF (PALAM:3 + UP:3) < 1500
+			PRINTFORML 发出越来越凌乱的呻吟声，甚至情不自禁地夹紧了埋在体内的%LOCALS%
+			PRINTFORML  乳头在乳头夹的蹂躏下挺立了起来
+		ELSEIF (PALAM:3 + UP:3) < 3000
+			PRINTFORML 在%LOCALS%和乳头夹的双重刺激下浑身散发出淫乱的色气
+			PRINTFORML  乳头肿胀得像熟透的果实一般，泛着诱人的光泽
+		ELSEIF (PALAM:3 + UP:3) < 6000
+			PRINTFORML 被%LOCALS%和乳头夹欺负得欲火焚身，如蛇一样扭动着身体
+			PRINTFORML  乳尖上的乳头夹随着%CALLNAME%的动作下流地摇晃起来
+		ELSEIF (PALAM:3 + UP:3) < 8000
+			PRINTFORML 夹着%LOCALS%的屁股摇晃着，挂着乳头夹的乳头随着剧烈的呼吸上下起伏
+			PRINTFORML  整个人的气质都变得淫乱至极
+		ELSEIF (PALAM:3 + UP:3) >= 8000
+			PRINTFORML 流下生理性眼泪，屁股后的小洞一张一合地吮吸着%LOCALS%
+			PRINTFORML  要是被认识的人看见%CALLNAME%这幅姿态，恐怕只会以为是长得相似的人而已吧
+		ENDIF
+	ELSEIF (PALAM:2 + UP:2) < 6000
+		IF (PALAM:3 + UP:3) < 100
+			PRINTFORML 好像因为后穴塞着的%LOCALS%产生了微妙的感觉
+		ELSEIF (PALAM:3 + UP:3) < 500
+			PRINTFORML 神情恍惚，目光湿润，似乎在后穴塞着的%LOCALS%上得到了难以启齿的快感，难为情地夹紧了双腿
+		ELSEIF (PALAM:3 + UP:3) < 1500
+			PRINTFORML 发出越来越凌乱的呻吟声，甚至情不自禁地绞紧了埋在体内的%LOCALS%
+			PRINTFORML  乳头在乳头夹的蹂躏下挺立了起来
+		ELSEIF (PALAM:3 + UP:3) < 3000
+			PRINTFORML 在%LOCALS%和乳头夹的双重刺激下浑身散发出淫乱的色气
+			PRINTFORML  乳头肿胀得像熟透的果实一般，泛着诱人的光泽，不由难耐地摩擦起双腿
+		ELSEIF (PALAM:3 + UP:3) < 6000
+			PRINTFORML 被%LOCALS%和乳头夹欺负得欲火焚身，如蛇一样扭动着身体
+			PRINTFORML  乳尖上的乳头夹随着%CALLNAME%的动作下流地摇晃起来，像是在渴求着爱抚
+		ELSEIF (PALAM:3 + UP:3) < 8000
+			PRINTFORML 眼神迷离，夹着%LOCALS%的屁股摇晃着，挂着乳头夹的乳头随着剧烈的呼吸上下起伏
+			PRINTFORML  整个人的气质都变得淫乱至极
+		ELSEIF (PALAM:3 + UP:3) >= 8000
+			PRINTFORML 流下生理性眼泪，屁股后的小洞一张一合地吮吸着%LOCALS%
+			PRINTFORML  有晶亮的液体顺着%CALLNAME%的大腿滑下
+			PRINTFORML  要是被认识的人看见这幅姿态，恐怕也只会以为是长得相似的人而已吧
+		ENDIF
+	ELSEIF (PALAM:2 + UP:2) < 8000
+		IF (PALAM:3 + UP:3) < 100
+			PRINTFORML 含着%LOCALS%难耐地扭动，身体在快感的刺激下兴奋得不住颤抖
+		ELSEIF (PALAM:3 + UP:3) < 500
+			PRINTFORML 在%LOCALS%的折磨下发出丢脸的叫喊，身体开始不由自主地追逐快乐，淫浪地扭动起来
+		ELSEIF (PALAM:3 + UP:3) < 1500
+			PRINTFORML 摩擦双腿，夹紧了屁股里的%LOCALS%
+			PRINTFORML  乳头在乳头夹的蹂躏下已经肿成黄豆大小，乳晕也扩散了，看起来比原来大了一圈
+		ELSEIF (PALAM:3 + UP:3) < 3000
+			PRINTFORML 感觉自己的肛穴被%LOCALS%蹂躏得通红肿胀，可疑的液体顺着%CALLNAME%腿间的弧线蜿蜒而下
+			PRINTFORML  被乳头夹的乳头高高挺立，就像熟透的果实一般，泛着诱人的光泽
+		ELSEIF (PALAM:3 + UP:3) < 6000
+			PRINTFORML 发出充满魅惑的呻吟，夹着%LOCALS%的屁股高高翘起
+			PRINTFORML  两瓣臀肉布满了汗珠，显得淫靡非常
+			PRINTFORML  随着%CALLNAME%的动作，乳头上夹着的乳头夹下流地摇晃出了两道弧线
+		ELSEIF (PALAM:3 + UP:3) < 8000
+			PRINTFORML 流下生理性眼泪，屁股后的小洞一张一合饥渴地吮吸着%LOCALS%
+			PRINTFORML  两粒乳头过于肿胀，乳头夹都快掉下来了
+			PRINTFORML  要是被认识的人看见%CALLNAME%这幅姿态，恐怕只会以为是长得相似的人而已吧
+		ELSEIF (PALAM:3 + UP:3) >= 8000
+			PRINTFORML 发出一声高过一声的呻吟，愈来愈短促，那本不该用于交合的穴口早已汪洋泛滥
+			PRINTFORML  晶莹的爱液顺着%LOCALS%噗啾噗啾地涌出来流了满腿，整个人的气质都变得淫乱至极
+		ENDIF
+	ELSE
+		IF (PALAM:3 + UP:3) < 100
+			PRINTFORML 贪婪地吮吸着后穴里的%LOCALS%，淫荡的液体沿着大腿内侧淌下来
+		ELSEIF (PALAM:3 + UP:3) < 500
+			PRINTFORML 夹着%LOCALS%的屁股摇晃着，挂着乳头夹的乳头随着剧烈的呼吸上下起伏
+			PRINTFORML  整个人的气质都变得淫乱至极
+		ELSEIF (PALAM:3 + UP:3) < 1500
+			PRINTFORML 夹紧后穴里的%LOCALS%，眼神迷离，浑身泛红
+			PRINTFORML  胸脯随着呼吸上下起伏，连带着乳头上的乳头夹晃动出两道惹眼的弧线
+		ELSEIF (PALAM:3 + UP:3) < 3000
+			PRINTFORML 感觉自己的肛穴被%LOCALS%蹂躏得通红肿胀，却根本不见痛苦
+			PRINTFORML  相反，可疑的液体顺着%CALLNAME%腿间的弧线蜿蜒而下，昭示出其主人是多么快乐
+		ELSEIF (PALAM:3 + UP:3) < 6000
+			PRINTFORML 高高翘起被%LOCALS%蹂躏得通红肿胀的屁股，一边发出断断续续的呻吟
+			PRINTFORML  两瓣布满汗珠和淫水的臀肉显得淫靡非常
+			PRINTFORML  乳头在乳头夹的蹂躏下已经肿成黄豆大小，乳晕也扩散了，看起来比原来大了一圈
+		ELSEIF (PALAM:3 + UP:3) < 8000
+			PRINTFORML 不能自己地流下口水，满脸涕泗横流，屁股后的小洞一张一合饥渴地吮吸着%LOCALS%，浑身抖如筛糠
+			PRINTFORML  要是被认识的人看见%CALLNAME%这幅姿态，恐怕只会以为是长得相似的人而已吧
+		ELSEIF (PALAM:3 + UP:3) >= 8000
+			PRINTFORML 在嘴里呼喊着意味不明的胡话，其间夹杂着让人脸红耳热的淫浪呻吟
+			PRINTFORML  那本不该用于交合的穴口早已汪洋泛滥，晶莹的爱液顺着%LOCALS%噗啾噗啾地涌出来流了满腿
+			PRINTFORML  %CALLNAME%的身体在快感下一阵一阵地痉挛
+		ENDIF
+	ENDIF
+;肛塞/ビーズ插入中　､拡張済みの后庭中ではない
+ELSEIF ((TEQUIP:肛塞 && SELECTCOM != 45) || (TEQUIP:后庭拉珠 && SELECTCOM != 46)) && SEXPLAY(TARGET) != 2 && TFLAG:53 == 0
+	SIF !TEQUIP:飞机杯
+		PRINTFORM 　%CALLNAME%
+	IF TEQUIP:肛塞
+		LOCALS = 肛塞
+	ELSE
+		LOCALS = 后庭拉珠
+	ENDIF
+	IF EXP:Ａ经验 < 10 && (PALAM:2 + UP:2) < 3000 && PALAM:4 < 10000
+		PRINTFORML 被塞在后穴中的%LOCALS%折磨得痛苦难耐
+	ELSEIF EXP:Ａ经验 < 30 && (PALAM:2 + UP:2) < 1000 && PALAM:4 < 6000
+		PRINTFORML 被%LOCALS%折磨得痛苦不已
+	ELSEIF EXP:Ａ经验 < 75 && (PALAM:2 + UP:2) < 500 && PALAM:4 < 3000
+		PRINTFORML 被%LOCALS%折磨得眉头紧皱
+	ELSEIF (PALAM:2 + UP:2) < 1500 && PALAM:4 >= 1000
+		PRINTFORML 被%LOCALS%折磨得神情苦闷
+	ELSEIF (PALAM:2 + UP:2) < 3000 && PALAM:4 < 500
+		IF (PALAM:2 + UP:2) < 500
+			PRINTFORML 在%LOCALS%的折磨下，除了疼痛外似乎还产生了别的奇怪的感觉
+		ELSEIF (PALAM:2 + UP:2) < 1500
+			PRINTFORML 在%LOCALS%的折磨下发出丢脸的叫喊，不由得羞愤地紧咬牙关，不肯再泄出多余的声音
+		ELSEIF EXP:Ａ经验 >= 30
+			PRINTFORML 在%LOCALS%的折磨下气息紊乱，脸上神色变幻，有痛苦，也有欢愉
+		ELSE
+			PRINTFORML 脸被情欲染成了粉红，可怜的肛穴被%LOCALS%强行撑大
+			PRINTFORML  周围的褶皱紧绷着，附近的皮肤都变得红肿不堪了
+		ENDIF
+	ELSEIF (PALAM:2 + UP:2) < 3000
+		PRINTFORML 被%LOCALS%玩弄得渐渐有了感觉，眼神迷离
+	ELSEIF (PALAM:2 + UP:2) < 6000
+		PRINTFORML 被%LOCALS%玩弄得神情恍惚，呼吸凌乱
+	ELSEIF (PALAM:2 + UP:2) < 8000
+		PRINTFORML 被%LOCALS%玩弄得产生了明显的快感，眼角流下生理性泪水
+	ELSE
+		PRINTFORML 被%LOCALS%玩弄得产生了强烈的快感，淫荡的液体沿着大腿内侧淌下来
+	ENDIF
+;乳头夹装着中、乳头夹指令ではない
+ELSEIF TEQUIP:乳头夹 && SELECTCOM != 47
+	SIF !TEQUIP:飞机杯
+		PRINTFORM 　%CALLNAME%
+	IF (PALAM:3 + UP:3) < 100
+		PRINTFORML 好像被%LOCALS%玩弄得并不舒服，眼神抗拒，目光尖锐，如同在说自己是绝对不会低头的
+	ELSEIF (PALAM:3 + UP:3) < 500
+		PRINTFORML 被%LOCALS%玩弄得并不舒服，眉头紧皱，仿佛一分一秒都是煎熬
+	ELSEIF (PALAM:3 + UP:3) < 1500
+		PRINTFORML 感觉自己的乳头在乳头夹的蹂躏下肿胀成了黄豆大小，乳晕也扩散了
+	ELSEIF (PALAM:3 + UP:3) < 3000
+		PRINTFORML 感觉自己的乳粒越来越硬，已经挺得很高了，让人错觉乳头夹是不是会从上面掉下来
+	ELSEIF (PALAM:3 + UP:3) < 6000
+		PRINTFORML 脸上交错着情欲与痛苦，通红肿胀的乳头在乳头夹的蹂躏下高高挺立，就像熟透的果实一般
+	ELSEIF (PALAM:3 + UP:3) < 8000
+		PRINTFORML 一边喘息一边摇晃胸部，夹着乳头夹的乳头寂寞地勃起，宛如在渴求谁的爱抚
+	ELSEIF (PALAM:3 + UP:3) >= 8000
+		PRINTFORML 肿胀的乳头在乳头夹的蹂躏下泛着诱人的光泽，随着身体的颤动与呼吸的起伏在空气中滑出了两道弧线
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;-------------------------------------------------
+;汎用状況説明文　汎用喘ぎ和連動
+;-------------------------------------------------
+;-------------------------------------------------
+@HANYOU_JYOKYO
+
+IF TALENT:崩溃
+	PRINTFORML %CALLNAME%双目失神地望着天空，连仅存的理智也消散殆尽
+	
+	RETURN 0
+ENDIF
+
+
+;Ｃだけ弄られている
+;IF (CCHECK(TARGET) || GETBIT(TFLAG:49, 0)) && (C:3 + C:1 + C:2 == 0) && SELECTCOM != 0 && !BCHECK(TARGET) && !ACHECK(TARGET) && !VCHECK(TARGET)
+;	CALL HANYOU_JYOKYO_C
+;	RETURN 0
+;Ｂだけ弄られている
+;ELSEIF (BCHECK(TARGET) || GETBIT(TFLAG:49, 3)) && (C:0 + C:1 + C:2 == 0) && SELECTCOM != 0 && !CCHECK(TARGET) && !ACHECK(TARGET) && !VCHECK(TARGET)
+;	CALL HANYOU_JYOKYO_B
+;	RETURN 0
+;Ａだけ弄られている
+;ELSEIF (ACHECK(TARGET) || GETBIT(TFLAG:49, 2)) && (C:0 + C:1 + C:3 == 0) && !BCHECK(TARGET) && !CCHECK(TARGET) && !VCHECK(TARGET)
+;	IF SELECTCOM == 4
+;		CALL HANYOU_JYOKYO_A2
+;	ELSE
+;		CALL HANYOU_JYOKYO_A
+;	ENDIF
+;	RETURN 0
+;Ｖだけ弄られている
+;ELSEIF (VCHECK(TARGET) || GETBIT(TFLAG:49, 1)) && (C:0 + C:2 + C:3 == 0) && !BCHECK(TARGET) && !CCHECK(TARGET) && !ACHECK(TARGET)
+;	CALL HANYOU_JYOKYO_V
+;	RETURN 0
+;ENDIF
+
+;ほかの場合は汎用喘ぎの全体的な痛さ和気持ちよさ和連動
+CALL KYOTUU_JYOKYO
+;痛苦LV2&快感レベル2以下(快感を感じる余裕が無い状態)
+IF D == 2 && C:4 <= 2
+	PRINTFORM %CALLNAME%
+	;受虐狂ッ気4以上あり
+	IF ABL:9 > 3
+		PRINTFORML 在激烈的痛苦中体会到了绝望
+	ELSE
+		PRINTFORML 徘徊在崩溃的边缘，已经不能承受更多的疼痛了
+	ENDIF
+;痛苦LV1&快感レベル1以下
+ELSEIF D == 1 && C:4 <= 2
+	PRINTFORM %CALLNAME%
+	;両方痛い、そして両方同じくらい痛い場合
+	IF D:1 > 0 && D:2 > 0&& D:1 == D:2
+		IF EXP:Ａ经验 < 10 && (PALAM:2 + UP:2) < 3000 && PALAM:4 < 10000
+			PRINTFORM 在后穴和阴道的双重折磨下痛苦不堪，神色扭曲
+			;受虐狂ッ気4以上あり
+			IF ABL:9 > 3
+				PRINTL 但身体好像违背意志兴奋起来了
+			ELSE
+				PRINTL …
+			ENDIF
+		ELSEIF EXP:Ａ经验 < 30 && (PALAM:2 + UP:2) < 1000 && PALAM:4 < 6000
+			PRINTFORM 在后穴和阴道的双重折磨下眉头紧皱，咬紧牙关
+			;受虐狂ッ気4以上あり
+			IF ABL:9 > 3
+				PRINTL 但身体好像违背意志兴奋起来了
+			ELSE
+				PRINTL …
+			ENDIF
+		ELSEIF EXP:Ａ经验 < 75 && (PALAM:2 + UP:2) < 500 && PALAM:4 < 3000
+			PRINTFORM 在后穴和阴道的双重折磨下呼吸凌乱，冷汗淋淋
+			;受虐狂ッ気4以上あり
+			IF ABL:9 > 3
+				PRINTL 但身体好像违背意志兴奋起来了
+			ELSE
+				PRINTL …
+			ENDIF
+		ELSE
+			IF (PALAM:2 + UP:2) < 500
+				PRINTL 被插入的后穴和阴道疼痛难忍
+			ELSEIF (PALAM:2 + UP:2) < 1500
+				PRINTL 被插入的后穴和阴道有点疼
+			ELSEIF EXP:Ａ经验 >= 30
+				PRINTL 被插入的后穴和阴道有点疼，但渐渐产生了微妙的快感
+			ELSE
+				PRINTL 被插入的两个洞内传出了难以忍受的瘙痒和灼热
+			ENDIF
+		ENDIF
+	;肛のが痛い場合
+	ELSEIF D:1 > D:2
+		IF TEQUIP:肛塞 && SEXPLAY(TARGET) != 2
+			LOCALS = 被塞在后穴中的肛塞
+			TFLAG:53 = 1
+		ELSEIF TEQUIP:后庭拉珠 && SEXPLAY(TARGET) != 2
+			LOCALS = 被塞在后穴中的后庭拉珠
+			TFLAG:53 = 1
+		ELSE
+			LOCALS = 干涩的肛穴被
+		ENDIF
+		IF EXP:Ａ经验 < 10 && (PALAM:2 + UP:2) < 3000 && PALAM:4 < 10000
+			PRINTFORML %LOCALS%玩弄得痛苦难耐…
+		ELSEIF EXP:Ａ经验 < 30 && (PALAM:2 + UP:2) < 1000 && PALAM:4 < 6000
+			PRINTFORML %LOCALS%玩弄得痛苦不已…
+		ELSEIF EXP:Ａ经验 < 75 && (PALAM:2 + UP:2) < 500 && PALAM:4 < 3000
+			PRINTFORML %LOCALS%玩弄得隐隐作痛
+		ELSE
+			IF (PALAM:2 + UP:2) < 500
+				PRINTFORML %LOCALS%玩弄得隐隐作痛，但似乎还产生了别的感觉…
+			ELSEIF (PALAM:2 + UP:2) < 1500
+				PRINTFORML %LOCALS%玩弄得隐隐作痛，但同时还产生了一种微妙的快感…
+			ELSEIF EXP:Ａ经验 >= 30
+				PRINTFORML %LOCALS%玩弄得隐隐作痛，但同时还产生了一种微妙的快感…
+			ELSE
+				PRINTFORML %LOCALS%玩弄得隐隐作痛，但似乎还产生了一种别的感觉…
+			ENDIF
+		ENDIF
+	;阴道のが痛い場合
+	ELSEIF D:2 > D:1
+		IF TEQUIP:自慰棒 && SEXPLAY(TARGET) != 1
+			LOCALS = 被塞在小穴中的凶物
+		ELSE
+			LOCALS = 干涩的阴道被
+		ENDIF
+		IF EXP:Ｖ经验 < 10 && (PALAM:1 + UP:1) < 3000 && PALAM:4 < 10000
+			PRINTFORML %LOCALS%玩弄得痛苦难耐…
+		ELSEIF EXP:Ｖ经验 < 30 && (PALAM:1 + UP:1) < 1000 && PALAM:4 < 6000
+			PRINTFORML %LOCALS%玩弄得痛苦不已…
+		ELSEIF EXP:Ｖ经验 < 75 && (PALAM:1 + UP:1) < 500 && PALAM:4 < 3000
+			PRINTFORML %LOCALS%玩弄得隐隐作痛
+		ELSE
+			IF (PALAM:1 + UP:1) < 500
+				PRINTFORML %LOCALS%玩弄得隐隐作痛，但似乎还产生了别的感觉…
+			ELSEIF (PALAM:1 + UP:1) < 1500
+				PRINTFORML %LOCALS%玩弄得隐隐作痛，但同时还产生了一种微妙的快感…
+			ELSEIF EXP:Ｖ经验 >= 30
+				PRINTFORML %LOCALS%玩弄得隐隐作痛，但同时还产生了一种微妙的快感…
+			ELSE
+				PRINTFORML %LOCALS%玩弄得隐隐作痛，但似乎还产生了一种别的感觉…
+			ENDIF
+		ENDIF
+	ELSE
+		PRINTFORM 疼得眼泪都要流下来了、
+		;受虐狂ッ気4以上あり
+		IF ABL:9 > 3
+			PRINTL 但身体好像违背意志兴奋起来了
+		ELSE
+			PRINTL …
+		ENDIF
+	ENDIF
+;ELSEIF D >= 1 && C:4 >= 2
+;痛苦+快感の喘ぎ　まだ無い
+;快感LV4(;三箇所以上绝顶寸前)
+ELSEIF C:4 == 4
+	IF BREAST(TARGET)
+		LOCALS:1 = 乳房
+	ELSE
+		LOCALS:1 = 乳头
+	ENDIF
+	IF PENIS(TARGET)
+		LOCALS:2 = 阴茎
+	ELSE
+		LOCALS:2 = 阴蒂
+	ENDIF
+	PRINTFORM %CALLNAME%
+	IF TALENT:男性
+		IF !RAND:2
+			PRINTL 在三重快感的刺激下几乎失去理智
+		ELSE
+			PRINTL 阴茎、肛穴和乳头被同时玩弄
+		ENDIF
+	ELSEIF C:0 == 0
+		PRINTFORML 阴道、肛穴和%LOCALS:1%被同时玩弄
+	ELSEIF C:1 == 0
+		PRINTFORML %LOCALS:2%、肛穴和%LOCALS:1%被同时玩弄
+	ELSEIF C:2 == 0
+		PRINTFORML %LOCALS:2%、阴道和%LOCALS:1%被同时玩弄
+	ELSEIF C:3 == 0
+		PRINTFORML %LOCALS:2%、阴道和肛穴被同时玩弄
+	ELSE
+		PRINTFORML 全身的敏感带被同时玩弄
+	ENDIF
+;快感LV3（一箇所～二箇所绝顶寸前or３箇所の気持ちよさが3以上）
+ELSEIF C:4 == 3
+	IF BREAST(TARGET)
+		LOCALS:1 = 乳房
+	ELSE
+		LOCALS:1 = 乳头
+	ENDIF
+	IF PENIS(TARGET)
+		LOCALS:2 = 阴茎
+	ELSE
+		LOCALS:2 = 阴蒂
+	ENDIF
+	PRINTFORM %CALLNAME%
+	;どこか一箇所绝顶寸前
+	IF C:0 == 4 || C:1 == 4 || C:2 == 4 || C:3 == 4
+	    PRINTFORM 的
+		SIF C:0 == 4
+			PRINTFORM %LOCALS:2%
+		IF C:1 == 4
+			SIF C:0 == 4
+				PRINTFORM 和
+			PRINTFORM 阴道
+		ENDIF
+		IF C:2 == 4
+			SIF C:0 == 4 || C:1 == 4
+				PRINTFORM 和
+			PRINTFORM 肛穴
+		ENDIF
+		IF C:3 == 4
+			SIF C:0 == 4 || C:1 == 4 || C:2 == 4
+				PRINTFORM 和
+			PRINTFORM %LOCALS:1%
+		ENDIF
+		PRINT 被
+		;二箇所以上の場合
+		SIF (C:0 + C:1 == 8) || (C:0 + C:2 == 8) || (C:0 + C:3 == 8) || (C:1 + C:2 == 8) || (C:1 + C:3 == 8) || (C:2 + C:3 == 8)
+			PRINT 同时
+		PRINTL 刺激达到了顶端，身体随着高潮不断颤抖
+		;瞬移的闪现
+    	SIF TALENT:221
+    	    CALL NINGAI_FLASH
+	ELSEIF C:0 + C:1 + C:2 + C:3 >= 12
+		PRINTL 在四重快感的刺激下浑身痉挛起来，快感吞噬了他全部的理智
+	ELSE
+		PRINTL 在三重快感的刺激下浑身紧绷，穴口也不断收缩
+	ENDIF
+;快感LV2（绝顶寸前ではない、二箇所の気持ちよさが2以上）
+ELSEIF C:4 == 2
+	;一番気持ちいい和ころで判断
+	IF PALAM_COMPARE(0) && C:0 > 0
+		CALL HANYOU_JYOKYO_C
+	ELSEIF PALAM_COMPARE(2) && C:2 > 0
+		SIF SELECTCOM == 4
+			CALL HANYOU_JYOKYO_A2
+		CALL HANYOU_JYOKYO_A
+	ELSEIF PALAM_COMPARE(1) && C:1 > 0
+		CALL HANYOU_JYOKYO_V
+	ELSEIF PALAM_COMPARE(3) && C:3 > 0
+		CALL HANYOU_JYOKYO_B
+	;快感パラが一番高いのに、今責められていない和いう状況の場合
+	;ELSE
+	;	IF C:2 >= C:1 && C:2 >= C:0 && C:2 >= C:3
+	;		IF SELECTCOM == 4
+	;			CALL HANYOU_JYOKYO_A2
+	;		ELSE
+	;			CALL HANYOU_JYOKYO_A
+	;		ENDIF
+	;	ELSEIF C:1 >= C:3 && C:1 >= C:0 && C:1 >= C:2
+	;		CALL HANYOU_JYOKYO_V
+	;	ELSEIF C:0 >= C:3 && C:0 >= C:1 && C:0 >= C:2
+	;		CALL HANYOU_JYOKYO_C
+	;	ELSEIF C:3 >= C:1 && C:3 >= C:0 && C:3 >= C:2
+	;		CALL HANYOU_JYOKYO_B
+	;	ENDIF
+	ENDIF
+;快感LV1
+ELSEIF C:4 <= 1
+	;今責められている所で判断
+	;C
+	IF GETBIT(TFLAG:49, 0)
+		CALL HANYOU_JYOKYO_C
+	;A
+	ELSEIF GETBIT(TFLAG:49, 2)
+		IF SELECTCOM == 4
+			CALL HANYOU_JYOKYO_A2
+		ELSE
+			CALL HANYOU_JYOKYO_A
+		ENDIF
+	;V
+	ELSEIF GETBIT(TFLAG:49, 1)
+		CALL HANYOU_JYOKYO_V
+	;B
+	ELSEIF GETBIT(TFLAG:49, 3)
+		CALL HANYOU_JYOKYO_B
+	ENDIF
+ENDIF
+RETURN 0
+;-------------------------------------------------
+;Ａだけ插入系
+;-------------------------------------------------
+@HANYOU_JYOKYO_A
+PRINTFORM %CALLNAME%
+IF EXP:Ａ经验 < 10 && (PALAM:2 + UP:2) < 3000 && PALAM:4 < 10000
+	PRINTFORML 干涩的后穴传来了激烈的疼痛
+ELSEIF EXP:Ａ经验 < 30 && (PALAM:2 + UP:2) < 1000 && PALAM:4 < 6000
+	PRINTFORML 被蹂躏的后穴疼痛不堪
+ELSEIF EXP:Ａ经验 < 75 && (PALAM:2 + UP:2) < 500 && PALAM:4 < 3000
+	PRINTFORML 干涩的后穴痛苦难忍
+ELSEIF (PALAM:2 + UP:2) < 1500 && PALAM:4 >= 1000
+	IF (PALAM:2 + UP:2) < 100
+		PRINTFORML 被操弄的后穴感觉并不舒服
+		TFLAG:51 = 1
+	ELSE
+		PRINTFORML 后穴的痛感已经麻木，感觉不到疼痛了
+		TFLAG:51 = 1
+	ENDIF
+ELSEIF (PALAM:2 + UP:2) < 3000 && PALAM:4 < 500
+	IF (PALAM:2 + UP:2) < 500
+		PRINTL 被操弄的后穴疼痛不已，但隐约还有一种酥麻的感觉渐渐涌上来
+	ELSEIF (PALAM:2 + UP:2) < 1500
+		PRINTL 被操弄的后穴疼痛不已，但又隐隐生出一种微妙的快感
+	ELSEIF EXP:Ａ经验 >= 30
+		PRINTL 脸上交错着情欲与痛苦，被操弄的后穴疼痛不已，但仍旧感觉到了难以言喻的酥麻
+	ELSE
+		PRINTL 的后穴传来令人不安又刺激的疼痒滋味
+	ENDIF
+ELSEIF (PALAM:2 + UP:2) < 3000
+	PRINTL 被操弄的后穴产生了快感，肛穴内溢出了淫荡的液体
+ELSEIF (PALAM:2 + UP:2) < 6000
+	PRINTL 被操弄的后穴产生了明显快感，臀部不由自主夹紧了
+ELSEIF (PALAM:2 + UP:2) < 8000
+	PRINTL 被操弄的后穴产生了强烈快感，如浪潮般吞噬了他的理智
+ELSEIF (PALAM:2 + UP:2) >= 8000
+	PRINTL 被操弄的后穴产生了激烈快感，淫荡的液体沿着大腿内侧流淌，快感如巨浪般吞噬了他的理智
+ENDIF
+;-------------------------------------------------
+;Ｖだけ插入系
+;-------------------------------------------------
+@HANYOU_JYOKYO_V
+PRINTFORM %CALLNAME%
+IF EXP:Ｖ经验 < 10 && (PALAM:1 + UP:1) < 3000 && PALAM:4 < 10000
+	PRINTFORML 干涩的小穴传来了激烈的疼痛
+ELSEIF EXP:Ｖ经验 < 30 && (PALAM:1 + UP:1) < 1000 && PALAM:4 < 6000
+	PRINTFORML  被蹂躏的小穴疼痛不堪
+ELSEIF EXP:Ｖ经验 < 75 && (PALAM:1 + UP:1) < 500 && PALAM:4 < 3000
+	PRINTFORML 干涩的小穴痛苦难忍
+ELSEIF (PALAM:1 + UP:1) < 1500 && PALAM:4 >= 1000
+	IF (PALAM:1 + UP:1) < 100
+		PRINTFORML 的小穴被操弄的感觉好像并不舒服
+		TFLAG:51 = 1
+	ELSE
+		PRINTFORML 阴道的痛感已经麻木，感觉不到疼痛了
+		TFLAG:51 = 1
+	ENDIF
+ELSEIF (PALAM:1 + UP:1) < 3000 && PALAM:4 < 500
+	IF (PALAM:1 + UP:1) < 500
+		PRINTL 被操弄的小穴疼痛不已，但隐约还有一种酥麻的感觉渐渐涌上来
+	ELSEIF (PALAM:1 + UP:1) < 1500
+		PRINTL 被操弄的小穴疼痛不已，但又隐隐生出一种微妙的快感
+	ELSEIF EXP:Ｖ经验 >= 30
+		PRINTL 脸上交错着情欲与痛苦，被操弄的小穴疼痛不已，但仍旧感觉到了难以言喻的酥麻
+	ELSE
+		PRINTL 干涩的小穴传来了激烈的疼痛，但又有一种刺激又不安的快感
+	ENDIF
+ELSEIF (PALAM:1 + UP:1) < 3000
+	PRINTL 被操弄的阴道产生了快感，情不自禁地溢出了淫荡的液体
+ELSEIF (PALAM:1 + UP:1) < 6000
+	PRINTL 被操弄的阴道内产生了明显快感，下身不由自主夹紧了
+ELSEIF (PALAM:1 + UP:1) < 8000
+	PRINTL 被操弄的阴道产生了强烈快感，如浪潮般吞噬了理智
+ELSEIF (PALAM:1 + UP:1) >= 8000
+	PRINTL 被操弄的阴道产生了激烈快感，淫荡的液体沿着大腿内侧流淌，快感如巨浪般吞噬了理智
+ENDIF
+
+;-------------------------------------------------
+;Ｃだけいじる系
+;PRINTL
+;CALL HANYOU_JYOKYO_C
+;-------------------------------------------------
+@HANYOU_JYOKYO_C
+PRINTFORM %CALLNAME%
+IF (PALAM:0 + UP:0) < 100
+	PRINTL 没什么感觉
+	TFLAG:51 = 1
+ELSEIF (PALAM:0 + UP:0) < 500
+	PRINTL 隐约感到下身传来的酥麻
+	TFLAG:51 = 1
+ELSEIF (PALAM:0 + UP:0) < 1500
+	PRINTL 隐约有了微妙的快感
+ELSEIF (PALAM:0 + UP:0) < 3000
+	PRINTL 难以遏制身体的欲望，因过于舒服喟叹出声
+ELSEIF (PALAM:0 + UP:0) < 6000
+	PRINTL 产生了明显的快感，阴茎又肿又胀
+ELSEIF (PALAM:0 + UP:0) < 8000
+	PRINTL 产生了灼热的快感，阴茎滚烫而硬挺
+ELSEIF (PALAM:0 + UP:0) >= 8000
+	PRINTL 产生了激烈的快感，前列腺颤抖着流下了透明的汁液
+ENDIF
+;-------------------------------------------------
+;Ｂだけいじる系
+;-------------------------------------------------
+@HANYOU_JYOKYO_B
+PRINTFORM %CALLNAME%
+IF (PALAM:3 + UP:3) < 100
+	PRINTL 眼神冷漠，满脸抗拒，似乎没能从被玩弄的乳头上得到快乐
+	TFLAG:51 = 1
+ELSEIF (PALAM:3 + UP:3) < 500
+	PRINTL 的表情有些复杂，不适地扭动了一下身躯
+	TFLAG:51 = 1
+ELSEIF (PALAM:3 + UP:3) < 1500
+	PRINTL 的脸上泛起羞耻的潮红，被玩弄的乳尖微微挺立
+ELSEIF (PALAM:3 + UP:3) < 3000
+	PRINTL 的脸上交错着羞耻与情欲，硬挺的乳尖肿胀成黄豆大小
+ELSEIF (PALAM:3 + UP:3) < 6000
+	PRINTL 难以遏制身体的欲望，乳尖随着不稳的呼吸上下起伏
+ELSEIF (PALAM:3 + UP:3) < 8000
+	PRINTL 被玩弄的乳头渐渐充血挺立，像熟透的果实一般泛着诱人的光泽
+ELSEIF (PALAM:3 + UP:3) >= 8000
+	PRINTL 被玩弄的乳头渐渐充血挺立，疯狂的快感蔓延到全身
+ENDIF
+
+;-------------------------------------------------
+;Ａ 舔肛用
+;-------------------------------------------------
+@HANYOU_JYOKYO_A2
+PRINTFORM %CALLNAME%
+IF (PALAM:2 + UP:2) < 100
+	PRINTL 似乎并不适应肛穴被玩弄的感觉
+	TFLAG:51 = 1
+ELSEIF (PALAM:2 + UP:2) < 500
+	PRINTL 的表情有些复杂，貌似开始习惯异物感了
+	TFLAG:51 = 1
+ELSEIF (PALAM:2 + UP:2) < 1500
+	PRINTL 的脸上泛起羞耻的潮红，不小心呻吟出声，连忙咬住嘴唇
+ELSEIF (PALAM:2 + UP:2) < 3000
+	PRINTL 神色变幻，有痛苦也有欢愉，明显产生了快感
+ELSEIF (PALAM:2 + UP:2) < 6000
+	PRINTL 的肛穴开始收缩吮吸，似乎有些微液体被分泌出来了
+ELSEIF (PALAM:2 + UP:2) < 8000
+	PRINTL 被玩弄的肛穴像是小嘴似的一张一合，能闻到淫靡的气味
+ELSEIF (PALAM:2 + UP:2) >= 8000
+	PRINTL 的肛穴里溢出了一股又一股粘稠的液体，已经湿得一塌糊涂
+ENDIF
+
+;-------------------------------------------------
+;Ｃ自慰
+;-------------------------------------------------
+@HANYOU_JYOKYO_C_JII
+
+IF (PALAM:0 + UP:0) < 100
+	IF MARK:反抗刻印 >= 3 || ABL:顺从 < 3
+		PRINTFORM %CALLNAME%自慰的动作很敷衍
+	ELSEIF ABL:顺从 + ABL:欲望 + ABL:露出癖 < 7
+		PRINTFORM %CALLNAME%几乎没有任何快感的样子
+	ELSEIF ABL:顺从 + ABL:欲望 + ABL:露出癖 < 11
+		PRINTFORM %CALLNAME%看起来并不讨厌这样的行为
+	ELSE
+		PRINTFORM %CALLNAME%在努力忘记一切让自己接受快感
+	ENDIF
+	TFLAG:51 = 1
+ELSEIF (PALAM:0 + UP:0) < 500
+	IF MARK:反抗刻印 >= 3 || ABL:顺从 < 3
+		PRINTFORM %CALLNAME%勉强照做了
+	ELSEIF ABL:顺从 + ABL:欲望 + ABL:露出癖 < 7
+		PRINTFORM %CALLNAME%并没感受到多少快感的样子
+	ELSEIF ABL:顺从 + ABL:欲望 + ABL:露出癖 < 11
+		PRINTFORM %CALLNAME%看起来并不讨厌这样的行为
+	ELSE
+		PRINTFORM %CALLNAME%在努力忘记一切让自己接受快感
+	ENDIF
+	TFLAG:51 = 1
+ELSEIF (PALAM:0 + UP:0) < 1500
+	IF MARK:反抗刻印 >= 3 || ABL:顺从 < 3
+		PRINTFORM %CALLNAME%自慰的动作很随便，不过看起来好像开始有感觉了
+	ELSEIF ABL:顺从 + ABL:欲望 + ABL:露出癖 < 7
+		PRINTFORM %CALLNAME%皱了皱眉，眼角泛红，似乎开始舒服了
+	ELSEIF ABL:顺从 + ABL:欲望 + ABL:露出癖 < 11
+		PRINTFORM %CALLNAME%的身体在快感的刺激下不由自主地哆嗦起来
+	ELSE
+		PRINTFORM %CALLNAME%的嘴里断断续续泄出甜腻的呻吟
+	ENDIF
+ELSEIF (PALAM:0 + UP:0) < 3000
+	IF MARK:反抗刻印 >= 3 || ABL:顺从 < 3
+		PRINTFORM %CALLNAME%咬着唇压抑欲望
+	ELSEIF ABL:顺从 + ABL:欲望 + ABL:露出癖 < 7
+		PRINTFORM %CALLNAME%的呼吸凌乱了，动作也渐失章法
+	ELSEIF ABL:顺从 + ABL:欲望 + ABL:露出癖 < 11
+		PRINTFORM %CALLNAME%忘我地自慰着，沉溺于这堕落的行为
+	ELSE
+		PRINTFORM %CALLNAME%在快感的刺激下吐出一连串淫乱的娇喘
+	ENDIF
+ELSEIF (PALAM:0 + UP:0) < 6000
+	IF MARK:反抗刻印 >= 3 || ABL:顺从 < 3
+		PRINTFORM %CALLNAME%紧咬嘴唇以免泄露出丢人的呻吟
+	ELSEIF ABL:顺从 + ABL:欲望 + ABL:露出癖 < 7
+		PRINTFORM %CALLNAME%难以遏制身体的欲望，自慰的动作越来越快了
+	ELSEIF ABL:顺从 + ABL:欲望 + ABL:露出癖 < 11
+		PRINTFORM %CALLNAME%陶醉于自慰的行为，毫不掩饰自己已经有了快感这件事
+	ELSE
+		PRINTFORM %CALLNAME%完全沉浸在自慰的行为当中
+	ENDIF
+ELSEIF (PALAM:0 + UP:0) < 8000
+	IF MARK:反抗刻印 >= 3 || ABL:顺从 < 3
+		PRINTFORM %CALLNAME%脸色潮红，极力忍耐快感
+	ELSEIF ABL:顺从 + ABL:欲望 + ABL:露出癖 < 7
+		PRINTFORM %CALLNAME%因刺激的快感蜷缩成一团，但手里的动作并没有停下来
+	ELSEIF ABL:顺从 + ABL:欲望 + ABL:露出癖 < 11
+		PRINTFORM %CALLNAME%仿佛不知羞耻似的把两腿间的隐私部位展现出来，高调地玩弄自己的性器
+	ELSE
+		PRINTFORM %CALLNAME%像个荡夫一样张开双腿玩弄自己的性器，好像这是什么值得骄傲的事情
+	ENDIF
+ELSEIF (PALAM:0 + UP:0) >= 8000
+	IF MARK:反抗刻印 >= 3 || ABL:顺从 < 3
+		PRINTFORM %CALLNAME%一脸快要坏掉的样子，加快了手上的频率
+	ELSEIF ABL:顺从 + ABL:欲望 + ABL:露出癖 < 7
+		PRINTFORM %CALLNAME%所有的注意力都集中在玩弄自己的性器上
+	ELSEIF ABL:顺从 + ABL:欲望 + ABL:露出癖 < 11
+		PRINTFORM %CALLNAME%的双手极快地抚弄自己的阴茎
+	ELSE
+		PRINTFORM %CALLNAME%一边疯狂地自慰着一边喊着快去了
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;骑乘位肛交
+;-------------------------------------------------
+@HANYOU_JYOKYO_KIJYO
+
+IF EXP:Ａ经验 < 30 && (PALAM:2 + UP:2) < 1000 && PALAM:4 < 6000
+	IF ABL:顺从 +  ABL:欲望 < 3
+		IF ABL:受虐属性 == 0
+			PRINTFORM %CALLNAME%目光憎恶地看着你
+		ELSEIF ABL:受虐属性 <= 3
+			PRINTFORM %CALLNAME%呆愣住了
+		ELSE
+			PRINTFORM %CALLNAME%貌似正压抑着内心的痛苦
+		ENDIF
+	ELSEIF ABL:顺从 +  ABL:欲望 < 5
+		IF ABL:受虐属性 == 0
+			PRINTFORM %CALLNAME%目光憎恶地看着你
+		ELSEIF ABL:受虐属性 <= 3
+			PRINTFORM %CALLNAME%发出破碎的呻吟，难以区分是源于苦痛抑或快乐
+		ELSE
+			PRINTFORM %CALLNAME%在疼痛的刺激下愈发感到兴奋
+		ENDIF
+	ELSEIF ABL:顺从 +  ABL:欲望 < 7
+		IF ABL:受虐属性 == 0
+			PRINTFORM %CALLNAME%疼得流下了泪水
+		ELSEIF ABL:受虐属性 <= 3
+			PRINTFORM %CALLNAME%上下活动着身体，疼得忍不住发抖
+		ELSE
+			PRINTFORM %CALLNAME%疼得咬紧了牙关，但还是自己动了起来
+		ENDIF
+	ELSEIF ABL:顺从 +  ABL:欲望 < 9
+		IF ABL:受虐属性 == 0
+			PRINTFORM %CALLNAME%疼得无法动弹
+		ELSEIF ABL:受虐属性 <= 3
+			PRINTFORM %CALLNAME%疼得面部扭曲，但还是上下动了起来
+		ELSE
+			IF PENIS(TARGET)
+				PRINTFORM %CALLNAME%在疼痛的折磨中竟渐渐勃起了
+			ELSE
+				PRINTFORM %CALLNAME%在疼痛的折磨中竟然湿了
+			ENDIF
+		ENDIF
+	ELSE
+		IF ABL:受虐属性 == 0
+			PRINTFORM %CALLNAME%疼得咬紧了牙关，但还是加快速度上下活动起来
+		ELSEIF ABL:受虐属性 <= 3
+			PRINTFORM %CALLNAME%一边忍耐着剧痛一边上下活动身体
+		ELSE
+			IF PENIS(TARGET)
+				PRINTFORM %CALLNAME%双目湿润地痛呼出声，然而下身却渐渐勃起了
+			ELSE
+				PRINTFORM %CALLNAME%双目湿润地痛呼出声，然而后面却湿了，淫荡的液体沿着大腿内侧淌下来
+			ENDIF
+		ENDIF
+	ENDIF
+ELSEIF EXP:Ａ经验 < 75 && (PALAM:2 + UP:2) < 500 && PALAM:4 < 3000
+	IF ABL:顺从 +  ABL:欲望 < 3
+		IF ABL:受虐属性 <= 1
+				PRINTFORM %CALLNAME%看上去紧张无措
+		ELSEIF ABL:受虐属性 <= 3
+				PRINTFORM %CALLNAME%疼得表情扭曲
+		ELSE
+				PRINTFORM %CALLNAME%艰难地喘着粗气
+		ENDIF
+	ELSEIF ABL:顺从 +  ABL:欲望 < 5
+		IF ABL:受虐属性 <= 1
+				PRINTFORM %CALLNAME%脸上写满不甘
+		ELSEIF ABL:受虐属性 <= 3
+				PRINTFORM %CALLNAME%疼得流下了眼泪，但还是配合地上下活动起来
+		ELSE
+				PRINTFORM %CALLNAME%发出了甜腻的娇喘，因被主人的阳具贯穿而感到兴奋
+		ENDIF
+	ELSEIF ABL:顺从 +  ABL:欲望 < 7
+		IF ABL:受虐属性 <= 1
+				PRINTFORM %CALLNAME%咬紧牙关忍受着痛苦
+				TFLAG:51 = 1
+		ELSEIF ABL:受虐属性 <= 3
+				PRINTFORM %CALLNAME%咬紧了牙关，疼得面部扭曲
+		ELSE
+				PRINTFORM %CALLNAME%因疼痛而感到刺激，加快速度上下活动起来
+		ENDIF
+	ELSEIF ABL:顺从 +  ABL:欲望 < 9
+		IF ABL:受虐属性 <= 3
+				PRINTFORM %CALLNAME%在疼痛中露出迷茫的表情，但还是配合地上下活动起来
+		ELSEIF ABL:受虐属性 <= 5
+				PRINTFORM %CALLNAME%痛得满脸泪痕，却又因为被主人的阳具贯穿而感到兴奋
+		ELSE
+				PRINTFORM %CALLNAME%浑身发抖，嘴里溢出艰涩的喘息声，身下的动作却不见减缓
+		ENDIF
+	ELSE
+		IF ABL:受虐属性 <= 3
+				PRINTFORM %CALLNAME%疼得浑身颤抖，却仍拼命地上下腾挪身体
+		ELSEIF ABL:受虐属性 <= 5
+				PRINTFORM %CALLNAME%疼得浑身颤抖，脸色也发白了，可是下身起伏的频率并没有变慢
+		ELSE
+				PRINTFORM %CALLNAME%疼得发出了惨叫，一边却拼命上下挪动身体
+		ENDIF
+	ENDIF
+ELSEIF (PALAM:2 + UP:2) < 1500 && PALAM:4 >= 1000
+	IF ABL:顺从 +  ABL:欲望 < 3
+		IF ABL:技巧 <= 1
+				PRINTFORM %CALLNAME%坐在你身上一动不动
+		ELSEIF ABL:技巧 <= 3
+				PRINTFORM %CALLNAME%试着上下活动身体
+		ELSE
+				PRINTFORM %CALLNAME%试图收紧后穴吮吸主人的阳具
+		ENDIF
+	ELSEIF ABL:顺从 +  ABL:欲望 < 5
+		IF ABL:技巧 <= 1
+				PRINTFORM %CALLNAME%动作僵硬地活动身体
+		ELSEIF ABL:技巧 <= 3
+				PRINTFORM %CALLNAME%适当地配合着主人的操弄
+		ELSE
+				PRINTFORM %CALLNAME%在沉默中上下摆动身体
+				TFLAG:51 = 1
+		ENDIF
+	ELSEIF ABL:顺从 +  ABL:欲望 < 7
+		IF ABL:技巧 <= 1
+				PRINTFORM %CALLNAME%动作生涩地扭动身躯
+		ELSEIF ABL:技巧 <= 3
+				PRINTFORM %CALLNAME%在沉默中上下摆动身体
+				TFLAG:51 = 1
+		ELSE
+				IF PENIS(PLAYER)
+					PRINTFORM %CALLNAME%尽量收紧后穴吮吸着主人的阳具
+				ELSE
+					PRINTFORM %CALLNAME%有技巧地扭动着腰肢，后穴贪婪地吮吸着主人的阳具
+				ENDIF
+		ENDIF
+	ELSEIF ABL:顺从 +  ABL:欲望 < 9
+		IF ABL:技巧 <= 1
+				PRINTFORM %CALLNAME%动作生硬地含着主人的肉棒，拼命地上下摆动身体
+		ELSEIF ABL:技巧 <= 3
+				PRINTFORM %CALLNAME%配合主人的抽插，有节奏地扭动着腰
+		ELSE
+				PRINTFORM %CALLNAME%熟练地摆动身体，收紧后穴吮吸着主人的阳具
+		ENDIF
+	ELSE
+		IF ABL:技巧 <= 1
+				PRINTFORM %CALLNAME%一边为自己的笨拙道歉，一边拼命地扭动身体
+		ELSEIF ABL:技巧 <= 3
+				PRINTFORM %CALLNAME%已经习惯了这样上下摆动身体
+		ELSE
+				IF PENIS(PLAYER)
+					PRINTFORM %CALLNAME%一边上下摆动身体，一边问%PLAYER_NAME()%自己侍奉得舒不舒服
+				ELSE
+					PRINTFORM %CALLNAME%使出了所有的技巧侍奉主人
+				ENDIF
+		ENDIF
+	ENDIF
+ELSEIF (PALAM:2 + UP:2) < 6000
+	IF ABL:顺从 +  ABL:欲望 < 3
+		IF ABL:技巧 <= 1
+				PRINTFORM %CALLNAME%的脸色非常不好看
+				TFLAG:51 = 1
+		ELSEIF ABL:技巧 <= 3
+				PRINTFORM %CALLNAME%似乎偶尔能感觉到快感
+		ELSE
+				PRINTFORM %CALLNAME%收紧后穴吮吸着主人的阳具，一边发出微弱的呻吟
+		ENDIF
+	ELSEIF ABL:顺从 +  ABL:欲望 < 5
+		IF ABL:技巧 <= 1
+				PRINTFORM %CALLNAME%断断续续地喘息着
+		ELSEIF ABL:技巧 <= 3
+				PRINTFORM %CALLNAME%压抑着情欲，偶尔传出两声低低的呻吟
+		ELSE
+				PRINTFORM %CALLNAME%配合地摆出了各种姿势
+		ENDIF
+	ELSEIF ABL:顺从 +  ABL:欲望 < 7
+		IF ABL:技巧 <= 1
+				PRINTFORM %CALLNAME%下意识地收紧了后穴
+		ELSEIF ABL:技巧 <= 3
+				PRINTFORM %CALLNAME%急促地喘息着，一边努力上下摆动身体
+		ELSE
+			IF PENIS(PLAYER)
+				PRINTFORM %CALLNAME%收紧后穴吮吸着主人的阳具，一边熟练地上下摆动身体
+			ELSE
+				PRINTFORM %CALLNAME%一边急促地喘息，一边熟练地上下摆动身体
+			ENDIF
+		ENDIF
+	ELSEIF ABL:顺从 +  ABL:欲望 < 9
+		IF ABL:技巧 <= 1
+				PRINTFORM %CALLNAME%掰开臀部，动作生硬地迎合着主人的撞击
+		ELSEIF ABL:技巧 <= 3 || !PENIS(PLAYER)
+				PRINTFORM %CALLNAME%对骑乘位的姿势感到异常兴奋
+		ELSE
+				PRINTFORM %CALLNAME%紧致的肠壁吮吸着主人的肉棒，一边熟练地上下摆动身体
+		ENDIF
+	ELSE
+		IF ABL:技巧 <= 1
+				PRINTFORM %CALLNAME%动作笨拙地掰开臀部迎合着主人的撞击，脸上泛起了快乐的潮红
+		ELSEIF ABL:技巧 <= 3 || !PENIS(PLAYER)
+				PRINTFORM %CALLNAME%努力地上下摆动着身体，甜腻的呻吟声断断续续地涌出
+		ELSE
+			IF KANRAKU(TARGET) == 3 || CFLAG:601 == 2
+				PRINTFORM %CALLNAME%好像在小声说着“请进”
+			ELSE
+				PRINTFORM %CALLNAME%自言自语着
+			ENDIF
+		ENDIF
+	ENDIF
+ELSEIF (PALAM:2 + UP:2) >= 6000
+	IF ABL:顺从 +  ABL:欲望 < 3
+		IF ABL:技巧 <= 1
+				PRINTFORM %CALLNAME%脸色潮红，拼命地压抑着浪潮一般的快感
+		ELSEIF ABL:技巧 <= 3
+				PRINTFORM %CALLNAME%顺应身体本能的欲望，摆动着淫荡的屁股
+		ELSE
+				PRINTFORM %CALLNAME%发出断断续续的娇喘，淫荡的屁股完全不受控制地摆动着
+		ENDIF
+	ELSEIF ABL:顺从 +  ABL:欲望 < 5
+		IF ABL:技巧 <= 1
+				PRINTFORM %CALLNAME%笨拙地摆动身体，甜腻的呻吟断断续续地涌出
+		ELSEIF ABL:技巧 <= 3
+				PRINTFORM %CALLNAME%脸色潮红，无法压抑住浪潮一般的快感
+		ELSE
+				PRINTFORM %CALLNAME%发出断断续续的娇喘，疯狂地摆动自己淫荡的屁股
+		ENDIF
+	ELSEIF ABL:顺从 +  ABL:欲望 < 7
+		IF ABL:技巧 <= 1
+				PRINTFORM %CALLNAME%笨拙地摆动身体，在欲望的支配下动作非常激烈
+		ELSEIF ABL:技巧 <= 3 || !PENIS(PLAYER)
+				PRINTFORM %CALLNAME%似乎越来越兴奋，动作也越来越快
+		ELSE
+				PRINTFORM %CALLNAME%紧致的肠壁吮吸着主人的肉棒，动作激烈地上下摆动身体
+		ENDIF
+	ELSEIF ABL:顺从 +  ABL:欲望 < 9
+		IF ABL:技巧 <= 1
+				PRINTFORM %CALLNAME%肠壁内瘙痒难止，激烈的快感简直令他疯狂
+		ELSEIF ABL:技巧 <= 3 || !PENIS(PLAYER)
+				PRINTFORM %CALLNAME%沉溺在快感当中，舒服得还想继续下去
+		ELSE
+				PRINTFORM %CALLNAME%像是害怕肉棒拔出去一样，用肠壁贪婪地吮吸着肉棒
+		ENDIF
+	ELSE
+		IF ABL:技巧 <= 1
+				PRINTFORM %CALLNAME%急促地喘息着，就快要到达顶点了
+		ELSEIF ABL:技巧 <= 3 || !PENIS(PLAYER)
+				PRINTFORM %CALLNAME%沉溺在快感当中，根本不想停下来
+		ELSE
+				PRINTFORM %CALLNAME%急促地喘息着，努力地摆动身体想要和%PLAYER_NAME()%一起达到高潮
+		ENDIF
+	ENDIF
+ENDIF
+
+
+
+;-------------------------------------------------
+;侍奉做爱
+;-------------------------------------------------
+@HANYOU_JYOKYO_CSEX
+IF (PALAM:0 + UP:0) < 1000
+	IF ABL:顺从 +  ABL:欲望 < 3
+		IF ABL:技巧 <= 1 && ABL:侍奉精神 <= 1
+				PRINTFORM %CALLNAME%根本没怎么动
+		ELSEIF ABL:技巧 <= 3 || ABL:侍奉精神 <= 3
+				PRINTFORM %CALLNAME%毫不专心地动着
+		ELSE
+				PRINTFORM %CALLNAME%脸色不甘地摆动腰部
+		ENDIF
+	ELSEIF ABL:顺从 +  ABL:欲望 < 5
+		IF ABL:技巧 <= 1 && ABL:侍奉精神 <= 1
+				PRINTFORM %CALLNAME%动作生硬地摆动身体，泛红的脸上神色有些尴尬
+		ELSEIF ABL:技巧 <= 3 || ABL:侍奉精神 <= 3
+				PRINTFORM %CALLNAME%适当地扭动腰部
+		ELSE
+				PRINTFORM %CALLNAME%一言不发地做着活塞运动
+		ENDIF
+	ELSEIF ABL:顺从 +  ABL:欲望 < 7
+		IF ABL:技巧 <= 1 && ABL:侍奉精神 <= 1
+				PRINTFORM %CALLNAME%试着开始了抽插
+		ELSEIF ABL:技巧 <= 3 || ABL:侍奉精神 <= 3
+				PRINTFORM %CALLNAME%在沉默中摆动身体
+		ELSE
+				PRINTFORM %CALLNAME%有技巧地扭动着腰
+		ENDIF
+	ELSEIF ABL:顺从 +  ABL:欲望 < 9
+		IF ABL:技巧 <= 1 && ABL:侍奉精神 <= 1
+				PRINTFORM %CALLNAME%毫无技巧地拼命抽插着
+		ELSEIF ABL:技巧 <= 3 || ABL:侍奉精神 <= 3
+				PRINTFORM %CALLNAME%有节奏地扭动着腰
+		ELSE
+				PRINTFORM %CALLNAME%熟练地摆动身体，侍奉着主人
+		ENDIF
+	ELSE
+		IF ABL:技巧 <= 1 && ABL:侍奉精神 <= 1
+				PRINTFORM %CALLNAME%一边为自己的笨拙道歉，一边拼命地挺腰
+				TFLAG:51 = 1
+		ELSEIF ABL:技巧 <= 3 || ABL:侍奉精神 <= 3
+				PRINTFORM %CALLNAME%熟练地摆动腰部，尽心侍奉主人
+		ELSE
+				PRINTFORM %CALLNAME%讨好地问%PLAYER_NAME()%自己侍奉的舒不舒服
+				TFLAG:51 = 1
+		ENDIF
+	ENDIF
+ELSEIF (PALAM:0 + UP:0) < 6000
+	IF ABL:顺从 +  ABL:欲望 < 3
+		IF ABL:技巧 <= 1 && ABL:侍奉精神 <= 1
+				PRINTFORM %CALLNAME%脸色有些不舒服，忍不住就要射了
+		ELSEIF ABL:技巧 <= 3 || ABL:侍奉精神 <= 3
+				PRINTFORM %CALLNAME%发出了低低的呻吟
+		ELSE
+				PRINTFORM %CALLNAME%像是被绞得太紧，泄出了微弱的呻吟
+		ENDIF
+	ELSEIF ABL:顺从 +  ABL:欲望 < 5
+		IF ABL:技巧 <= 1 && ABL:侍奉精神 <= 1
+				PRINTFORM %CALLNAME%断断续续地喘息着
+		ELSEIF ABL:技巧 <= 3 || ABL:侍奉精神 <= 3
+				PRINTFORM %CALLNAME%一直保持沉默，只在偶尔传出两声压抑的呻吟
+		ELSE
+				PRINTFORM %CALLNAME%配合地摆出了各种姿势
+		ENDIF
+	ELSEIF ABL:顺从 +  ABL:欲望 < 7
+		IF ABL:技巧 <= 1 && ABL:侍奉精神 <= 1
+				PRINTFORM %CALLNAME%似乎对于这种行为不够擅长，笨拙地活动
+		ELSEIF ABL:技巧 <= 3 || ABL:侍奉精神 <= 3
+				PRINTFORM %CALLNAME%一边喘息一边持续着抽插运动
+		ELSE
+				PRINTFORM %CALLNAME%一边喘息一边持续着活动身体
+		ENDIF
+	ELSEIF ABL:顺从 +  ABL:欲望 < 9
+		IF ABL:技巧 <= 1 && ABL:侍奉精神 <= 1
+				PRINTFORM %CALLNAME%对于两人相连的姿态感到了快乐
+		ELSEIF ABL:技巧 <= 3 || ABL:侍奉精神 <= 3
+				PRINTFORM %CALLNAME%对于自己处于上位这件事感到了兴奋
+		ELSE
+				PRINTFORM %CALLNAME%似乎很兴奋自己掌握了主导权
+		ENDIF
+	ELSE
+		IF ABL:技巧 <= 1 && ABL:侍奉精神 <= 1
+				PRINTFORM %CALLNAME%难以遏制身体的快感，脸上泛起了潮红
+		ELSEIF ABL:技巧 <= 3 || ABL:侍奉精神 <= 3
+				PRINTFORM %CALLNAME%一边发出淫荡的呻吟一边活动着
+		ELSE
+				PRINTFORM %CALLNAME%为了让自己更舒服而追逐着快乐
+		ENDIF
+	ENDIF
+ELSEIF (PALAM:0 + UP:0) >= 6000
+	IF ABL:顺从 +  ABL:欲望 < 3
+		IF ABL:技巧 <= 1 && ABL:侍奉精神 <= 1
+				PRINTFORM %CALLNAME%脸色潮红，拼命地压抑着浪潮一般的快感
+		ELSEIF ABL:技巧 <= 3 || ABL:侍奉精神 <= 3
+				PRINTFORM %CALLNAME%顺应身体本能的欲望，摆动着淫荡的屁股
+		ELSE
+				PRINTFORM %CALLNAME%发出断断续续的娇喘，淫荡的屁股完全不受控制地摆动着
+		ENDIF
+	ELSEIF ABL:顺从 +  ABL:欲望 < 5
+		IF ABL:技巧 <= 1 && ABL:侍奉精神 <= 1
+				PRINTFORM %CALLNAME%摆动着身体，甜腻的呻吟断断续续地涌出
+		ELSEIF ABL:技巧 <= 3 || ABL:侍奉精神 <= 3
+				PRINTFORM %CALLNAME%根本无法压抑住浪潮一般的快感
+		ELSE
+				PRINTFORM %CALLNAME%看起来很拼命地摆动着腰部
+		ENDIF
+	ELSEIF ABL:顺从 +  ABL:欲望 < 7
+		IF ABL:技巧 <= 1 && ABL:侍奉精神 <= 1
+				PRINTFORM %CALLNAME%的动作虽然很稚嫩，本人的反应却好像很强烈的样子
+		ELSEIF ABL:技巧 <= 3 || ABL:侍奉精神 <= 3
+				PRINTFORM %CALLNAME%的动作愈来愈快，看起来就快要到顶峰了
+		ELSE
+				PRINTFORM %CALLNAME%抽插的动作越来越激烈了
+		ENDIF
+	ELSEIF ABL:顺从 +  ABL:欲望 < 9
+		IF ABL:技巧 <= 1 && ABL:侍奉精神 <= 1
+				PRINTFORM %CALLNAME%好像迷上这样的行为了
+		ELSEIF ABL:技巧 <= 3 || ABL:侍奉精神 <= 3
+				PRINTFORM %CALLNAME%对于身体相连的现状好像感觉很舒服
+				TFLAG:51 = 1
+		ELSE
+				PRINTFORM %CALLNAME%有些沉迷这种重叠在一起的状态
+				TFLAG:51 = 1
+		ENDIF
+	ELSE
+		IF ABL:技巧 <= 1 && ABL:侍奉精神 <= 1
+				PRINTFORM %CALLNAME%叫喊着快要去了
+				TFLAG:51 = 1
+		ELSEIF ABL:技巧 <= 3 || !PENIS(PLAYER) || ABL:侍奉精神 <= 3
+				PRINTFORM %CALLNAME%不停地喊着快要去了
+				TFLAG:51 = 1
+		ELSE
+				PRINTFORM %CALLNAME%急促地喘息着，努力地摆动身体想要和%PLAYER_NAME()%一起达到高潮
+		ENDIF
+	ENDIF
+ENDIF
+
+@NINGAI_FLASH
+A = RAND:100
+IF A < 25
+    PRINTFORMW 下一秒，%CALLNAME%的身形如供电不足的电灯一样闪烁起来，随即消弭无形
+    PRINTFORML 几秒过后，%CALLNAME%再次出现在%PLAYER_NAME()%面前
+ENDIF

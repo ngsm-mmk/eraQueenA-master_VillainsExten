@@ -1,0 +1,186 @@
+﻿;露出癖の可否
+@ISABLUP8
+;恋慕、相亲相爱、淫乱、娼妇はMAXLV10
+IF ABL:8 >= 10
+	RETURN 0
+ELSEIF ABL:8 >= 5 && TALENT:3 == 0 && TALENT:6 == 0 && TALENT:4 == 0 && TALENT:7 == 0
+	RETURN 0
+ENDIF
+
+CALL DECIDE_ABLUP8
+
+IF Z == 0
+	RETURN 0
+ELSE
+	RETURN 1
+ENDIF
+
+
+;露出癖
+@ABLUP8
+DRAWLINE
+IF ABL:8 >= 10
+	PRINTW 已达MAX
+	RETURN 0
+ELSEIF ABL:8 >= 5 && TALENT:3 == 0 && TALENT:6 == 0 && TALENT:4 == 0 && TALENT:7 == 0
+	PRINTW 已达MAX
+	RETURN 0
+ENDIF
+
+CALL DECIDE_ABLUP8
+
+;ＬＶ３から４に上げるときは异常经验必要（素質：[喜欢引人注目]なら無視できる）
+IF ABL:8 == 3 && TALENT:28 == 0
+	PRINTS EXPNAME:50
+	PRINTL 取得后才能继续升级
+;ＬＶ４から５に上げるときは异常经验3以上必要（素質：[喜欢引人注目]なら無視できる）
+ELSEIF ABL:8 == 4 && TALENT:28 == 0
+	PRINTS EXPNAME:50
+	PRINTL 3以上才能继续升级
+;ＬＶ８から９に上げるときは异常经验5以上必要（素質：[喜欢引人注目]なら無視できる）
+ELSEIF ABL:8 == 8 && TALENT:28 == 0
+	PRINTS EXPNAME:50
+	PRINTL 5以上才能继续升级
+ENDIF
+
+;欲望が必要
+PRINTS ABLNAME:1
+PRINT LV
+PRINTV ABL:8 + 1
+PRINTL 以上才能继续升级
+
+PRINT [0] - 
+PRINTS PALAMNAME:9
+PRINT 之珠×
+PRINTV A
+IF ABL:8 < 2
+	PRINT 、
+	PRINTS EXPNAME:2
+	PRINTV 1
+	PRINT 以上
+ELSE
+	PRINT 、
+	PRINTS EXPNAME:11
+	PRINTV 1
+	PRINT 以上
+ENDIF
+PRINT ……
+
+IF I == 0
+	PRINT ＯＫ
+ELSE
+	SIF I & 1
+		PRINT 珠子不足 
+	SIF I & 2
+		PRINT 经验不足 
+	SIF I & 4
+		PRINT 能力不足 
+ENDIF
+PRINTL 
+
+
+PRINTL [100] - 放弃
+
+
+INPUT
+IF (RESULT < 0 || RESULT > 0) && RESULT != 100
+	RESTART
+ELSEIF I != 0 && RESULT == 0
+	PRINTL 尚未满足条件
+	RESTART
+ELSEIF RESULT == 100
+	RETURN 0
+ENDIF
+
+ABL:8 += 1
+
+IF RESULT == 0
+	JUEL:9 -= A
+ENDIF
+
+PRINTS ABLNAME:8
+PRINT 的等级升到了
+PRINTV ABL:8
+PRINTW ！
+
+;露出癖LVUP判定
+@DECIDE_ABLUP8
+;条件別にＯＫかダメかを記録する
+I = 0
+J = 0
+K = 0
+;能力アップ可能なら1にする
+Z = 0
+
+IF ABL:8 == 0
+	A = 100
+ELSEIF ABL:8 == 1
+	A = 1000
+ELSEIF ABL:8 == 2
+	A = 5000
+ELSEIF ABL:8 == 3
+	A = 15000
+ELSEIF ABL:8 == 4
+	A = 35000
+ELSEIF ABL:8 == 5
+	A = 35000
+ELSEIF ABL:8 == 6
+	A = 35000
+ELSEIF ABL:8 == 7
+	A = 35000
+ELSEIF ABL:8 == 8
+	A = 35000
+ELSEIF ABL:8 == 9
+	A = 35000
+ENDIF
+
+;难以越过的底线
+IF TALENT:27 && (TALENT:3 == 0 && TALENT:4 == 0 && TALENT:5 == 0 && TALENT:6 == 0 && TALENT:7 == 0 && TALENT:8 == 0)
+	TIMES A , 2.00
+ENDIF
+
+;欲望が露出癖＋１レベルでないといけない
+IF ABL:1 < ABL:8+1
+	;欲望が不足
+	I |= 4
+ENDIF
+
+;ＬＶ３から４に上げるときは异常经验必要（素質：[喜欢引人注目]なら無視できる）
+IF ABL:8 == 3 && TALENT:28 == 0
+	IF EXP:50 == 0
+		;异常经验が不足
+		I |= 2
+	ENDIF
+;ＬＶ４から５に上げるときは异常经验3以上必要（素質：[喜欢引人注目]なら無視できる）
+ELSEIF ABL:8 == 4 && TALENT:28 == 0
+	IF EXP:50 < 3
+		;异常经验が不足
+		I |= 2
+	ENDIF
+;ＬＶ８から９に上げるときは异常经验5以上必要（素質：[喜欢引人注目]なら無視できる）
+ELSEIF ABL:8 == 8 && TALENT:28 == 0
+	IF EXP:50 < 5
+		;异常经验が不足
+		I |= 2
+	ENDIF
+ENDIF
+
+;耻情之珠で上げる
+SIF JUEL:9 < A
+	I |= 1
+IF ABL:8 < 2
+	;绝顶经验が必要
+	SIF EXP:2 == 0
+		I |= 2
+ELSE
+	;调教自慰经验が必要
+	SIF EXP:11 == 0
+		I |= 2
+ENDIF
+
+IF I == 0
+	Z = 1
+ENDIF
+
+RETURN 1
+

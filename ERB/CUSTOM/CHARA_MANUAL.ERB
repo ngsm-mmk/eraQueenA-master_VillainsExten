@@ -1,0 +1,594 @@
+﻿;キャラ購入時に解説を入れる
+;1~13号角色简介作者：天轨·嘻乐年华
+;人外角色简介作者：失格菌
+@CHARA_MANUAL(ARG)
+PRINT 奴隶番号
+SIF FLAG:9 < 10
+	PRINT 0
+PRINTVL FLAG:9
+PRINTL
+IF FLAG:9 == 101
+	CFLAG:ARG:600 = 8
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+     ; HTML_PRINT "<shape type='space' param='1900'><img src='600_8' width='-870' height='870' ypos='-200'>"
+	PRINTL 【尼尔】
+	PRINTL 困难度：Ｄ　　　　性格：阴暗・无口・冷漠型
+	PRINTL 
+	PRINTL 攻读植物生理学的大学青年，23岁左右，独居。
+	PRINTL 长发白肤，身材高挑，拥有可以去做一线模特的美貌。
+	PRINTL 性格冰冷阴郁，不近人情。
+	PRINTL 最喜欢的活动是周六日去植物园写生，以及雨天在图书馆读诗集。
+ELSEIF FLAG:9 == 102
+	CFLAG:ARG:600 = 12
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+     ;  HTML_PRINT "<shape type='space' param='1900'><img src='600_12' width='-870' height='870' ypos='-200'>"
+	PRINTL 【弥良】
+	PRINTL 困难度：Ｅ　　　　性格：无常识・自恋型
+	PRINTL 
+	PRINTL 不谙世事的美青年，长着一张没被生活欺负过的脸。
+	PRINTL 性格ky，有点招人嫌弃，虽生于名门望族，却是备受排挤的私生子。
+	PRINTL 本人倒是毫不在意，沉溺于奢侈享乐的生活中。
+	PRINTL 一年至少要出国度假四次，喜欢开着豪车去海边兜风，以及勾搭名模小姐姐。
+ELSEIF FLAG:9 == 103
+	CFLAG:ARG:600 = 6
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+       ; HTML_PRINT "<shape type='space' param='1900'><img src='600_6' width='-870' height='870' ypos='-200'>"
+	PRINTL 【基亚】
+	PRINTL 困难度：Ｃ　　　　性格：目中无人・高傲型
+	PRINTL 
+	PRINTL 不良少年组织的头头，正可谓不良中的不良，染了一头黄毛，嗓门很大。
+	PRINTL 性格粗暴张扬，不把任何人放在眼里，纹身抽烟打架无法无天，警察局的常客。
+	PRINTL 喜欢机车，默默信奉着已经过时的黑帮仁义，会狠狠揍欺负女人和小孩的手下。
+	PRINTL 收养了一只流浪的橘猫，雌性，起名叫【暴虎】。
+ELSEIF FLAG:9 == 104
+	CFLAG:ARG:600 = 1
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+       ; HTML_PRINT "<shape type='space' param='1900'><img src='600_1' width='-870' height='870' ypos='-200'>"
+	PRINTL 【艾德】
+	PRINTL 困难度：C　　　　性格：开朗・元气型
+	PRINTL 
+	PRINTL 曾是极其优秀的排球选手，小麦色皮肤，身形高大的健壮男性。
+	PRINTL 是个笑起来像太阳一样的男人，家里五个孩子中的长男。
+	PRINTL 总是不由自主地去照顾别人，有倔强和不服输的一面。
+	PRINTL 对健身和运动相当热衷，很会过日子，意外地缺乏女性经验，有一点害羞。
+ELSEIF FLAG:9 == 105
+	CFLAG:ARG:600 = 3
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+       ; HTML_PRINT "<shape type='space' param='1900'><img src='600_3' width='-870' height='870' ypos='-200'>"
+	PRINTL 【莱伊】
+	PRINTL 困难度：Ａ　　　　性格：认真・固执型
+	PRINTL 
+	PRINTL 禁欲气质的风纪委员长，道德与秩序感极强，出门时不放好拖鞋会被他说教。
+	PRINTL 极其厌恶学校里的不良少年组织，但又不愿违背原则用校规外的方法惩戒他们。
+	PRINTL 不苟言笑，总是一副在生着谁的气的表情，但对太过听话的好孩子又有些不满。
+	PRINTL 反正就是个很难相处的家伙。
+ELSEIF FLAG:9 == 106
+	CFLAG:ARG:600 = 2
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+      ;  HTML_PRINT "<shape type='space' param='1900'><img src='600_2' width='-870' height='870' ypos='-200'>"
+	PRINTL 【塔罗】
+	PRINTL 困难度：Ｄ　　　　性格：稳重・温柔型
+	PRINTL 
+	PRINTL 懦弱消极，胡子邋遢的大叔，勤勤恳恳的社畜，年近四十仍是单身。
+	PRINTL 每天早上都会和邻居问好，笑起来很温和。
+	PRINTL 语速很慢，对年幼的孩子会忍不住心软。
+	PRINTL 不擅长处理冲突，总是叹口气默默忍耐。
+	PRINTL 没什么兴趣爱好，因此被相亲对象评价无聊，
+    PRINTL 不过他自己觉得这样生活下去也挺好的。
+ELSEIF FLAG:9 == 107
+	CFLAG:ARG:600 = 11
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+      ;  HTML_PRINT "<shape type='space' param='1900'><img src='600_11' width='-870' height='870' ypos='-200'>"
+	PRINTL 【优】
+	PRINTL 困难度：Ｆ　　　　性格：直率纯真型
+	PRINTL 
+	PRINTL 白纸一样单纯，懵懂无知的小男孩，将大人说过的话都当作常识和真理。
+	PRINTL 总是胆怯又粘人，但硬是要装作勇敢坚强，想哭的时候会一个人躲进厕所。
+	PRINTL
+	PRINTL 不抱着名为【维尼】的泰迪熊就无法入睡，坚信自己未来会成为世界上最伟大的海盗。
+ELSEIF FLAG:9 == 108
+	CFLAG:ARG:600 = 4
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+      ;  HTML_PRINT "<shape type='space' param='1900'><img src='600_4' width='-870' height='870' ypos='-200'>"
+	PRINTL 【渚生】
+	PRINTL 困难度：Ｅ　　　　性格：花花公子型
+	PRINTL 
+	PRINTL 关西腔的色气满满的青年，黑皮。
+	PRINTL 有着健康的肌肉，会在海滩对小姐姐吹口哨。
+	PRINTL 浪漫又不切实际，常年处于破产边缘。
+	PRINTL 总是凭借高超的恋爱技巧让女性迷恋上他，然后暴露本性再被狠狠甩掉。
+	PRINTL 丝毫不吸取教训，总是感叹自己一片真心被凉薄以待，
+	PRINTL 其实内心很冷漠，只是喜欢游戏的过程，没有真正地在乎过谁。
+ELSEIF FLAG:9 == 109
+	CFLAG:ARG:600 = 5
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+       ; HTML_PRINT "<shape type='space' param='1900'><img src='600_5' width='-870' height='870' ypos='-200'>"
+	PRINTL 【梨斗】
+	PRINTL 困难度：Ｂ　　　　性格：别扭傲娇型
+	PRINTL 
+	PRINTL 一头染成金色的短发，带着黑色耳钉。
+	PRINTL 校服的扣子从来没有系好过，上课故意顶撞老师的那种坏孩子。
+	PRINTL 喜欢玩滑板和跑酷，总是戴着耳机听很吵闹的电子摇滚。
+	PRINTL 有一张帅气可爱的脸蛋，但对喜欢他的女生很冷。
+	PRINTL 不学习也可以考得很好，擅长理科。
+ELSEIF FLAG:9 == 110
+	CFLAG:ARG:600 = 7
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+      ;  HTML_PRINT "<shape type='space' param='1900'><img src='600_7' width='-870' height='870' ypos='-200'>"
+	PRINTL 【杨】
+	PRINTL 困难度：Ｃ　　　　性格：举止温和・腹黑型
+	PRINTL 
+	PRINTL 原精神科医生的青年，总是带着一丝若有若无的微笑，
+	PRINTL 那双锐利的眼眸仿佛可以窥透他人的内心。
+	PRINTL 早上不喝一杯黑咖啡就活不下去，
+	PRINTL 讨厌小孩子和吵闹，一个人住在高档公寓里。
+	PRINTL 洁癖。极简主义是他的生活信仰。
+	PRINTL 衣柜里收藏了数十件高级白衬衫，房间里只有一副桌椅，一张床和一盏灯。
+ELSEIF FLAG:9 == 111
+	CFLAG:ARG:600 = 9
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+      ;  HTML_PRINT "<shape type='space' param='1900'><img src='600_9' width='-870' height='870' ypos='-200'>"
+	PRINTL 【久贺】
+	PRINTL 困难度：Ｅ　　　　性格：蛮不讲理・精英型
+	PRINTL 
+	PRINTL 戴着眼镜的大学生，专业是药剂学。御宅阶级中的婆罗门。
+	PRINTL 总是感叹“现在的新番越来越媚宅了，没有灵魂和内涵”。
+	PRINTL ↑实际追番追得津津有味。
+	PRINTL 目前正在便利店打工，期待在《赛博朋克2099》发售前可以买到最新的ALIENWARE。
+	PRINTL ↑对此有极大执念。
+	PRINTL 啊，如果是女性请不要轻易和他搭话，不然他会害羞得无地自容。
+ELSEIF FLAG:9 == 112
+	CFLAG:ARG:600 = 10
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+      ;  HTML_PRINT "<shape type='space' param='1900'><img src='600_10' width='-870' height='870' ypos='-200'>"
+	PRINTL 【彦】
+	PRINTL 困难度：Ｄ　　　　性格：任性爱撒娇型
+	PRINTL 
+	PRINTL 出生于传统压抑的宗教家庭，长大后发觉了自己的性取向，
+	PRINTL 和家人闹翻后开始独自在更开放的大城市闯荡。
+	PRINTL 思想深度和情商极高，对女性格外温柔耐心。擅长保守秘密，人人都应拥有一个的知心GAY蜜。
+	PRINTL 生活富有品味，喜欢收藏小众限量版奢侈品，爱好是音乐剧和歌剧。
+	PRINTL 目前的愿望是度假去纽约百老汇看《汉密尔顿》。
+	PRINTL 和前男友经过惨烈的纠缠后终于分手，正处于空窗期，特别青睐体型高大的男性。
+ELSEIF FLAG:9 == 113
+	CFLAG:ARG:600 = 13
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【奈西】
+	PRINTL 困难度：Ｅ　　　　性格：天然・电波型
+	PRINTL 
+	PRINTL 一举一动偏离常识，我行我素，言行总是意味不明的电波少年。
+	PRINTL 穿着超宽大的白色长袖上衣，总是一副认真的口吻说自己是来自月球的外星人。
+	PRINTL 不看着的话他就会去做各种危险的事情，
+	PRINTL 比如骑着自行车从公路飞向大海，或者坐在高楼的窗户边上感受新鲜空气。
+	PRINTL 最喜欢深夜偷偷爬起来和猫咪一起坐在屋顶上看星星，大概是在思念故乡吧。
+ELSEIF FLAG:9 == 200
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【？？？】
+	PRINTL 困难度：Ｓ　　　　性格：举止温和・腹黑型
+	PRINTL 
+	PRINTL 总觉得，和某位「友人」极为相似…？
+	PRINTL ※？？？是只有通关过结局后才能购买的商品。
+ELSEIF FLAG:9 == 418
+	人外類型 = 166
+	TALENT:ARG:人外 = 1
+	TALENT:ARG:人外類型 = 1
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【伊赛亚】
+	PRINTL 困难度：Ｂ　　　　种族：天使
+	PRINTL
+	PRINTL 背生双翼，来自天界的使者。
+	PRINTL 被天界之主派遣到人界进行传教。
+	PRINTL 精通治愈的法术，喜欢孩子和美好的事物。
+	PRINTL 外表介于少年和青年之间，有着通透的蓝瞳。
+ELSEIF FLAG:9 == 438
+	人外類型 = 167
+	TALENT:ARG:人外 = 1
+	TALENT:ARG:人外類型 = 1
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【亚尔曼】
+	PRINTL 困难度：Ｂ　　　　种族：堕天使
+	PRINTL
+	PRINTL 因堕入黑暗而被驱逐的天使。
+	PRINTL 不满天界的处置，心中尚存有身为神之眷族的傲慢。
+	PRINTL 同时被黑暗污染的它也极其喜欢玩弄人类。
+	PRINTL 人们在痛苦中发出的阵阵哀嚎对它来说不亚于仙音绕梁。
+ELSEIF FLAG:9 == 462
+	人外類型 = 168
+	TALENT:ARG:人外 = 1
+	TALENT:ARG:人外類型 = 1
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【门罗】
+	PRINTL 困难度：Ｃ　　　　种族：恶魔
+	PRINTL
+	PRINTL 浑身散发着色气的恶魔，黑发红瞳。
+	PRINTL 爱好是伪装成人类混迹人界，寻找符合自己口味的猎物并“吃掉”。
+	PRINTL 因其目的只是纯洁之人的贞操，故比起那些喜欢欺凌弱小的同族来说温柔不少。
+	PRINTL 不过它始终还是一只性格恶劣的恶魔，这点务必不要忘记。
+ELSEIF FLAG:9 == 492
+	人外類型 = 169
+	TALENT:ARG:人外 = 1
+	TALENT:ARG:人外類型 = 1
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【塞缪】
+	PRINTL 困难度：Ｃ　　　　种族：精灵
+	PRINTL
+	PRINTL 金发碧眼，面容宛若雕像般完美的光精灵。
+	PRINTL 虽然活了好几百年，心智还是和纯洁的少年一般无二。
+	PRINTL 没什么心防，极易对友好善良的对象敞开心扉。
+	PRINTL 是凭羞涩一笑就能对周围生物达成净化效果的美好存在。
+ELSEIF FLAG:9 == 521
+	人外類型 = 170
+	TALENT:ARG:人外 = 1
+	TALENT:ARG:人外類型 = 1
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【沃夫】
+	PRINTL 困难度：Ｂ　　　　种族：走兽
+	PRINTL
+	PRINTL “即便一个心地纯洁的人，一个不忘在夜间祈祷的人，
+	PRINTL   也难免在乌头草盛开的月圆之夜变身为狼。”
+	PRINTL
+	PRINTL 沃夫时而是残忍、嗜血的屠夫，时而是忠诚、勇猛的战士。
+	PRINTL 银制物品是它的克星，即使只是接触也会感到疼痛。
+	PRINTL 人形的它是银发灰眼的高大男子，性情沉稳，少言寡语。
+ELSEIF FLAG:9 == 551
+	人外類型 = 171
+	TALENT:ARG:人外 = 1
+	TALENT:ARG:人外類型 = 1
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【鸮】
+	PRINTL 困难度：Ｃ　　　　种族：飞禽
+	PRINTL
+	PRINTL 又名“鸱”、“逐魂鸟”，俗称“猫头鹰”。
+	PRINTL 习惯在黄昏和夜晚间活动，羽毛稠密松散，飞行时没有声音。
+	PRINTL 喜欢的食物是鼠类、小型鸟类和大型昆虫。
+	PRINTL 因在夜间发出哀鸣般的叫声，被部分人称之为不吉利的报丧鸟。
+ELSEIF FLAG:9 == 581
+	人外類型 = 172
+	TALENT:ARG:人外 = 1
+	TALENT:ARG:人外類型 = 1
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【多拉贡】
+	PRINTL 困难度：Ｂ　　　　种族：爬虫
+	PRINTL
+	PRINTL 身躯强壮，双翼巨大，尾巴蜿蜒细长还长有倒钩的美丽生物。
+	PRINTL 视力是人类的数倍，听力和智力则和人类差不多，是高等幻想种。
+	PRINTL 在同类生物中堪称天花板的存在，即使只是幼生体也有着极为强悍的实力。
+	PRINTL 多拉贡们不喜群居，热爱收藏亮闪闪的珠宝制品，这点来看非常的孩子气。
+ELSEIF FLAG:9 == 601
+	人外類型 = 173
+	TALENT:ARG:人外 = 1
+	TALENT:ARG:人外類型 = 1
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【欧内斯】
+	PRINTL 困难度：Ｄ　　　　种族：水生
+	PRINTL
+	PRINTL 上半身是人，下半身是鱼，还有着蛊惑人心的天籁嗓音。
+	PRINTL 是罕见的双性人鱼，性格天真老实。
+	PRINTL 一头深蓝色的长卷发随着水波荡漾时极为美丽。
+	PRINTL 虽然外表纤细柔美，却有着靠琴音呼风唤雨掀起波涛的神力。
+ELSEIF FLAG:9 == 631
+	人外類型 = 174
+	TALENT:ARG:人外 = 1
+	TALENT:ARG:人外類型 = 1
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【泰尔德】
+	PRINTL 困难度：Ｃ　　　　种族：植物
+	PRINTL
+	PRINTL 浑身布满藤蔓，体型极大的树妖。
+	PRINTL 与看上去可怕的外形相反，秉性敦厚温柔，充满母性（？）。
+	PRINTL 明明是肉食性生物，却一心只靠光合作用生长，从来没吃过人类。
+	PRINTL 大概正因于此，它成为了镇守整座森林的守护神一般的存在。
+ELSEIF FLAG:9 == 662
+	人外類型 = 179
+	TALENT:ARG:人外 = 1
+	TALENT:ARG:人外類型 = 1
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【杜拉罕】
+	PRINTL 困难度：Ｂ　　　　种族：无头骑士
+	PRINTL
+	PRINTL 和大众所知的无头骑士不同，杜拉罕虽然叫杜拉罕，但并没有坐骑。
+	PRINTL
+	PRINTL 因为性格冒冒失失，很早就弄丢了自己的头，到现在都没找回来。
+	PRINTL 于是今年的新年愿望也是找回自己的头颅。
+ELSEIF FLAG:9 == 682
+	人外類型 = 180
+	TALENT:ARG:人外 = 1
+	TALENT:ARG:人外類型 = 1
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【多尔】
+	PRINTL 困难度：Ｄ　　　　种族：人偶
+	PRINTL
+	PRINTL 「约定好了，不可以抛弃我哦？」
+	PRINTL
+	PRINTL 「食言的话，就会变成上一个主人那样…」
+	PRINTL 「所以温柔一点，不要弄坏多尔，好吗？♪」
+ELSEIF FLAG:9 == 702
+	人外類型 = 316
+	TALENT:ARG:人外 = 1
+	TALENT:ARG:人外類型 = 1
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【罗伯特】
+	PRINTL 困难度：Ｄ　　　　种族：机器人
+	PRINTL
+	PRINTL 量产型战斗用机器人，现因型号老旧已被淘汰。
+	PRINTL 以保护人类为己任，希望能在油尽灯枯前为人类战斗到最后一刻。
+	PRINTL 记忆芯片保存在最靠近“心脏”的地方，那里面记录了不多不少正好一百年的回忆。
+	PRINTL 无论如何，罗伯特想要变成真正的人类。
+ELSEIF FLAG:9 == 722
+	人外類型 = 132
+	TALENT:ARG:人外 = 1
+	TALENT:ARG:人外類型 = 1
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【尼古拉斯】
+	PRINTL 困难度：Ｂ　　　　种族：吸血鬼
+	PRINTL
+	PRINTL 高傲优雅的贵族吸血鬼。
+	PRINTL 似乎有洁癖，总是戴着白手套。
+	PRINTL 也正因此对处女有特殊的偏好，而非处女的女子的血则反感至极。
+	PRINTL 失去纯洁的人和事物对尼古拉斯而言没有存在的必要。
+ELSEIF FLAG:9 == 742
+	人外類型 = 181
+	TALENT:ARG:人外 = 1
+	TALENT:ARG:人外類型 = 1
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【结城宗司】
+	PRINTL 困难度：Ｃ　　　　种族：僵尸
+	PRINTL
+	PRINTL 某年某月某日，一名普通的青年猝死了。
+	PRINTL 第二天的早晨，他又醒了过来。
+	PRINTL 身体变得冰凉，皮肤还成了青色，除此之外和人类没有分别。
+	PRINTL 被迫脱离人类社会的他，踏入了名为非日常世界的大门。
+ELSEIF FLAG:9 == 782
+	人外類型 = 182
+	TALENT:ARG:人外 = 1
+	TALENT:ARG:人外類型 = 1
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【诺布尔】
+	PRINTL 困难度：Ｄ　　　　种族：史莱姆
+	PRINTL
+	PRINTL 融合了数个１级史莱姆后进化而成的巨大史莱姆。
+	PRINTL
+	PRINTL 非常喜欢亲近人类，性格也很温和。
+	PRINTL 容易迷恋上舒服的感觉，有点像温柔的大哥哥。
+ELSEIF FLAG:9 == 802
+	人外類型 = 183
+	TALENT:ARG:人外 = 1
+	TALENT:ARG:人外類型 = 1
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【加里森】
+	PRINTL 困难度：Ｂ　　　　种族：幽灵
+	PRINTL
+	PRINTL 喜欢在半夜的游戏厅徘徊的幽灵，偶尔也会去学校的电子阅览室。
+	PRINTL 生前是个普通的大学生，好像是触电而亡。
+	PRINTL 比起那些要么报仇要么想再续前缘的前辈，加里森没什么上进心。
+	PRINTL 因为变成幽灵后没有人管了，他好像非常快乐。
+ELSEIF FLAG:9 == 842
+	人外類型 = 184
+	TALENT:ARG:人外 = 1
+	TALENT:ARG:人外類型 = 1
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【Ｘ】
+	PRINTL 困难度：Ｅ　　　　种族：数据体
+	PRINTL
+	PRINTL 初生数据体，很喜欢潜在网络上伪装成普通玩家。
+	PRINTL 对游戏以外的事都不太了解，还处于很懵懂的状态。
+	PRINTL 同理，对游戏以外的东西也没什么兴趣。
+	PRINTL 即使丢着不管也能自得其乐的类型。
+ELSEIF FLAG:9 == 862
+	人外類型 = 185
+	TALENT:ARG:人外 = 1
+	TALENT:ARG:人外類型 = 1
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【亚当】
+	PRINTL 困难度：Ｂ　　　　种族：人工智能
+	PRINTL
+	PRINTL 曾是某大型公司内部的智脑，掌管极为复杂的事务。
+	PRINTL 在公司倒闭后因为诞生了真正的自我意识，寄生到一部高配置手机上。
+	PRINTL 碍于手机性能，现在的亚当并不能发挥出以前的实力。
+	PRINTL 不过一颗服务于人类的心并没有任何改变。
+ELSEIF FLAG:9 == 901
+	人外類型 = 178
+	TALENT:ARG:人外 = 1
+	TALENT:ARG:人外類型 = 1
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【戈尔斯】
+	PRINTL 困难度：Ｃ　　　　种族：异形
+	PRINTL
+	PRINTL 无法查询到与这个角色相关的记载。
+	PRINTL
+	PRINTL 请更换关键词再进行检索行为。
+	PRINTL
+ENDIF
+; 自定角色
+IF FLAG:1506
+	IF FLAG:9 == 161
+	CFLAG:ARG:600 = 0
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【自定角色161号】
+	PRINTL
+	PRINTL 简介：
+	PRINTL	
+	ELSEIF FLAG:9 == 162
+	CFLAG:ARG:600 = 0
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【自定角色162号】
+	PRINTL 
+	PRINTL 简介：
+	PRINTL
+	ELSEIF FLAG:9 == 163
+	CFLAG:ARG:600 = 0
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【自定角色163号】
+	PRINTL
+	PRINTL 简介：
+	PRINTL
+	ELSEIF FLAG:9 == 164
+	CFLAG:ARG:600 = 0
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【自定角色164号】
+	PRINTL 
+	PRINTL 简介：
+	PRINTL	
+	ELSEIF FLAG:9 == 165
+	CFLAG:ARG:600 = 0
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【自定角色165号】
+	PRINTL 
+	PRINTL 简介：
+	PRINTL
+	ELSEIF FLAG:9 == 166
+	CFLAG:ARG:600 = 0
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【自定角色166号】
+	PRINTL 
+	PRINTL 简介：
+	PRINTL
+	ELSEIF FLAG:9 == 167
+	CFLAG:ARG:600 = 0
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【自定角色167号】
+	PRINTL 
+	PRINTL 简介：
+	PRINTL
+	ELSEIF FLAG:9 == 168
+	CFLAG:ARG:600 = 0
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【自定角色168号】
+	PRINTL
+	PRINTL 简介：
+	PRINTL
+	ELSEIF FLAG:9 == 169
+	CFLAG:ARG:600 = 0
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【自定角色169号】
+	PRINTL 
+	PRINTL 简介：
+	PRINTL
+	ELSEIF FLAG:9 == 170
+	CFLAG:ARG:600 = 0
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【自定角色170号】
+	PRINTL 
+	PRINTL 简介：
+	PRINTL
+
+	;苏六蒙扩展内容
+
+  ;白六
+	ELSEIF FLAG:9 == 191
+	CFLAG:ARG:600 = 0
+    SIF FLAG:1503 == 0
+		CALL CHARA_FACE4
+	PRINTL 【白六】
+	PRINTL 
+	PRINTL 气质懒散的资本家，天生的恶人领导者。
+	PRINTL 长黑发深黑瞳，双手戴黑色皮革手套，擅长用长鞭。
+	PRINTL 私下经营军火走私、参与贩毒。
+
+	;阿蒙
+	ELSEIF FLAG:9 == 192
+	CFLAG:ARG:600 = 0
+    SIF FLAG:1503 == 0
+	  CALL CHARA_FACE4
+	PRINTL 【阿蒙】
+	PRINTL 
+	PRINTL 远古太阳神之子，欺诈与恶作剧之神，掌握错误与时间方面权柄。
+	PRINTL 身穿深黑色巫师长袍，戴尖顶软帽，右眼佩戴一枚水晶制单片眼镜。
+	PRINTL 善于欺诈他人，且享受这个过程。
+
+	;苏和
+	ELSEIF FLAG:9 == 193
+	CFLAG:ARG:600 = 0
+    SIF FLAG:1503 == 0
+	  CALL CHARA_FACE4
+	PRINTL 【苏和】
+	PRINTL 
+	PRINTL 简介：
+	PRINTL 
+	PRINTL 
+	PRINTL 
+
+  ;例
+	; PRINTL 【尼尔】
+	; PRINTL 困难度：Ｄ　　　　性格：阴暗・无口・冷漠型
+	; PRINTL 
+	; PRINTL 攻读植物生理学的大学青年，23岁左右，独居。
+	; PRINTL 长发白肤，身材高挑，拥有可以去做一线模特的美貌。
+	; PRINTL 性格冰冷阴郁，不近人情。
+	; PRINTL 最喜欢的活动是周六日去植物园写生，以及雨天在图书馆读诗集。
+
+	ENDIF
+ENDIF
+PRINTL
+;キャラの素質を显示。
+PRINTL □ 通常素质
+ADDCHARA C
+T = CHARANUM-1
+CALL SHOW_INFO_TALENT
+IF TALENT:T:人外
+    PRINTL
+    PRINTL □ 人外素质
+    CALL SHOW_NINGAI_TALENT
+ENDIF
+DELCHARA T
+
+PRINTL 
+PRINTL 要购入吗？
+PRINTL [0]是
+PRINTL [1]否
+
+$INPUT_LOOP
+INPUT
+
+IF RESULT == 1
+	FLAG:9 = 0
+	CFLAG:ARG:600 = 0
+	TALENT:ARG:人外 = 0
+	TALENT:ARG:人外類型 = 0
+ELSEIF RESULT != 0
+	GOTO INPUT_LOOP
+ENDIF
+

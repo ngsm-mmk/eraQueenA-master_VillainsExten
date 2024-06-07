@@ -1,0 +1,133 @@
+﻿;-------------------------------------------------
+;强制口交する
+;
+;-------------------------------------------------
+@COM209
+;-------------------------------------------------
+;主人受
+;-------------------------------------------------
+PRINTL 强制口交
+STR:0 = 强制口交
+
+
+;丝袜びりびりフラグ
+IF TEQUIP:1 == 5 || TEQUIP:1 == 6
+	TFLAG:55 = 1
+ENDIF
+
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+;消費体力、气力
+LOSEBASE:0 += 5
+LOSEBASE:1 += 100
+
+SOURCE:0 = 250
+SOURCE:13 = 50
+SOURCE:17 = 50
+SOURCE:18 = 50
+
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 40
+
+;调教者のTALENT:善用舌头をみる
+SIF TALENT:PLAYER:52
+	TIMES SOURCE:0 , 1.50
+
+;调教者のTALENT:猫舌をみる
+SIF TALENT:PLAYER:54
+	TIMES SOURCE:0 , 0.75
+
+;陷落していると情爱、していないと逸脱増加
+IF TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8
+	SOURCE:4 += 50
+ELSE
+	TIMES SOURCE:17 , 1.50
+ENDIF
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;奴隶のＰ⇔调教者の口の汚れが移动
+STAIN:2 |= STAIN:PLAYER:0
+STAIN:PLAYER:0 |= STAIN:2
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;蔷薇经验とか加算
+CALL COM_EXP(3)
+
+
+;嗜虐属性に応じて嗜虐快乐经验
+E = 1
+L = 0
+IF ABL:10 == 0
+	E += 0
+	L += 0
+ELSEIF ABL:10 == 1
+	E += 1
+	L += 1
+ELSEIF ABL:10 == 2
+	E += 3
+	L += 2
+ELSEIF ABL:10 == 3
+	E += 5
+	L += 3
+ELSEIF ABL:10 == 4
+	E += 7
+	L += 4
+ELSEIF ABL:10 >= 5
+	E += 9
+	L += 5
+ENDIF
+;调教者の受虐属性で嗜虐快乐经验
+IF ABL:PLAYER:9 == 0
+	E += 0
+	L += 0
+ELSEIF ABL:PLAYER:9 == 1
+	E += 1
+	L += 1
+ELSEIF ABL:PLAYER:9 == 2
+	E += 2
+	L += 3
+ELSEIF ABL:PLAYER:9 == 3
+	E += 3
+	L += 5
+ELSEIF ABL:PLAYER:9 == 4
+	E += 4
+	L += 7
+ELSEIF ABL:PLAYER:9 >= 5
+	E += 5
+	L += 9
+ENDIF
+PRINT 嗜虐快乐经验+
+PRINTVL E
+EXP:32 += E
+TFLAG:28 = E
+IF L > 0
+	PRINTFORM %CALLNAME:PLAYER%的
+	PRINT 痛苦快乐经验+
+	PRINTVL L
+	EXP:PLAYER:30 += L
+	TFLAG:27 = L
+ENDIF
+
+;调教者が猫舌持ちの場合は、调教者に嗜虐快乐经验を追加
+IF TALENT:PLAYER:54
+	EXP:PLAYER:32 += 1
+	PRINTFORML %CALLNAME:PLAYER%的%EXPNAME:32%＋１
+ENDIF
+
+;依赖度ベクトル
+TFLAG:33 = 3
+
+
+RETURN 1
+

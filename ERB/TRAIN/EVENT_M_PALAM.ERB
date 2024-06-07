@@ -1,0 +1,1467 @@
+﻿;-------------------------------------------
+;调教者の射精時のテ接吻ト
+;-------------------------------------------
+@PALAM_MESSAGE_A
+;射精箇所变更時
+;ぶっかけのメッセージ
+;PRINTFORML [0] 「发」
+;PRINTFORML [1] 「脸」
+;PRINTFORML [2] 「胸」
+;PRINTFORML [3] 「腹」
+;PRINTFORML [4] 「腋」
+;PRINTFORML [5] 「腿」
+;PRINTFORML [6] 「股间」
+;PRINTFORML [7] 「屁股」
+;PRINTFORML [8] 「足」
+;PRINTFORML [9] 「直接射在避孕套里」
+IF CFLAG:106
+	;髪
+	IF CFLAG:106 == 1
+		PRINTFORML 将肉棒抵在了%CALLNAME%的头发上
+		IF TEQUIP:7
+			A = 7
+			CALL CLOTHES_NAME
+		ELSE
+			PRINTFORM \@ TALENT:美人 ? 艳丽的 # \@发丝
+		ENDIF
+		PRINTFORML 被射满了浓稠的精液…
+	;顔
+	ELSEIF CFLAG:106 == 2
+		PRINTFORML 在%CALLNAME%的脸庞微微仰起时释放了…
+		;顺从3以上
+		IF ABL:0 >= 3
+			PRINTFORM %CALLNAME%紧闭双眼，
+			IF TEQUIP:8
+				A = 8
+				CALL CLOTHES_NAME
+			ELSE
+				PRINTFORM 脸上
+			ENDIF
+		PRINTFORML 被射满了精液…
+		ELSE
+			PRINTFORML 粗暴地抓住满脸嫌恶的%CALLNAME%的脑袋
+			IF TEQUIP:8
+				A = 8
+				CALL CLOTHES_NAME
+			ELSE
+				PRINTFORM 那张不肯服输的脸颊
+			ENDIF
+		PRINTFORML 被白浊玷污了…
+		ENDIF
+	;胸
+	ELSEIF CFLAG:106 == 3
+		;上身外衣、全身外衣、上身内衣を着用
+		IF TEQUIP:6 > 0 || TEQUIP:5 > 0 || TEQUIP:3 > 0
+			;射精した人物
+			IF TFLAG:6
+				PRINTFORM %CALLNAME:ASSI%
+			ELSE
+				PRINTFORM %PLAYER_NAME()%
+			ENDIF
+			PRINTFORM 在%CALLNAME%的
+			IF TEQUIP:3 > 0
+				A = 3
+			ELSEIF TEQUIP:5 > 0
+				A = 5
+			ELSEIF TEQUIP:6 > 0
+				A = 6
+			ENDIF
+			CALL CLOTHES_NAME
+			PRINTFORML 上面释放出来了
+			PRINTFORM %CALLNAME%的
+			CALL CLOTHES_NAME
+			PRINTFORML 被释放出的精液染上了浑浊的白色…
+		ELSE
+			;射精した人物
+			IF TFLAG:6
+				PRINTFORM %CALLNAME:ASSI%
+			ELSE
+				PRINTFORM %PLAYER_NAME()%
+			ENDIF
+			PRINTFORML 对准%CALLNAME%布满汗珠的胸口释放了…
+			IF TALENT:男性 || TALENT:双性
+                                                                PRINTFORML 精液顺着%CALLNAME%
+				IF TALENT:高大体型
+					PRINTFORM 健实的
+				ELSEIF TALENT:矮小体型
+					PRINTFORM 纤细的
+				ELSE
+					PRINTFORM 平坦的
+				ENDIF
+				PRINTFORML 胸膛缓缓流淌
+			ELSEIF TALENT:贫乳 || TALENT:绝壁
+				PRINTFORML 精液顺着上下起伏的薄薄的胸部蜿蜒流淌…
+				;顺从3以上
+				IF ABL:0 >= 3
+					PRINTFORML %CALLNAME%满怀欣喜地用手指蘸取精液，涂在自己硬邦邦的乳头上…
+				ENDIF
+			ELSEIF TALENT:巨乳 || TALENT:爆乳
+				IF TALENT:140
+					PRINTFORML 壮观的胸膛上积存着流不下去的精液
+				ELSE
+					PRINTFORML 丰满的乳沟里积存着流不下去的精液
+				ENDIF
+				IF ABL:0 >= 4
+					PRINTFORML 精液在%CALLNAME%的胸上肆意流淌…
+				ELSE
+					PRINTFORML …
+				ENDIF
+			ELSE
+				PRINTFORML 精液顺着恰到好处的胸脯缓缓流淌…
+				SIF ABL:0 >= 4
+					PRINTFORML %CALLNAME%主动挺起胸脯接纳精液的洗礼…
+			ENDIF
+		ENDIF
+	;腹
+	ELSEIF CFLAG:106 == 4
+		;射精した人物
+		IF TFLAG:6
+			PRINTFORM %CALLNAME:ASSI%
+		ELSE
+			PRINTFORM %PLAYER_NAME()%
+		ENDIF
+		PRINTFORM 在仰卧的%CALLNAME%
+		;全身外衣、上身外衣を着用
+		IF TEQUIP:6 > 0
+			A = 6
+			CALL CLOTHES_NAME
+			PRINTFORML 卷起的
+		ELSEIF TEQUIP:5 > 0
+			A = 5
+			CALL CLOTHES_NAME
+			PRINTFORML 掀开的
+		ENDIF
+		SIF TALENT:喜欢运动
+			PRINT 紧绷的
+		SIF TALENT:白肤
+			PRINT 白皙的
+		PRINTFORML 腹部上摩擦着阴茎，随即绝顶了…
+		PRINTFORML 释放在%CALLNAME%腹部的精液流向了肚脐…
+	;腋
+	ELSEIF CFLAG:106 == 5
+		;射精した人物
+		IF TFLAG:6
+			PRINTFORM %CALLNAME:ASSI%
+		ELSE
+			PRINTFORM %PLAYER_NAME()%
+		ENDIF
+		PRINTFORM 用%CALLNAME%湿润
+		SIF TALENT:白肤
+			PRINT 白皙		
+		PRINTL 的腋下夹住阴茎…
+		PRINTFORML 一边尽情享受着薄嫩肌肤包裹住自己的柔软触感，将龟头全部挤入腋下的空间，一边畅快地释放出精液…
+	;太腿
+	ELSEIF CFLAG:106 == 6
+		PRINTFORML 将蓄势待发的阴茎对准了%CALLNAME%的大腿…
+		PRINTFORML 已至临界的阴茎弹跳着，在%CALLNAME%
+		IF MALE(TARGET)
+			SIF TALENT:喜欢运动
+				PRINT 紧绷的
+		ELSE
+			PRINT 光滑的
+		ENDIF
+		PRINTFORML 大腿上射得到处都是…
+	;割れ目
+	ELSEIF CFLAG:106 == 7
+		;粗布劳动裤、裙裤を着用
+		IF TEQUIP:4 == 2 || TEQUIP:4 == 3
+			PRINTFORM 把阴茎贴在%CALLNAME%的
+			A = 4
+			CALL CLOTHES_NAME
+			PRINTFORML 上摩擦，不一会儿后射出了精液…
+		ELSE
+			PRINTFORM 把阴茎贴在
+			;全身外衣、下身外衣を着用
+			IF TEQUIP:6 > 0 || TEQUIP:4 == 1
+                PRINTFORM 身着
+				SIF TEQUIP:6 > 0
+					A = 6
+				SIF TEQUIP:4 == 1
+					A = 4
+				CALL CLOTHES_NAME
+				PRINTFORM 的
+			ENDIF
+			PRINTFORM %CALLNAME%的
+			;下身内衣を着用
+			IF TEQUIP:2 > 0
+				A = 2
+				CALL CLOTHES_NAME
+				PRINTFORML 上摩擦，不一会儿后释放出了精液…
+			ELSE
+				PRINTFORM 股间摩擦，
+				;处女（插入かと思って焦る）
+				SIF TALENT:0
+					PRINTFORML %CALLNAME%很担心自己会被突然插入，紧绷着身体
+				;射精した人物
+				IF TFLAG:6
+					PRINTFORM %CALLNAME:ASSI%
+				ELSE
+					PRINTFORM %PLAYER_NAME()%
+				ENDIF
+				PRINTFORML 把龟头抵在%CALLNAME%的大腿和胯股之间释放出了精液
+			ENDIF
+		ENDIF
+	;尻
+	ELSEIF CFLAG:106 == 8
+		PRINTS CALLNAME:TARGET
+		PRINTFORM 四肢着地趴下，
+		;粗布劳动裤、裙裤を着用
+		IF TEQUIP:4 == 2 || TEQUIP:4 == 3
+			A = 4
+			CALL CLOTHES_NAME
+			PRINTFORM 下的
+		ELSEIF TEQUIP:6 > 0 || TEQUIP:4 == 1 || TEQUIP:2 > 0
+			;全身外衣、下身外衣を着用
+			IF TEQUIP:6 > 0 || TEQUIP:4 == 1
+				PRINTFORM 包裹着
+				SIF TEQUIP:6 > 0
+					A = 6
+				SIF TEQUIP:4 == 1
+					A = 4
+				CALL CLOTHES_NAME
+				PRINTFORM 的
+			ENDIF
+			;下身内衣を着用
+			IF TEQUIP:2 > 0
+				A = 2
+				CALL CLOTHES_NAME
+				PRINTFORM 下的
+			ENDIF
+		ELSE
+			SIF TALENT:喜欢运动
+				PRINTFORM 紧实的
+			PRINTFORM 臀部
+		ENDIF
+		PRINTFORML 被精液溅射得到处都是…
+	;ゴム
+	ELSEIF CFLAG:106 == 9
+		;射精した人物
+		IF TFLAG:6
+			PRINTFORM %CALLNAME:ASSI%
+		ELSE
+			PRINTFORM %PLAYER_NAME()%
+		ENDIF
+		PRINTFORML 的精液量太大，把避孕套射得满满当当…
+		PRINTFORML 抽出阴茎后，向%CALLNAME%展示了前端沉甸甸坠下的避孕套…
+		;做爱で射精かつ、后庭以外を実行時
+		IF SEXPLAY(TARGET) == 1 && !TFLAG:6
+			IF (TALENT:恋慕 || TALENT:淫乱 || TALENT:服从 || TALENT:相亲相爱 || TALENT:娼妇 || TALENT:隶属)
+				PRINTFORML 看见%PLAYER_NAME()%有做避孕措施，%CALLNAME%松了一口气…
+			ELSE
+				PRINTFORML %CALLNAME%以为会被射在身体里，不由脸色发青…
+			ENDIF
+		ENDIF
+	;足
+	ELSEIF CFLAG:106 == 10
+		PRINTFORM %CALLNAME%的
+		;靴着用
+		IF TEQUIP:9
+			A = 9
+			CALL CLOTHES_NAME
+		;袜子着用
+		ELSEIF TEQUIP:2
+			A = 2
+			CALL CLOTHES_NAME
+		;裸足
+		ELSE
+			PRINTFORM 裸足
+		ENDIF
+		PRINTFORML 在阴茎的摩擦下被精液弄脏了…
+	ENDIF
+	RETURN 0
+ENDIF
+
+
+;手、口以外で射精
+IF TFLAG:9 == 1
+	PRINT 释放出的精液弄脏了
+	;Ｗ素股
+	IF SELECTCOM == 510 || SELECTCOM == 127 || SELECTCOM == 126
+		PRINT 两人的
+	ELSE
+		PRINTFORM %CALLNAME%的
+	ENDIF
+	;髪扱き
+	IF SELECTCOM == 90
+		IF TEQUIP:7
+			A = 7
+			CALL CLOTHES_NAME
+		ELSE
+			PRINT 头发
+		ENDIF
+		PRINTL ……
+	;肛強制侍奉
+	ELSEIF SELECTCOM == 145
+		PRINTL 脸颊……
+	;其他：接吻、素股、Ｗ素股、阴茎相互摩擦、侍奉フラグが立つ逆调教など
+	ELSE
+		PRINTL 身体……
+	ENDIF
+;手、口以外で大量射精
+ELSEIF TFLAG:9 == 2
+	;Ｗ素股
+	IF SELECTCOM == 510 || SELECTCOM == 127 || SELECTCOM == 126
+		PRINT 两人的
+	ELSE
+		PRINTFORM %CALLNAME%的
+	ENDIF
+	;接吻、素股、Ｗ素股
+	SIF SELECTCOM == 20 || SELECTCOM == 83 || SELECTCOM == 510 || SELECTCOM == 127 || SELECTCOM == 126
+		PRINT 身体
+	;髪扱き
+	IF SELECTCOM == 90
+		IF TEQUIP:7
+			A = 7
+			CALL CLOTHES_NAME
+		ELSE
+			PRINT 头发
+		ENDIF
+	ENDIF
+	;肛強制侍奉
+	SIF SELECTCOM == 145
+		PRINT 面颊
+	PRINTL 沾满了释放出的大量精液…
+ENDIF
+
+;侵犯助手で射精
+IF TFLAG:7 > 0
+	PRINTFORM 在%CALLNAME%面前，%CALLNAME:ASSI%
+	SIF TFLAG:7 == 1
+		PRINTFORML 的深处被射入了精液…
+	SIF TFLAG:7 == 2
+		PRINTFORML 的深处被射入了多到溢出来的精液…
+	SIF TFLAG:7 == 3
+		PRINTL 被侵犯着射出精液…
+	SIF TFLAG:7 == 4
+		PRINTL 被侵犯着射出了大量的精液…
+	SIF ABL:精液成瘾 > 3
+		PRINTFORML %CALLNAME%出神地凝视着滴落的精液…
+ENDIF
+
+;口で射精
+IF TFLAG:0 == 1
+	;口交命令、双枪口交
+	IF SELECTCOM == 81 || SELECTCOM == 511
+		IF ABL:6 >= 3
+			PRINTFORML %CALLNAME%滚动着喉咙，咕嘟咕嘟地把精液喝干了…
+		ELSE
+			PRINTFORML 精液灌进了%CALLNAME%的口腔…
+		ENDIF
+	;乳交、乳夹口交
+	ELSEIF SELECTCOM == 82 || SELECTCOM == 88
+		IF TALENT:110 || TALENT:111
+			PRINTFORML %CALLNAME%双峰间的精液积成一滩…
+		ELSE
+			PRINTFORML 精液飞散出去，%CALLNAME%的胸和脸上被洒得到处都是…
+		ENDIF
+	;Ｗ口交
+	ELSEIF SELECTCOM == 124
+		PRINTFORML %CALLNAME%和%CALLNAME:ASSI%用嘴接住射出的精液…
+	;Ｗ乳交
+	ELSEIF SELECTCOM == 125
+		PRINTFORML %CALLNAME%和%CALLNAME:ASSI%的脸和胸都被精液玷污了…
+	;６９式、69乳交
+	ELSEIF SELECTCOM == 501 || SELECTCOM == 508
+			;男
+			IF TALENT:140
+				PRINTFORML %CALLNAME%因为阴茎处传来的刺激，浑身颤抖着吞咽精液…
+			ELSE
+				PRINTFORML %CALLNAME%因为小穴处传来的刺激，浑身颤抖着吞咽精液…
+			ENDIF
+	;强制口交
+	ELSEIF SELECTCOM == 140
+		IF ABL:侍奉精神 >= 4 || ABL:精液成瘾
+			PRINTFORML %CALLNAME%滚动着喉咙，咕嘟咕嘟地把精液喝干了…
+		ELSE
+			PRINTFORML %CALLNAME%被抓住脑袋，在喉咙深处释放出精液…
+		ENDIF
+	ENDIF
+;口で大量射精
+ELSEIF TFLAG:0 == 2
+	;口交命令、双枪口交
+	IF SELECTCOM == 81 || SELECTCOM == 511
+		IF ABL:7 >= 3
+			PRINTFORML 来不及喝完的精液从%CALLNAME%口中溢出…
+		ELSE
+			PRINTFORML 释放出的精液敲打着%CALLNAME%的喉咙，从其唇边溢出…
+		ENDIF
+	;乳交、乳夹口交
+	ELSEIF SELECTCOM == 82 || SELECTCOM == 88
+		PRINTFORML %CALLNAME%的脸和胸口被飞散的精液溅得到处都是…
+	;Ｗ口交
+	ELSEIF SELECTCOM == 124
+		PRINTFORML 大量的精液溅射在%CALLNAME%和%CALLNAME:ASSI%的脸上…
+	;Ｗ乳交
+	ELSEIF SELECTCOM == 125
+		PRINTFORML %CALLNAME%和%CALLNAME:ASSI%的胸、脸和头发都被染上了白浊…
+	;６９式、69乳交
+	ELSEIF SELECTCOM == 501 || SELECTCOM == 508
+			;男
+			IF TALENT:140 == 0
+				PRINTFORML %CALLNAME%因为阴茎处传来的刺激，浑身颤抖着吞咽精液…
+			ELSE
+				PRINTFORML %CALLNAME%因为小穴处传来的刺激，浑身颤抖着吞咽精液…
+			ENDIF
+	;强制口交
+	ELSEIF SELECTCOM == 140
+		IF ABL:侍奉精神 >= 4 || ABL:精液成瘾
+			PRINTFORML 来不及喝完的精液从%CALLNAME%口中溢出…
+		ELSE
+			PRINTFORML 释放出的精液敲打着%CALLNAME%的喉咙，从其唇边溢出…
+		ENDIF
+	ENDIF
+ENDIF
+
+;手で射精
+IF TFLAG:1 == 1
+	SIF EXP:20 == 0
+		PRINTFORM 脸上浮现出惊讶神情的
+	SIF ABL:16 > 2
+		PRINTFORM 脸上浮现出恍惚之色的
+	PRINTFORML %CALLNAME%看着精液喷薄而出…
+;手で大量射精
+ELSEIF TFLAG:1 == 2
+	SIF EXP:20 == 0
+		PRINTFORM 脸上浮现出惊讶神情的
+	SIF ABL:16 > 2
+		PRINTFORM 脸上浮现出恍惚之色的
+	PRINTFORM %CALLNAME%的脸和手
+		SIF TEQUIP:0 == 1
+			PRINT 套
+	PRINTFORML 上瞬间沾满了大量的精液…
+ENDIF
+
+;足で射精
+IF TFLAG:16 == 1
+	IF TALENT:83
+		PRINTFORM 在%CALLNAME%的冷漠视线下，%CALLNAME%的
+	ELSE
+		PRINTFORM %CALLNAME%的
+	ENDIF
+		;靴着用
+		IF TEQUIP:9
+			A = 9
+			CALL CLOTHES_NAME
+		;袜子着用
+		ELSEIF TEQUIP:2
+			A = 2
+			CALL CLOTHES_NAME
+		;裸足
+		ELSE
+			PRINTFORM 裸足
+		ENDIF
+		PRINTFORML 染上了热腾腾的精液…
+;足で大量射精
+ELSEIF TFLAG:16 == 2
+	IF TALENT:83
+		PRINTFORM 在%CALLNAME%的冷漠视线下，%CALLNAME%的
+	ELSE
+		PRINTFORM %CALLNAME%的
+	ENDIF
+		;靴着用
+		IF TEQUIP:9
+			A = 9
+			CALL CLOTHES_NAME
+		;袜子着用
+		ELSEIF TEQUIP:2
+			A = 2
+			CALL CLOTHES_NAME
+		;裸足
+		ELSE
+			PRINTFORM 裸足
+		ENDIF
+	PRINTFORML 沾染了大量热腾腾的精液…
+ENDIF
+
+;胸で射精
+IF TFLAG:34 == 1
+
+	IF (TALENT:3 || TALENT:6) || PALAM:6 >= PALAMLV:5
+		PRINTFORM %CALLNAME%
+		SIF (TALENT:3 || TALENT:6) || ABL:16 >= 3
+			PRINTFORM 满脸恍惚地
+		SIF PALAM:6 >= PALAMLV:5
+			PRINTFORM 用充斥着情欲的浑浊双眼
+		PRINTFORML 凝视着自己被白浊沾满的胸口…
+	ELSE
+		PRINTFORML 看着精液将自己的胸脯染成了白色…
+	ENDIF
+	IF (TALENT:3 || TALENT:6) || ABL:16 >= 3
+		PRINTFORML 
+		PRINTFORM 之后，像是在说很可惜似的，
+		SIF ABL:6 >= 4
+			PRINTFORM 身体因快感而颤抖着，
+		PRINTFORML 将附着在自己胸口的精液挑起来仔细地舔舐…
+	ELSE
+		PRINTFORML 
+	ENDIF
+;胸で大量射精
+ELSEIF TFLAG:34 == 2
+	IF (TALENT:3 || TALENT:6) || PALAM:6 >= PALAMLV:5
+		PRINTFORM %CALLNAME%
+		SIF (TALENT:3 || TALENT:6) || ABL:16 >= 3
+			PRINTFORM 一脸恍惚地
+		SIF PALAM:6 >= PALAMLV:5
+			PRINTFORML 的身躯因快感而颤抖，一边
+		PRINTFORML 注视着不仅污染了自己的胸口，还进一步弄脏自己整个上半身的大量精液…
+	ELSE
+		PRINTFORML 精液将%CALLNAME%的上半身染成了白色…
+	ENDIF
+ENDIF
+
+;做爱で射精
+IF TFLAG:2 > 0
+	IF PALAM:6 < PALAMLV:4 || TFLAG:31
+		;正常位
+		IF SELECTCOM == 60 || SELECTCOM == 517
+			PRINTFORM 抽出阴茎后的小穴里流出了
+			SIF TFLAG:31
+				PRINTFORM 混有处子血的
+			PRINTFORML 精液…
+		;后背位
+		ELSEIF SELECTCOM == 61 || SELECTCOM == 515
+			PRINTFORM 抽出阴茎后的小穴里落下了
+			SIF TFLAG:31
+				PRINTFORM 混有处子血的
+			PRINTFORML 精液…
+		;正常位肛交、首絞め肛
+		ELSEIF SELECTCOM == 62 || SELECTCOM == 518
+			PRINTFORML 从肛穴里漏出的精液顺着双臀的缝隙滴落下来…
+		;后背位肛交、对面立位肛、背面立位肛、打屁股肛
+		ELSEIF SELECTCOM == 63 || SELECTCOM == 75 || SELECTCOM == 77 || SELECTCOM == 516
+			PRINTFORML 从肛穴里漏出的精液顺着大腿的边缘滴落下来…
+		;骑乘位、骑乘位揉乳自慰
+		ELSEIF SELECTCOM == 66 || (SELECTCOM == 505 && TFLAG:705 == 0)
+			PRINTFORM 抽出阴茎后
+			SIF TFLAG:31
+				PRINTFORM 混有处子血的
+			PRINTFORML 精液流淌了出来…
+		;骑乘位肛交、对面座位肛交、背面座位肛交、骑乘位揉乳自慰肛、二輪刺し肛
+		ELSEIF SELECTCOM == 67 || SELECTCOM == 70 || SELECTCOM == 71 || (SELECTCOM == 505 && TFLAG:705 == 1) || SELECTCOM == 513
+			PRINTFORML 从肛穴里漏出的精液顺着阴茎的柱身垂落下来…
+		;对面座位、背面座位、乱れ牡丹、二輪刺し
+		ELSEIF SELECTCOM == 68 || SELECTCOM == 69 || SELECTCOM == 504 || SELECTCOM == 512
+			PRINTFORM 从小穴里抽出阴茎后
+			PRINTFORML 精液顺着肉棒滴落下来…
+		;对面立位、背面立位
+		ELSEIF SELECTCOM == 74 || SELECTCOM == 76
+			PRINTFORML 抽出阴茎后，小穴里漏出的精液顺着大腿的弧线流淌…
+		;插入Ｇ点玩弄
+		ELSEIF SELECTCOM == 506
+			PRINTFORML %PLAYER_NAME()%对准%CALLNAME%的阴道壁释放出精液…
+		;插入子宫口玩弄
+		ELSEIF SELECTCOM == 507
+			PRINTFORML %CALLNAME%的子宫被注入了热气腾腾的精液…
+		;駅弁
+		ELSEIF SELECTCOM == 514
+			PRINTFORML 从体内满溢而出的精液顺着阴茎垂落…
+		ENDIF
+	ELSE
+		IF SEXPLAY(TARGET) == 2
+			PRINTL 注满了精液的内壁细微地颤抖着，将阴茎紧紧地勒住了……
+		ELSEIF SEXPLAY(TARGET) == 1
+			PRINTL 注满了精液的内壁轻柔地媚动着，将阴茎紧紧地缠绕住……
+		ENDIF
+	ENDIF
+ENDIF
+;射精止め解除、尿道バルーン解除で射精
+IF ((SELECTCOM == 109 && !TEQUIP:37) || (SELECTCOM == 153 && !TEQUIP:39)) && TFLAG:10 > 0
+	PRINTFORM 被堵塞在尿道中的白浊从%CALLNAME%的马眼里
+	SIF TFLAG:10 >= 2
+		PRINTFORM 大量
+	PRINTFORML 迸射而出…	
+
+;逆做爱で射精
+ELSEIF SEXPLAY(TARGET) >= 3 && TFLAG:10 > 0 && FLAG:7 > 0 && !(TEQUIP:47 || TEQUIP:48)
+	SIF ASSIPLAY
+		PRINTFORM %PLAYER_NAME()%用
+	PRINTFORM 肉壁从
+	SIF ABL:1 >= 5
+		PRINTFORM 一脸恍惚的
+	PRINTFORML %CALLNAME%那儿榨取着精液…
+ENDIF
+
+;调教者空射精
+IF TFLAG:164
+	;竿の有無で分岐
+	IF TALENT:PLAYER:140 || TALENT:PLAYER:139 || TALENT:PLAYER:137
+		IF TFLAG:164 == 1
+			SIF ASSIPLAY
+				PRINTFORM %PLAYER_NAME()%在
+			PRINTFORML %CALLNAME%颤动的体内感受到了无限的欢愉…
+		ELSEIF TFLAG:164 == 2
+			SIF ASSIPLAY
+				PRINTFORM %PLAYER_NAME()%的
+			PRINTFORML 阴茎在%CALLNAME%体内快乐地颤抖着…
+		ELSEIF TFLAG:164 == 3
+			SIF ASSIPLAY
+				PRINTFORM %PLAYER_NAME()%的
+			PRINTFORML 阴茎在%CALLNAME%手中快乐地颤抖着…
+		ELSEIF TFLAG:164 == 4
+			SIF ASSIPLAY
+				PRINTFORM %PLAYER_NAME()%的
+			PRINTFORML 阴茎在%CALLNAME%口中快乐地颤抖着…
+		ELSEIF TFLAG:164 == 5
+			SIF ASSIPLAY
+				PRINTFORM %PLAYER_NAME()%的
+			PRINTFORML 阴茎因快感而颤颤抖动…
+		ELSEIF TFLAG:164 == 6
+			SIF ASSIPLAY
+				PRINTFORM %PLAYER_NAME()%的
+			PRINTFORML 阴茎因快感而颤颤抖动…
+		ELSEIF TFLAG:164 == 7
+			SIF ASSIPLAY
+				PRINTFORM %PLAYER_NAME()%的
+			PRINTFORML 阴茎因快感而颤颤抖动…
+		ELSEIF TFLAG:164 == 8
+			PRINTFORM %CALLNAME%的身体上
+			SIF ASSIPLAY
+				PRINTFORM %PLAYER_NAME()%的
+			PRINTFORML 阴茎快乐地抖动着…
+		ENDIF
+	ELSE
+	;竿無
+		;助手绝顶
+		IF TFLAG:164 == 6
+			PRINTFORML %CALLNAME:ASSI%全身痉挛着抵达了高潮…
+		;強制舔阴
+		ELSEIF TFLAG:164 == 7
+			IF ABL:TARGET:2 < 4
+				SIF ASSIPLAY
+					PRINTFORM %PLAYER_NAME()%
+				PRINTFORML 因小穴内传来的快乐浑身颤抖着高潮了…
+			ELSE
+				SIF ASSIPLAY
+					PRINTFORM %PLAYER_NAME()%
+				PRINTFORML 阴唇内潮吹出透明的爱液，就这样高潮了…
+			ENDIF
+		;逆强奸
+		ELSEIF TFLAG:164 == 8
+			IF ASSIPLAY
+				PRINTFORML %PLAYER_NAME()%坐在%CALLNAME%身上快乐地活动着…
+			ELSE
+				PRINTFORML 在%CALLNAME%的身上迎来了高潮…
+			ENDIF
+		ELSEIF TFLAG:164 == 10
+		;女调教者が插入される系
+			SIF ASSIPLAY
+				PRINTFORM %PLAYER_NAME()%
+			PRINTFORML 在小穴被抽插的极乐中痉挛着抵达了高潮…
+		ELSEIF TFLAG:164 == 11
+		;女调教者が插入される系（肛）
+			SIF ASSIPLAY
+				PRINTFORM %PLAYER_NAME()%
+			PRINTFORML 在后门被抽插的极乐中痉挛着抵达了高潮…
+		ELSEIF TFLAG:164 == 12
+		;自慰
+			SIF ASSIPLAY
+				PRINTFORM %PLAYER_NAME()%的
+			PRINTFORML 身体在阵阵痉挛中颤抖着高潮了…
+		ELSE
+			PRINTFORML %PLAYER_NAME()%全身震颤着迎来了高潮…
+		ENDIF
+	ENDIF
+	TFLAG:164 = 0
+ENDIF
+
+;テ接吻トを読むためのウエイト
+;表示があるときのみ
+SIF TFLAG:0 || TFLAG:1 || TFLAG:2 || TFLAG:3 || TFLAG:7 || TFLAG:8 || TFLAG:9 || TFLAG:10 || TFLAG:16 || TFLAG:34 || CFLAG:106
+	WAIT
+;-------------------------------------------
+;空射精時のテ接吻ト
+;-------------------------------------------
+@PALAM_MESSAGE_A2
+;空射精
+IF NOWEX:40
+	IF NOWEX:40 >= 2 && TALENT:114
+		PRINTFORML 年幼的%CALLNAME%的阴茎大幅度抖动着，享受着高潮的快乐…
+	ELSEIF NOWEX:40 >= 2 && TEQUIP:39
+		PRINTFORM 尿道口被堵住的%CALLNAME%的阴茎
+		PRINTFORML 大幅度抖动，夸张地膨胀着…
+	ELSEIF NOWEX:40 >= 2
+		PRINTFORM 根部被绑缚的%CALLNAME%的阴茎
+		PRINTFORML 大幅度抖动着，前端可怜兮兮地分泌出些许精液，滴滴答答落下了…
+	ELSEIF TALENT:114
+		PRINTFORML 年幼的%CALLNAME%的阴茎无法吐出精液
+		PRINTFORML 仅能像被电了一般徒劳地痉挛着…
+	ELSEIF TEQUIP:39
+		PRINTFORM 尿道口被堵住的%CALLNAME%的阴茎
+		PRINTFORML 像被电了一般一阵一阵地痉挛着…
+	ELSE	
+		PRINTFORM 根部被绑缚的%CALLNAME%的阴茎
+		PRINTFORML 像被电了一般一阵一阵地痉挛着…
+	ENDIF
+ENDIF
+;-------------------------------------------
+;触手の射精時のテ接吻ト
+;-------------------------------------------
+@PALAM_MESSAGE_E
+;触手が射精
+SIF TFLAG:15 == 1
+	PRINTFORML 紧密缠绕着%CALLNAME%的触手吐出了黏糊糊的液体…
+;触手が大量射精
+SIF TFLAG:15 == 2
+	PRINTFORML 紧密缠绕着%CALLNAME%的触手一起吐出了黏糊糊的液体，淋得%CALLNAME%全身都是…
+;テ接吻トを読むためのウエイト
+;表示があるときのみ
+SIF TFLAG:15
+	WAIT
+
+;-------------------------------------------
+;奴隶の绝顶時のテ接吻ト
+;-------------------------------------------
+@PALAM_MESSAGE_B
+;表示があるときのみ
+IF TFLAG:29 > 0
+	PRINTL
+ENDIF
+
+;绝顶
+IF TFLAG:29 > 0
+	;喷乳あり
+	IF TFLAG:11 > 0
+		;上身外衣、全身外衣、上身内衣を着用
+		IF TEQUIP:6 || TEQUIP:5 || TEQUIP:3
+		    PRINTFORM %CALLNAME%的
+			IF TEQUIP:3 > 0
+				A = 3
+			ELSEIF TEQUIP:5 > 0
+				A = 5
+			ELSEIF TEQUIP:6 > 0
+				A = 6
+			ENDIF
+			CALL CLOTHES_NAME
+			PRINTFORM 被流出的乳汁浸湿…
+		ELSE
+			PRINTFORM 乳尖流出了乳汁…
+		ENDIF
+	ENDIF
+	;阴茎无で绝顶が強い
+	IF TFLAG:29 >= 5 && !PENIS(TARGET)
+		;下身外衣、全身外衣、下身内衣を着用
+		;IF TEQUIP:6[全身外衣] || TEQUIP:5[上身外衣] || TEQUIP:3[上身内衣]
+		IF TEQUIP:6 || TEQUIP:4 || TEQUIP:2
+            PRINTFORM %CALLNAME%的
+			IF TEQUIP:2 > 0
+				A = 2
+			ELSEIF TEQUIP:4 > 0
+				A = 4
+			ELSEIF TEQUIP:6 > 0
+				A = 6
+			ENDIF
+			CALL CLOTHES_NAME
+			PRINTFORM 被爱液浸得透明了…
+		ELSE
+			PRINTFORM 小穴里喷射出透明的汁液…
+		ENDIF
+	ENDIF
+	;射精あり　;IF TFLAG:10射精関連 > 0 && TEQUIP:37射精止め == 0 && TEQUIP:38导尿管使用中 == 0 && TEQUIP:39バルーン导尿管使用 == 0
+	IF TFLAG:10 > 0 && TEQUIP:37 == 0 && TEQUIP:38 == 0 && TEQUIP:39 == 0
+	    PRINTFORM %CALLNAME%
+		;下身外衣、全身外衣、下身内衣を着用
+		IF TEQUIP:6 || TEQUIP:4 || TEQUIP:2
+	        PRINTFORM 的
+			IF TEQUIP:2 > 0
+				A = 2
+			ELSEIF TEQUIP:4 > 0
+				A = 4
+			ELSEIF TEQUIP:6 > 0
+				A = 6
+			ENDIF
+			CALL CLOTHES_NAME
+			PRINTFORM 被精液浸得透明了…
+			IF TFLAG:29 > 3
+			    PRINTFORM 就这样
+				SIF (TALENT:137 || TALENT:139 || TALENT:140) && TFLAG:11 == 0
+					PRINTFORM 背部后仰，
+				PRINTFORML 全身痉挛着迎来了高潮
+			ELSE
+				PRINTFORML 就这样迎来了高潮
+			ENDIF
+		ELSE
+			IF (SELECTCOM == 123 || SELECTCOM == 115) && TFLAG:32 == 1
+				IF !RAND:2
+					PRINTFORM 一边承受着冷淡的视线，一边在%PLAYER_NAME()%的脚上释放出
+					SIF TFLAG:10 == 2
+						PRINT 大量
+					PRINTFORML 滚烫的精液
+				ELSE
+					PRINTFORM 因肉棒被踩踏而全身颤抖着
+					SIF TFLAG:10 == 2
+						PRINT 极有气势地
+					PRINTFORML 射精了
+				ENDIF
+				IF !KANRAKU(TARGET) && ABL:受虐属性 < 3 && MALE(TARGET) && !MALE(PLAYER) && !TALENT:幼稚 && CFLAG:600 != 11 && !RAND:2
+					PRINTFORML 身为男人的自尊心被女人践踏在脚下，不仅如此还射了出来
+					PRINTFORML %CALLNAME%露出屈辱的表情，眼角流下不甘的眼泪…
+				ELSEIF ABL:受虐属性 >= 3
+					PRINTFORML %CALLNAME%因受虐的快感舒服得眯起了眼…
+				ENDIF
+			;肛门爱抚だけで射精　男限定
+			ELSEIF MALE(TARGET) && TFLAG:32 == 3 && !SOUCHAKU(3) && (SELECTCOM == 4 || SELECTCOM == 5 || SELECTCOM == 224 || SELECTCOM == 590)
+				PRINTFORM 作为男人，却仅仅因为
+				IF SELECTCOM == 4
+					PRINT 后面被舔舐
+				ELSE
+					PRINT 后面被搅拌
+				ENDIF
+				PRINTFORM 就迎来了高潮，
+				SIF TFLAG:10 == 2
+					PRINT 大量
+				PRINTFORML 滚烫的精液从阴茎里喷薄而出…
+				IF !KANRAKU(TARGET) && MARK:反抗刻印 >= 2 && !TALENT:幼稚 && CFLAG:600 != 11 
+					PRINTFORML %CALLNAME%露出屈辱的表情，眼角流下不甘的眼泪…
+				ENDIF
+			;抚摸或舔耳朵射精
+			ELSEIF SELECTCOM == 17 || SELECTCOM == 18
+				PRINTFORM 明明只是耳朵被
+				IF SELECTCOM == 17
+					PRINT 抚摸
+				ELSE
+					PRINT 舔舐
+				ENDIF
+				PRINTFORML 玩弄而已，却因为这个动作就引发了高潮，
+				SIF TFLAG:10 == 2
+					PRINT 大量
+				PRINTFORML 滚烫的精液从阴茎里喷薄而出…
+				IF !KANRAKU(TARGET) && MARK:反抗刻印 >= 2 && !TALENT:幼稚 && CFLAG:600 != 11 
+					PRINTFORML %CALLNAME%露出屈辱的表情，眼角流下不甘的眼泪…
+					PRINTFORML
+				ELSE
+					PRINTFORML %CALLNAME%羞耻的满脸通红，也遮掩不住自己经不起撩拨的现实…
+					PRINTFORML
+				ENDIF
+			;肛を突かれただけで射精　男限定
+			ELSEIF MALE(TARGET) && TFLAG:32 == 3 && !SOUCHAKU(3) && (SELECTCOM == 62 || SELECTCOM == 63 || SELECTCOM == 67 || SELECTCOM == 70 || SELECTCOM == 71 || SELECTCOM == 75 || SELECTCOM == 77 || SELECTCOM == 226 || SELECTCOM == 504 || SELECTCOM == 513 || SELECTCOM == 514 || SELECTCOM == 591)
+				PRINTFORML 作为男人，明明一直没碰过前面
+				PRINTFORM 只是被抽插着后面就
+				SIF TFLAG:10 == 2
+					PRINT 极有气势地
+				PRINTFORML 高潮了…
+				IF !KANRAKU(TARGET) && MARK:反抗刻印 >= 2 && !TALENT:幼稚 && CFLAG:600 != 11 
+					PRINTFORML %CALLNAME%的脸因屈辱而扭曲，嘴里不停咒骂着怨毒的话…
+				ENDIF
+			;打屁股か打屁股做爱されながら射精
+			ELSEIF SELECTCOM == 100 || SELECTCOM == 515 || SELECTCOM == 516
+				PRINTFORM 在屁股被打得啪啪作响的同时，
+				SIF TFLAG:10 == 2
+					PRINT 大量
+				PRINTFORML 滚烫的精液从阴茎里喷薄而出…
+			;侍奉しながら射精
+			ELSEIF (SELECTCOM >= 80 && SELECTCOM <= 92 && SELECTCOM != 89) || SELECTCOM == 113 || SELECTCOM == 120 || SELECTCOM == 124 || SELECTCOM == 125 || SELECTCOM == 127
+				PRINTFORM 一边侍奉着%PLAYER_NAME()%一边浑身震颤
+				SIF TFLAG:10 == 2
+					PRINT ，极有气势
+				PRINTFORML 地射精了
+			;Ｃ自慰しながら射精
+			ELSEIF SELECTCOM == 11 || SELECTCOM == 592
+				;视频拍摄中
+				IF TEQUIP:28
+					PRINT 在照相机的镜头前
+				;羞耻PLAY中
+				ELSEIF TEQUIP:30
+					PRINT 在镜子前
+				ELSE
+					PRINTFORM 在%PLAYER_NAME()%面前
+				ENDIF
+				PRINTFORML 疯狂地搓动着阴茎
+				PRINTFORM 全身痉挛着射出了
+				SIF TFLAG:10 == 2
+					PRINT 大量
+				PRINTFORML 滚烫的精液
+				IF KANRAKU(TARGET) && ABL:露出癖 >= 4
+					PRINTFORML %CALLNAME%脸上露出沉溺在快乐与羞耻中的神情…
+				ELSEIF !KANRAKU(TARGET)
+					PRINTFORML %CALLNAME%的脸上满是羞耻和屈辱…
+				ENDIF
+			;Ａ自慰しながら射精
+			ELSEIF SELECTCOM == 14
+				SIF MALE(TARGET)
+					PRINTFORM 明明是男人，却
+				;视频拍摄中
+				IF TEQUIP:28
+					PRINT 在照相机的镜头前
+				;羞耻PLAY中
+				ELSEIF TEQUIP:30
+					PRINT 在镜子前
+				ELSE
+					PRINTFORM 在%PLAYER_NAME()%面前
+				ENDIF
+				PRINTFORM 全身颤抖着搅弄自己的后穴，
+				SIF TFLAG:10 == 2
+					PRINT 大量
+				PRINTFORML 滚烫的精液从阴茎里喷薄而出
+				IF KANRAKU(TARGET) && ABL:露出癖 >= 4
+					PRINTFORML %CALLNAME%脸上露出沉溺在快乐与羞耻中的神情…
+				ELSEIF !KANRAKU(TARGET)
+					PRINTFORML %CALLNAME%的脸上满是羞耻和屈辱…
+				ENDIF
+			;Ｂ自慰しながら射精　男限定
+			ELSEIF MALE(TARGET) && (!SOUCHAKU(4) || !SOUCHAKU(3)) && (SELECTCOM == 10 || SELECTCOM == 505)
+				PRINTFORM 身为男人却亲手拉拽拧动自己的乳珠，全身颤抖着
+				SIF TFLAG:10 == 2
+					PRINT 极有气势地
+				PRINTFORML 射精了
+				IF KANRAKU(TARGET) && ABL:露出癖 >= 5
+					PRINTFORML %CALLNAME%脸上露出沉溺在快乐与羞耻中的神情…
+				ELSE
+					PRINTFORML %CALLNAME%的脸上满是羞耻和屈辱…
+				ENDIF
+			;Ｂだけで射精　男限定
+			ELSEIF MALE(TARGET) && TFLAG:32 == 4 && !SOUCHAKU(4) && (SELECTCOM == 6 || SELECTCOM == 7 || SELECTCOM == 8 || SELECTCOM == 47 || SELECTCOM == 48 || SELECTCOM == 126 || SELECTCOM == 101 || SELECTCOM == 150 || SELECTCOM == 222) 
+				PRINTFORM 身为男人却陶醉地拉拽拧动着自己的乳珠
+				SIF TFLAG:10 == 2
+					PRINT 大量
+				PRINTFORML 射精了…
+				IF !KANRAKU(TARGET) && MARK:反抗刻印 >= 2 && !TALENT:幼稚 && CFLAG:600 != 11 
+					PRINTFORML %CALLNAME%的脸因屈辱而扭曲，嘴里不停咒骂着怨毒的话…
+				ENDIF 
+			ELSE
+				;视频拍摄中
+				IF TEQUIP:28
+					PRINT 在照相机的镜头前
+				;羞耻PLAY中
+				ELSEIF TEQUIP:30
+					PRINT 在镜子前
+				ENDIF
+				PRINTFORM 从阴茎里喷射出
+				SIF TFLAG:10 == 2
+					PRINT 大量的
+				PRINTFORM 精液
+				IF TFLAG:29 > 3
+					SIF (TALENT:137 || TALENT:139 || TALENT:140) && TFLAG:11 == 0
+						PRINTFORML 背部后仰，
+					IF TFLAG:10 == 2
+						PRINTFORML 全身痉挛着迎来了高潮
+					ELSE
+						PRINTFORML 全身震颤着迎来了高潮
+					ENDIF
+				ELSE
+					PRINTFORML 迎来了高潮
+				ENDIF
+			ENDIF
+		ENDIF
+	;射精无(绝顶ｵﾝﾘｰ)
+	ELSE
+	    PRINTFORM %CALLNAME%
+		;肛门爱抚だけで绝顶　男限定
+		IF MALE(TARGET) && TFLAG:32 == 3 && !SOUCHAKU(3) && (SELECTCOM == 4 || SELECTCOM == 5 || SELECTCOM == 224 || SELECTCOM == 590)
+			PRINTFORM 作为男人，却仅仅因为
+			IF SELECTCOM == 4
+				PRINT 后面被舔舐
+			ELSE
+				PRINT 后面被搅拌
+			ENDIF
+			PRINTFORML 就全身震颤着迎来了高潮…
+			IF !KANRAKU(TARGET) && MARK:反抗刻印 >= 2 && !RAND:3 && !TALENT:幼稚 && CFLAG:600 != 11 
+				PRINTFORML %CALLNAME%的脸因屈辱而扭曲…
+			ENDIF
+		;肛を突かれただけで绝顶　男限定
+		ELSEIF MALE(TARGET) && TFLAG:32 == 3 && !SOUCHAKU(3) && (SELECTCOM == 62 || SELECTCOM == 63 || SELECTCOM == 67 || SELECTCOM == 70 || SELECTCOM == 71 || SELECTCOM == 75 || SELECTCOM == 77 || SELECTCOM == 226 || SELECTCOM == 504 || SELECTCOM == 513 || SELECTCOM == 514 || SELECTCOM == 591)
+			PRINTFORML 被抽插着后穴，在全身一阵一阵的痉挛中迎来了高潮
+			IF !KANRAKU(TARGET) && MARK:反抗刻印 >= 2 && !RAND:3 && !TALENT:幼稚 && CFLAG:600 != 11 
+				PRINTFORML %CALLNAME%的脸因屈辱而扭曲，嘴里不停咒骂着怨毒的话…
+			ENDIF
+		;打屁股か打屁股做爱されながら绝顶
+		ELSEIF SELECTCOM == 100 || SELECTCOM == 515 || SELECTCOM == 516
+			PRINTFORML 被强烈地撞击着后穴，就这样迎来了高潮…
+		;侍奉しながら绝顶
+		ELSEIF (SELECTCOM >= 80 && SELECTCOM <= 92 && SELECTCOM != 89) || SELECTCOM == 113 || SELECTCOM == 120 || SELECTCOM == 124 || SELECTCOM == 125 || SELECTCOM == 127
+			PRINTFORML 在侍奉着%PLAYER_NAME()%的同时全身颤抖着迎来了高潮…
+		;Ｂ自慰しながら绝顶　男限定
+		ELSEIF MALE(TARGET) && (!SOUCHAKU(4) || !SOUCHAKU(3)) && (SELECTCOM == 10 || SELECTCOM == 505)
+			PRINTFORML 身为男人却亲手拉拽拧动自己的乳珠，全身一阵一阵地痉挛着迎来了高潮…
+		;Ｂだけで射精　男限定
+		ELSEIF MALE(TARGET) && TFLAG:32 == 4 && !SOUCHAKU(4) && (SELECTCOM == 6 || SELECTCOM == 7 || SELECTCOM == 8 || SELECTCOM == 47 || SELECTCOM == 48 || SELECTCOM == 126 || SELECTCOM == 101 || SELECTCOM == 150 || SELECTCOM == 222) 
+			PRINTFORML 身为男人却亲手拉拽拧动着自己的乳珠迎来了高潮…
+		;三点攻で绝顶
+		ELSEIF SELECTCOM == 595
+			PRINTFORML 被%PLAYER_NAME()%的手引导至高潮
+		ELSE
+		    PRINTFORM 就这样
+			SIF (TFLAG:29 < 5 || (TALENT:137 || TALENT:139) || TALENT:140) && TFLAG:10 == 0 && TFLAG:11 == 0
+				PRINTFORM 背部后仰，
+			PRINTFORML 全身震颤着迎来了高潮
+		ENDIF
+	ENDIF
+ENDIF
+
+@PALAM_MESSAGE_B2
+
+;绝顶
+SIF TFLAG:29 >= 3
+	PRINTS CALLNAME:TARGET
+IF TFLAG:29 >= 5 && TFLAG:19 && (TEQUIP:11 || TFLAG:60)
+	PRINTFORML 的内壁里滴下粘稠的液体，穴口如喘息一般色情地反复翕张…
+ELSEIF TFLAG:29 >= 5
+	PRINTFORML 断断续续地反复高潮，最终筋疲力尽地瘫软在那儿…
+ELSEIF TFLAG:29 >= 3
+	PRINTFORML 剧烈喘息着，沉浸在绝顶的余韵中…
+ENDIF
+
+;绝顶とおもらし
+IF TFLAG:29 >= 1 && TEQUIP:37 && (TEQUIP:27 || TALENT:57)
+	PRINTFORML %CALLNAME%的尿道口滴下少量透明的尿液
+	PRINTFORML 扎在根部的蝴蝶结似乎妨碍了排尿…
+ELSEIF TFLAG:29 >= 1 && TEQUIP:38
+	IF TEQUIP:6 || TEQUIP:4 || TEQUIP:2
+		IF TEQUIP:2 > 0
+			A = 2
+		ELSEIF TEQUIP:4 > 0
+			A = 4
+		ELSEIF TEQUIP:6 > 0
+			A = 6
+		ENDIF
+		CALL CLOTHES_NAME
+		PRINTFORML 上出现了小片湿渍…
+	ELSE
+		IF TEQUIP:25
+			PRINTFORM 触手
+		ELSE
+			PRINTFORM 导尿管
+		ENDIF
+		PRINTFORML 和%CALLNAME%尿道口间产生的狭窄缝隙里滴落了透明的尿液
+		PRINTFORML 逐渐积成了一个小水坑…
+	ENDIF
+ELSEIF TFLAG:29 >= 1 && TEQUIP:39
+	PRINTFORML %CALLNAME%在高潮的同时几乎失禁
+	PRINTFORML 但由于尿道口被堵住了，并不被允许解放…
+ELSEIF TFLAG:29 >= 7 && TEQUIP:27 && TALENT:57
+	IF TEQUIP:6 || TEQUIP:4 || TEQUIP:2
+        PRINTFORM 尿液冲透
+		IF TEQUIP:2 > 0
+			A = 2
+		ELSEIF TEQUIP:4 > 0
+			A = 4
+		ELSEIF TEQUIP:6 > 0
+			A = 6
+		ENDIF
+		CALL CLOTHES_NAME
+		PRINTFORML 有气势地喷射出来，在空中划过数条弧线…
+	ELSE
+	PRINTFORML %CALLNAME%间歇性抽动着身体，无法停止自己的放尿行为
+	PRINTFORML 看来排尿于%CALLNAME%而言已经是一种快乐了…
+	ENDIF
+ELSEIF TFLAG:29 >= 7 && TEQUIP:27
+	IF TEQUIP:6 || TEQUIP:4 || TEQUIP:2
+        PRINTFORM 尿液冲透
+		IF TEQUIP:2 > 0
+			A = 2
+		ELSEIF TEQUIP:4 > 0
+			A = 4
+		ELSEIF TEQUIP:6 > 0
+			A = 6
+		ENDIF
+		CALL CLOTHES_NAME
+		PRINTFORML 有气势地喷射出来，在空中划过数条弧线…
+	ELSE
+	PRINTFORML 痉挛的%CALLNAME%的尿道口里像是喷泉一样喷射出淅淅沥沥的尿液…
+	ENDIF
+ELSEIF TFLAG:29 >= 7 && TALENT:57
+	IF TEQUIP:6 || TEQUIP:4 || TEQUIP:2
+        PRINTFORM 尿液冲透
+		IF TEQUIP:2 > 0
+			A = 2
+		ELSEIF TEQUIP:4 > 0
+			A = 4
+		ELSEIF TEQUIP:6 > 0
+			A = 6
+		ENDIF
+		CALL CLOTHES_NAME
+		PRINTFORML 有气势地喷射出来，在空中划过数条弧线…
+	ELSE
+	PRINTFORML 痉挛的%CALLNAME%的尿道口里喷射出淡黄色的水流，在空中划出弧线…
+	ENDIF
+ELSEIF TFLAG:29 >= 5 && TEQUIP:27 && TALENT:57
+	IF TEQUIP:6 || TEQUIP:4 || TEQUIP:2
+		IF TEQUIP:2 > 0
+			A = 2
+		ELSEIF TEQUIP:4 > 0
+			A = 4
+		ELSEIF TEQUIP:6 > 0
+			A = 6
+		ENDIF
+		CALL CLOTHES_NAME
+		PRINTFORML 里流出的尿液汇成了小水洼…
+	ELSE
+	PRINTFORML 浑身无力的%CALLNAME%的尿道口里像喷泉一样喷射出一股淡黄色的水流…
+	ENDIF
+ELSEIF TFLAG:29 >= 5 && TEQUIP:27
+	IF TEQUIP:6 || TEQUIP:4 || TEQUIP:2
+		IF TEQUIP:2 > 0
+			A = 2
+		ELSEIF TEQUIP:4 > 0
+			A = 4
+		ELSEIF TEQUIP:6 > 0
+			A = 6
+		ENDIF
+		CALL CLOTHES_NAME
+		PRINTFORML 里流出的尿液汇成了小水洼…
+	ELSE
+	PRINTFORML 筋疲力尽的%CALLNAME%的尿道口里喷射出一股淡黄色的水流，在空中划过弧线…
+	ENDIF
+ELSEIF TFLAG:29 >= 5 && TALENT:57
+	IF TEQUIP:6 || TEQUIP:4 || TEQUIP:2                                                
+		IF TEQUIP:2 > 0
+			A = 2
+		ELSEIF TEQUIP:4 > 0
+			A = 4
+		ELSEIF TEQUIP:6 > 0
+			A = 6
+		ENDIF
+		CALL CLOTHES_NAME
+		PRINTFORML 里流出的尿液汇成了小水洼…
+	ELSE
+	PRINTFORML 筋疲力尽的%CALLNAME%的尿道口里流出了尿液，逐渐汇聚成小水洼…
+	ENDIF
+ELSEIF TFLAG:29 >= 3 && TEQUIP:27 && TALENT:57
+	IF TEQUIP:6 || TEQUIP:4 || TEQUIP:2
+		IF TEQUIP:2 > 0
+			A = 2
+		ELSEIF TEQUIP:4 > 0
+			A = 4
+		ELSEIF TEQUIP:6 > 0
+			A = 6
+		ENDIF
+		CALL CLOTHES_NAME
+		PRINTFORML 被尿液染成黄色，还不住蔓延…
+	ELSE
+	PRINTFORML 颤抖着的%CALLNAME%的尿道口里喷射出强劲的淡黄色水流，在空中划过了弧线…
+	ENDIF
+ELSEIF TFLAG:29 >= 3 && TEQUIP:27
+	IF TEQUIP:6 || TEQUIP:4 || TEQUIP:2
+		IF TEQUIP:2 > 0
+			A = 2
+		ELSEIF TEQUIP:4 > 0
+			A = 4
+		ELSEIF TEQUIP:6 > 0
+			A = 6
+		ENDIF
+		CALL CLOTHES_NAME
+		PRINTFORML 被尿液染成黄色，还不住蔓延…
+	ELSE
+	PRINTFORML 颤抖着的%CALLNAME%的尿道口里流出了尿液，逐渐汇聚成小水洼…
+	ENDIF
+ELSEIF TFLAG:29 >= 3 && TALENT:57
+	IF TEQUIP:6 || TEQUIP:4 || TEQUIP:2
+		IF TEQUIP:2 > 0
+			A = 2
+		ELSEIF TEQUIP:4 > 0
+			A = 4
+		ELSEIF TEQUIP:6 > 0
+			A = 6
+		ENDIF
+		CALL CLOTHES_NAME
+		PRINTFORML 被尿液染成黄色，还不住蔓延…
+	ELSE
+	PRINTFORML 颤抖着的%CALLNAME%的性器里一滴一滴地漏出了尿液…
+	ENDIF
+ELSEIF TFLAG:29 >= 1 && TEQUIP:27 && TALENT:57
+	IF TEQUIP:6 || TEQUIP:4 || TEQUIP:2
+		IF TEQUIP:2 > 0
+			A = 2
+		ELSEIF TEQUIP:4 > 0
+			A = 4
+		ELSEIF TEQUIP:6 > 0
+			A = 6
+		ENDIF
+		CALL CLOTHES_NAME
+		PRINTFORML 面上可疑的湿渍越扩越大…
+	ELSE
+	PRINTFORML %CALLNAME%的尿道口里流出了尿液，逐渐汇聚成小水洼…
+	ENDIF
+ELSEIF TFLAG:29 >= 1 && TEQUIP:27
+	IF TEQUIP:6 || TEQUIP:4 || TEQUIP:2
+		IF TEQUIP:2 > 0
+			A = 2
+		ELSEIF TEQUIP:4 > 0
+			A = 4
+		ELSEIF TEQUIP:6 > 0
+			A = 6
+		ENDIF
+		CALL CLOTHES_NAME
+		PRINTFORML 面上可疑的湿渍越扩越大…
+	ELSE
+	PRINTFORML %CALLNAME%的性器里一滴一滴地漏出了尿液…
+	ENDIF
+ENDIF
+
+;テ接吻トを読むためのウエイト
+;表示があるときのみ
+IF TFLAG:29 > 0
+	WAIT
+ENDIF
+
+;-------------------------------------------
+;调教後のテ接吻ト
+;-------------------------------------------
+@PALAM_MESSAGE_C
+
+
+;处女喪失で触手が射精
+IF TFLAG:15 == 1 && TFLAG:3
+	PRINTL
+	PRINTFORML 混在触手粘液里的处子血从%CALLNAME%的小穴里流出，顺着丑陋的触手滑淌下来…
+	PRINTL
+	WAIT
+ENDIF
+;处女喪失で射精无
+IF TFLAG:2 == 0 && TFLAG:15 == 0 && TFLAG:3
+	PRINTL
+	PRINTFORML %CALLNAME%的小穴中，象征着处女身份的血液缓缓垂落…
+	PRINTL
+	WAIT
+ENDIF
+;什么也不做
+IF SELECTCOM == 21
+	IF PALAM:5 >= PALAMLV:3
+		PRINTL
+	ENDIF
+	SIF PALAM:5 >= PALAMLV:3
+		PRINTFORM %CALLNAME%喘息连连，
+	SIF PALAM:5 >= PALAMLV:5
+		PRINTFORM 灼热的视线注视着这边，
+	SIF PALAM:5 >= PALAMLV:3 && TEQUIP:26
+		PRINTFORM 一边紧紧抱住自己颤抖的身体，
+	IF PALAM:5 >= PALAMLV:4 && !MALE(TARGET)
+		PRINTFORM 不停地摩擦着大腿
+	ENDIF
+	IF PALAM:5 >= PALAMLV:3
+		PRINTFORML 好像已经饥渴难耐…
+		PRINTL
+		WAIT
+	ENDIF
+ENDIF
+
+;口交で射精後
+IF TFLAG:8 > 0
+PRINTL
+	PRINTFORM 之後、
+	IF TFLAG:0 && TFLAG:6
+		PRINTFORML %CALLNAME%交替舔舐着%PLAYER_NAME()%和%CALLNAME:ASSI%的肉棒，仔细地清理上面的污垢…
+	ELSE
+		SIF TFLAG:8 >= 2
+				PRINTFORM %CALLNAME:ASSI%和
+		PRINTFORM %CALLNAME%
+		SIF ABL:0 >= 3
+			 PRINTFORM 一边吮吸着残留的精液，
+		PRINTFORML 一边娇媚地舔舐阴茎…
+	ENDIF
+	SIF TFLAG:8 == 3
+		PRINTFORML 似乎仅仅这样还远远不够，两个人互相舔吻起对方口里积存的精液…
+PRINTL
+WAIT
+ENDIF
+
+;做爱で射精後
+IF TFLAG:2 > 0
+	PRINTL
+	IF TEQUIP:4 || TEQUIP:2
+		IF TEQUIP:4
+			A = 4
+		ELSEIF TEQUIP:2
+			A = 2
+		ENDIF
+	PRINTFORM 从体内溢出的精液把
+	CALL CLOTHES_NAME
+	PRINTFORML 弄脏了…
+	ENDIF
+	PRINTL
+	WAIT
+ENDIF
+
+;-------------------------------------------
+;パラメータ変化時テ接吻ト　作成中
+;-------------------------------------------
+@PALAM_MESSAGE_D
+;情欲がLV2になったとき　などなど
+
+
+;-------------------------------------------
+;刻印取得時のテ接吻ト
+;-------------------------------------------
+@MARK_MESSAGE
+M:1 = 0
+CALL MARK_MESSAGE_A
+CALL MARK_MESSAGE_P
+CALL MARK_MESSAGE_S
+CALL MARK_MESSAGE_R
+
+@MARK_MESSAGE_A
+;痛苦刻印
+IF TFLAG:22 > 0
+	PRINTL
+ENDIF
+
+IF TFLAG:22 == 1
+	PRINTFORML %CALLNAME%的脸因忍受痛苦而扭曲…
+	PRINTFORML %CALLNAME%获得了痛苦刻印LV1
+ELSEIF TFLAG:22 == 2
+	PRINTFORML %CALLNAME%在这段时间里叫苦不迭…
+	PRINTFORML %CALLNAME%获得了痛苦刻印LV2
+	IF TFLAG:25 == 1 && M:1 == 0
+		PRINTFORML 顺从升到了LV1
+		M:1 = 1
+	ENDIF
+ELSEIF TFLAG:22 == 3
+	IF CFLAG:600 == 10 || CFLAG:600 == 11
+		PRINTFORML %CALLNAME%痛得流下眼泪，哭了出来…
+	ELSE
+		PRINTFORML %CALLNAME%痛得直打滚…
+	ENDIF
+	PRINTFORML %CALLNAME%获得了痛苦刻印LV3
+	IF TFLAG:25 == 1 && M:1 == 0
+		PRINTFORML 顺从升到了LV1
+		M:1 = 1
+	ENDIF
+	IF TALENT:PLAYER:83
+		PRINTFORML 【%CALLNAME:PLAYER%是施虐狂】
+		PRINTFORML %EXPNAME:50%＋２
+	ELSEIF TALENT:PLAYER:53 && SELECTCOM == 104
+		PRINTFORML 【%CALLNAME:PLAYER%擅长用针】
+		PRINTFORML %EXPNAME:50%＋２
+	ELSE
+		PRINTFORML %EXPNAME:50%＋１
+	ENDIF
+ENDIF
+IF TFLAG:22 > 0
+	PRINTL
+	WAIT
+ENDIF
+
+@MARK_MESSAGE_P
+;快乐刻印
+IF TFLAG:23 > 0
+	PRINTL
+ENDIF
+IF TFLAG:23 == 1
+	PRINTFORML %CALLNAME%因激烈的快感抖动着身体…
+	PRINTFORML %CALLNAME%获得了快乐刻印LV1
+ELSEIF TFLAG:23 == 2
+	PRINTFORML %CALLNAME%在快感的余韵中神情渐渐柔和…
+	PRINTFORML %CALLNAME%获得了快乐刻印LV2
+ELSEIF TFLAG:23 == 3
+	PRINTFORML %CALLNAME%在强烈的快感里，身心都开始焦躁不安，蠢蠢欲动…
+	PRINTFORML %CALLNAME%获得了快乐刻印LV3
+	IF TFLAG:25 == 1 && M:1 == 0
+		PRINTFORML 顺从升到了LV1
+		M:1 = 1
+	ENDIF
+ENDIF
+IF TFLAG:23 > 0
+	PRINTL
+	WAIT
+ENDIF
+
+@MARK_MESSAGE_S
+;屈服刻印
+;快乐による刻印
+IF TFLAG:24 > 10
+	PRINTL
+ENDIF
+IF TFLAG:24 == 11
+	PRINTFORML %CALLNAME%禁不住发出了可爱的声音
+	PRINTFORML 在羞赧之下面红耳赤地转移了视线…
+	PRINTFORML %CALLNAME%获得了屈服刻印LV1
+ELSEIF TFLAG:24 == 12
+	PRINTFORML %CALLNAME%快乐地颤抖着，投来了渴望的视线…
+	PRINTFORML %CALLNAME%获得了屈服刻印LV2
+	IF TFLAG:25 == 1 && M:1 == 0
+		PRINTFORML 顺从升到了LV1
+		M:1 = 1
+	ENDIF
+ELSEIF TFLAG:24 == 13
+	PRINTFORML %CALLNAME%整个人被快感刺激得一塌糊涂，恳求着进一步的蹂躏…
+	PRINTFORML %CALLNAME%获得了屈服刻印LV3
+	IF TFLAG:25 == 1 && M:1 == 0
+		PRINTFORML 顺从升到了LV2
+		M:1 = 1
+	ENDIF
+;痛苦、恐怖による刻印
+ELSEIF TFLAG:24 == 21
+	PRINTFORML %CALLNAME%看见%PLAYER_NAME()%后小声地悲鸣起来…
+	PRINTFORML %CALLNAME%获得了屈服刻印LV1
+ELSEIF TFLAG:24 == 22
+	PRINTFORML %CALLNAME%蜷缩着身体，眼里写满恐惧…
+	PRINTFORML %CALLNAME%获得了屈服刻印LV2
+	IF TFLAG:25 == 1 && M:1 == 0
+		PRINTFORML 顺从升到了LV1
+		M:1 = 1
+	ENDIF
+ELSEIF TFLAG:24 == 23
+	PRINTFORML %CALLNAME%瑟瑟发抖，不断请求着原谅…
+	PRINTFORML %CALLNAME%获得了屈服刻印LV3
+	IF TFLAG:25 == 1 && M:1 == 0
+		PRINTFORML 顺从升到了LV2
+		M:1 = 1
+	ENDIF
+;屈服、恭顺による刻印
+ELSEIF TFLAG:24 == 31
+	PRINTFORML %CALLNAME%的脸因屈辱而扭曲…
+	PRINTFORML %CALLNAME%获得了屈服刻印LV1
+ELSEIF TFLAG:24 == 32
+	PRINTFORML %CALLNAME%的反抗意志明显减弱了…
+	PRINTFORML %CALLNAME%获得了屈服刻印LV2
+	IF TFLAG:25 == 1 && M:1 == 0
+		PRINTFORML 顺从升到了LV1
+		M:1 = 1
+	ENDIF
+ELSEIF TFLAG:24 == 33
+	PRINTFORML %CALLNAME%的瞳孔中一片空虚，不知在望向何处…
+	PRINTFORML %CALLNAME%获得了屈服刻印LV3
+	IF TFLAG:25 == 1 && M:1 == 0
+		PRINTFORML 顺从升到了LV2
+		M:1 = 1
+	ENDIF
+ENDIF
+IF TFLAG:24 > 10
+	PRINTL
+	WAIT
+ENDIF
+
+@MARK_MESSAGE_R
+;反抗刻印
+IF TFLAG:21 > 0
+	PRINTL
+ENDIF
+IF TFLAG:21 == 1
+	IF CFLAG:600 == 68
+	PRINTFORML %CALLNAME%双眼失去焦距，露出了呆滞的神情…
+	ELSE
+	PRINTFORML %CALLNAME%投来锐利的视线…
+	ENDIF
+	PRINTFORML %CALLNAME%获得了反抗刻印LV1
+ELSEIF TFLAG:21 == 2
+	IF CFLAG:600 == 68
+	PRINTFORML %CALLNAME%露出了绝望的表情…
+	ELSE
+	PRINTFORML %CALLNAME%的脸上流露出愤怒的表情…
+	ENDIF
+	PRINTFORML %CALLNAME%获得了反抗刻印LV2
+	IF TFLAG:25 == 1
+		PRINTFORML 顺从下降到LV0了
+		M:1 = 1
+	ELSEIF TFLAG:25 == 2 && M:1 == 0
+		PRINTFORML 顺从下降到LV1了
+		M:1 = 1
+	ENDIF
+ELSEIF TFLAG:21 == 3
+	IF CFLAG:600 == 68
+	PRINTFORML %CALLNAME%像是坏掉了一样，神色颠狂…
+	ELSE
+	PRINTFORML %CALLNAME%的脸因愤怒而扭曲，嘴里低喃着恶毒的诅咒…
+	ENDIF
+	PRINTFORML %CALLNAME%获得了反抗刻印LV3
+	IF TFLAG:25 == 1 && M:1 == 0
+		PRINTFORML 顺从下降到LV0了
+		M:1 = 1
+	ELSEIF TFLAG:25 == 2 && M:1 == 0
+		PRINTFORML 顺从下降到LV2了
+		M:1 = 1
+	ENDIF
+ENDIF
+IF TFLAG:21 > 0
+	PRINTL
+	WAIT
+ENDIF

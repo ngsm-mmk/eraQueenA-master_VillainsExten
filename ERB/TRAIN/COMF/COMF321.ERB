@@ -1,0 +1,331 @@
+﻿;-------------------------------------------------
+;輪姦
+;-------------------------------------------------
+@COM321
+#LOCALSIZE 17
+
+PRINTL 轮奸
+STR:0 = 轮奸
+
+VARSET LOCAL
+
+;Ｖを犯す　[攻]でなく、Ｖがある
+SIF !TALENT:158 && !TALENT:140
+	LOCAL:1 = 1
+;Ａを犯す　[攻]でない
+IF !TALENT:158 && !TALENT:0 && !TALENT:1
+	LOCAL:2 = 2
+	;Ｖを犯せるなら半減
+	SIF LOCAL:1
+		LOCAL:2 = 1
+ENDIF
+;逆强奸　[受]でなく、阴茎があり、道具が付いておらず、演出费リーが国民/カップル/人外のどれか
+SIF !TALENT:157 && PENIS(TARGET) && !CCHECK(TARGET) && (TFLAG:500 == 1 || TFLAG:500 == 2 || TFLAG:500 == 8)
+	LOCAL:3 = 1
+;ぶっかけ
+LOCAL:4 = 2
+;Ｖ、Ａ、逆レがあるなら半減
+SIF LOCAL:1 || LOCAL:2 || LOCAL:3
+	LOCAL:4 = 1
+;犯す箇所を記録
+TFLAG:705 = 0
+SIF LOCAL:1
+	TFLAG:705 |= 2
+SIF LOCAL:2
+	TFLAG:705 |= 1
+SIF LOCAL:3
+	TFLAG:705 |= 4
+	
+LOCAL:11 = (ABL:4 + ABL:1) / 3 + 1
+LOCAL:12 = (ABL:5 + ABL:1) / (LOCAL:2 == 1 ? 6 # 3) + 1
+LOCAL:13 = (ABL:3 + ABL:1) / 3 + 1
+LOCAL:14 = (ABL:2 + ABL:0) / (LOCAL:4 == 1 ? 6 # 3) + 1
+LOCAL:16 = (ABL:8 + ABL:9 + ABL:1) / 3 + 1
+;先に収益を算出してTFLAG:71に入れておく（地の文で显示ため）
+;資金への加算自体は後で行う
+;TFLAG:71 = (LOCAL:11 + LOCAL:12 + LOCAL:13 + LOCAL:14 + LOCAL:16)
+;SELECTCASE TFLAG:500
+;	;子供、狗
+;	CASE 3, 4
+;		TFLAG:71 = RAND:100
+;	;浮浪者
+;	CASE 7
+;		TFLAG:71 *= 500
+;	;通行人、カップル、不良少年
+;	CASE 1, 2, 6
+;		TFLAG:71 *= 1000
+;	;マフィン、しんぶんくん
+;	CASE 5, 6
+;		TFLAG:71 *= 1000
+;	;人外
+;	CASE 8
+;		TFLAG:71 *= RAND:5000
+;ENDSELECT
+
+
+;CALL KOJO_MESSAGE_COM
+
+
+;V经验を伴う指令のフラグ(处女膜再生对応)
+SIF LOCAL:1
+	TFLAG:19 = 1
+;调教对象が后庭处子だった場合の喪失フラグ
+SIF LOCAL:2 && TALENT:161
+	TFLAG:161 = 1
+;调教对象が童贞だった場合の喪失フラグ
+SIF LOCAL:3 && TALENT:160
+	TFLAG:160 = 1
+
+
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 600
+LOSEBASE:1 += 500
+
+;Ｖを犯す　快Ｖ、疼痛のソース
+IF LOCAL:1
+	SOURCE:1 += 50 + LOCAL:11
+	SOURCE:7 += 500
+ENDIF
+;Ａを犯す　快Ａ、疼痛のソース
+IF LOCAL:2
+	SOURCE:2 += 50 + LOCAL:12
+	SOURCE:7 += 700
+ENDIF
+;逆强奸　快Ｃ、屈从のソース
+IF LOCAL:3
+	SOURCE:0 += 50 + LOCAL:13
+	SOURCE:14 += 300
+ENDIF
+;快Ｂ、屈从、液体、情欲、性行动、露出、疼痛、恐惧、逸脱、反感のソース
+SOURCE:3 += 200
+SOURCE:14 += 30 * LOCAL:16
+SOURCE:11 += 40 * LOCAL:16
+SOURCE:10 += 40 * LOCAL:16
+SOURCE:5 += 30 * LOCAL:16
+SOURCE:13 += 30 * LOCAL:16
+SOURCE:7 += 1000 / LOCAL:16
+SOURCE:8 += 2000 / LOCAL:16
+SOURCE:17 += 1500 / LOCAL:16
+SOURCE:18 += 1000 / LOCAL:16
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 1000
+
+;Ｖ
+IF LOCAL:1
+	;处女、再生处女だった場合
+	IF TALENT:0 || TALENT:1
+		TIMES SOURCE:18 , 2.00
+		SOURCE:7 += 2000
+	ENDIF
+
+	;Vへの痛苦は先に処理しておく
+	;EXP:Ｖ经验をみる（处女の反感は別途処理済みなので省略）
+	IF EXP:0 < EXPLV:1
+		TIMES SOURCE:7 , 2.50
+	ELSEIF EXP:0 < EXPLV:2
+		TIMES SOURCE:7 , 0.80
+		TIMES SOURCE:18 , 1.20
+	ELSEIF EXP:0 < EXPLV:3
+		TIMES SOURCE:7 , 0.40
+	ELSEIF EXP:0 < EXPLV:4
+		TIMES SOURCE:7 , 0.10
+	ELSEIF EXP:0 < EXPLV:5
+		TIMES SOURCE:7 , 0.00
+	ELSEIF EXP:0 >= EXPLV:5
+		TIMES SOURCE:7 , 0.00
+	ENDIF
+
+	;PALAM:润滑をみる
+	IF PALAM:4 < PALAMLV:1
+		TIMES SOURCE:7 , 1.20
+		TIMES SOURCE:18 , 1.50
+	ELSEIF PALAM:4 < PALAMLV:2
+		TIMES SOURCE:7 , 0.70
+		TIMES SOURCE:18 , 1.20
+	ELSEIF PALAM:4 < PALAMLV:3
+		TIMES SOURCE:7 , 0.40
+	ELSEIF PALAM:4 < PALAMLV:4
+		TIMES SOURCE:7 , 0.10
+	ELSEIF PALAM:4 >= PALAMLV:4
+		TIMES SOURCE:7 , 0.10
+	ENDIF
+ENDIF
+
+;Ａ
+IF LOCAL:2
+	;后庭处子だった場合
+	IF TALENT:161
+		TIMES SOURCE:18 , 2.00
+		SOURCE:7 += 2000
+	ENDIF
+
+	;Aへの痛苦は先に処理しておく
+	;EXP:Ａ经验をみる
+	IF EXP:1 < EXPLV:1
+		TIMES SOURCE:7 , 3.00
+		TIMES SOURCE:18 , 3.00
+	ELSEIF EXP:1 < EXPLV:2
+		TIMES SOURCE:7 , 1.20
+		TIMES SOURCE:18 , 2.00
+	ELSEIF EXP:1 < EXPLV:3
+		TIMES SOURCE:7 , 0.80
+		TIMES SOURCE:18 , 1.50
+	ELSEIF EXP:1 < EXPLV:4
+		TIMES SOURCE:7 , 0.60
+		TIMES SOURCE:18 , 1.20
+	ELSEIF EXP:1 < EXPLV:5
+		TIMES SOURCE:7 , 0.40
+	ELSEIF EXP:1 >= EXPLV:5
+		TIMES SOURCE:7 , 0.20
+	ENDIF
+
+	;PALAM:润滑をみる
+	IF PALAM:4 < PALAMLV:1
+		TIMES SOURCE:7 , 1.20
+		TIMES SOURCE:18 , 2.00
+	ELSEIF PALAM:4 < PALAMLV:2
+		TIMES SOURCE:7 , 1.00
+		TIMES SOURCE:18 , 1.50
+	ELSEIF PALAM:4 < PALAMLV:3
+		TIMES SOURCE:7 , 0.60
+	ELSEIF PALAM:4 < PALAMLV:4
+		TIMES SOURCE:7 , 0.30
+	ELSEIF PALAM:4 >= PALAMLV:4
+		TIMES SOURCE:7 , 0.20
+	ENDIF
+ENDIF
+
+;逆强奸
+IF LOCAL:3
+	;童贞だった場合
+	IF TALENT:160
+		;射精槽にボー茄子
+		BASE:2 += 8000
+		TIMES SOURCE:18 , 1.20
+	ENDIF
+ENDIF
+
+;特に严厉な指令では、异常经验に応じて効果を減らす
+IF EXP:50 < EXPLV:1
+	TIMES SOURCE:8 , 1.20
+	TIMES SOURCE:17 , 1.20
+	TIMES SOURCE:18 , 1.20
+ELSEIF EXP:50 < EXPLV:2
+	TIMES SOURCE:8 , 0.90
+	TIMES SOURCE:17 , 0.90
+	TIMES SOURCE:18 , 0.90
+ELSEIF EXP:50 < EXPLV:3
+	TIMES SOURCE:8 , 0.80
+	TIMES SOURCE:17 , 0.80
+	TIMES SOURCE:18 , 0.80
+ELSEIF EXP:50 < EXPLV:4
+	TIMES SOURCE:8 , 0.70
+	TIMES SOURCE:17 , 0.70
+	TIMES SOURCE:18 , 0.70
+ELSEIF EXP:50 < EXPLV:5
+	TIMES SOURCE:8 , 0.60
+	TIMES SOURCE:17 , 0.60
+	TIMES SOURCE:18 , 0.60
+ELSE
+	TIMES SOURCE:8 , 0.50
+	TIMES SOURCE:17 , 0.50
+	TIMES SOURCE:18 , 0.50
+ENDIF
+
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;衣服と汚れの処理
+STAIN:0 |= 2
+STAIN:0 |= 4
+STAIN:1 |= 2
+STAIN:1 |= 4
+IF LOCAL:3
+	STAIN:2 |= 1
+	STAIN:2 |= 8
+ENDIF
+IF LOCAL:1
+	STAIN:3 |= 2
+	STAIN:3 |= 4
+	STAIN:6 |= 2
+	STAIN:6 |= 4
+ENDIF
+IF LOCAL:2
+	STAIN:4 |= 2
+	STAIN:4 |= 4
+ENDIF
+STAIN:5 |= 4
+SIF TEQUIP:0
+	STAIN:8 |= 4
+SIF TEQUIP:7
+	STAIN:15 |= 4
+SIF TEQUIP:8
+	STAIN:16 |= 4
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;Ｖ
+IF LOCAL:1
+	EXP:0 += LOCAL:11
+	PRINTFORML Ｖ经验+{LOCAL:11}
+	LOCAL:15 += LOCAL:11
+	EXP:5 += LOCAL:11
+	PRINTFORML 内射经验+{LOCAL:11}
+	CFLAG:105 += LOCAL:11
+ENDIF
+
+;Ａ
+IF LOCAL:2
+	EXP:1 += LOCAL:12
+	PRINTFORML Ａ经验+{LOCAL:12}
+	LOCAL:15 += LOCAL:12
+	EXP:8 += LOCAL:12
+	PRINTFORML 肛射经验+{LOCAL:12}
+ENDIF
+
+;逆强奸
+SIF LOCAL:3
+	LOCAL:15 += LOCAL:13
+
+EXP:4 += LOCAL:15
+PRINTFORML 性交经验+{LOCAL:15}
+
+IF (LOCAL:15)/2 > 0
+	EXP:2 += (LOCAL:15)/2
+	PRINTFORML 绝顶经验+{(LOCAL:15)/2}
+ENDIF
+
+EXP:22 += LOCAL:14
+PRINTFORML 口交经验+{LOCAL:14}
+LOCAL:15 += LOCAL:14
+
+LOCAL:15 = (LOCAL:15 + LOCAL:16 / 3)
+EXP:20 += LOCAL:15
+PRINTFORML 精液经验+{LOCAL:15}
+
+IF !CFLAG:56
+	EXP:50 += 1
+	PRINTL 轮奸初体验的异常经验＋１
+ENDIF
+CFLAG:56 += 1
+
+
+;収益を資金に加算
+;MONEY += TFLAG:71
+
+
+
+;依赖度ベクトル
+TFLAG:33 = 5
+
+RETURN 1

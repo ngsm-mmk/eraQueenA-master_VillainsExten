@@ -1,0 +1,96 @@
+﻿;=============================================================================
+;体力・气力の最大値上昇処理
+;=============================================================================
+;调教结束後それぞれ2/5の確率で体力・气力の最大値が上昇。异常经验の値で上昇する数値が増加します
+;ただし増加する値はそれぞれ＋４０が限度かつ、性別(及び处女性)によって
+;体力、气力それぞれにある値を超えるとそれ以上は成长しない限界値というものが设定されています。
+;また、体力・气力を減らしすぎた場合は上昇しないよう条件を変えました。
+@EVENT_GROWTH
+A = MAXBASE:0-BASE:0
+B = MAXBASE:1-BASE:1
+C = RAND:4
+D = 1
+G = EXP:50
+SIF G > 10
+	G = 10
+H = G*2
+
+;调教对象の性別、处女性によって成长限界が変化(男性は限界値がかなり高く设定されている)
+IF TALENT:122
+	I = 9000
+	J = 5000
+ELSE
+	I = 5000
+	IF TALENT:0 && EXP:0 == 0 && ABL:4 == 0
+		J = 4000
+	ELSEIF TALENT:0 && EXP:0 == 0
+		J = 3500
+	ELSE
+		J = 3000
+	ENDIF
+ENDIF
+
+;体力が大きい場合は气力が、气力が大きい場合は体力が成长する確率が上昇
+IF C == 1 && MAXBASE:0 > MAXBASE:1 && RAND:3 == 0
+	C = 2
+ELSEIF C == 2 && MAXBASE:1 > MAXBASE:0 && RAND:3 == 0
+	C = 1
+ENDIF
+
+IF C <= 1 && A != 0 && BASE:0 >= 300 && MAXBASE:0 < I
+	SIF A > 0 && A <= 500
+		D = 250
+	SIF A > 500 && A <= 1000
+		D = 300
+	SIF A > 1000 && A <= 1500
+		D = 350
+	SIF A > 1500 && A <= 2000
+		D = 400
+	SIF A > 2000 && A <= 2500
+		D = 450
+	SIF A > 2500
+		D = 500
+	SIF BASE:0 < 500
+		D = 750
+	E = (A/D)
+	SIF E > 20
+		E = 20
+	SIF (TALENT:3 == 0 || TALENT:6 == 0)
+		E /= 2
+	IF (E+H) > 0
+		MAXBASE:0 += (E+H)*5
+		PRINTFORML 激烈的调教后%CALLNAME:TARGET%承受快感的能力变高了。
+		PRINTFORML %CALLNAME:TARGET%的体力最大值上升了{(E+H)*5}。
+		WAIT
+	ENDIF
+ELSEIF C <= 1 && A != 0 && BASE:0 >= 300 && MAXBASE:0 >= I
+	C = 0
+ENDIF
+
+IF (C == 0 || C == 2) && B != 0 && BASE:1 >= 100 && MAXBASE:1 < J
+	SIF B > 0 && B <= 300
+		D = 200
+	SIF B > 300 && B <= 500
+		D = 250
+	SIF B > 1000 && B <= 1500
+		D = 350
+	SIF B > 1500 && B <= 2000
+		D = 400
+	SIF B > 2000 && B <= 2500
+		D = 450
+	SIF B > 2500
+		D = 500
+	SIF BASE:1 < 500
+		D = 750
+	F = (B/D)
+	SIF F > 20
+		F = 20
+	SIF (TALENT:3 == 0 || TALENT:6 == 0)
+		F /= 2
+	IF (F+H) > 0
+		MAXBASE:1 += (F+H)*3
+		PRINTFORML 激烈的调教后%CALLNAME:TARGET%的意志力变强了。
+		PRINTFORML %CALLNAME:TARGET%的气力最大值上升了{(F+H)*3}。
+		WAIT
+	ENDIF
+ENDIF

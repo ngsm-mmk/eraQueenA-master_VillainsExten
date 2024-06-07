@@ -1,0 +1,161 @@
+﻿;-------------------------------------------------
+;礼物
+;日常系指令、レベル3
+;-------------------------------------------------
+@COM23
+PRINTL 送礼物
+
+PRINTFORML 要送什么礼物？
+PRINTFORML [0] 笑容（仅此而已）
+IF MONEY >= 1000
+    IF TALENT:318 && CFLAG:600 == 1
+	    PRINTFORML [1] 蛋白粉($1000)
+	ELSE
+	    PRINTFORML [1] 食物($1000)
+    ENDIF
+ENDIF
+IF MONEY >= 2500
+    IF TALENT:318 && CFLAG:600 == 1
+	    PRINTFORML [2] 沙袋($2500)
+	ELSE
+	    PRINTFORML [2] 日用品($2500)
+    ENDIF
+ENDIF
+IF MONEY >= 10000
+    IF CFLAG:600 == 1 && CSTR:11 == "拳击"
+	    PRINTFORML [3] 拳击手套($10000)
+	ELSE
+	    PRINTFORML [3] 饰品($10000)
+    ENDIF
+ENDIF
+IF MONEY >= 25000
+    IF CFLAG:600 == 1 && CSTR:11 == "篮球"
+	    PRINTFORML [4] 有签名的球衣($25000)
+	ELSE
+	    PRINTFORML [4] 衣服($25000)
+    ENDIF
+ENDIF
+;SIF MONEY >= 150000
+;	PRINTFORML [5] 奢侈品($150000)
+;eraheta用
+;キャラ特有の特別な礼物
+;FLAG:1500(新設)を利用し、一度しか渡せないようにします
+;恋慕ルートに乗っているキャラが一人だけ、かつ相亲相爱状態で出現します
+;変数Pで特別な礼物の選択肢が表示されたときだけ礼物処理ができるようにします
+;特別な礼物所有キャラでない場合、戒指が表示されます
+IF MONEY >= 0 && FLAG:30 == 1 && TALENT:6 && FLAG:1500 == 0
+;	IF NO:MASTER == 3
+;		PRINTFORML [6] 铁十字
+;		P = 1
+;	ELSEIF NO:MASTER == 1
+;		PRINTFORML [6] 献给%CALLNAME:TARGET%的歌
+;		P = 1
+		PRINTFORML [6] 誓约的戒指
+		P = 1
+;	ENDIF
+ENDIF
+PRINTFORML [100] 还是算了
+
+INPUT
+IF RESULT == 1 && MONEY < 1000
+	RESTART
+ELSEIF RESULT == 2 && MONEY < 2500
+	RESTART
+ELSEIF RESULT == 3 && MONEY < 10000
+	RESTART
+ELSEIF RESULT == 4 && MONEY < 25000
+	RESTART
+ELSEIF RESULT == 5 && MONEY < 150000
+	RESTART
+ELSEIF RESULT == 6 && FLAG:30 != 1 && FLAG:1500 != 0
+	RESTART
+ELSEIF RESULT == 0
+	;笑容
+	TFLAG:17 = 0
+ELSEIF RESULT == 1
+	;食べ物を礼物
+	TFLAG:17 = 1
+	MONEY -= 1000
+ELSEIF RESULT == 2
+	;日用品を礼物
+	TFLAG:17 = 2
+	MONEY -= 2500
+ELSEIF RESULT == 3
+	;装饰品を礼物
+	CALL 送飾品(TARGET)
+	TFLAG:17 = 3
+	MONEY -= 10000
+ELSEIF RESULT == 4
+	;服を礼物
+	SIF !(CFLAG:600 == 1 && CSTR:11 == "拳击")
+	CALL 送衣服(TARGET)
+	TFLAG:17 = 4
+	MONEY -= 25000
+ELSEIF RESULT == 5
+	;高価な物を礼物
+	TFLAG:17 = 5
+	MONEY -= 150000
+ELSEIF RESULT == 6 && P == 1
+	;特別な品を礼物
+	TFLAG:17 = 6
+	FLAG:1500 = NO:TARGET
+	P = 0
+ELSEIF RESULT == 100
+	PRINTFORMW 放弃送礼
+	RETURN 0
+ELSE
+	RESTART
+
+ENDIF
+
+STR:0 = 送礼物
+
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 10
+LOSEBASE:1 += 20
+
+IF TFLAG:17 == 0
+	SOURCE:12 = 1000
+	SOURCE:17 = 100
+ELSEIF TFLAG:17 == 1
+	SOURCE:12 = 1500
+	SOURCE:17 = 150
+ELSEIF TFLAG:17 == 2
+	SOURCE:12 = 2500
+	SOURCE:17 = 250
+ELSEIF TFLAG:17 == 3
+	SOURCE:12 = 3500
+	SOURCE:17 = 350
+ELSEIF TFLAG:17 == 4
+	SOURCE:12 = 5000
+	SOURCE:17 = 500
+ELSEIF TFLAG:17 == 5
+	SOURCE:12 = 7000
+	SOURCE:17 = 700
+ELSEIF TFLAG:17 == 6
+	SOURCE:12 = 12000
+	SOURCE:17 = 1200
+ENDIF
+
+;爱情经验
+IF (TALENT:3 == 1 || TALENT:6 == 1) && ASSIPLAY == 0 && TFLAG:17 > 0
+	A = TFLAG:17
+	PRINTS EXPNAME:23
+	PRINTVL +A
+	EXP:23 += A
+ENDIF
+
+;依赖度ベクトル
+TFLAG:33 = 4
+
+;依赖度補正値
+SIF (TALENT:3 == 1 || TALENT:6 == 1) && ASSIPLAY == 0
+	TFLAG:30 += TFLAG:17
+
+
+RETURN 1
+

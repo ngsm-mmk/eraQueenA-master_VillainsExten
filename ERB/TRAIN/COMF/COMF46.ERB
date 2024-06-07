@@ -1,0 +1,202 @@
+﻿;-------------------------------------------------
+;后庭拉珠
+;道具使用指令、レベル3
+;-------------------------------------------------
+@COM46
+PRINTL 后庭拉珠
+STR:0 = 后庭拉珠
+
+
+;丝袜びりびりフラグ
+IF TEQUIP:1 == 5 || TEQUIP:1 == 6
+	TFLAG:55 = 1
+ENDIF
+
+;后庭处子だった場合の喪失フラグ
+;IF TALENT:161
+;	TFLAG:161 = 1
+;ENDIF
+
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 60
+LOSEBASE:1 += 150
+
+SOURCE:2 = 150
+SOURCE:7 = 200
+SOURCE:13 = 50
+SOURCE:14 = 50
+SOURCE:17 = 60
+SOURCE:18 = 80
+
+;装着時は快Aは下がる
+SIF TEQUIP:15 == 0
+	TIMES SOURCE:2 , 0.80
+
+;取下時は快Aは上がる
+SIF TEQUIP:15 == 1
+	TIMES SOURCE:2 , 3.00
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 70
+
+;Aへの痛苦は先に処理しておく
+;EXP:Ａ经验をみる
+IF EXP:1 < EXPLV:1
+	TIMES SOURCE:7 , 3.00
+	TIMES SOURCE:18 , 3.00
+ELSEIF EXP:1 < EXPLV:2
+	TIMES SOURCE:7 , 1.20
+	TIMES SOURCE:18 , 2.00
+ELSEIF EXP:1 < EXPLV:3
+	TIMES SOURCE:7 , 0.80
+	TIMES SOURCE:18 , 1.50
+ELSEIF EXP:1 < EXPLV:4
+	TIMES SOURCE:7 , 0.60
+ELSEIF EXP:1 < EXPLV:5
+	TIMES SOURCE:7 , 0.40
+	TIMES SOURCE:18 , 0.80
+ELSEIF EXP:1 >= EXPLV:5
+	TIMES SOURCE:7 , 0.20
+	TIMES SOURCE:18 , 0.50
+ENDIF
+
+;PALAM:润滑をみる
+IF PALAM:4 < PALAMLV:1
+	TIMES SOURCE:7 , 1.20
+	TIMES SOURCE:18 , 2.00
+ELSEIF PALAM:4 < PALAMLV:2
+	TIMES SOURCE:7 , 1.00
+	TIMES SOURCE:18 , 1.50
+ELSEIF PALAM:4 < PALAMLV:3
+	TIMES SOURCE:7 , 0.60
+ELSEIF PALAM:4 < PALAMLV:4
+	TIMES SOURCE:7 , 0.30
+	TIMES SOURCE:18 , 0.80
+ELSEIF PALAM:4 >= PALAMLV:4
+	TIMES SOURCE:7 , 0.20
+	TIMES SOURCE:18 , 0.50
+ENDIF
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+IF TEQUIP:19 == 0
+	EXP:1 += 1
+	PRINTL Ａ经验＋１
+ELSEIF TEQUIP:19 == 1
+	EXP:1 += 2
+	PRINTL Ａ经验＋２
+ENDIF
+
+;异常经验、男性限定
+;IF TALENT:男性 && TALENT:后庭处子 && TEQUIP:触手
+;	EXP:50 += 2
+;	PRINTFORML %EXPNAME:50%＋２
+;ELSEIF TALENT:男性 && TALENT:后庭处子
+;	EXP:50 += 1
+;	PRINTFORML %EXPNAME:50%＋１
+;ENDIF
+
+;蔷薇经验とか加算
+CALL COM_EXP(1)
+
+
+
+;依赖度ベクトル
+TFLAG:33 = 3
+
+CALL KOJO_MESSAGE_COM
+
+;着脱の処理
+IF TEQUIP:15 == 0
+	TEQUIP:15 = 1
+ELSE
+	TEQUIP:15 = 0
+ENDIF
+
+
+RETURN 1
+
+
+;-------------------------------------------------
+;装着継続の処理
+;-------------------------------------------------
+@EQUIP_COM46
+;后庭拉珠插入中
+
+PRINTL ＜后庭拉珠插入中＞
+
+LOSEBASE:0 += 60
+LOSEBASE:1 += 150
+
+SOURCE:2 += 75
+SOURCE:13 += 25
+SOURCE:14 += 25
+SOURCE:17 += 25
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 35
+
+;Aへの痛苦は先に処理しておく
+;EXP:Ａ经验をみる
+A = 100
+B = 25
+IF EXP:1 < EXPLV:1
+	TIMES A , 3.00
+	TIMES B , 3.00
+ELSEIF EXP:1 < EXPLV:2
+	TIMES A , 1.20
+	TIMES B , 2.00
+ELSEIF EXP:1 < EXPLV:3
+	TIMES A , 0.80
+	TIMES B , 1.50
+ELSEIF EXP:1 < EXPLV:4
+	TIMES A , 0.60
+ELSEIF EXP:1 < EXPLV:5
+	TIMES A , 0.40
+	TIMES B , 0.80
+ELSEIF EXP:1 >= EXPLV:5
+	TIMES A , 0.20
+	TIMES B , 0.50
+ENDIF
+
+;PALAM:润滑をみる
+IF PALAM:4 < PALAMLV:1
+	TIMES A , 1.20
+	TIMES B , 2.00
+ELSEIF PALAM:4 < PALAMLV:2
+	TIMES A , 1.00
+	TIMES B , 1.50
+ELSEIF PALAM:4 < PALAMLV:3
+	TIMES A , 0.60
+ELSEIF PALAM:4 < PALAMLV:4
+	TIMES A , 0.30
+	TIMES B , 0.80
+ELSEIF PALAM:4 >= PALAMLV:4
+	TIMES A , 0.20
+	TIMES B , 0.50
+ENDIF
+SOURCE:7 += A
+SOURCE:18 += B
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+EXP:1 += 1
+PRINTL Ａ经验＋１
+
+
+RETURN 1
+

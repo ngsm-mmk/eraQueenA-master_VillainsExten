@@ -1,0 +1,91 @@
+﻿;-------------------------------------------------
+;空气灌肠
+;严厉な调教指令、レベル3
+;-------------------------------------------------
+@COM147
+PRINTL 空气灌肠
+STR:0 = 空气灌肠
+
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 40
+LOSEBASE:1 += 100
+
+SOURCE:2 = 100
+SOURCE:7 = 150
+SOURCE:13 = 100
+SOURCE:14 = 50
+SOURCE:17 = 100
+SOURCE:18 = 100
+
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 100
+
+;Aへの痛苦は先に処理しておく
+;EXP:Ａ经验をみる
+IF EXP:1 < EXPLV:1
+	TIMES SOURCE:7 , 3.00
+	TIMES SOURCE:18 , 3.00
+ELSEIF EXP:1 < EXPLV:2
+	TIMES SOURCE:7 , 1.20
+	TIMES SOURCE:18 , 2.00
+ELSEIF EXP:1 < EXPLV:3
+	TIMES SOURCE:7 , 0.80
+	TIMES SOURCE:18 , 1.50
+ELSEIF EXP:1 < EXPLV:4
+	TIMES SOURCE:7 , 0.60
+	TIMES SOURCE:18 , 1.20
+ELSEIF EXP:1 < EXPLV:5
+	TIMES SOURCE:7 , 0.40
+ELSEIF EXP:1 >= EXPLV:5
+	TIMES SOURCE:7 , 0.20
+ENDIF
+
+;PALAM:润滑をみる
+IF PALAM:4 < PALAMLV:1
+	TIMES SOURCE:7 , 1.20
+	TIMES SOURCE:18 , 2.00
+ELSEIF PALAM:4 < PALAMLV:2
+	TIMES SOURCE:7 , 1.00
+	TIMES SOURCE:18 , 1.50
+ELSEIF PALAM:4 < PALAMLV:3
+	TIMES SOURCE:7 , 0.60
+ELSEIF PALAM:4 < PALAMLV:4
+	TIMES SOURCE:7 , 0.30
+ELSEIF PALAM:4 >= PALAMLV:4
+	TIMES SOURCE:7 , 0.20
+ENDIF
+
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;Ａ经验
+EXP:1 += 1
+PRINTL Ａ经验＋１
+
+;蔷薇经验とか加算
+CALL COM_EXP(1)
+
+;依赖度ベクトル
+TFLAG:33 = 5
+
+;依赖度補正値(服从で1、隶属で2）
+IF TALENT:5 && ASSIPLAY == 0
+	TFLAG:30 += 1
+ELSEIF TALENT:8 && ASSIPLAY == 0
+	TFLAG:30 += 2
+ENDIF
+
+
+RETURN 1
+
+

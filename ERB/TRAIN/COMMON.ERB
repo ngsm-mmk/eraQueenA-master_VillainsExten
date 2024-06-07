@@ -1,0 +1,980 @@
+﻿;-------------------------------------------------
+;汎用関数置き場
+;素質関連(素質分類系など)
+;-------------------------------------------------
+;-------------------------------------------------
+;関数名:GET_TALENTNAME
+;概　要:素質名取得関数
+;引　数:ARG:0…キャラ登录番号
+;　　　:ARG:1…TALENT番号
+;戻り値:素質名
+;備　考:文中関数
+;素質の名前を返す。上位素質名の処理を行う
+;-------------------------------------------------
+@GET_TALENTNAME(ARG:0, ARG:1)
+#FUNCTIONS
+SELECTCASE ARG:1
+	CASE 65
+		RETURNF "喜欢身体接触"
+	CASE 66
+		RETURNF "厌恶身体接触"
+	CASE 114
+		RETURNF "孩童尺寸(射精不可)"
+ENDSELECT
+RETURNF TALENTNAME:(ARG:1)
+
+;-------------------------------------------------
+;関数名:GET_SEX
+;概　要:性別取得関数
+;引　数:ARG:0…キャラ登录番号
+;戻り値:性別を表す文字列
+;備　考:文中関数
+;-------------------------------------------------
+@GET_SEX(ARG)
+#FUNCTIONS
+IF TALENT:ARG:双性
+	RETURNF TALENTNAME:137
+ELSEIF TALENT:ARG:扶她
+	RETURNF TALENTNAME:139
+ELSEIF TALENT:ARG:男性
+	RETURNF TALENTNAME:140
+ELSE
+	RETURNF "女性"
+ENDIF
+
+;-------------------------------------------------
+;関数名:TALENT_TYPE
+;概　要:素質分類関数
+;引　数:ARG:0…TALENT番号,ARG:1…キャラ登录番号
+;戻り値:素質分類番号
+;       (0.非表示/1.性別/2.性格/3.体質/4.技能/5.後天素質/6.陷落素質/7.未分類)
+;備　考:文中関数
+;素質分類テーブル。素質の分類番号を返す。
+;素質整頓表示に用いる
+;
+;-------------------------------------------------
+@TALENT_TYPE(ARG:0, ARG:1)
+#FUNCTION
+SELECTCASE ARG:0
+	;阴茎ありの時表示させる素質
+	;孩童尺寸/短小/巨根/尺寸傲人/包茎/绝伦
+	CASE 114 TO 117, 119, 152
+		IF TALENT:(ARG:1):137 || TALENT:(ARG:1):139 || TALENT:(ARG:1):140
+			RETURNF 3
+		ELSE
+			RETURNF 0
+		ENDIF
+	;女性器ありの時表示させる素質
+	;淫壶/Ｖ钝感/Ｖ敏感
+	CASE 75, 103, 104
+		IF TALENT:(ARG:1):140
+			RETURNF 0
+		ELSE
+			RETURNF 3
+		ENDIF
+	;胸ありの時表示させる素質
+	;贫乳/绝壁/巨乳/爆乳
+	CASE 109 TO 112
+		IF TALENT:(ARG:1):140 || TALENT:(ARG:1):137
+			RETURNF 0
+		ELSE
+			RETURNF 3
+		ENDIF
+;	;0.非表示(表示させない素質)
+;	CASE 
+;		RETURNF 0
+	;1.性別
+	CASE 0, 1, 137, 139, 140, 157, 158, 160, 161
+		RETURNF 1
+	;2.性格
+	CASE 10 TO 36, 63 TO 71, 82, 87, 88, 151, 166 TO 168
+		RETURNF 2
+	;3.体質
+	CASE 40 TO 44, 54, 56, 57, 60 TO 62, 72 TO 84, 90 TO 134, 142, 143, 145 TO 150
+		RETURNF 3
+	;4.技能
+	CASE 50 TO 53, 55, 58, 59, 135, 136, 144, 156, 169
+		RETURNF 4
+	;5.後天素質
+	CASE 37, 85, 86, 141, 153 TO 155, 159, 165, 200 TO 205
+		RETURNF 5
+	;6.陷落素質
+	CASE 3 TO 9, 162
+		RETURNF 6
+ENDSELECT
+;7.未分類(これがあるのは望ましくない)
+RETURNF 7
+
+
+;-------------------------------------------------
+;関数名:TALENT_TYPENAME
+;概　要:素質分類名取得関数
+;引　数:ARG…TALENT分類番号
+;戻り値:素質分類を表す文字列
+;       (0.非表示/1.性別/2.性格/3.体質/4.技能/5.後天素質/6.種族特性/7.未分類)
+;備　考:文中関数
+;素質の分類名を返す。素質整頓表示に用いる
+;-------------------------------------------------
+@TALENT_TYPENAME(ARG)
+#FUNCTIONS
+SIF !STRLENS(LOCALS)
+	SPLIT "非表示/性別/性格/体質/技能/後天素質/陷落素質/未分類", "/", LOCALS
+RETURNF LOCALS:ARG
+
+;-------------------------------------------------
+;汎用関数置き場
+;未分類
+;-------------------------------------------------
+;-------------------------------------------------
+;関数名:CHOICE
+;概　要:２～１０択関数
+;引　数:ARGS:0…質問内容
+;      :ARGS:1～10…選択肢の文字列(3以降は省略可)
+;戻り値:ユーザ输入結果(0～9)
+;選択条件の無い、シンプルな選択肢作成関数
+;口上とかでも使えるかもしれない
+;とりあえず10択まで。増やしてもいいけど
+;-------------------------------------------------
+@CHOICE(ARGS:0, ARGS:1, ARGS:2, ARGS:3, ARGS:4, ARGS:5, ARGS:6, ARGS:7, ARGS:8, ARGS:9, ARGS:10)
+PRINTSL ARGS:0
+FOR LOCAL, 0, 10
+	PRINTFORML [{LOCAL}] - %ARGS:(1 + LOCAL)%
+	SIF LOCAL && !STRLENS(ARGS:(2 + LOCAL))
+		BREAK
+NEXT
+$INPUT_LOOP
+INPUT
+SELECTCASE RESULT
+	CASE 0 TO LOCAL - 1
+	CASEELSE
+		CLEARLINE 1
+		GOTO INPUT_LOOP
+ENDSELECT
+RETURN RESULT
+
+;-------------------------------------------------
+;関数名:PRINT_BASE
+;概　要:BASE表示用関数
+;引　数:ARGS …BASEの名前
+;　　　 ARG:0…キャラ登录番号
+;       ARG:1…显示BASE
+;       ARG:2…BARの長さ(省略した場合32)
+;       ARG:3…真ならBASEの値を0以上に補正する
+;              (省略した場合、補正しない)
+;戻り値:无
+;-------------------------------------------------
+@PRINT_BASE(ARGS, ARG:0, ARG:1, ARG:2, ARG:3)
+PRINTS ARGS
+LOCAL:0 = ARG:3 ? MAX(BASE:(ARG:0):(ARG:1), 0) # BASE:(ARG:0):(ARG:1)
+LOCAL:1 = MAXBASE:(ARG:0):(ARG:1)
+BAR LOCAL:0, LOCAL:1, ARG:2 ? ARG:2 # 32
+PRINTFORM ({LOCAL:0, 5}/{LOCAL:1, 5})
+
+@PRINT_BASEL(ARGS, ARG:0, ARG:1, ARG:2, ARG:3)
+CALL PRINT_BASE(ARGS, ARG:0, ARG:1, ARG:2, ARG:3)
+PRINTL 
+
+@PRINT_BASEW(ARGS, ARG:0, ARG:1, ARG:2, ARG:3)
+CALL PRINT_BASE(ARGS, ARG:0, ARG:1, ARG:2, ARG:3)
+WAIT
+
+;-------------------------------------------------
+;関数名:COM_EXP
+;概　要:蔷薇经验とか追加関数
+;引　数: ARG…追加される经验
+;戻り値:无
+;-------------------------------------------------
+@COM_EXP(ARG)
+IF (TALENT:137 || TALENT:140) && (TALENT:PLAYER:137 || TALENT:PLAYER:140)
+	PRINTFORML %EXPNAME:41%+{ARG}
+	EXP:41 += ARG
+	EXP:PLAYER:41 += ARG
+ELSEIF (TALENT:137 == 0 && TALENT:140 == 0) && (TALENT:PLAYER:137 == 0 && TALENT:PLAYER:140 == 0)
+	PRINTFORML %EXPNAME:40%+{ARG}
+	EXP:40 += ARG
+	EXP:PLAYER:40 += ARG
+ENDIF
+;调教者を記録
+CFLAG:(NO:PLAYER + 1199) += ARG
+
+;-------------------------------------------------
+;関数名:MALE
+;概　要:男性か女性か判定関数
+;引　数: ARG…キャラ登录番号
+;戻り値:男性なら１、女性なら０
+;-------------------------------------------------
+@MALE(ARG)
+#FUNCTION
+IF TALENT:ARG:男性 || TALENT:ARG:双性
+	RETURNF 1
+ELSE
+	RETURNF 0
+ENDIF
+
+
+;;≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡
+;口上向け関数ファイル
+;多くはeraSQRから移植させていただきました。感謝
+;≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡
+;-------------------------------------------------
+;阴茎判定関数@PENIS
+;式中で使用する関数です。阴茎がある場合1を返します
+;引数0は对象の登录番号。しょうもない中身
+;-------------------------------------------------
+@PENIS(ARG)
+#FUNCTION
+RETURNF TALENT:ARG:双性 || TALENT:ARG:扶她 || TALENT:ARG:男性
+
+;-------------------------------------------------
+;胸判定関数@BREAST
+;式中で使用する関数です。おっぱいがある場合1を返します
+;引数0は对象の登录番号。しょうもない中身
+;-------------------------------------------------
+@BREAST(ARG)
+#FUNCTION
+RETURNF !TALENT:ARG:男性 && !TALENT:ARG:双性 && !TALENT:ARG:绝壁
+
+;-------------------------------------------------
+;確率判定関数@PERCENT
+;式中で使用する関数です。引数％の確率判定を行います。通れば1を返します
+;-------------------------------------------------
+@PERCENT(ARG)
+#FUNCTION
+RETURNF (ARG - RAND:100) > 0
+
+;-------------------------------------------------
+;関数名:BIND_CHECK_A
+;概　要:拘束チェック関数、道具によるもののみ
+;引　数:ARG…部位(0.四肢/1.目/2.口/??.鼻/??.耳/??.手/??.足)
+;戻り値:該当部位が拘束されて使用不可になっているかどうか
+;備  考:式中関数
+;拘束をチェックする関数。ちょっと試作品
+;拘束手段を後から追加する場合に、その都度口上側を更新するのが嫌なので作成
+;テンプレで使うかどうかはしばらく様子見
+;-------------------------------------------------
+@BIND_CHECK_A(ARG)
+#FUNCTION
+SELECTCASE ARG
+	;四肢
+	CASE 0
+		;绳子、触手紧缚
+		RETURNF TEQUIP:绳子
+	;視覚
+	CASE 1
+		;眼罩
+		RETURNF TEQUIP:眼罩
+	;口
+	CASE 2
+		;口塞球、触手口辱
+		RETURNF TEQUIP:口塞球 || TEQUIP:触手口辱
+ENDSELECT
+RETURNF 0
+
+;-------------------------------------------------
+;関数名:BIND_CHECK_B
+;概　要:拘束チェック関数
+;引　数:ARG…部位(0.四肢/1.目/2.口/??.鼻/??.耳/5.手/6.足)
+;戻り値:該当部位が拘束されて使用不可になっているかどうか
+;備  考:式中関数
+;拘束をチェックする関数。ちょっと試作品
+;拘束手段を後から追加する場合に、その都度口上側を更新するのが嫌なので作成
+;テンプレで使うかどうかはしばらく様子見
+;-------------------------------------------------
+@BIND_CHECK_B(ARG)
+#FUNCTION
+SELECTCASE ARG
+	;四肢
+	CASE 0
+		;绳子、触手紧缚
+		RETURNF TEQUIP:绳子
+	;視覚
+	CASE 1
+		;眼罩
+		RETURNF TEQUIP:眼罩
+	;口
+	CASE 2
+		;口塞球、触手口辱
+		RETURNF TEQUIP:口塞球 || TEQUIP:触手口辱
+	;手
+	CASE 5
+		;绳子、触手紧缚
+		RETURNF TEQUIP:绳子
+	;脚
+	CASE 6
+		;绳子、触手紧缚
+		RETURNF TEQUIP:绳子
+ENDSELECT
+RETURNF 0
+
+;-------------------------------------------------
+;関数名:CCHECK
+;概　要:Ｃに気持ちいいものが付いてるか判定
+;引　数:ARG…キャラ登录番号
+;戻り値:
+;備  考:式中関数
+;-------------------------------------------------
+@CCHECK(ARG)
+#FUNCTION
+RETURNF TEQUIP:阴蒂夹 ||  TEQUIP:飞机杯 || TEQUIP:导尿管 || TEQUIP:尿道气球 || TEQUIP:助手Ｃ爱抚
+
+;-------------------------------------------------
+;関数名:VCHECK
+;概　要:Ｖに気持ちいいものが付いてるか判定
+;引　数:ARG…キャラ登录番号
+;戻り値:
+;備  考:式中関数
+;-------------------------------------------------
+@VCHECK(ARG)
+#FUNCTION
+RETURNF TEQUIP:自慰棒 || TEQUIP:触手产卵 || TEQUIP:助手Ｖ爱抚 || TEQUIP:助手Ｖ插入
+
+;-------------------------------------------------
+;関数名:ACHECK
+;概　要:Ａに気持ちいいものが付いてるか判定
+;引　数:ARG…キャラ登录番号
+;戻り値:
+;備  考:式中関数
+;-------------------------------------------------
+@ACHECK(ARG)
+#FUNCTION
+RETURNF TEQUIP:肛塞 || TEQUIP:后庭拉珠 || TEQUIP:灌肠器＋塞头 || TEQUIP:扩张气球 || TEQUIP:肛门电极 || TEQUIP:触手肛产卵 || TEQUIP:助手Ａ爱抚 || TEQUIP:助手Ａ插入
+
+;-------------------------------------------------
+;関数名:BCHECK
+;概　要:Ｂに気持ちいいものが付いてるか判定
+;引　数:ARG…キャラ登录番号
+;戻り値:
+;備  考:式中関数
+;-------------------------------------------------
+@BCHECK(ARG)
+#FUNCTION
+RETURNF TEQUIP:乳头夹 || TEQUIP:乳房电极 || TEQUIP:触手玩弄乳腺 || TEQUIP:助手Ｂ爱抚
+
+;-------------------------------------------------
+;関数名:KANRAKU
+;eraQueenA用に簡易化。调教者变更を考慮しない　11/08/29
+;概　要:陷落ルートを调查関数
+;引　数:ARG:0…キャラ登录番号 空白の時はTARGETを代入
+;戻り値:0=未陷落　1=恋慕ルート　2=淫乱ルート　3=服从ルート
+;備  考:式中関数
+;-------------------------------------------------
+@KANRAKU(ARG)
+#FUNCTION
+IF TALENT:ARG:恋慕 || TALENT:ARG:相亲相爱
+	RETURNF 1
+ELSEIF TALENT:ARG:淫乱 || TALENT:ARG:娼妇
+	RETURNF 2
+ELSEIF TALENT:ARG:服从 || TALENT:ARG:隶属
+	RETURNF 3
+ENDIF
+RETURNF 0
+;-------------------------------------------------
+;関数名:SEXPLAY
+;概　要:调教对象がしている做爱
+;引　数:ARG:0…キャラ登录番号
+;戻り値:1=做爱2=Ａ做爱3=逆做爱中4=逆Ａ做爱
+;備  考:式中関数
+;-------------------------------------------------
+@SEXPLAY(ARG)
+#FUNCTION
+SELECTCASE SELECTCOM
+	CASE 60,61,66,68,69,72,74,76,506,507,512,515,517
+		RETURNF 1
+	CASE 62,63,67,70,71,73,75,77,513,516,518,591
+		RETURNF 2
+	CASE 205,206,211
+		RETURNF 3
+	CASE 212,213,214
+		RETURNF 4
+	CASE 504,505,514,592,593,594,595
+		SELECTCASE PREVCOM
+			CASE 60,61,66,68,69,72,74,76,506,507,512,515,517
+				RETURNF 1
+			CASE 62,63,67,70,71,73,75,77,513,516,518,591
+				RETURNF 2
+		ENDSELECT
+	CASE 215
+		IF TFLAG:705
+			TFLAG:707 = 4
+		ELSE
+			TFLAG:707 = 3
+		ENDIF
+ENDSELECT
+RETURNF 0
+;-------------------------------------------------
+;関数名:SAMESEXPLAY
+;概　要:调教对象がされている做爱が前回と同じところに插入してるかどうか
+;-------------------------------------------------
+@SAMESEXPLAY
+IF TFLAG:706 == 0
+	TFLAG:707 = 0
+	SELECTCASE SELECTCOM
+		CASE 60,61,66,68,69,72,74,76,506,507,512,515,517
+			TFLAG:707 = 1
+		CASE 62,63,67,70,71,73,75,77,513,516,518,591
+			TFLAG:707 = 2
+		CASE 205,206,211
+			TFLAG:707 = 1
+		CASE 212,213,214
+			TFLAG:707 = 2
+		CASE 504,505,514,592,593,594,595
+			SELECTCASE PREVCOM
+				CASE 60,61,66,68,69,72,74,76,506,507,512,515,517
+					TFLAG:707 = 1
+				CASE 62,63,67,70,71,73,75,77,513,516,518,591
+					TFLAG:707 = 2
+			ENDSELECT
+		CASE 215
+			IF TFLAG:705
+				TFLAG:707 = 2
+			ELSE
+				TFLAG:707 = 1
+			ENDIF
+	ENDSELECT
+	TFLAG:706 = 1
+	TFLAG:709 = 0
+	SIF TFLAG:707 == TFLAG:708 && TFLAG:707 > 0 && TFLAG:708 > 0
+		TFLAG:709 = TFLAG:707
+ELSE
+	TFLAG:708 = 0
+	SELECTCASE SELECTCOM
+		CASE 60,61,66,68,69,72,74,76,506,507,512,515,517
+			TFLAG:708 = 1
+		CASE 62,63,67,70,71,73,75,77,513,516,518,591
+			TFLAG:708 = 2
+		CASE 205,206,211
+			TFLAG:708 = 1
+		CASE 212,213,214
+			TFLAG:708 = 2
+		CASE 504,514,592,593,594,595
+			SELECTCASE PREVCOM
+				CASE 60,61,66,68,69,72,74,76,506,507,512,515,517
+					TFLAG:708 = 1
+				CASE 62,63,67,70,71,73,75,77,513,516,518,591
+					TFLAG:708 = 2
+			ENDSELECT
+		CASE 215
+			IF TFLAG:705
+				TFLAG:708 = 2
+			ELSE
+				TFLAG:708 = 1
+			ENDIF
+	ENDSELECT
+	TFLAG:706 = 0
+	TFLAG:709 = 0
+	SIF TFLAG:707 == TFLAG:708 && TFLAG:707 > 0 && TFLAG:708 > 0
+		TFLAG:709 = TFLAG:708
+ENDIF
+
+;-------------------------------------------------
+;関数名:DOUSEI
+;概　要:二人が同性か判定する関数
+;引　数:ARG,ARG:1…キャラ登录番号
+;戻り値:同性なら1、異性なら0
+;備  考:式中関数
+;-------------------------------------------------
+@DOUSEI(ARG, ARG:1)
+#FUNCTION
+SIF (TALENT:ARG:双性 || TALENT:ARG:男性) && !TALENT:(ARG:1):双性 && !TALENT:(ARG:1):男性
+	RETURNF 0
+SIF (TALENT:(ARG:1):双性 || TALENT:(ARG:1):男性) && !TALENT:ARG:双性 && !TALENT:ARG:男性
+	RETURNF 0
+RETURNF 1
+
+;-------------------------------------------------
+;関数名:PLAYER_NAME
+;概　要:调教者の呼び名
+;引　数:ARG=1…助手プ雷中でも、あえて主人を指したい場合
+;		ARG=2…淫乱か恋慕か服从で、誰を呼ぶか決めたい場合
+;戻り値:调教者の呼び名の文字列
+;備　考:文中関数
+;-------------------------------------------------
+@PLAYER_NAME(ARG)
+#FUNCTIONS
+SELECTCASE ARG
+	;助手プ雷中でも、あえて主人を指したい場合
+	CASE 1
+		;一人称視点→私
+		IF FLAG:3
+			RETURNF @"%CSTR:MASTER:0%"
+		ELSE
+			RETURNF @"%CALLNAME:MASTER%"
+		ENDIF
+	;淫乱か恋慕か服从で、誰を呼ぶか決めたい場合
+	CASE 2
+		IF TALENT:恋慕 || TALENT:相亲相爱
+			;恋慕ルートは主人を呼ぶ
+			IF FLAG:3
+				RETURNF @"%CSTR:MASTER:0%"
+			ELSE
+				RETURNF @"%CALLNAME:MASTER%"
+			ENDIF
+		ELSE
+			IF ASSIPLAY == 0 && FLAG:3
+				RETURNF @"%CSTR:MASTER:0%"
+			ELSE
+				RETURNF @"%CALLNAME:PLAYER%"
+			ENDIF
+		ENDIF
+	CASEELSE
+		IF ASSIPLAY == 0 && FLAG:3
+			RETURNF @"%CSTR:MASTER:0%"
+		ELSEIF ASSIPLAY
+			RETURNF @"%CALLNAME:PLAYER%"
+		ELSE
+			RETURNF @"%CALLNAME:MASTER%"
+		ENDIF
+ENDSELECT
+
+;-------------------------------------------------
+;関数名:RELATION_UP
+;概　要:互いの相性アップ
+;引　数:ARG:0キャラAの登录番号｡ARG:1キャラBの登录番号。ARG:2アップする値(％)
+;備　考:文中関数
+;-------------------------------------------------
+@RELATION_UP(ARG:0,ARG:1,ARG:2)
+PRINTL
+IF ARG:2 > 0
+	PRINTFORMW %CALLNAME:(ARG:0)%和%CALLNAME:(ARG:1)%的相性值上升
+ELSEIF ARG:2 < 0
+	PRINTFORMW %CALLNAME:(ARG:0)%和%CALLNAME:(ARG:1)%的相性值下降
+ENDIF
+RELATION:(ARG:0):(NO:(ARG:1)) += ARG:2
+RELATION:(ARG:1):(NO:(ARG:0)) += ARG:2
+
+;上限と下限
+SIF RELATION:(ARG:0):(NO:(ARG:1)) > 200
+	RELATION:(ARG:0):(NO:(ARG:1)) = 200
+SIF RELATION:(ARG:1):(NO:(ARG:0)) > 200
+	RELATION:(ARG:1):(NO:(ARG:0)) = 200
+SIF RELATION:(ARG:0):(NO:(ARG:1)) < 0
+	RELATION:(ARG:0):(NO:(ARG:1)) = 0
+SIF RELATION:(ARG:1):(NO:(ARG:0)) < 0
+	RELATION:(ARG:1):(NO:(ARG:0)) = 0
+
+;-------------------------------------------------
+;関数名:RELATION_UP_AtoB
+;概　要:A→B相性アップ
+;引　数:ARG:0キャラAの登录番号｡ARG:1キャラBの登录番号。ARG:2アップする値(％)
+;備　考:文中関数
+;-------------------------------------------------
+@RELATION_UP_AtoB(ARG:0,ARG:1,ARG:2)
+PRINTL
+IF ARG:2 > 0
+	PRINTFORMW %CALLNAME:(ARG:0)%对%CALLNAME:(ARG:1)%的相性值上升
+ELSEIF ARG:2 < 0
+	PRINTFORMW %CALLNAME:(ARG:0)%对%CALLNAME:(ARG:1)%的相性值下降
+ENDIF
+RELATION:(ARG:0):(NO:(ARG:1)) += ARG:2
+;上限と下限
+SIF RELATION:(ARG:0):(NO:(ARG:1)) > 200
+	RELATION:(ARG:0):(NO:(ARG:1)) = 200
+SIF RELATION:(ARG:0):(NO:(ARG:1)) < 0
+	RELATION:(ARG:0):(NO:(ARG:1)) = 0
+;-------------------------------------------------
+;関数名:SOUCHAKU
+;概　要:调教对象が自慰棒などの刺激用アイテムを付けてるか判定用
+;引　数:ARG：　1.阴茎系除外　2.Ｖ系除外　3.肛系除外　4.Ｂ系除外
+;戻り値:付けてるなら1、無いなら0
+;備  考:式中関数
+;-------------------------------------------------
+;-------------------------------------------------
+@SOUCHAKU(ARG)
+#FUNCTION
+;【阴茎Ｃ系】
+IF ARG != 1
+	;阴蒂夹装着中
+	SIF TEQUIP:11
+		RETURNF 1
+	;飞机杯装着中
+	SIF TEQUIP:12
+		RETURNF 1
+	;导尿管插入中
+	SIF TEQUIP:38
+		RETURNF 1
+	;尿道气球插入中
+	SIF TEQUIP:39
+		RETURNF 1
+	;阴蒂か阴茎爱抚命令
+	SIF TEQUIP:49 > 0
+		RETURNF 1
+ENDIF
+
+;【肛系】
+IF ARG != 3
+	;肛塞装着中
+	SIF TEQUIP:14
+		RETURNF 1
+	;后庭拉珠使用中
+	SIF TEQUIP:15
+		RETURNF 1
+	;灌肠＋肛プラグ装着中
+	SIF TEQUIP:21
+		RETURNF 1
+	;扩张气球装着中
+	SIF TEQUIP:22
+		RETURNF 1
+	;肛门电极装着中
+	SIF TEQUIP:23
+		RETURNF 1
+	;肛门爱抚命令
+	SIF TEQUIP:46
+		RETURNF 1
+	;肛插入命令
+	SIF TEQUIP:48
+		RETURNF 1
+	;尾巴肛插入命令
+	SIF TEQUIP:52
+		RETURNF 1
+ENDIF
+
+
+;【Ｂ系】
+IF ARG != 4
+	;振动乳头夹装着中
+	SIF TEQUIP:16
+		RETURNF 1
+	;挤奶器装着中
+	SIF TEQUIP:17
+		RETURNF 1
+	;乳房电极装着中
+	SIF TEQUIP:24
+		RETURNF 1
+	;胸爱抚命令
+	SIF TEQUIP:44
+		RETURNF 1
+ENDIF
+
+;【Ｖ系】
+IF ARG != 2
+	;自慰棒装着中
+	SIF TEQUIP:13
+		RETURNF 1
+	;手指插入命令
+	SIF TEQUIP:45
+		RETURNF 1
+	;插入命令
+	SIF TEQUIP:47
+		RETURNF 1
+	;尾巴插入命令
+	SIF TEQUIP:51
+		RETURNF 1
+ENDIF
+
+;触手调教中
+SIF TEQUIP:25
+	RETURNF 1
+
+RETURNF 0
+
+;-------------------------------------------------
+;関数名:RELATIONS
+;概　要:関係判定関数
+;引　数:ARG…キャラ１の登录番号
+;		ARG:1…キャラ２の登录番号
+;戻り値:キャラ１にとって、キャラ２は何であるか
+;備　考:文中関数
+;0:特に无
+;1:兄	2:弟	3:姐	4:妹	5:父	6:母	7:息子	8:娘	9:家族	10:同一人物
+;11:先輩	12:後輩	13:上司	14:部下	15:先生	16:生徒	17:師匠	18:弟子	19:友人	20:知り合い
+;21:幼馴染	22:思い人	23:主人	24:従者	25:仕事仲間	26:部活仲間	27:同僚	28:同級生	29:恋人同士
+;-------------------------------------------------
+@RELATIONS(ARG, ARG:1)
+#FUNCTION
+RETURNF CFLAG:ARG:(NO:(ARG:1) + 2000)
+
+;-------------------------------------------------
+;関数名:RELATIONS2
+;概　要:関係判定関数
+;引　数:ARG…キャラ１の登录番号
+;		ARG:1…キャラ２の登录番号
+;戻り値:２人の関係
+;備　考:文中関数
+;0=特に関係无 1=兄弟 2親子 3家族 4=同一人物 5=知り合い 6=師弟 7=友人 8=幼馴染
+;9=仕事仲間 10=部活仲間 11=同僚 12=同級生 13=恋人同士
+;-------------------------------------------------
+@RELATIONS2(ARG, ARG:1)
+#FUNCTION
+SELECTCASE CFLAG:ARG:(NO:(ARG:1) + 2000)
+	CASE 0
+		RETURNF 0
+	CASE 1 , 2
+		RETURNF 1
+	CASE 5 , 7
+		RETURNF 2
+	CASE 9 , 3 , 4 , 6 , 8
+		RETURNF 3
+	CASE 10
+		RETURNF 4
+	CASE 17 , 18
+		RETURNF 6
+	CASE 19
+		RETURNF 7
+	CASE 21
+		RETURNF 8
+	CASE 25
+		RETURNF 9
+	CASE 26
+		RETURNF 10
+	CASE 27
+		RETURNF 11
+	CASE 28
+		RETURNF 12
+	CASE 29
+		RETURNF 13
+ENDSELECT
+RETURNF 5
+;-------------------------------------------------
+;関数名:CVAB_CHECK
+;概　要:行為箇所判定 TFLAG:49
+;-------------------------------------------------
+@CVAB_CHECK
+TFLAG:49 = 0
+;C
+SIF SELECTCOM == 0 || SELECTCOM == 1 || SELECTCOM == 2 || SELECTCOM == 9 || SELECTCOM == 11 || SELECTCOM == 12 || SELECTCOM == 13 || SELECTCOM == 40 || SELECTCOM == 41 || SELECTCOM == 42 || SELECTCOM == 43 || SELECTCOM == 50 || SELECTCOM == 83 || SELECTCOM == 84 || SELECTCOM == 85 || SELECTCOM == 115 || SELECTCOM == 121 || SELECTCOM == 122 || SELECTCOM == 123 || SELECTCOM == 127 || SELECTCOM == 144 || SELECTCOM == 153 || SELECTCOM == 163 || SELECTCOM == 169 || SELECTCOM == 170 || SELECTCOM == 205 || SELECTCOM == 206 || SELECTCOM == 211 || SELECTCOM == 212 || SELECTCOM == 213 || SELECTCOM == 214 || SELECTCOM == 220 || SELECTCOM == 221 || SELECTCOM == 501 || SELECTCOM == 510 || SELECTCOM == 592 || SELECTCOM == 593 || SELECTCOM == 595
+	SETBIT TFLAG:49 ,0
+
+;V
+SIF SEXPLAY(TARGET) == 1 || SELECTCOM == 3 || SELECTCOM == 44 || SELECTCOM == 141 || SELECTCOM == 143 || SELECTCOM == 161 || SELECTCOM == 223 || SELECTCOM == 225 || SELECTCOM == 301 || SELECTCOM == 302 || SELECTCOM == 304 || SELECTCOM == 306 || SELECTCOM == 307 || SELECTCOM == 502 || SELECTCOM == 503 || SELECTCOM == 504 || (PREVCOM == 66 && SELECTCOM == 505) || SELECTCOM == 506 || SELECTCOM == 512
+	SETBIT TFLAG:49 ,1
+
+;A
+SIF SEXPLAY(TARGET) == 2 || SELECTCOM == 4 || SELECTCOM == 5 || SELECTCOM == 14 || SELECTCOM == 45 || SELECTCOM == 46 || SELECTCOM == 142 || SELECTCOM == 143 || SELECTCOM == 146 || SELECTCOM == 147 || SELECTCOM == 148 || SELECTCOM == 149 || SELECTCOM == 162 || SELECTCOM == 167 || SELECTCOM == 224 || SELECTCOM == 226 || SELECTCOM == 303 || SELECTCOM == 305 || SELECTCOM == 306 || SELECTCOM == 308 || (PREVCOM == 67 && SELECTCOM == 505) || SELECTCOM == 513 || SELECTCOM == 590
+	SETBIT TFLAG:49 ,2
+
+;兽姦の場合
+;下半身着衣、又はＡとＶ両方開いていない
+IF SELECTCOM == 155
+	IF (TEQUIP:2 || TEQUIP:4 == 2) || ((TEQUIP:13 || TALENT:140) && (TEQUIP:14 || TEQUIP:15 || TEQUIP:21 || TEQUIP:22 || TEQUIP:23))
+		SETBIT TFLAG:49 ,0
+	;男性、又はＶに道具插入
+	ELSEIF TEQUIP:13 || TALENT:140
+		SETBIT TFLAG:49 ,2
+	ELSE
+		SETBIT TFLAG:49 ,1
+	ENDIF
+ENDIF
+
+;B
+;侍奉系の乳交はひとまず除外
+;揉胸、玩弄乳头、胸爱抚、胸自慰、乳头夹、乳头跳蛋、挤奶器、乳头奸、乳夹口交、饮用母乳
+;髪扱き、打胸部、互相推搡胸部、乳房电极、触手揉乳、触手挤奶、胸爱抚命令、触手乳腺責め、骑乘位揉乳自慰、６９乳交、搾乳、插入中胸爱抚
+SIF SELECTCOM == 0 || SELECTCOM == 6 || SELECTCOM == 7 || SELECTCOM == 8 || SELECTCOM == 10 || SELECTCOM == 47 || SELECTCOM == 48 || SELECTCOM == 49 || SELECTCOM == 65 || SELECTCOM == 84 || SELECTCOM == 88 || SELECTCOM == 89 || SELECTCOM == 90 || SELECTCOM == 101 || SELECTCOM == 126 || SELECTCOM == 150 || SELECTCOM == 164 || SELECTCOM == 165 || SELECTCOM == 222 || SELECTCOM == 300 || SELECTCOM == 505 || SELECTCOM == 508 || SELECTCOM == 509 || SELECTCOM == 594 || SELECTCOM == 595
+	SETBIT TFLAG:49 ,3
+
+
+;口
+;接吻、口交命令、强制舔足、乳夹口交、指チュパ、乳を飲ませる、強制舔阴、顔騎圧迫、Ｗ口交、イマラチオ、饮尿、触手口辱、避孕套精飲（奴隶）、含精接吻、６９式、双枪口交
+SIF SELECTCOM  == 20 || SELECTCOM == 81 || SELECTCOM == 86 || SELECTCOM == 88 || SELECTCOM == 91 || SELECTCOM == 93 || SELECTCOM == 113 || SELECTCOM == 120 || SELECTCOM == 124 || SELECTCOM == 140 || SELECTCOM == 157 || SELECTCOM == 168 || SELECTCOM == 192 || SELECTCOM == 194 || SELECTCOM == 501 || SELECTCOM == 511
+	SETBIT TFLAG:49 ,4
+;-------------------------------------------------
+;関数名:PENIS_YOBIKATA
+;概　要:キャラが阴茎のことをどう呼ぶかの判定
+;引　数:ARG…キャラの登录番号
+;-------------------------------------------------
+@PENIS_YOBIKATA(ARG)
+#FUNCTIONS
+;口調が元々雑なキャラ
+IF CFLAG:ARG:602 || CFLAG:ARG:603
+	RETURNF "鸡巴"
+ELSE
+	SELECTCASE CFLAG:ARG:600
+		;元気タイプ
+		CASE 1
+			RETURNF "鸡巴"
+		;穏やかタイプ
+		CASE 2
+			RETURNF "鸡巴"
+		;ピュアショタ
+		CASE 11
+			RETURNF "大鸡鸡"
+		CASEELSE
+			;ほかの気質で決める…まだ改善する余裕があるかも
+			IF TALENT:ARG:美术属性 || TALENT:ARG:文系 || TALENT:ARG:喜欢花草 || TALENT:ARG:美人 || CFLAG:ARG:601 == 1
+				RETURNF "肉棒"
+			ELSEIF TALENT:ARG:高大体型 || TALENT:ARG:喜欢运动
+				RETURNF "鸡巴"
+			ELSEIF TALENT:ARG:幼稚 && CFLAG:606
+				RETURNF "大鸡鸡"
+			ELSE
+				RETURNF "鸡巴"
+			ENDIF
+	ENDSELECT
+ENDIF
+
+
+;----------------------------------------------------------------------
+;汎用地の文と随机喘ぎをシンクロさせるための快感レベルと痛苦レベルの計算
+;----------------------------------------------------------------------
+@KYOTUU_JYOKYO
+;C:4 = 快感のレベル
+;C:0 = C快感
+;C:1 = V快感
+;C:2 = A快感
+;C:3 = B快感
+C:0 = 0
+C:1 = 0
+C:2 = 0
+C:3 = 0
+C:4 = 0
+;D = 痛苦のレベル
+;D:1 = Ａが痛い
+;D:2 = Ｖが痛い
+D = 0
+D:1 = 0
+D:2 = 0
+
+CALL CVAB_CHECK
+;Ａ ;舔肛は痛くないと思うので別枠
+IF ACHECK(TARGET) || GETBIT(TFLAG:49, 2)
+	IF SELECTCOM != 4 || ACHECK(TARGET)
+		IF EXP:Ａ经验 < 10 && (PALAM:2 + UP:2) < 3000 && PALAM:4 < 10000
+			D = 1
+			D:1 = 4
+		ELSEIF EXP:Ａ经验 < 30 && (PALAM:2 + UP:2) < 1000 && PALAM:4 < 6000
+			D = 1
+			D:1 = 3
+		ELSEIF EXP:Ａ经验 < 75 && (PALAM:2 + UP:2) < 500 && PALAM:4 < 3000
+			D = 1
+			D:1 = 2
+		ELSEIF (PALAM:2 + UP:2) < 1500 && PALAM:4 >= 1000
+
+		ELSEIF (PALAM:2 + UP:2) < 3000 && PALAM:4 < 500
+			C:2 = 1
+			D = 1
+			D:1 = 1
+		ELSEIF (PALAM:2 + UP:2) < 3000
+			C:2 = 1
+		ELSEIF (PALAM:2 + UP:2) < 6000
+				C:2 = 2
+		ELSEIF (PALAM:2 + UP:2) < 8000
+				C:2 = 3
+		ELSE
+				C:2 = 4
+		ENDIF
+	ELSE
+		IF EXP:Ａ经验 < 10 && (PALAM:2 + UP:2) < 3000 && PALAM:4 < 10000
+		ELSEIF EXP:Ａ经验 < 30 && (PALAM:2 + UP:2) < 1000 && PALAM:4 < 6000
+		ELSEIF EXP:Ａ经验 < 75 && (PALAM:2 + UP:2) < 500 && PALAM:4 < 3000
+		ELSEIF (PALAM:2 + UP:2) < 3000
+			C:2 = 1
+		ELSEIF (PALAM:2 + UP:2) < 6000
+				C:2 = 2
+		ELSEIF (PALAM:2 + UP:2) < 8000
+				C:2 = 3
+		ELSE
+				C:2 = 4
+		ENDIF
+	ENDIF
+ENDIF
+
+;Ⅴ
+IF VCHECK(TARGET) || GETBIT(TFLAG:49, 1)
+	IF EXP:Ｖ经验 < 10 && (PALAM:1 + UP:1) < 3000 && PALAM:4 < 10000
+		D = 1
+		D:2 = 4
+	ELSEIF EXP:Ｖ经验 < 30 && (PALAM:1 + UP:1) < 1000 && PALAM:4 < 6000
+		D = 1
+		D:2 = 3
+	ELSEIF EXP:Ｖ经验 < 75 && (PALAM:1 + UP:1) < 500 && PALAM:4 < 3000
+		D = 1
+		D:2 = 2
+	ELSEIF (PALAM:1 + UP:1) < 1500 && PALAM:4 >= 1000
+
+	ELSEIF (PALAM:1 + UP:1) < 3000 && PALAM:4 < 500
+		C:1 = 1
+		D = 1
+		D:2 = 1
+	ELSEIF (PALAM:1 + UP:1) < 3000
+		C:1 = 1
+	ELSEIF (PALAM:1 + UP:1) < 6000
+		C:1 = 2
+	ELSEIF (PALAM:1 + UP:1) < 8000
+		C:1 = 3
+	ELSE
+		C:1 = 4
+	ENDIF
+ENDIF
+;Ｃ
+IF CCHECK(TARGET) || GETBIT(TFLAG:49, 0)
+	IF (PALAM:0 + UP:0) < 1500
+	ELSEIF (PALAM:0 + UP:0) < 3000
+		C:0 = 1
+	ELSEIF (PALAM:0 + UP:0) < 6000
+		C:0 = 2
+	ELSEIF (PALAM:0 + UP:0) < 8000
+		C:0 = 3
+	ELSEIF (PALAM:0 + UP:0) >= 8000
+		C:0 = 4
+	ENDIF
+ENDIF
+;Ｂ
+IF BCHECK(TARGET) || GETBIT(TFLAG:49, 3)
+	IF (PALAM:3 + UP:3) < 1500
+	ELSEIF (PALAM:3 + UP:3) < 3000
+		C:3 = 1
+	ELSEIF (PALAM:3 + UP:3) < 6000
+		C:3 = 2
+	ELSEIF (PALAM:3 + UP:3) < 8000
+		C:3 = 3
+	ELSEIF (PALAM:3 + UP:3) >= 8000
+		C:3 = 4
+	ENDIF
+ENDIF
+
+
+;慣れない足交侍奉なら痛い
+SIF SELECTCOM == 123 && (PALAM:0 + UP:0) < 1500 && D == 0
+	D = 1
+;暴力を振るうなどはD = 1
+SIF (SELECTCOM == 30 || (SELECTCOM >= 100 && SELECTCOM <= 104) || SELECTCOM == 110 || SELECTCOM == 115) && D == 0
+	D = 1
+;電極装着中､触手调教中
+SIF (TEQUIP:23 || TEQUIP:24) || (TEQUIP:25 && EXP:触手经验 < 100)
+	D = 2
+;严厉调教は受虐狂がなければ痛苦ＬＶ2  烙印　拷問
+SIF ((SELECTCOM >= 140 && SELECTCOM <= 143) || (SELECTCOM >= 149 && SELECTCOM <= 153) || SELECTCOM == 156 || SELECTCOM == 108) && ABL:受虐属性 < 4
+	D = 2
+;首絞め、金蹴りは痛苦ＬＶ2
+SIF SELECTCOM == 112 || SELECTCOM == 114 || SELECTCOM == 517 || SELECTCOM == 518
+	D = 2
+
+;全体的の気持ち良さのレベル分け
+
+;三箇所以上绝顶寸前ならLV4
+IF (C:0 + C:1 + C:2 >= 12) || (C:0 + C:1 + C:3 >= 12) || (C:0 + C:2 + C:3 >= 12) || (C:1 + C:2 + C:3 >= 12)
+	C:4 = 4
+;一箇所～二箇所绝顶寸前oror三箇所の気持ちよさが3以上ならLV3
+ELSEIF C:0 == 4 || C:1 == 4 || C:2 == 4 || C:3 == 4 || (C:0 + C:1 + C:2 >= 9) || (C:0 + C:1 + C:3 >= 9) || (C:0 + C:2 + C:3 >= 9) || (C:1 + C:2 + C:3 >= 9)
+	C:4 = 3
+;二箇所の気持ちよさが2以上ならLV2
+ELSEIF (C:0 + C:1 >= 4) || (C:0 + C:2 >= 4) || (C:0 + C:3 >= 4) || (C:1 + C:2 >= 4) || (C:1 + C:3 >= 4) || (C:2 + C:3 >= 4)
+	C:4 = 2
+ELSEIF C:0 + C:1 + C:2 + C:3 == 0
+	C:4 = 0
+ELSE
+	C:4 = 1
+ENDIF
+
+;----------------------------------------------------------------------
+;一番快感が強いところかどうか
+;ARG：0,快Ｃ　1,快Ｖ　2,快Ａ　3,快Ｂ
+;----------------------------------------------------------------------
+@PALAM_COMPARE(ARG)
+#FUNCTION
+SIF (PALAM:ARG + UP:ARG) >= (PALAM:0 + UP:0) && (PALAM:ARG + UP:ARG) >= (PALAM:1 + UP:1) && (PALAM:ARG + UP:ARG) >= (PALAM:2 + UP:2) && (PALAM:ARG + UP:ARG) >= (PALAM:3 + UP:3)
+	RETURNF 1
+RETURNF 0
+
+;----------------------------------------------------------------------
+;登录番号抽出関数@NO2
+;前にあった@NOを式中関数にしたものです
+;----------------------------------------------------------------------
+@NO2(ARG)
+#FUNCTION
+FOR LOCAL, 0, CHARANUM
+	SIF NO:LOCAL == ARG
+		RETURNF LOCAL
+NEXT
+RETURNF -1
+

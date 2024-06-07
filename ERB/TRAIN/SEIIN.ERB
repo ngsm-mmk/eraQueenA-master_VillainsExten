@@ -1,0 +1,220 @@
+﻿;----------------------------------------------------------------
+;精飲绝顶関連の処理の始動
+;----------------------------------------------------------------
+@SEIIN_START
+
+;口で射精させていなければ処理しない
+IF TFLAG:0 == 0
+	RETURN
+ENDIF
+
+;強制精飲绝顶の回数（通称：パブロフカウンター）をチェックする
+CALL SEIIN_CHECK
+
+
+;----------------------------------------------------------------
+;強制精飲绝顶の回数（パブロフカウンター）チェック
+;パブロフカウンター+1回で精飲绝顶へ
+;パブロフカウンターが足りない場合
+;器具や乳交などで绝顶していれば
+;強制精飲绝顶へ
+;----------------------------------------------------------------
+@SEIIN_CHECK
+
+;規定の回数
+S = 20
+;娼妇、淫乱は基本15
+SIF TALENT:淫乱 == 1 || TALENT:娼妇 == 1
+	S = 15
+
+;奴隶の素質により規定回数を増減する
+;刚强
+SIF TALENT:12 == 1
+	S += 2
+;高傲
+SIF TALENT:15 == 1
+	S += 5
+;性保守
+SIF TALENT:24 == 1
+	S += 2
+;乐观
+SIF TALENT:25 == 1
+	S -= 2
+;悲观
+SIF TALENT:26 == 1
+	S += 2
+;难以越过的底线
+SIF TALENT:27 == 1
+	S += 5
+;性压抑
+SIF TALENT:32 == 1
+	S += 2
+;性开放
+SIF TALENT:33 == 1
+	S -= 2
+;药物抗性
+SIF TALENT:56 == 1
+	S += 2
+;污臭钝感
+SIF TALENT:61 == 1
+	S -= 2
+;污臭敏感
+SIF TALENT:62 == 1
+	S += 2
+;接受快感
+SIF TALENT:70 == 1
+	S -= 2
+;否定快感
+SIF TALENT:71 == 1
+	S += 2
+;容易上瘾
+SIF TALENT:72 == 1
+	S -= 5
+;性倒错
+SIF TALENT:80 == 1
+	S -= 2
+;讨厌男人
+SIF TALENT:82 == 1
+	S += 2
+
+IF CFLAG:43 >= S
+	CALL SEIIN_ORGASM
+ELSEIF TFLAG:29 > 0
+	CALL SEIIN_COMPULSION_ORGASM
+ENDIF
+
+
+;----------------------------------------------------------------
+;精飲绝顶の処理
+;----------------------------------------------------------------
+@SEIIN_ORGASM
+
+;精饮绝顶经验の回数追加
+EX:13 += 1
+EXP:24 += 1
+
+;精饮绝顶经验の処理
+;经验の回数によって処理が変化
+IF EXP:24 == 1
+	PRINTFORML 
+	PRINTFORMW %CALLNAME:TARGET%的样子很奇怪…
+	IF SELECTCOM == 192 || SELECTCOM == 194
+		PRINTFORM 吞咽精液的瞬间
+	ELSE
+		PRINTFORM 在其口中射精的瞬间
+	ENDIF
+	;通常の绝顶の有無によって地の文が変化
+	IF TFLAG:29 > 0
+		PRINTFORMW %CALLNAME:TARGET%的身体抖动得比平时更为剧烈…
+	ELSE
+		PRINTFORML 明明还未对他做什么
+		PRINTFORMW 却好像只是喝了精液就高潮了……
+	ENDIF
+	PRINTFORML 
+	IF SELECTCOM == 192 || SELECTCOM == 194
+		PRINTFORMW %CALLNAME:TARGET%对饮精行为产生了过剩反应
+	ELSE
+		PRINTFORMW %CALLNAME:TARGET%对口内射精产生了过剩反应
+	ENDIF
+	;精液成瘾がLV3に上がる
+	IF ABL:16 < 3
+		PRINTFORMW %CALLNAME:TARGET%の%ABLNAME:16%上升到3了
+		ABL:16 = 3
+	ENDIF
+	PRINTFORMW %EXPNAME:50%＋1
+	EXP:50 += 1
+
+	;素質の変化
+	;污臭敏感がなくなり、弱点を握る
+	PRINTFORM %CALLNAME:TARGET%
+	SIF TALENT:62 == 1
+		PRINTFORMW %CALLNAME:TARGET%失去了%TALENTNAME:62%
+		TALENT:62 = 0
+	SIF TALENT:37 == 0 && !KANRAKU(TARGET)
+		PRINTFORMW %PLAYER_NAME(1)%掌握了%CALLNAME:TARGET%的%TALENTNAME:37%
+	PRINTL 
+	TALENT:37 = 1
+ELSE
+	IF SELECTCOM == 192 || SELECTCOM == 194
+		PRINTFORML %CALLNAME:TARGET%发出含混不清的声音，肩膀微微颤动着，就那样迎来了高潮…
+	ELSE
+		PRINTFORM 射精的同时
+		PRINTFORML 含着阴茎的%CALLNAME:TARGET%发出含蓄的声音
+		PRINTFORML 肩膀微微颤抖着，就那样迎来了高潮…
+	ENDIF
+	PRINTL 
+ENDIF
+
+PRINTFORML 精饮绝顶经验＋1
+
+;パラメーター増減
+;基本ソース　露出、情欲、润滑、屈从、反抗
+SOURCE:10 += 500
+SOURCE:11 += 2000
+SOURCE:13 += 1000
+SOURCE:14 += 3000
+SOURCE:18 += 800
+
+IF EXP:24 == 1
+	TIMES SOURCE:13 , 1.50
+	TIMES SOURCE:14 , 2.00
+	TIMES SOURCE:18 , 1.50
+ELSEIF ABL:16 == 5
+	TIMES SOURCE:14 , 1.20
+ELSEIF ABL:16 == 8
+	TIMES SOURCE:11 , 1.50
+	TIMES SOURCE:18 , 0.80
+	TIMES SOURCE:14 , 1.50
+ELSEIF ABL:16 == 10
+	TIMES SOURCE:11 , 2.00
+	TIMES SOURCE:14 , 2.00
+	TIMES SOURCE:18 , 0.50
+ENDIF
+
+
+;----------------------------------------------------------------
+;強制精飲绝顶の処理
+;強制精飲绝顶の经验回数をCFLAG:4000に格納
+;----------------------------------------------------------------
+@SEIIN_COMPULSION_ORGASM
+
+CFLAG:43 += 1
+
+;強制精飲绝顶の经验回数によって処理を分岐
+IF CFLAG:43 == 1
+	PRINTFORML 
+	PRINTFORM %CALLNAME:TARGET%释放了
+	SIF SELECTCOM != 192 && SELECTCOM != 194
+		PRINTFORM 。
+	PRINTFORML 一边饮下精液的同时
+	PRINTFORML 一边接受了强烈的刺激
+	PRINTFORML 就那样被强迫着推上了高潮…
+	PRINTFORML 強制精飲绝顶
+	PRINTL 
+ELSEIF CFLAG:43 == S
+	PRINTFORML 強制精飲绝顶
+	PRINTFORML 
+	PRINTFORML %CALLNAME:TARGET%はすっかり
+	PRINTFORML 好像记住了精液的味道…
+	PRINTL 
+ELSE
+	PRINTFORML 強制精飲绝顶
+	PRINTL 
+ENDIF
+
+;パラメーター増減
+;基本ソース
+;屈从、恐惧、郁闷、反抗
+SOURCE:8 += 500
+SOURCE:14 += 1000
+SOURCE:16 += 200
+SOURCE:18 += 300
+
+IF CFLAG:43 == 1
+	TIMES SOURCE:8 , 1.50
+	TIMES SOURCE:14 , 1.50
+	TIMES SOURCE:16 , 1.50
+	TIMES SOURCE:18 , 1.50
+ELSEIF CFLAG:43 == S
+	SOURCE:11 = 1000
+ENDIF

@@ -1,0 +1,410 @@
+﻿;-------------------------------------------------
+;尿道导尿管
+;道具使用指令
+;-------------------------------------------------
+@COM50
+;-------------------------------------------------
+;特殊派生処理
+;-------------------------------------------------
+IF TEQUIP:25
+	PRINTL 触手尿道插入
+	STR:0 = 触手尿道插入
+	SELECTCOM = 170
+ELSE
+	PRINTL 导尿管
+	STR:0 = 导尿管
+ENDIF
+
+
+
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 60
+LOSEBASE:1 += 150
+
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 500
+
+;ABL:Ｃ感觉をみる
+IF ABL:3 == 0
+	SOURCE:0 = 80
+	SOURCE:14 = 300
+ELSEIF ABL:3 == 1
+	SOURCE:0 = 250
+	SOURCE:14 = 800
+ELSEIF ABL:3 == 2
+	SOURCE:0 = 600
+	SOURCE:14 = 1400
+ELSEIF ABL:3 == 3
+	SOURCE:0 = 1000
+	SOURCE:14 = 1800
+ELSEIF ABL:3 == 4
+	SOURCE:0 = 1300
+	SOURCE:14 = 2100
+ELSE
+	SOURCE:0 = 1700
+	SOURCE:14 = 2400
+ENDIF
+
+;ABL8,受虐属性をみる
+IF ABL:9 < 1
+	SOURCE:7 = 2000
+	SOURCE:15 = 1000
+	SOURCE:14 = 200
+	SOURCE:17 = 1000
+	SOURCE:18 = 2000
+ELSEIF ABL:9 <2
+	SOURCE:7 = 1600
+	SOURCE:15 = 2000
+	SOURCE:14 = 500
+	SOURCE:17 = 1000
+	SOURCE:18 = 1000
+ELSEIF ABL:9 < 3
+	SOURCE:7 = 1200
+	SOURCE:15 = 1000
+	SOURCE:14 = 800
+	SOURCE:17 = 1000
+	SOURCE:18 = 500
+ELSEIF ABL:9 < 4
+	SOURCE:7 = 800
+	SOURCE:15 = 1000
+	SOURCE:14 = 1200
+	SOURCE:17 = 1000
+	SOURCE:18 = 100
+ELSEIF ABL:9 < 5
+	SOURCE:7 = 600
+	SOURCE:15 = 1000
+	SOURCE:14 = 1500
+	SOURCE:17 = 1000
+	SOURCE:18 = 0
+ELSE
+	SOURCE:7 = 400
+	SOURCE:15 = 1000
+	SOURCE:14 = 2000
+	SOURCE:17 = 1000
+	SOURCE:18 = 0
+ENDIF
+
+;PALAM:润滑をみる
+IF PALAM:4 < PALAMLV:1
+	TIMES SOURCE:0 , 0.40
+	SOURCE:7 += 1600
+ELSEIF PALAM:4 < PALAMLV:2
+	TIMES SOURCE:0 , 0.80
+	SOURCE:7 += 1000
+ELSEIF PALAM:4 < PALAMLV:3
+	TIMES SOURCE:0 , 1.00
+	SOURCE:7 += 600
+ELSEIF PALAM:4 < PALAMLV:4
+	TIMES SOURCE:0 , 1.40
+	SOURCE:7 += 250
+ELSEIF PALAM:4 >= PALAMLV:4
+	TIMES SOURCE:0 , 1.80
+	SOURCE:7 += 120
+ENDIF
+
+;PALAM:情欲をみる
+IF PALAM:6 < PALAMLV:1
+	TIMES SOURCE:0 , 0.80
+ELSEIF PALAM:6 < PALAMLV:2
+	TIMES SOURCE:0 , 0.90
+ELSEIF PALAM:6 < PALAMLV:3
+	TIMES SOURCE:0 , 1.00
+ELSEIF PALAM:6 < PALAMLV:4
+	TIMES SOURCE:0 , 1.10
+ELSEIF PALAM:6 >= PALAMLV:4
+	TIMES SOURCE:0 , 1.20
+ENDIF
+
+;ABL:顺从をみる
+IF ABL:0 == 0
+	TIMES SOURCE:0 , 0.80
+ELSEIF ABL:0 == 1
+	TIMES SOURCE:0 , 0.90
+ELSEIF ABL:0 == 2
+	TIMES SOURCE:0 , 1.00
+ELSEIF ABL:0 == 3
+	TIMES SOURCE:0 , 1.10
+ELSEIF ABL:0 == 4
+	TIMES SOURCE:0 , 1.20
+ELSE
+	TIMES SOURCE:0 , 1.30
+ENDIF
+
+;小人体形
+SIF TALENT:142
+	TIMES SOURCE:7 , 2.00
+
+;Ｃ敏感、钝感をみる
+;快Ｃ自体のチェックは後でまとめてやる
+IF TALENT:101
+	TIMES SOURCE:7 , 1.50
+	TIMES SOURCE:14 , 1.50
+	TIMES SOURCE:17 , 1.50
+ELSEIF TALENT:102
+	TIMES SOURCE:7 , 0.60
+	TIMES SOURCE:14 , 0.60
+	TIMES SOURCE:17 , 0.60
+ENDIF
+
+;处女で贞操重视
+SIF TALENT:0 == 1 && TALENT:30
+	SOURCE:14 /= 3
+
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;触手玩弄阴茎なら、触手体液が阴茎に付く
+SIF TEQUIP:25
+	STAIN:2 |= 32
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+EXP:49 += 1
+PRINTL Ｕ扩张经验＋１
+
+IF EXP:49 <= 1
+	EXP:50 += 1
+	PRINTL 异常经验＋１
+ENDIF
+
+;触手召喚時、触手经验の重置をする
+SIF TEQUIP:25 == 1
+	觸手 = 0
+
+;依赖度ベクトル
+TFLAG:33 = 5
+
+;依赖度補正値(服从で1、隶属で2）
+IF TALENT:5 && ASSIPLAY == 0
+	TFLAG:30 += 1
+ELSEIF TALENT:8 && ASSIPLAY == 0
+	TFLAG:30 += 2
+ENDIF
+CALL KOJO_MESSAGE_COM
+;着脱の処理
+IF TEQUIP:38 == 0
+	TEQUIP:38 = 1
+ELSE
+	TEQUIP:38 = 0
+ENDIF
+
+RETURN 1
+
+;-------------------------------------------------
+;装着継続の処理
+;-------------------------------------------------
+@EQUIP_COM50
+;尿道导尿管
+IF TEQUIP:25
+	PRINTL ＜触手尿道插入中＞
+ELSE
+	PRINTL ＜导尿管插入中＞
+ENDIF
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 250
+
+A = 20
+
+;EXP:Ｕ拡張经验をみる
+IF EXP:49 < EXPLV:1
+	TIMES A , 3.00
+ELSEIF EXP:49 < EXPLV:2
+	TIMES A , 2.50
+ELSEIF EXP:49 < EXPLV:3
+	TIMES A , 2.00
+ELSEIF EXP:49 < EXPLV:4
+	TIMES A , 1.00
+ELSEIF EXP:49 < EXPLV:5
+	TIMES A , 0.80
+ELSE
+	TIMES A , 0.60
+ENDIF
+
+;胆怯
+SIF TALENT:10
+	TIMES A , 2.00
+;缺乏感情
+SIF TALENT:22
+	TIMES A , 0.60
+
+LOSEBASE:0 += A
+LOSEBASE:1 += A * 2
+
+;ABL:Ｃ感觉をみる
+IF ABL:0 == 0
+	A = 80
+	B = 300
+ELSEIF ABL:0 == 1
+	A = 250
+	B = 800
+ELSEIF ABL:0 == 2
+	A = 600
+	B = 1400
+ELSEIF ABL:0 == 3
+	A = 1000
+	B = 1800
+ELSEIF ABL:0 == 4
+	A = 1300
+	B = 2100
+ELSE
+	A = 1700
+	B = 2400
+ENDIF
+
+;EXP:Ｕ经验をみる
+IF EXP:6 < EXPLV:1
+	TIMES A , 0.50
+	C = 2000
+ELSEIF EXP:6 < EXPLV:2
+	TIMES A , 1.00
+	C = 300
+ELSEIF EXP:6 < EXPLV:3
+	TIMES A , 1.10
+	C = 50
+ELSEIF EXP:6 < EXPLV:4
+	TIMES A , 1.20
+	C = 10
+ELSEIF EXP:6 < EXPLV:5
+	TIMES A , 1.40
+	C = 0
+ELSE
+	TIMES A , 1.60
+	C = 0
+ENDIF
+
+;PALAM:润滑をみる
+IF PALAM:4 < PALAMLV:1
+	TIMES A , 0.40
+	C += 800
+ELSEIF PALAM:4 < PALAMLV:2
+	TIMES A , 0.80
+	C += 500
+ELSEIF PALAM:10 < PALAMLV:3
+	TIMES A , 1.00
+	C += 300
+ELSEIF PALAM:4 < PALAMLV:4
+	TIMES A , 1.40
+	C += 120
+ELSE
+	TIMES A , 1.80
+	C += 100
+ENDIF
+
+;PALAM:情欲をみる
+IF PALAM:6 < PALAMLV:1
+	TIMES A , 0.80
+ELSEIF PALAM:6 < PALAMLV:2
+	TIMES A , 0.90
+ELSEIF PALAM:6 < PALAMLV:3
+	TIMES A , 1.00
+ELSEIF PALAM:6 < PALAMLV:4
+	TIMES A , 1.10
+ELSE
+	TIMES A , 1.20
+ENDIF
+
+;ABL:顺从をみる
+IF ABL:0 == 0
+	TIMES A , 0.80
+ELSEIF ABL:0 == 1
+	TIMES A , 0.90
+ELSEIF ABL:0 == 2
+	TIMES A , 1.00
+ELSEIF ABL:0 == 3
+	TIMES A , 1.10
+ELSEIF ABL:0 == 4
+	TIMES A , 1.20
+ELSE
+	TIMES A , 1.30
+ENDIF
+
+;小人体形
+SIF TALENT:142
+	TIMES C , 2.00
+
+;Ｃ敏感、钝感をみる
+;快Ｃ自体のチェックは後でまとめてやる
+IF TALENT:101
+	TIMES A , 1.50
+	TIMES B , 1.50
+	TIMES C , 1.50
+ELSEIF TALENT:102
+	TIMES A , 0.60
+	TIMES B , 0.60
+	TIMES C , 0.60
+ENDIF
+
+;处女で贞操重视
+SIF TALENT:0 == 1 && TALENT:30
+	B /= 3
+
+SOURCE:0 += A
+SOURCE:14 += B
+SOURCE:6 += C
+SOURCE:17 += B
+
+CALL EQUIP_MESSAGE_COM50
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+
+EXP:6 += 2
+PRINTL Ｕ经验＋２
+
+IF TEQUIP:25 == 0
+
+;蔷薇经验とか加算
+CALL COM_EXP(1)
+
+
+ENDIF
+
+SIF TEQUIP:25
+	觸手 += 1
+RETURN 1
+
+;--------------------------------------------------
+;装着時メッセージ
+;--------------------------------------------------
+@EQUIP_MESSAGE_COM50
+SIF FLAG:6 == 0
+	RETURN 0
+
+PRINTL 
+PRINTFORM %CALLNAME:TARGET%的尿道被
+IF TEQUIP:25
+	PRINT 触手
+ELSE
+	PRINT 导尿管
+ENDIF
+PRINTL 蹂躏着。
+IF ABL:9 == 0
+	PRINTFORM 是因为无法接受侵入尿道的异物吗？%CALLNAME:TARGET%的脸上浮现出苦闷的神情。
+ELSEIF ABL:9 == 1
+	PRINTFORM %CALLNAME:TARGET%紧闭双眼，努力抑制着排尿感。
+ELSEIF ABL:9 == 2
+	PRINTFORM %CALLNAME:TARGET%的脸因憋尿感红成一片，双腿夹紧微微颤抖。
+ELSEIF ABL:9 == 3
+	PRINTFORM %CALLNAME:TARGET%饱受着小腹剧痛的折磨，但却时不时露出恍惚的神情。
+ELSEIF ABL:9 >= 5
+	PRINTFORML 来自尿道的刺激似乎让%CALLNAME:TARGET%很是享受。
+	SIF TALENT:57
+		PRINTFORM 由于强烈的快感，%CALLNAME:TARGET%的尿道口不检点地张开了，从中滴滴答答垂下淡黄色的液体。
+ELSE
+	PRINTFORM 承受着尿意与尿道扩张的双重折磨，%CALLNAME:TARGET%紧皱着眉头。
+ENDIF
+WAIT
+SIF TEQUIP:25
+	觸手 += 1
+

@@ -1,0 +1,1236 @@
+﻿;--------------------------------------------------
+;このファイル内では素質についての記述があります。
+;--------------------------------------------------
+;=============================================================================
+;用語辞典――素質
+;=============================================================================
+;--------------------------------------------------
+;素質解説メインページ
+;--------------------------------------------------
+@DICTIONARY_TALENT_MAIN
+P = 0
+$PRINT_LIST
+DRAWLINE
+PRINTFORML 「素质」相关的大体说明。
+PRINTFORML 请选择想要了解的素质。 ＜page.{P+1}/12＞
+;PRINTFORML (※现阶段并未全部完成)
+DRAWLINE
+;各ページを表示
+FOR LOCAL:1, 0, 20
+	LOCAL = LOCAL:1 + P*20
+	STRLENS TALENTNAME:LOCAL
+	SIF RESULT > 0
+		PRINTFORML [{LOCAL, 3}]%TALENTNAME:LOCAL%
+NEXT
+DRAWLINE
+PRINTFORMLC \@(P <= 0) ? %" " * 16% # [1001]上一页\@
+PRINTLC [1000]返回
+PRINTFORMLC \@(P >= 11) ? %" " * 16% # [1009]下一页\@
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 1000
+	RETURN 0
+ELSEIF RESULT == 1001 && P > 0
+	P -= 1
+	GOTO PRINT_LIST
+ELSEIF RESULT == 1009 && P < 12
+	P += 1
+	GOTO PRINT_LIST
+ELSE
+	Q = RESULT
+	STRLENS TALENTNAME:Q
+	IF RESULT > 0
+		PRINTFORML 【%TALENTNAME:Q%】
+		TRYCALLFORM DICTIONARY_TALENT_{Q}
+		GOTO PRINT_LIST
+	ELSE
+		GOTO INPUT_LOOP
+	ENDIF
+ENDIF
+
+;--------------------------------------------------
+;素質解説
+;--------------------------------------------------
+;处女
+@DICTIONARY_TALENT_0
+PRINTL 没有过性相关（尤指阴道插入）体验，或是单纯保留着处女膜。
+PRINTL 前者的话，因为没有性经验所以在调教中抵抗很激烈。
+PRINTL 不过作为奴隶拍卖时价值会大幅提高。
+PRINTW 当然，♂是不会持有这个素质的。
+
+;再生处女
+@DICTIONARY_TALENT_1
+PRINTL 吃下「红色的糖果」后再生出的处女膜。
+PRINTL 拍卖时的价值自然会提高，但会比纯粹无插入经验的真处女低。
+PRINTL 同时，在调教中抵抗会稍微比以前激烈一些。
+PRINTW 当然，♂是不会持有这个素质的。
+
+	;陷落系の素質
+;恋慕
+@DICTIONARY_TALENT_3
+PRINTL 在被主人调教时感到纯然的欣喜和快乐，恋慕系陷落的素质之一。
+PRINTL 因为对主人怀有微弱爱意，所以大部分指令都言听计从。
+PRINTL 诸如「屈服」等相关数值的增长也更加容易了。
+PRINTL 这种情感是真正的爱还是斯德哥尔摩就看您的理解了。
+PRINTL [取得条件]
+PRINTL 顺从、侍奉精神3以上+屈服刻印Lv3+反抗刻印Lv0+侍奉快乐经验200以上
+PRINTW 依赖度1000以上+异常经验2以下+被助手调教的经验1000以下
+
+;淫乱
+@DICTIONARY_TALENT_4
+PRINTL 脑子里只有下半身和啪啪啪，渴望从调教中获得快乐，淫乱系陷落的素质之一。
+PRINTL 因为身心都追求着快感，所以大部分指令都非常积极地去实行，几乎算是言听计从。
+PRINTL 由于这份积极和主动，整体的能力都容易提高。
+PRINTL 因为取得条件较为苛刻，初期较难培养。
+PRINTL [取得条件]
+PRINTL 欲望3以上+CVAB感觉合计10以上+快乐刻印Lv3+屈服刻印Lv3+反抗刻印Lv0+绝顶经验50以上
+PRINTL 以下条件满足任意一个
+PRINTW 异常经验3以上 / 异常经验1以上+被助手调教的经验1000以上 / 被助手调教的经验2000以上
+
+;服从
+@DICTIONARY_TALENT_5
+PRINTL 完全臣服，身心都变成足下奴隶的状态，服从系陷落的素质之一。
+PRINTL 对主人几乎没有反抗的念头，任何命令都绝对服从。
+PRINTL 只要是和主人相关的事，无论什么都能接受。
+PRINTL 「反感」数值的增长会变得困难。
+PRINTL [取得条件]
+PRINTL 顺从、受虐属性3以上+CAVB感觉10以下+屈服刻印Lv3+反抗刻印Lv0
+PRINTW 痛苦快乐经验+紧缚经验200以上+依赖度-1000以下+异常经验2以上+被助手调教的经验1000以下
+
+;相亲相爱
+@DICTIONARY_TALENT_6
+PRINTL 对主人抱有发自内心的深切爱意，彻底坠入爱河。恋慕系的进阶素质。
+PRINTL 因为彼此间拥有了比[恋慕]时更深的羁绊，所有指令的实行效果进一步增强。
+PRINTL 另外，拍卖额会大幅度降低。
+PRINTL [取得条件]
+PRINTL 恋慕、顺从、侍奉精神5以上+反抗刻印Lv0+爱情经验200以上+侍奉快乐经验400以上
+PRINTW 依赖度3000以上+异常经验5以下+被同性助手调教的经验1500以下
+
+;娼妇
+@DICTIONARY_TALENT_7
+PRINTL 一言以蔽之，牝犬。淫乱系的进阶素质。
+PRINTL 情欲和快乐系的上升幅度变得更大了。
+PRINTL 因为具有丰富的技术和极高的敏感度，拍卖额非常可观。
+PRINTL [取得条件]
+PRINTL 淫乱、欲望5以上+CVAB感觉合计20以上+反抗刻印Lv0+绝顶经验200以上
+PRINTL 以下条件满足任意一个
+PRINTW 异常经验6以上 / 异常经验4以上+被同性助手调教的经验2000以上 / 异常经验3以上+被同性助手调教的经验3000以上
+
+;隶属
+@DICTIONARY_TALENT_8
+PRINTL 发誓连带着灵魂都一辈子追随主人左右，最棒的奴隶。服从系的进阶素质。
+PRINTL 开始萌发作为奴隶的个人意识，希望一生为主人效劳。
+PRINTL 到了这一步已经不太可能对主人反感了，是非常顺从的理想的性奴隶。
+PRINTL 在陷落素质中拍卖额增幅最大。
+PRINTL [取得条件]
+PRINTL 服从、顺从、受虐属性5以上+CAVB感觉15以下+反抗刻印Lv0
+PRINTW 痛苦快乐经验+紧缚经验500以上+依赖度-3000以下+异常经验5以上+被同性助手调教的经验1500以下
+
+
+;崩溃
+@DICTIONARY_TALENT_9
+PRINTL 无法承受调教，身心都坏掉了的状态。
+PRINTL 因为心已经彻底死掉，对主人的好感度不再变化。
+PRINTL 无法作为合格的性奴隶使用，拍卖额自然也非常低下。
+PRINTL 除非做了非常不道德的事，否则不会发生。
+PRINTW 总之请让崩溃了的奴隶好好休息，耐心等其康复。
+;PRINTW 崩溃用の口上が用意されている場合、プ雷ヤーの心をも抉ります。
+
+
+;性格系の素質
+;胆怯
+@DICTIONARY_TALENT_10
+PRINTL 和字面意义一样，是怯懦的性格。
+PRINTL 因为对恐怖的耐性很低，所以「反感」不易增长，「恐怖」则更容易增长。
+PRINTW 「顺从」能力的提升也较为容易。
+
+;反抗
+@DICTIONARY_TALENT_11
+PRINTL 和字面意义一样，是叛逆的性格。
+PRINTL 对于诱拐、监禁，最后进行性调教的主人会表现出露骨的反抗意志。
+PRINTL 因为反抗性强，一开始命令类型的指令基本都不会实行。
+PRINTL 此外「恭顺」和「情欲」的数值较难增长。
+PRINTW 又由于对于成为性奴隶一事充满抗拒，必须把「顺从」能力提升到4以上才能拍卖。
+
+;刚强
+@DICTIONARY_TALENT_12
+PRINTL 和字面意义一样，是刚毅的性格。
+PRINTL 对于诱拐、监禁，最后进行性调教的主人也能毫不畏惧地毅然面对。
+PRINTL 因为性格坚毅，一开始命令类型的指令基本都不会实行。
+PRINTL 随着时间经过，气力值的回复量较多。
+PRINTW 又由于不肯轻易承认自己性奴隶的身份，必须把「顺从」能力提升到4以上才能拍卖。
+
+;直率
+@DICTIONARY_TALENT_13
+PRINTL 和字面意义一样，是率真的性格。
+PRINTL 能较为坦然地面对调教，所以对主人的命令基本不会反抗。
+PRINTL 「恭顺」数值较易增长。
+PRINTW 或许是天性使然，「顺从」和「侍奉精神」的能力提升变得更容易。
+
+;老实
+@DICTIONARY_TALENT_14
+PRINTL 安分顺从的性格。
+PRINTL 精神方面比较平和，不太容易生气。
+PRINTW 「反感」数值较难增长。
+
+;高傲
+@DICTIONARY_TALENT_15
+PRINTL 骄傲的，常常不自觉地把自己放在高位的性格。
+PRINTL 在现实生活中多半也处于上位者的身份。
+PRINTL 因为自尊心很强，损害自尊心的指令基本都不会实行。
+PRINTL 「反感」较易增长，「屈服」数值较难增长。
+PRINTW 「技巧」和「侍奉精神」的能力提升更为困难。
+
+;自大
+@DICTIONARY_TALENT_16
+PRINTL 正如其名，这类型格对什么都会反抗到底。
+PRINTL 属于精神方面不太成熟的角色。
+PRINTL 「反感」较易增长，「顺从」和「侍奉精神」的能力提升更为困难。
+PRINTW 消去反抗刻印所需的「屈服之珠」也会相应增多。
+
+;自卑
+@DICTIONARY_TALENT_17
+PRINTL 自认为没有什么值得骄傲的东西，所以很容易征服。
+PRINTL 调教指令实行更容易，「屈服」数值也较易增长。
+PRINTW 「侍奉精神」的能力提升更为容易。
+
+;傲娇
+@DICTIONARY_TALENT_18
+PRINTL 傲的侧面是娇，多为表现为口是心非，口嫌体正直。
+PRINTL 顺从3以下的场合会激烈反抗。
+PRINTW 顺从4以上的场合就瞬间逆转变成言听计从的消极状态。
+
+	;性への関心系の素質
+;自制力
+@DICTIONARY_TALENT_20
+PRINTL 正如其名，能够很好控制自己的欲望。
+PRINTL 因此必须将「欲望」提升到4以上才能作为性奴隶拍卖。
+PRINTW 此外「侍奉精神」能力和快乐系的数值上升也会变得更为困难。
+
+;无动于衷
+@DICTIONARY_TALENT_21
+PRINTFORML 对「%CALLNAME:MASTER%」和性相关的事情都不太关心的状态。
+PRINTL 「恭顺」「情欲」「屈服」「恐怖」「反感」等数值全部都很难增长。
+PRINTW 此外「侍奉精神」的能力提升也较难。
+
+;缺乏感情
+@DICTIONARY_TALENT_22
+PRINTL 感情？那是什么？稀薄到几乎看不见摸不着。
+PRINTW 整体数值都很难提升，「侍奉精神」的能力提升也较难。
+
+;性好奇
+@DICTIONARY_TALENT_23
+PRINTL 关注着各种各样的事，积极主动的性格。
+PRINTL 同样，对性相关的事情也会表现出浓厚的兴趣，想要探索深入。
+PRINTW 调教指令很容易实行，「学习」的数值也上升较快。
+
+;性保守
+@DICTIONARY_TALENT_24
+PRINTL 性格保守，性相关的事几乎不会去碰的性格。
+PRINTL 对纯粹只为了追逐快乐的性事极为反感，容易拒绝主人的命令。
+PRINTW 「学习」的数值较难提升，「侍奉精神」的能力提升也很艰难。
+
+;乐观
+@DICTIONARY_TALENT_25
+PRINTL 性格开朗，积极向上，总是有正面倾向。
+PRINTL 即使接受了性相关的调教也不会太往心里去，「抑郁」数值较难增长。
+PRINTW 此外，「侍奉精神」的能力提升也更容易。
+
+;悲观
+@DICTIONARY_TALENT_26
+PRINTL 非常容易消沉，凡事先往消极负面的方向想的性格。
+PRINTL 会因为性相关的调教陷入自虐般的黑泥漩涡，「抑郁」数值容易增长。
+PRINTW 此外，「侍奉精神」能力较易提升。
+
+;难以越过的底线
+@DICTIONARY_TALENT_27
+PRINTFORML 心防极重，在自己与「%CALLNAME:MASTER%」间画出一条泾渭分明的线。
+PRINTL 能力提升到Lv4需要2倍珠子，提升到Lv5需要3倍珠子，非常可怕。
+PRINTL 强化能力所需的经验回数也比通常的奴隶多得多。
+PRINTW 不过一旦陷落，这些DEBUFF就会自动解除。
+
+;喜欢引人注目
+@DICTIONARY_TALENT_28
+PRINTL 正如其名，喜欢引起他人的注意。
+PRINTL 为了在任何时候获得优先关注，更容易实行主人的指令。
+PRINTW 有容易提高「侍奉精神」和「露出癖」能力的倾向。
+
+	;心系の素質
+;贞操重视
+@DICTIONARY_TALENT_30
+PRINTL 正如其名，有着想要守护贞操的想法。
+PRINTL 对性相关的调教持否定态度，情爱系调教的效果相应变低。
+PRINTL 「反感」数值容易上升。
+PRINTW 同时持有[处女]素质的场合，会产生为了守护贞操宁可用后面来承受调教的倾向。
+
+;贞操淡漠
+@DICTIONARY_TALENT_31
+PRINTL 正如其名，对守护贞操没什么执念。
+PRINTL 因为这种怎样都好的淡漠态度，情爱系调教的效果相应变低。
+PRINTW 「反感」数值较难上升。
+
+;性压抑
+@DICTIONARY_TALENT_32
+PRINTL 精神上压抑自己的心的状态。
+PRINTL 竖起心防，不愿意听从主人的命令。
+PRINTL 「欲望」能力不提升到4以上就无法拍卖。
+PRINTL 因为从心底压抑自己，「情欲」数值较难提升。
+PRINTL 相应的「反感」和「抑郁」数值则非常容易增长。
+PRINTL 越是感到快乐，就越会强烈压抑自己。
+PRINTW 欲望升到Lv3的时候会失去这项素质。
+
+;性开放
+@DICTIONARY_TALENT_33
+PRINTL 正如其名，完全解放自己精神的状态。
+PRINTL 从来不会做压抑自己内心真实感受的行为，因此「情欲」和「屈服」数值较易增长。
+PRINTW 「受虐属性」能力也更容易提升。
+
+;抵抗
+@DICTIONARY_TALENT_34
+PRINTL 即便被捉住还是剧烈抵抗的状态。
+PRINTL 会拼尽全力地拒绝主人的命令。
+PRINTL 「情欲」数值较难增长，「反感」数值较易增长。
+PRINTL 因为很讨厌做性奴隶，「欲望」能力不提高到4以上就无法拍卖。
+PRINTW 顺从升到Lv3的时候会失去这项素质。
+
+;害羞
+@DICTIONARY_TALENT_35
+PRINTL 会因为性行为和皮肤裸露感到害羞的性格。
+PRINTL 会抵抗让自己害羞的命令。
+PRINTW 羞耻露出系的调教效果很高。
+
+;不知羞耻
+@DICTIONARY_TALENT_36
+PRINTL 完全不会因性行为和皮肤裸露感到害羞的性格。
+PRINTW 露出系调教的效果低。
+
+;弱点
+@DICTIONARY_TALENT_37
+PRINTFORML 被主人持有了不想被知道的情报时的状态。
+PRINTFORMW 因为精神上担心着秘密被暴露给更多人，所以指令的实行变得相对容易。
+
+	;体質系の素質
+;怕痛
+@DICTIONARY_TALENT_40
+PRINTL 对疼痛敏感的体质。
+PRINTL 「恐怖」和「反感」数值较易增长。
+PRINTL 「受虐属性」能力和SM系调教时获得的「情欲」数值容易增长。
+PRINTW 但因为《痛苦》所带来的的消耗也会变大，这点还请注意。
+
+;耐痛
+@DICTIONARY_TALENT_41
+PRINTL 对疼痛迟钝的体质。
+PRINTL 「恐怖」和「反感」数值较难增长。
+PRINTW 因为《痛苦》所带来的的消耗也比其他人轻。
+
+;容易湿
+@DICTIONARY_TALENT_42
+PRINTL 受刺激后容易分泌爱液的体质。
+PRINTW 正如其名，「润滑」数值容易增长。
+
+;不易湿
+@DICTIONARY_TALENT_43
+PRINTL 即使受刺激也很难分泌爱液的体质。
+PRINTW 正如其名，「润滑」数值较难增长。
+
+;不擅料理 元：メシマズ
+@DICTIONARY_TALENT_44
+PRINTL 经验压倒性不足、明明不擅长还热情过剩、持有独特的味觉…
+PRINTL 这个角色所制作的料理都会被敬而远之。
+PRINTW 不过，只要坚持不懈地努力，加上对主人深深的爱情，有朝一日才能定会开花结果吧。
+
+	;技术系の素質
+;学得快
+@DICTIONARY_TALENT_50
+PRINTL 手脚灵巧，脑子好。
+PRINTL 「学习」数值较易增长。
+PRINTW 因为领会能力很强，「侍奉精神」的提高也变得容易。
+
+;学得慢
+@DICTIONARY_TALENT_51
+PRINTL 做什么都很笨拙，记性不好。
+PRINTL 多为孩子气的角色所持有。
+PRINTL 「学习」数值较难增长。
+PRINTW 因为领会能力很差，「侍奉精神」的提高会更困难。
+
+;善用舌头
+@DICTIONARY_TALENT_52
+PRINTL 天性素质之一，天生就掌握了灵活运用舌头的技巧。
+PRINTL 口交系调教的效果变高。
+PRINTW 调教者有时也能用舌头有效地调教玩弄，口交和舔阴等命令能给予的快乐变成2倍。
+
+;擅长用针
+@DICTIONARY_TALENT_53
+PRINTL 后天才能之一，经常用针的角色掌握的技能。
+PRINTL 调教者拥有这项素质的时候，「针刺」指令的效果变高。
+PRINTL 不怎么消耗体力，但会带来痛苦。
+PRINTL 此外，注射系指令的上升也会变得更容易。
+PRINTW 「针刺」造成痛苦刻印Lv3的情况下，异常经验＋1。
+
+;猫舌
+@DICTIONARY_TALENT_54
+PRINTL 和字面意思一样，舌头像猫舌一样。
+PRINTL 因为表面像锉刀一样粗糙，被舔的话会非常疼。
+PRINTW 有这个素质的话原则上无法进行口交系调教。
+
+;调和知识
+@DICTIONARY_TALENT_55
+PRINTL 调和特殊药剂时必须具备的知识。
+PRINTL 因为对药精通，持有这个技能的助手或主人在场的情况下可以购买和使用特殊的药。
+PRINTL 使用药物时可能会减轻体力和气力的消耗。
+PRINTW 淫乱･服从陷落的奴隶数5人以上、调教经验2000以上的时候可以取得。
+
+;药物抗性
+@DICTIONARY_TALENT_56
+PRINTL 对药物有着抗性。
+PRINTW 药品系效果半数衰减，或是干脆无法使用。
+
+;漏尿癖
+@DICTIONARY_TALENT_57
+PRINTL 很容易想到的体质。
+PRINTW 具有这个素质时除了能用放尿指令外，每次受到刺激尿意也会上涌，直到突破界限。
+
+;手指灵巧
+@DICTIONARY_TALENT_58
+PRINTL 因为已经在各式各样的调教中磨练了技巧，所以隔着衣服也能实行部分爱抚和性交的指令。
+PRINTL 是后天才能之一，没有一定程度的技巧无法取得。
+PRINTW 详细的取得方法请去看游戏相关Ｑ＆Ａ。
+
+;擅长料理
+@DICTIONARY_TALENT_59
+PRINTL 拥有料理才能或者说天赋的素质。
+PRINTL 味觉出色、热衷于磨练自己的烹饪技术。
+PRINTW 「料理技能」容易提升，但因为味觉敏感，「精液成瘾」难以提升。
+
+	;潔癖度系の素質
+;容易自慰
+@DICTIONARY_TALENT_60
+PRINTL 对自己的欲望很忠实的性格，想要的时候会忍不住自慰。
+PRINTL 正应如此，对自慰相关的指令不怎么反感，更容易实行。
+PRINTL 掌握了有效的自慰方法后能更容易提升「自慰成瘾」的能力。
+PRINTW 同时，调教结束后发生自慰事件的频率也比其他人高。
+
+;污臭钝感
+@DICTIONARY_TALENT_61
+PRINTL 对臭味比较迟钝的体质。
+PRINTL 因为对精液等臭味几乎没什么感觉，所以口交系调教更容易进行。
+PRINTW 此外，「精液成瘾」能力的提升也更容易。
+
+;污臭敏感
+@DICTIONARY_TALENT_62
+PRINTL 对臭味很敏感的体质。
+PRINTL 因为对精液等臭味非常敏锐，所以口交系调教难以进行。
+PRINTW 此外，「精液成瘾」能力的提升也很困难。
+
+;自我奉献
+@DICTIONARY_TALENT_63
+PRINTL 付出型人格，从为他人效劳中证明自己的存在价值。
+PRINTL 侍奉系调教的实行变得简单，「屈服」数值容易增长。
+PRINTW 此外，「侍奉精神」也更易提升。
+
+;脏污无视
+@DICTIONARY_TALENT_64
+PRINTL 不太介意身上沾有爱液和精液等污物。
+PRINTL 不会因为沾染污秽产生抵抗，所以调教者可以无视脏污进行更多的指令。
+PRINTW 侍奉系指令容易实行。
+
+;喜欢身体接触
+@DICTIONARY_TALENT_65
+PRINTL 非常喜欢和人身体接触。
+PRINTL 能从被触摸拥抱的事中感到幸福。
+PRINTW 一个人寂寞的时候光凭自慰无法满足，所以「自慰成瘾」难以提高。
+
+;厌恶身体接触
+@DICTIONARY_TALENT_66
+PRINTL 不擅长与人身体接触。
+PRINTW 直接碰到肌肤会抗拒，相比之下着衣PLAY跟自慰较易进行。
+
+	;正直度系の素質
+;接受快感
+@DICTIONARY_TALENT_70
+PRINTL 只要是快乐的事情就能坦率接受的性格。
+PRINTL 因为不怎么抗拒舒服的体验，指令很容易实行。
+PRINTL 「情欲」数值容易增长。
+PRINTW 此外，「欲望」和「侍奉精神」也更容易提升。
+
+;否定快感
+@DICTIONARY_TALENT_71
+PRINTL 抵抗快感，拒绝快感，快感什么的就是邪道！……嘛，就是这样。
+PRINTL 性相关的东西都很抵触，所以指令难以实行。
+PRINTL 自然，「情欲」数值很难增长。
+PRINTL 无论如何都不想屈服于性的快乐，因此快乐系调教的时候「抑郁」上升很快。
+PRINTW 对新手调教师来说是很苦手的素质。
+
+;容易上瘾
+@DICTIONARY_TALENT_72
+PRINTL 字面意义，容易沉迷于快感的体质。
+PRINTW 类似「○○成瘾」这种名字的能力都很容易提升。
+
+;容易高潮
+@DICTIONARY_TALENT_73
+PRINTL 字面意义，随便弄弄就绝顶了，是优秀性奴隶的素质之一。
+PRINTL 正应如此，容易实行指令。
+PRINTW 快感系的数值和「情欲」数值升得很快。
+
+;自慰狂
+@DICTIONARY_TALENT_74
+PRINTL 阴蒂和阴茎稍微被刺激就无法忘怀的体质。
+PRINTL 正应如此，Ｃ系指令的效果上升。
+PRINTW 原则上无法和[淫壶]跟[尻穴狂]等淫乱系素质共存。
+
+;淫壶
+@DICTIONARY_TALENT_75
+PRINTL 沉溺在阴道相关的快乐中的体质。
+PRINTL 阴道已经完全适应了主人赐予的东西，Ｖ系指令的效果上升。
+PRINTW 原则上无法和[自慰狂]跟[尻穴狂]等淫乱系素质共存。
+
+;尻穴狂
+@DICTIONARY_TALENT_76
+PRINTL 完全沦陷在肛穴被玩弄的快感中的体质。
+PRINTL 稍微刺激菊门就能感到幸福，Ａ系指令的效果上升。
+PRINTW 原则上无法和[自慰狂]跟[淫壶]等淫乱系素质共存。
+
+;淫乳
+@DICTIONARY_TALENT_77
+PRINTL 只要胸部被玩弄就忘乎所以的体质。
+PRINTL 对于胸部的刺激非常敏感，Ｂ系指令的效果上升。
+PRINTW 原则上无法和[淫壶]跟[尻穴狂]等淫乱系素质共存。
+
+;性爱狂
+@DICTIONARY_TALENT_78
+PRINTL 没什么比做爱还快乐，成天只想着做爱的体质。
+PRINTL 对性交非常执着，性交系指令的效果上升。
+PRINTW 原则上无法和[淫壶]和[尻穴狂]等淫乱系素质共存。
+
+	;性愛性系の素質
+;性倒错
+@DICTIONARY_TALENT_80
+PRINTL 对于普通来说不会联想到性的行为也会有性幻想・精神上异常高涨的性癖。
+PRINTL 即使是被认为异常的SM系调教效果也很高。
+PRINTW 因为觉得调教这种事是充满诱惑和吸引力的，全体能力的提升都很容易。
+
+;男女通吃
+@DICTIONARY_TALENT_81
+PRINTL 对象无论是男是女都能够接受的素质。
+PRINTL 也有『双性恋』、『Bi』等叫法。
+PRINTL 因为这个缘故，对同性相关的性关系不会太过抗拒，所以类似的指令较容易实行。
+PRINTL 此外，「同性倾向」、「男同成瘾」等能力较易提升。
+PRINTW 女性的时候则是「百合属性」和「百合成瘾」容易提升。
+
+;讨厌男人
+@DICTIONARY_TALENT_82
+PRINTL 讨厌♂。
+PRINTW 被[男性]、[双性]的调教师调教时，指令难以实行。
+
+;施虐狂
+@DICTIONARY_TALENT_83
+PRINTL 对赋予他人痛苦感到愉悦的性癖。
+PRINTL 「侍奉精神」难以提升，「嗜虐属性」容易提升。
+PRINTL 因为进攻性很强，担任调教者时指令容易实行。
+PRINTW 满足一定条件就会觉醒这项素质。
+
+;受虐狂
+@DICTIONARY_TALENT_84
+PRINTL 能从痛苦中感到喜悦和快感的素质。
+PRINTL SM系指令的效果上升，「情欲」数值也容易增长。
+PRINTL 此外，「露出癖」和「受虐属性」的能力也很容易提升。
+PRINTW 满足一定条件就会觉醒这项素质。
+
+;嫉妒
+@DICTIONARY_TALENT_85
+PRINTL 容易产生嫉妒心，反感容易增长。
+PRINTL 恋慕陷落的情况下被放置就会出现这个素质。
+PRINTW 拥有「情绪不安定」特性的角色很容易陷入嫉妒状态。
+
+;盲信
+@DICTIONARY_TALENT_86
+PRINTL 容易盲目信奉主人的一切言行的素质。
+PRINTL 会对主人有着异乎寻常的崇拜感，如果是主人的命令就会欣然接受。
+PRINTW 「屈服」数值容易增长。
+
+;小恶魔
+@DICTIONARY_TALENT_87
+PRINTL 喜欢捉弄玩弄对方的性格。
+PRINTL 调教者的时候可以更巧妙地把对方玩弄在股掌之中。
+PRINTW 日常事件中也会有额外的剧情。
+
+;讨厌女人
+@DICTIONARY_TALENT_88
+PRINTL 讨厌♀。
+PRINTW 被[男性]、[双性]以外的调教师调教时，指令难以实行。
+
+	;魅了系の素質
+;狐狸
+@DICTIONARY_TALENT_90
+PRINTL 总之就是狐狸的意思。
+PRINTW 助手化时变成[妖狐]。
+
+;妖狐
+@DICTIONARY_TALENT_91
+PRINTL 妖狐的素质。
+PRINTL 是因为有着煽情魅惑的容貌吗？
+PRINTL 作为调教者时对象的「耻情」容易增长。
+PRINTW 同时担任助手的时候会不知不觉地调配「媚药」。
+
+;魅力
+@DICTIONARY_TALENT_92
+PRINTL 其存在就是魅力二字的体现。
+PRINTW 调教时没什么特别影响，但拍卖额会上升。
+
+;魅惑
+@DICTIONARY_TALENT_93
+PRINTL 其一举一动无时无刻不在蛊惑着周围的生物。
+PRINTL 如果是调教者持有这项素质，奴隶会因为看得入迷而不知不觉顺从听话起来。
+PRINTL 届时全体数值都容易增长。
+PRINTW 是被调教者持有时才能发挥出最大效用的素质之一。
+
+;谜之魅力
+@DICTIONARY_TALENT_94
+PRINTL 有着在不经意中吸引他人的，不可思议的魅力。
+PRINTL 如果是调教者持有这项素质，奴隶会因为那奇妙的气场不知不觉接受了命令。
+PRINTL 届时全体数值都容易增长。
+PRINTFORMW 主人笼络到5名奴隶后可在事件中获得。
+
+	;身体特徴他
+;矮小体型
+@DICTIONARY_TALENT_100
+PRINTL 身材矮小，体格就像孩子一样的素质。
+PRINTL 通常多见于小孩子的角色。
+PRINTW 「痛苦」和「恐怖」数值有容易增长的倾向。
+
+;Ｃ钝感
+@DICTIONARY_TALENT_101
+PRINTL 对阴蒂或阴茎的刺激很迟钝的体质。
+PRINTW 快Ｃ较难上升，玩弄Ｃ系的调教不容易实行。
+
+;Ｃ敏感
+@DICTIONARY_TALENT_102
+PRINTL 对阴蒂或阴茎的刺激很敏感的体质。
+PRINTW 快Ｃ容易上升，玩弄Ｃ系的调教容易实行。
+
+;Ｖ钝感
+@DICTIONARY_TALENT_103
+PRINTL 对阴道受到的刺激很迟钝的体质。
+PRINTL 快Ｖ较难上升，玩弄Ｖ系的调教不容易实行。
+PRINTW 通常来说[男性]不会有这个素质。
+
+;Ｖ敏感
+@DICTIONARY_TALENT_104
+PRINTL 对阴道受到的刺激很敏感的体质。
+PRINTL 快Ｖ容易上升，玩弄Ｖ系的调教容易实行。
+PRINTW 通常来说[男性]不会有这个素质。
+
+;Ａ钝感
+@DICTIONARY_TALENT_105
+PRINTL 对肛门受到的刺激很迟钝的体质。
+PRINTW 快Ａ较难上升，玩弄Ａ系的调教不容易实行。
+
+;Ａ敏感
+@DICTIONARY_TALENT_106
+PRINTL 对肛门受到的刺激很敏感的体质。
+PRINTW 快Ａ容易上升，玩弄Ａ系的调教容易实行。
+
+;Ｂ钝感
+@DICTIONARY_TALENT_107
+PRINTL 对胸部受到的刺激很迟钝的体质。
+PRINTW 快Ｂ较难上升，玩弄Ｂ系的调教不容易实行。
+
+;Ｂ敏感
+@DICTIONARY_TALENT_108
+PRINTL 对胸部受到的刺激很敏感的体质。
+PRINTW 快Ｂ容易上升，玩弄Ｂ系的调教容易实行。
+
+;贫乳
+@DICTIONARY_TALENT_109
+PRINTL 胸部的尺寸很小，低于平均值。
+PRINTL 对来自胸部的刺激更加敏感，「Ｂ感觉」数值容易上升。
+PRINTW 相应的，和胸部相关的指令有一定限制，要进行乳交的话需要更高的技巧。
+
+;绝壁
+@DICTIONARY_TALENT_110
+PRINTL 几乎不存在胸部那种东西，前后看上去都一样。
+PRINTL 对来自胸部的刺激更加敏感，「Ｂ感觉」数值容易上升。
+PRINTL 相应的，和胸部相关的指令有一定限制，要进行乳交的话需要更高的技巧。
+PRINTW 有这个素质的话无法获得[母乳体质]。
+
+;巨乳
+@DICTIONARY_TALENT_111
+PRINTL 胸部的尺寸很大，高于平均值。
+PRINTL 对来自胸部的刺激较为迟钝，「Ｂ感觉」数值不易上升。
+PRINTW 相应的，和胸部相关的指令没什么限制，进行乳交所需的技巧要求也较低。
+
+;爆乳
+@DICTIONARY_TALENT_112
+PRINTL 胸部的尺寸非常大，已经不是常人所有的了。
+PRINTL 对来自胸部的刺激较为迟钝，「Ｂ感觉」数值不易上升。
+PRINTW 相应的，和胸部相关的指令没什么限制，进行乳交所需的技巧要求也较低。
+
+;高大体型
+@DICTIONARY_TALENT_113
+PRINTL 体格高大结实，本游戏中属于健壮肌肉多的体型。
+PRINTW 体格差会影响部分指令的实行。
+
+;孩童尺寸
+@DICTIONARY_TALENT_114
+PRINTL 下面的尺寸和儿童的一样大。
+PRINTW Ｃ系和性交系调教有较大增益，但有这个素质的话就无法射精。
+
+;短小
+@DICTIONARY_TALENT_115
+PRINTL 好听的说，这个尺寸很保守。
+PRINTL Ｃ系和性交系调教以及敏感度有较大增益。
+PRINTW 本人的名誉如何姑且不论。
+
+;巨根
+@DICTIONARY_TALENT_116
+PRINTL 下面的尺寸很优秀，非常棒。
+PRINTL Ｃ系和性交系调教以及敏感度有相应减益。
+PRINTW 本人大概很是引以为傲吧。
+
+;尺寸傲人
+@DICTIONARY_TALENT_117
+PRINTL 太厉害了，这不就和马一样了吗！
+PRINTL 但因为太大了反而会遇到很多阻碍，Ｃ系和性交系调教以及敏感度的减益非常多。
+PRINTW 但很容易获得[绝伦]素质。
+
+;白虎
+@DICTIONARY_TALENT_118
+PRINTL 阴毛完全被剃掉或是天生没有毛的素质。
+PRINTW 剃掉的场合过段时间就会长出来。
+
+;包茎
+@DICTIONARY_TALENT_119
+PRINTL 就是有包皮的状态。
+PRINTL Ｃ系的敏感度稍微有点影响，也容易感到害羞。
+PRINTW 多用几次「剥包皮」指令这个素质就会消失。
+
+	;特殊
+
+;恢复快
+@DICTIONARY_TALENT_130
+PRINTL 有着很高的恢复能力。
+PRINTL 休息时的体力恢复比一般人多。
+PRINTW 即便接受了严厉的调教也可能马上回复。
+
+;恢复慢
+@DICTIONARY_TALENT_131
+PRINTL 恢复能力很低。
+PRINTL 休息时的体力恢复比一般人少。
+PRINTW 需要长期休息和药物改善的情况会变多。
+
+;吸血鬼
+@DICTIONARY_TALENT_132
+PRINTL 传说中的超自然生物。
+PRINTL 通过饮用人类或其它生物的血液，能够令自身长久生存下去。
+PRINTL 被它们吸食了血液的人类有概率变成下级吸血鬼，成为它们的眷属。
+PRINTW 夜间休息时体力恢复量上升，白天不能暴露在日光下。
+
+;日光浴
+@DICTIONARY_TALENT_133
+PRINTL 被阳光照射后会变得精神的体质。
+PRINTW 白天休息时体力和气力恢复量上升。
+
+;月光浴
+@DICTIONARY_TALENT_134
+PRINTL 沐浴月光能变得更健康的体质。
+PRINTW 夜间休息时体力和气力恢复量上升。
+
+;治疗
+@DICTIONARY_TALENT_135
+PRINTL 掌握有治疗他人的方法。
+PRINTW 主人或助手持有这项素质的情况下，奴隶的体力恢复量上升。
+
+;鼓舞
+@DICTIONARY_TALENT_136
+PRINTL 天性开朗，有着领导气质，或是有自我奉献倾向的奴隶。
+PRINTL 因其特性，调教者持有时除了容易执行指令外，随时间流逝奴隶的气力恢复量也会增加。
+PRINTW 助手持有的情况能会煽动奴隶的劣情，造成调教结束后的自慰回数增加。
+
+;双性
+@DICTIONARY_TALENT_137
+PRINTL 比起男性来说多了女性的小穴。可以执行阴道系性交指令，也可以射精。
+PRINTL 因为数量稀少所以价格高昂，大概是有这方面爱好的人很多吧。
+PRINTW 与未持有[双性]的角色相比，可使用的指令会有部分变化。
+
+;不可思议的根
+@DICTIONARY_TALENT_138
+PRINTL 一般是具有中性外表的女性所持有的素质。
+PRINTL 满足成为助手的条件后会获得[扶她]。
+PRINTW 但与本游戏无缘。
+
+;扶她
+@DICTIONARY_TALENT_139
+PRINTL 比起女性来说多了男性的阴茎。可以执行性交系指令，也可以射精。
+PRINTL 因为数量稀少所以价格高昂，大概是有这方面爱好的人很多吧。
+PRINTW 与未持有[扶她]的角色相比，可使用的指令会有部分变化。
+
+;男性
+@DICTIONARY_TALENT_140
+PRINTL 字面意义，性別是♂，本游戏能买到的奴隶全部都是这个性别。
+PRINTL 女性调教者时可以执行阴道性交系指令，但不能对男性奴隶执行Ｖ系调教。
+PRINTW 男性调教者的场合更多的是走Ａ系调教吧。
+
+;疯癫
+@DICTIONARY_TALENT_141
+PRINTL 内心崩坏，精神失常的状态。
+PRINTL 持有这个素质拍卖额会降低。可以在商店购买[精神修复药]治愈。
+PRINTL 如果调教者良心不会痛的话…
+PRINTW 即使不用持有 [施虐狂]也能对这种状态的奴隶实行很多严厉类型的调教。
+
+;小人体型
+@DICTIONARY_TALENT_142
+PRINTL 比[矮小体型]还要更加娇小的身材，多半是人外。
+PRINTL 因为身体太过娇小，通常无法插入，也不能使用自慰棒等工具。
+PRINTL 主要是Ｖ、Ａ系调教有所制约。
+PRINTL 总之对于调教来说是非常麻烦的素质。
+PRINTW 主人是[小人体型]或持有[禁断的知识]的场合，能一定程度上避免这种制约。
+
+
+;兽耳
+@DICTIONARY_TALENT_143
+PRINTL 虽然是人类的外形但有着动物的耳朵。
+PRINTW 在调教时没什么影响，但拍卖额会上升。
+
+;禁断的知识
+@DICTIONARY_TALENT_144
+PRINTL 被认为是禁忌的可怕的知识。
+PRINTL 正如其名，是会被一般人忌讳恐惧的技术。
+PRINTL 持有该项素质可以执行更多特殊的项目和指令，商店里会有额外道具贩卖。
+PRINTW 三种素质的陷落奴隶各一人，且调教经验2000以上就能获得该项素质。
+
+;人气
+@DICTIONARY_TALENT_145
+PRINTL 表明该角色的人气很高。
+PRINTW 在调教时没什么影响，但拍卖额会上升。
+
+;具现化
+@DICTIONARY_TALENT_146
+PRINTL 能自如控制阴茎是否出现的能力。
+PRINTL 满足一定调教和成为助手时会获得[扶她]素质。
+PRINTW 是很新奇珍贵的素质，但与本游戏无缘。
+
+;人外
+@DICTIONARY_TALENT_147
+PRINTL 天使．恶魔．仙人等，总之不是人类。
+PRINTL 有着可夸耀的异常恢复力，休息时体力恢复量极多。
+PRINTW 由于其稀少性和不死性，拍卖额大幅上升。
+
+;疯癫の目
+@DICTIONARY_TALENT_148
+PRINTL 只是凝视就能引发[疯癫]状态的不可思议的魔眼。
+PRINTW 本游戏未实装。
+
+;母乳体质
+@DICTIONARY_TALENT_149
+PRINTL 能够分泌母乳的体质。
+PRINTL 调教时给予胸部刺激可能会喷出乳汁。
+PRINTL 使用挤奶器、触手挤奶等指令也能挤出母乳赚钱。
+PRINTW 持有该项素质的奴隶体力・气力的减少会变多，请计划性地保留吧。
+
+;幼儿／幼儿退行
+@DICTIONARY_TALENT_150
+PRINTL 本来就是幼儿，或者精神上是幼儿。
+PRINTL 对女性的胸部有一定的依恋，调教者使用胸部相关的调教效果会有增益。
+PRINTL 调教时被其吮吸胸部，「Ｂ感觉」很高的话可能会由于刺激获得[母乳体质]。
+PRINTW 奴隶变成「幼儿退行」的话，好好休息有概率恢复正常。
+
+;幼稚
+@DICTIONARY_TALENT_151
+PRINTL 表现出孩子特有的幼稚和不成熟。
+PRINTL 对女性的胸部有一定的依恋，调教者使用胸部相关的调教效果会有增益。
+PRINTW 调教时被其吮吸胸部，「Ｂ感觉」很高的话可能会由于刺激获得[母乳体质]。
+
+;绝伦
+@DICTIONARY_TALENT_152
+PRINTL 精力绝伦，无论几次都能射出精液来的体质。
+PRINTL 每次的射精量増加，再勃起的速度也很快。
+PRINTL 是后天能掌握的素质之一。
+PRINTW 射精经验400以上（主人的场合300以上），且性别为男是取得。
+
+;怀孕
+@DICTIONARY_TALENT_153
+PRINTL 正如其名，腹中正孕育着新生命的状态。
+PRINTL 怀孕时胸围会增长一个等级并获得[母乳体质]。
+PRINTL 其余有几个素质也会产生变化。
+PRINTL 怀孕时情绪敏感，压力超过基准值可能会陷入[崩溃]状态。
+PRINTL 拍卖时会有极大减益，分娩后该项素质消失。
+PRINTL 需要注意的是，某些人外种族无法受孕，比如：
+PRINTW 人偶、机器人、僵尸、幽灵、无形体等。
+
+;育儿中
+@DICTIONARY_TALENT_154
+PRINTL 在育儿室中养育婴孩的状态。
+PRINTL 怀孕后经过一定时间会平安分娩而进入这个状态。
+PRINTW 孩子可以离开育儿室后该素质就会消失。
+
+;母性
+@DICTIONARY_TALENT_155
+PRINTL [育儿中]的同时可以获得的素质，代表着对孩子慈爱的心。
+PRINTL 非[恋慕]素质的时候分娩也可能会放弃抚养婴孩。
+PRINTW 和[育儿中]不同，孩子离开育儿室后该项素质也不会消失。
+
+;观察眼（元：千里眼）
+@DICTIONARY_TALENT_156
+PRINTL 能够看透一切事物本质的魔眼。
+PRINTW 持有该项素质的主人可以看到平时看不到的压力值、依赖度等数值。
+
+;受
+@DICTIONARY_TALENT_157
+PRINTL 代表此人是受，性行为时位于下方。
+PRINTL 插入系指令・事件过滤。
+
+;攻
+@DICTIONARY_TALENT_158
+PRINTL 代表此人是攻，性行为时位于上方。
+PRINTL 被插入系指令・事件过滤。
+
+;烙印
+@DICTIONARY_TALENT_159
+PRINTL 证明是主人所有物的标志。
+PRINTW 在业内会被视为捡了二手，拍卖额会降低。
+
+;童贞
+@DICTIONARY_TALENT_160
+PRINTL 和处女一样，性经验为零，或是单纯的插入经验为零。
+PRINTL 当然就算保持童贞三十年也不会成为魔法师。
+PRINTL 不过在拍卖方面，即便是童贞价格也不会升高。格差社会。
+PRINTL 根据丧失方式的不同，有可能会获得异常经验。
+PRINTW 当然了，性别♀是没有这个素质的。
+
+;后庭处子
+@DICTIONARY_TALENT_161
+PRINTW 肛门的处女。根据丧失方式的不同，有可能会获得异常经验。
+
+;失意
+@DICTIONARY_TALENT_162
+PRINTL 失去可以依赖的对象，精神低落的状态。
+PRINTL 指令的实行变得艰难，依赖度也会微妙变动。
+PRINTL 反感容易增长，失意状态中也无法获得陷落素质。
+PRINTW 随着时间的经过会失去这个状态。
+
+;Omega
+@DICTIONARY_TALENT_164
+PRINTL 如果有Omega的属性，就算是男性也可以怀孕。
+PRINTL 在剧情任务里的洗脑催眠选项中可以进行此项洗脑。
+PRINTL 此属性用Ａ怀孕，生产完也会增加Ａ扩张经验。
+PRINTW Omega可以在洗脑任务里进行消除，变性或者转成双性也会自动消除。
+
+;天使
+@DICTIONARY_TALENT_166
+PRINTL 天使种族。
+PRINTL 背生双翼，来自天界的使者。
+PRINTL 代表着圣洁、良善与正直。
+PRINTL 遵从天界之主的旨意，是天界与人间的桥梁。
+PRINTW 通常肩负保护人类、监视人类的职责。
+
+;堕天使
+@DICTIONARY_TALENT_167
+PRINTL 堕天使种族。
+PRINTL 长着黑色的羽翼，被天界驱逐出来的天使。
+PRINTL 其原因通常是因为堕入黑暗，背叛了天神。
+PRINTL 与普通天使相反，堕天使性格残忍扭曲，以他人痛苦为乐。
+PRINTW 在审判日到来前，它们将一直在地上游荡。
+
+;恶魔
+@DICTIONARY_TALENT_168
+PRINTL 恶魔种族。
+PRINTL 长着双角、翅膀和光滑的尾巴，邪恶的象征。
+PRINTL 会以其力量欺骗、操纵或蹂躏人类，擅长暗黑系术法。
+PRINTW 为阻碍人类与天使的沟通无所不用其极。
+
+;精灵
+@DICTIONARY_TALENT_169
+PRINTL 精灵种族。
+PRINTL 精灵们热爱大自然，向往和平，居住在森林之中。
+PRINTL 它们的寿命很长，喜好艺术，擅长魔法和弓箭。
+PRINTW 高贵、优雅、聪明且美丽，可谓是完美无缺的种族。
+
+;走兽
+@DICTIONARY_TALENT_170
+PRINTL 一个大类。
+PRINTL 与飞禽相对，主要活动范围在陆地上。
+PRINTL 典型的族群有狼人、半人马、狐妖、独角兽等。
+PRINTW 通常有着兽耳首尾和看上去很暖和的毛皮。
+
+;飞禽
+@DICTIONARY_TALENT_171
+PRINTL 一个大类。
+PRINTL 与走兽相对，主要活动范围在空中。
+PRINTL 典型的族群有哈比、天狗、毕方、青鸟等。
+PRINTW 通常有着锐利的钩爪和美丽蓬松的羽翼。
+
+;爬虫
+@DICTIONARY_TALENT_172
+PRINTL 一个大类。
+PRINTL 爬虫主要为卵生，本游戏中昆虫也归为此类。
+PRINTL 也即包括爬虫与昆虫两个类别的含义。
+PRINTL 典型的族群有西方龙、蛇、蜘蛛、蜥蜴等。
+PRINTW 爬虫的主要行动方式为爬行，而昆虫则多为飞翔。
+
+;水生
+@DICTIONARY_TALENT_173
+PRINTL 一个大类。
+PRINTL 主要生活在水中，行动方式是潜游。
+PRINTL 典型的族群有人鱼、章鱼、海蛇、海豚等。
+PRINTW 通常长着蹼，在水中腰肢灵活，速度极快。
+
+;植物
+@DICTIONARY_TALENT_174
+PRINTL 一个大类。
+PRINTL 花草树木，菌菇山参，皆为此列。
+PRINTL 典型的族群有树妖、人参草、曼德拉草、食人花等。
+PRINTW 通常为绿色系，长有叶片或花瓣，通过光合作用生长。
+
+;类人
+@DICTIONARY_TALENT_175
+PRINTL 一个大类。
+PRINTL 外貌有人类的特征，却又并非人类的种族。
+PRINTL 典型的族群有无头骑士、人偶、机器人、吸血鬼等。
+PRINTW 类人种族通常不具有化形能力。
+
+;不定形
+@DICTIONARY_TALENT_176
+PRINTL 一个大类。
+PRINTL 没有固定的形体，可以随心所欲变换外貌。
+PRINTL 常见种族有史莱姆、幽灵等。
+PRINTW 部分异形也可归为此类，界限比较模糊。
+
+;无形体
+@DICTIONARY_TALENT_177
+PRINTL 一个大类。
+PRINTL 没有形体，或者说无法观测到形体。
+PRINTL 比如病毒、数据体、人工智能等。
+PRINTL 多为概念一样的存在，抑或只有思想存在。
+PRINTW 调教时不选择[化形]的话基本是无法执行任何指令的。
+
+;异形
+@DICTIONARY_TALENT_178
+PRINTL 一个大类。
+PRINTL 外形怪异奇特，对人来来说是无法接受的长相。
+PRINTL 不可名状之物，有的看了还会掉SAN值。
+PRINTL 有可能会具有不定形的特质。
+PRINTW 多为集肉块（？）、触手（？？）、腥臭液体（？？？）为一体的存在。
+
+;无头骑士
+@DICTIONARY_TALENT_179
+PRINTL 骑着无头的马在夜间奔跑的无头骑士。
+PRINTL 是勾走将死之人魂魄，传达死讯的使者。
+PRINTL 8月底9月初这段时期是无头骑士频繁出没的日子。
+PRINTL 不过只要佩戴金饰，就能吓退无头骑士保住性命。
+PRINTW 因为没有头很吓人，拍卖跟打工时都会降低收益。
+
+;人偶
+@DICTIONARY_TALENT_180
+PRINTL 被人类制造出来的人偶，有着精致的五官。
+PRINTL 只要被注入感情，就能拥有自我意识变成诸如此类的怪异。
+PRINTL 或许是为了报答主人给予的爱，又或许是为了报复主人的抛弃。
+PRINTL 拥有生命的那一刻，它们挣开双眼，机械性地踏出了第一步……
+PRINTL 和机器人一样无法产生爱液，必须使用润滑剂。
+PRINTW 无法射精，自带药物抗性，无法执行放尿相关指令。
+
+;僵尸
+@DICTIONARY_TALENT_181
+PRINTL 死而复生的人类，只要脑子没被破坏就能再次站起来。
+PRINTL 也称“丧尸”、“活死人”等。
+PRINTL 值得一提的是中国的僵尸则是双腿无法弯曲，只能跳跃行走的另一种怪物。
+PRINTW 人类若被它们袭击，僵尸病毒进入到体内后会被传染变成新的僵尸。
+
+;史莱姆
+@DICTIONARY_TALENT_182
+PRINTL 果冻状或半液体状，身体呈半透明，能自由变换形态、分裂融合的怪物。
+PRINTL 在剑与魔法世界中生存的勇者应该相当熟悉这种家伙。
+PRINTL 因身体柔软具有弹性，可以蠕动前行或者跳跃攻击。
+PRINTW 本游戏中可以变为人身步行。
+
+;幽灵
+@DICTIONARY_TALENT_183
+PRINTL 死者的灵魂，以其生前样貌再度现身于世间。
+PRINTL 没有固定的形体，通常呈现出半透明的模样。
+PRINTW 没有特殊的能力或羁绊的话，一般人是看不见它们的。
+
+;数据体
+@DICTIONARY_TALENT_184
+PRINTL 存在纯粹由１和０的数据组成，只能在电子海中活动。
+PRINTL 根据情况可以让设备投影出虚拟的体态作为自己的形象。
+PRINTW 只要核心主脑不灭，就能永远存活下去。
+
+;人工智能
+@DICTIONARY_TALENT_185
+PRINTL 英文缩写为AI，是对人的意识、思维的信息过程的模拟。
+PRINTW 它们能像人类那样思考，甚至可以超越人类的极限。
+
+;化形
+@DICTIONARY_TALENT_200
+PRINTL 人外种族特有技能，能够变为近似人类的形态。
+PRINTL 翅膀、鱼尾、爪子、触手等会收起来。
+PRINTW 无形体的人外会显现出身形，或是让意识进入备用身体。
+
+;羽翅
+@DICTIONARY_TALENT_201
+PRINTW 带有羽毛的翅膀，天使、飞禽等身上较为常见。
+
+;骨翅
+@DICTIONARY_TALENT_202
+PRINTW 只有骨节的翅膀。你说什么，芙兰朵露？
+
+;蝠翼
+@DICTIONARY_TALENT_203
+PRINTW 大概是骨翅多了翼膜的形态，恶魔身上较为常见。
+
+;虫翼
+@DICTIONARY_TALENT_204
+PRINTW 薄薄的蝉翼，或是有鳞粉的蝶翼，都归为此类。
+
+;独角
+@DICTIONARY_TALENT_205
+PRINTW 独角兽的独角啦，鬼的角啦，总之就是这样的东西。
+
+;双角
+@DICTIONARY_TALENT_206
+PRINTW 犄角、鹿角、山羊角、恶魔角……等等。
+
+;兽尾
+@DICTIONARY_TALENT_207
+PRINTL 非常美好的存在，毛茸茸抱起来很舒服。
+PRINTW 值得注意的是本游戏中龙的尾巴也归为兽尾，但是没有毛。
+
+;鱼尾
+@DICTIONARY_TALENT_208
+PRINTW 人鱼的尾巴，这么说就很简单明了。
+
+;蛇尾
+@DICTIONARY_TALENT_209
+PRINTW 和鱼尾一样占据整个下半身，通常很长，能把人缠起来。
+
+;多尾
+@DICTIONARY_TALENT_210
+PRINTW 一般在猫又、九尾狐身上见到，早期也有两条鱼尾的美人鱼形象。
+
+;手爪
+@DICTIONARY_TALENT_211
+PRINTW 常见于鸟类、兽类身上的爪子，长在上肢的部位。
+
+;足爪
+@DICTIONARY_TALENT_212
+PRINTW 常见于鸟类、兽类身上的爪子，长在下肢的部位。
+
+;多足
+@DICTIONARY_TALENT_213
+PRINTW 顾名思义，有很多只脚，比如蜈蚣、蜘蛛等。
+
+;触手
+@DICTIONARY_TALENT_214
+PRINTW 无需解释，大家都明白的东西。
+
+;尖耳
+@DICTIONARY_TALENT_215
+PRINTW 又尖又长的耳朵，非常美丽。
+
+;三目
+@DICTIONARY_TALENT_216
+PRINTW 长于额头上的第三只眼。
+
+;复眼
+@DICTIONARY_TALENT_217
+PRINTW 昆虫类特有，由不定数量的小眼组成。
+
+;四足步行
+@DICTIONARY_TALENT_218
+PRINTW 如字面意思，行动方式为四肢着地前进。
+
+;飞翔
+@DICTIONARY_TALENT_219
+PRINTW 拥有翅膀才能飞翔，不过很好奇骨翅是怎么飞起来的。
+
+;漂浮
+@DICTIONARY_TALENT_220
+PRINTW 一般来说只有体重够轻才能解锁这样的行动方式。
+
+;瞬移
+@DICTIONARY_TALENT_221
+PRINTW 很有趣的行动方式，绝顶时概率闪现。
+
+;潜游
+@DICTIONARY_TALENT_222
+PRINTW 无论是在水底还是水上都行进如风。
+
+;爬行
+@DICTIONARY_TALENT_223
+PRINTW 爬虫类和僵尸常用的行动方式。
+
+;巨大体型
+@DICTIONARY_TALENT_224
+PRINTL 至少也有两层楼那么高。
+PRINTL 拥有这个素质的家伙会吃得很多，换言之就是维持费用高昂。
+PRINTW 体型不同的话，就只能用触手来进行调教了。
+
+;变化体型
+@DICTIONARY_TALENT_225
+PRINTW 可以变成人类的体型。
+
+;恒温体质
+@DICTIONARY_TALENT_226
+PRINTL 体温调节机制比较完善的体质。
+PRINTW 能在环境温度变化的情况下保持体温的相对稳定。
+
+;变温体质
+@DICTIONARY_TALENT_227
+PRINTL 也称为冷血体质。
+PRINTL 体内没有自身调节体温的机制。
+PRINTW 会随着环境变化改变体温。
+
+;无体温
+@DICTIONARY_TALENT_228
+PRINTL 就是没有体温的意思。
+PRINTW 比如人偶、机器人、无形体种族等。
+
+;不死系
+@DICTIONARY_TALENT_229
+PRINTL 很难死掉，或者永生不死。
+PRINTW 比如无头骑士、僵尸等。
+
+;Ｗ敏感
+@DICTIONARY_TALENT_230
+PRINTL 对翅膀受到的刺激很敏感的体质。
+PRINTW 快Ｗ容易上升，抚摸翅膀的时候容易高潮。
+
+;Ｗ钝感
+@DICTIONARY_TALENT_231
+PRINTL 对翅膀受到的刺激很迟钝的体质。
+PRINTW 快Ｗ较难上升，抚摸翅膀的时候不易高潮。
+
+;Ｔ敏感
+@DICTIONARY_TALENT_232
+PRINTL 对尾巴受到的刺激很敏感的体质。
+PRINTW 快Ｔ容易上升，进行尾巴相关指令的时候容易高潮。
+
+;Ｔ钝感
+@DICTIONARY_TALENT_233
+PRINTL 对尾巴受到的刺激很迟钝的体质。
+PRINTW 快Ｔ较难上升，进行尾巴相关指令的时候不易高潮。
+
+;Ｅ敏感
+@DICTIONARY_TALENT_234
+PRINTL 对耳朵受到的刺激很敏感的体质。
+PRINTW 快Ｅ容易上升，进行耳朵相关指令的时候容易高潮。
+
+;Ｅ钝感
+@DICTIONARY_TALENT_235
+PRINTL 对耳朵受到的刺激很迟钝的体质。
+PRINTW 快Ｅ较难上升，进行耳朵相关指令的时候不易高潮。
+
+;马身
+@DICTIONARY_TALENT_236
+PRINTL 半人马专属。
+PRINTL 因为马屁股很大，所以不太需要扩张。
+PRINTW 相应的很多体位无法实行。
+
+;无头
+@DICTIONARY_TALENT_237
+PRINTL 脑袋呢？脑袋去哪儿了？
+PRINTW 一般跟不死系一起出现。
+
+;青肤
+@DICTIONARY_TALENT_238
+PRINTW 青色的肌肤，一看就非人类。

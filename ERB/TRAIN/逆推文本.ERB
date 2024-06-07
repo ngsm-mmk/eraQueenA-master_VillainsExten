@@ -1,0 +1,349 @@
+﻿;逆推相关口上-----------------------------------------------------------------------------------------------
+@逆推詢問
+SIF FLAG:7 <= 0
+	RETURN 0
+	;友人君
+	IF NO == 200
+		PRINTFORMW 「可以的話，不如就讓%CSTR:0%來為%CSTR:3%效勞，%CSTR:2%意下如何呢？」
+	;开朗元气型
+	ELSEIF CFLAG:600 == 1
+		PRINTFORMW 「吶…%MASTERNAME%…让%CSTR:0%在上面好不好？」
+	;稳重温柔型
+	ELSEIF CFLAG:600 == 2
+		PRINTFORMW 「%MASTERNAME%…%CSTR:0%想要抱%CSTR:2%，可以吗？」
+	;认真固执型	
+	ELSEIF CFLAG:600 == 3
+		PRINTFORMW 「抱歉…实在忍不住了，可以让%CSTR:0%来抱%CSTR:2%吗？」
+	;花花公子型
+	ELSEIF CFLAG:600 == 4
+		PRINTFORMW 「%CSTR:2%实在太有魅力了…%CSTR:0%可以推倒%CSTR:2%吗？」
+	;别扭傲娇型
+	ELSEIF CFLAG:600 == 5
+		PRINTFORMW 「偶而也要让%CSTR:0%在上面啦…不然太不公平了！」
+	;目中无人高傲型
+	ELSEIF CFLAG:600 == 6
+		PRINTFORMW 「磨磨蹭蹭的…既然这样，不如让%CSTR:0%自己来吧！」
+	;举止温和腹黑型
+	ELSEIF CFLAG:600 == 7
+		PRINTFORMW 「不能总是让%CSTR:2%一人这么"劳碌"，让%CSTR:0%来服务%CSTR:2%可好？」
+	;阴暗无口冷漠型
+	ELSEIF CFLAG:600 == 8
+		PRINTFORMW 「想要抱%MASTERNAME%…不行吗？」
+	;蛮不讲理精英型
+	ELSEIF CFLAG:600 == 9
+		PRINTFORMW 「%MASTERNAME%…不如这次换%CSTR:0%来？」
+	;任性爱撒娇型
+	ELSEIF CFLAG:600 == 10
+		PRINTFORMW 「想抱%MASTERNAME%…求求%CSTR:2%了，会很舒服的哦？」
+	;直率纯真型
+	ELSEIF CFLAG:600 == 11
+		PRINTFORMW 「好想要啊，%MASTERNAME%…可以让%CSTR:0%在上面嘛？」
+	;无常识自恋型
+	ELSEIF CFLAG:600 == 12
+		PRINTFORMW 「啊，%MASTERNAME%！%CSTR:0%想抱%CSTR:2%了……觉得很惊喜对吧？」
+	;天然电波型
+	ELSEIF CFLAG:600 == 13
+		PRINTFORMW 「要插入插头才有电呀…所以…%MASTERNAME%，%CSTR:2%懂吧？」
+	;痞气油嘴滑舌型
+	ELSEIF CFLAG:600 == 66
+		PRINTFORMW 「%CSTR:0%很行的哦…%MASTERNAME%，不试试看吗？」
+	;心机白莲花型
+	ELSEIF CFLAG:600 == 67
+		PRINTFORMW 「好想搂%MASTERNAME%入怀…给%CSTR:0%个表达爱意的机会，好吗？」
+	;创伤・自暴自弃性格
+	ELSEIF CFLAG:600 == 68
+		PRINTFORMW 「像%CSTR:0%这样的人，想要……抱%MASTERNAME%…可以吗？」	
+	ELSE
+		PRINTDATAL
+			DATAFORM 「%MASTERNAME%…偶而也让%CSTR:0%在上面吧？」
+			DATAFORM 「%MASTERNAME%…让%CSTR:0%来侍奉%CSTR:2%吧？」
+			DATAFORM 「不如…让%CSTR:0%来抱%CSTR:2%吧？」
+			DATAFORM 「这次…让%CSTR:0%自己来吧？」
+			DATAFORM 「换%CSTR:0%在上面…可以吧？」
+		ENDDATA
+		PRINTFORMW 
+	ENDIF	
+
+@逆推口上
+SIF FLAG:7 <= 0
+	RETURN 0
+	;友人君
+	IF NO == 200
+		PRINTFORMW 「这么坦率的%CSTR:3%真让人喜欢，那么，就让%CSTR:0%尽全力满足%CSTR:2%吧？」
+		PRINTFORMW %CALLNAME%露出了意味深长的笑容，翻身压在了%PLAYER_NAME()%的上方……
+	;开朗元气型
+	ELSEIF CFLAG:600 == 1
+		PRINTFORMW 「哇…好喜欢%MASTERNAME%…谢谢！」
+		PRINTFORMW %CALLNAME%露出满面的笑容，高兴地飞扑在%PLAYER_NAME()%的身上并亲吻着面颊……
+		;稳重温柔型
+	ELSEIF CFLAG:600 == 2
+		PRINTFORMW 「真的可以吗？…谢谢%MASTERNAME%…%CSTR:0%会很温柔的。」
+		PRINTFORMW %CALLNAME%似乎很高兴的样子，低下头来亲吻着%PLAYER_NAME()%的额头……
+	;认真固执型	
+	ELSEIF CFLAG:600 == 3
+		PRINTFORMW 「那么……%MASTERNAME%…放轻松点……」
+		PRINTFORMW %CALLNAME%拨开%PLAYER_NAME()%的发丝，双眼很认真地凝视着……
+	;花花公子型
+	ELSEIF CFLAG:600 == 4
+		PRINTFORMW 「啊！%MASTERNAME%果然是最棒的…放心…一定很舒服的哦！」
+		PRINTFORMW %CALLNAME%翻身压在%PLAYER_NAME()%的上方，漏出了胸有成竹的微笑……
+	;别扭傲娇型
+	ELSEIF CFLAG:600 == 5
+		PRINTFORMW 「欸？那一开始应该先要…唔…不可以笑！%CSTR:0%…%CSTR:0%会做的……」
+		PRINTFORMW %CALLNAME%满脸通红，像是负气一般压在了压在%PLAYER_NAME()%的上方……
+	;目中无人高傲型
+	ELSEIF CFLAG:600 == 6
+		PRINTFORMW 「从这个角度俯瞰着%CSTR:2%，果然是好风景呢……」
+		PRINTFORMW %CALLNAME%压在%PLAYER_NAME()%的上方，露出了满足的神情……
+	;举止温和腹黑型
+	ELSEIF CFLAG:600 == 7
+		PRINTFORMW 「%MASTERNAME%，别担心…%CSTR:0%会很温柔的……」
+		PRINTFORMW %CALLNAME%一边抚摸着%PLAYER_NAME()%的脸庞，一边在耳边轻声低语着……
+	;阴暗无口冷漠型
+	ELSEIF CFLAG:600 == 8
+		PRINTFORMW 「那么，%MASTERNAME%，请把眼睛闭起来……」
+		PRINTFORMW %CALLNAME%俯身低头在%PLAYER_NAME()%合上的眼皮上落下了亲吻……
+	;蛮不讲理精英型
+	ELSEIF CFLAG:600 == 9
+		PRINTFORMW 「这样就好，%MASTERNAME%放心，不会痛的……」
+		PRINTFORMW %CALLNAME%抱紧了%PLAYER_NAME()%之後，轻抚背脊安抚着……
+	;任性爱撒娇型
+	ELSEIF CFLAG:600 == 10
+		PRINTFORMW 「嘻嘻，就知道%MASTERNAME%最好了，那，要先做什么呢…？」
+		PRINTFORMW %CALLNAME%高兴地眯起了眼睛，手指不安份地在%PLAYER_NAME()%的身体上轻挠着……
+	;直率纯真型
+	ELSEIF CFLAG:600 == 11
+		PRINTFORMW 「如果，只是如果哦？%MASTERNAME%痛了一定要告诉%CSTR:0%哦…？」
+		PRINTFORMW %CALLNAME%小心地压在%PLAYER_NAME()%的身上，兴奋却又有点不安地说着……
+	;无常识自恋型
+	ELSEIF CFLAG:600 == 12
+		PRINTFORMW 「果然…就知道这世上，没有人能拒绝%CSTR:0%啊……」
+		PRINTFORMW %CALLNAME%压在%PLAYER_NAME()%的身上，得意地眨了眨眼睛……
+	;天然电波型
+	ELSEIF CFLAG:600 == 13
+		PRINTFORMW 「啊，果然只有%MASTERNAME%是%CSTR:0%的同伴……」
+		PRINTFORMW %CALLNAME%放心地趴在%PLAYER_NAME()%的身上，舒服地谓叹了一口氣……
+	;痞气油嘴滑舌型
+	ELSEIF CFLAG:600 == 66
+		PRINTFORMW 「看%CSTR:0%的，一定会让%MASTERNAME%欲罢不能的……」
+		PRINTFORMW %CALLNAME%轻挑起%PLAYER_NAME()%的下巴，豪情壮志地说着……
+	;心机白莲花型
+	ELSEIF CFLAG:600 == 67
+		PRINTFORMW 「能像这样碰触着%MASTERNAME%……简直就像作梦一样……」
+		PRINTFORMW %CALLNAME%垂下眼帘，用手指像描绘一样轻轻抚摸着%PLAYER_NAME()%的身体……
+	;创伤・自暴自弃性格
+	ELSEIF CFLAG:600 == 68	
+		PRINTFORMW 「%CSTR:2%，不嫌弃吗？……%MASTERNAME%……」
+		PRINTFORMW %CALLNAME%睁大了眼睛，然後像是对待易碎品般，小心颤抖地抱住了%PLAYER_NAME()%……
+	ELSE
+	PRINTDATAL
+		DATAFORM  %CALLNAME%迫不及待地压在了%PLAYER_NAME()%的身上……
+		DATAFORM  %CALLNAME%开心地搂抱着%PLAYER_NAME()%……
+		DATAFORM  %CALLNAME%温柔地抱紧了%PLAYER_NAME()%……
+		DATAFORM  %CALLNAME%难以自抑地亲吻着%PLAYER_NAME()%……
+	ENDDATA
+		PRINTFORMW 
+	ENDIF
+@逆推被拒口上
+SIF FLAG:7 <= 0
+	RETURN 0
+	;友人君
+	IF NO == 200
+		PRINTFORMW 「唉，真可惜。不过，只要%CSTR:3%喜欢的话，那么，%CSTR:0%怎么样都可以。」
+	;开朗元气型
+	ELSEIF CFLAG:600 == 1
+		PRINTFORMW 「欸…不行吗？好可惜，想说能抱%MASTERNAME%的话，一定很舒服的……」
+	;稳重温柔型
+	ELSEIF CFLAG:600 == 2
+		PRINTFORMW 「不可以吗？那也没关系，只要和%MASTERNAME%在一起，做什么都好……」
+	;认真固执型	
+	ELSEIF CFLAG:600 == 3
+		PRINTFORMW 「不行吗？那么，%MASTERNAME%，就别再考验%CSTR:0%的自制力了吧……」
+	;花花公子型
+	ELSEIF CFLAG:600 == 4
+		PRINTFORMW 「不给%CSTR:0%献殷勤的机会吗？…这么强势的%MASTERNAME%，又让%CSTR:0%再度爱上了呢！」
+	;别扭傲娇型
+	ELSEIF CFLAG:600 == 5
+		PRINTFORMW 「欸…%MASTERNAME%怎么这样，好不公平啊！」
+	;目中无人高傲型
+	ELSEIF CFLAG:600 == 6
+		PRINTFORMW 「不肯让%CSTR:0%在上面的话…那%MASTERNAME%可要好好做到%CSTR:0%满意为止！」
+	;举止温和腹黑型
+	ELSEIF CFLAG:600 == 7
+		PRINTFORMW 「寸步不让…吗？…就算是这样，%CSTR:0%也还是喜欢%MASTERNAME%……」
+	;阴暗无口冷漠型
+	ELSEIF CFLAG:600 == 8
+		PRINTFORMW 「不行吗…不…没关系…被%MASTERNAME%拥抱就很幸福了……」
+	;蛮不讲理精英型
+	ELSEIF CFLAG:600 == 9
+		PRINTFORMW 「真是，仗着%CSTR:0%的喜欢，真拿%MASTERNAME%没办法啊…」
+	;任性爱撒娇型
+	ELSEIF CFLAG:600 == 10
+		PRINTFORMW 「呜…%MASTERNAME%不让%CSTR:0%在上面…」
+	;直率纯真型
+	ELSEIF CFLAG:600 == 11
+		PRINTFORMW 「不行呀？那…要比平常更加疼爱%CSTR:0%哦？」
+	;无常识自恋型
+	ELSEIF CFLAG:600 == 12
+		PRINTFORMW 「居然拒绝？啊…难道是害羞了吗？…%MASTERNAME%真可爱呀！」
+	;天然电波型
+	ELSEIF CFLAG:600 == 13
+		PRINTFORMW 「嘛，像平常那样"插电"也行吧……」
+	;痞气油嘴滑舌型
+	ELSEIF CFLAG:600 == 66
+		PRINTFORMW 「欸，真的不试试吗？不会是怕输给%CSTR:0%了吧？」
+	;心机白莲花型
+	ELSEIF CFLAG:600 == 67
+		PRINTFORMW 「虽然很遗憾，不过，%CSTR:0%被%MASTERNAME%拥抱也很欢喜……」
+	;创伤・自暴自弃性格
+	ELSEIF CFLAG:600 == 68	
+		PRINTFORMW 「啊，果然……是%CSTR:0%得意忘形了……」
+	ELSE
+	PRINTDATAL
+		DATAFORM  %CALLNAME%露出了很遗憾的表情……
+		DATAFORM  %CALLNAME%叹了一口气，老实地任%PLAYER_NAME()%摆布……
+		DATAFORM  被拒的%CALLNAME%似乎觉得也没什么要紧，催促着%PLAYER_NAME()%继续……
+	ENDDATA	
+	ENDIF	
+	PRINTFORMW 
+@逆推進行中口上
+IF TFLAG:2 > 0
+	;奴隶射在主人里面
+	CALL PALAM_MESSAGE_A
+	PRINTDATAL
+		DATAFORM 「啊啊…实在忍不住了……%MASTERNAME:PLAYER%的里面…太舒服了…」
+		DATAFORM 「唔……啊！…全都射进%MASTERNAME:PLAYER%的里面了…感觉……实在太棒了……」
+		DATAFORM 「%MASTERNAME:PLAYER%！%MASTERNAME:PLAYER%！…唔…啊啊！！…射在里面了……」
+		DATAFORM 「唔啊…%MASTERNAME:PLAYER%的里面吸的这么紧的话…唔！……射…射了……」
+		DATAFORM 「%MASTERNAME:PLAYER%的里面好热…实在太舒服…所以…唔…啊啊！啊……」
+	ENDDATA
+ELSE
+	SELECTCASE  X:99
+	;奴隶愛撫主人
+		CASE 0, 3, 5, 6, 7, 8
+		IF !RAND:2
+			PRINTDATAL
+				DATAFORM 「能随心所欲…触碰着%MASTERNAME:PLAYER%…就像作梦一样…」
+				DATAFORM 「%MASTERNAME:PLAYER%…舒服吗？」
+				DATAFORM 「好喜欢…想让%MASTERNAME:PLAYER%…觉得更加地舒服…」
+				DATAFORM 「想看…%MASTERNAME:PLAYER%意乱情迷…的样子……」
+				DATAFORM 「%CSTR:PLAYER:0%想听…%MASTERNAME:PLAYER%喘息的声音……」
+			ENDDATA
+		ELSE
+		ENDIF	
+		;奴隶进行口奉仕
+		CASE 1, 2, 4, 209
+		IF !RAND:2
+			PRINTDATAL
+				DATAFORM 「%MASTERNAME:PLAYER%的味道…还是这么好…」
+				DATAFORM 「%MASTERNAME:PLAYER%…舒服吗？」
+				DATAFORM 「好喜欢…想让%MASTERNAME:PLAYER%…觉得更加地舒服…」
+				DATAFORM 「%MASTERNAME:PLAYER%的这里…被弄湿了…好色情的样子…」
+				DATAFORM 「实在忍不住了，想嚐嚐%MASTERNAME:PLAYER%的味道…」
+			ENDDATA
+		ELSE
+		ENDIF	
+		;奴隶要求侍奉
+		CASE 80, 82, 83, 85
+		IF !RAND:2
+			PRINTDATAL
+				DATAFORM 「%MASTERNAME:PLAYER%的技术真好…实在…非常地舒服…」
+				DATAFORM 「能被%MASTERNAME:PLAYER%这样侍奉…就像作梦一样…」
+				DATAFORM 「%MASTERNAME:PLAYER%…这种专注的表情，真让人兴奋…」
+				DATAFORM 「%MASTERNAME:PLAYER%就像是有魔力似地……」
+				DATAFORM 「嗯啊…啊啊…%MASTERNAME:PLAYER%…%MASTERNAME:PLAYER%…就是这样……」
+			ENDDATA
+		ELSE
+		ENDIF	
+		;奴隶插入主人
+		CASE 60, 61, 66, 68, 69, 74, 76, 62, 63, 67, 70, 71, 75, 77
+		IF !RAND:2
+			PRINTDATAL
+				DATAFORM 「%MASTERNAME:PLAYER%的里面…好热…好舒服…」
+				DATAFORM 「%MASTERNAME:PLAYER%不习惯吗？…里面…吸的好紧…」
+				DATAFORM 「抱歉…腰好像停不下来了…」
+				DATAFORM 「%MASTERNAME:PLAYER%会痛吗？…还是…很舒服？」
+				DATAFORM 「%MASTERNAME:PLAYER%，吸这么紧的话…会忍不住射在里面的…」
+				DATAFORM 「能进入%MASTERNAME:PLAYER%里面，就像作梦一样…」
+				DATAFORM 「这样子，有%MASTERNAME:PLAYER%只属於%CSTR:PLAYER:0%的感觉…」
+			ENDDATA
+		ELSE
+		ENDIF		
+		;奴隶逆强奸主人
+		CASE 211, 212, 213, 214
+		IF !RAND:2
+			PRINTDATAL
+				DATAFORM 「%MASTERNAME:PLAYER%…%MASTERNAME:PLAYER%…好棒…！」
+				DATAFORM 「果然还是这样子最能感受到%MASTERNAME:PLAYER%……」
+				DATAFORM 「肚子…被%MASTERNAME:PLAYER%顶着好舒服……」
+				DATAFORM 「啊！要变成%MASTERNAME:PLAYER%的形状了……」
+				DATAFORM 「在%CSTR:PLAYER:0%的里面…%MASTERNAME:PLAYER%…觉得舒服吗…？」
+				DATAFORM 「想要吃进…%MASTERNAME:PLAYER%…的全部……」
+				DATAFORM 「身体想要……被%MASTERNAME:PLAYER%…填满……」
+				DATAFORM 「这种饥渴的感觉……只有%MASTERNAME:PLAYER%…可以满足……」
+				DATAFORM 「想听…%MASTERNAME:PLAYER%说出…也想要%CSTR:PLAYER:0%的话……」
+			ENDDATA
+		ELSE
+		ENDIF		
+		;奴隶对主人SM
+		CASE 100, 101, 102, 103, 104
+		IF !RAND:2
+			PRINTDATAL
+				DATAFORM 「%MASTERNAME:PLAYER%…很痛吗？」
+				DATAFORM 「%MASTERNAME:PLAYER%皱眉的样子也很好看……」
+				DATAFORM 「会痛吗？…还是很舒服？」
+				DATAFORM 「想看%MASTERNAME:PLAYER%忍耐着痛楚的表情……」
+				DATAFORM 「%MASTERNAME:PLAYER%这幅模样，特别让人兴奋……」
+				DATAFORM 「习惯的话，痛也会变成快感…%MASTERNAME:PLAYER%…是知道的吧？」
+				DATAFORM 「%MASTERNAME:PLAYER%现在的表情…真让人按捺不住……」
+			ENDDATA
+		ELSE
+		ENDIF	
+		CASEELSE
+		IF !RAND:2
+			PRINTDATAL
+				DATAFORM 「%MASTERNAME:PLAYER%…觉得舒服吗？」
+				DATAFORM 「%MASTERNAME:PLAYER%…有感觉了吗？」
+				DATAFORM 「一直想这么做…%MASTERNAME:PLAYER%…」
+				DATAFORM 「想要听…%MASTERNAME:PLAYER%的声音……」
+				DATAFORM 「想看…%MASTERNAME:PLAYER%更多的表情…」
+				DATAFORM 「%MASTERNAME:PLAYER%…喜欢这样的刺激吗？」
+			ENDDATA
+		ELSE
+		ENDIF				
+	ENDSELECT	
+ENDIF
+;奴隶讓主人射精的台詞
+IF TFLAG:10 > 0 && TFLAG:29 < 4
+	PRINTFORML
+	PRINTFORML
+	PRINTFORM %CALLNAME:TARGET%  
+	SIF TFLAG:10 == 2
+	PRINTFORM 大量
+	PRINTFORML 射精
+			PRINTDATAL
+				DATAFORM 「%MASTERNAME:PLAYER%…射出来了哦，觉得舒服吗？」
+				DATAFORM 「啊啊，%MASTERNAME:PLAYER%…射精的表情真棒……」
+				DATAFORM 「这样很舒服吧？…%MASTERNAME:PLAYER%…」
+				DATAFORM 「%MASTERNAME:PLAYER%…的精液…好喜欢…」
+				DATAFORM 「射出来了啊…%MASTERNAME:PLAYER%…觉得满足吗？」
+			ENDDATA
+;奴隶讓主人绝顶的台詞
+ELSEIF  TFLAG:29 > 2
+	PRINTFORML
+	PRINTFORML
+	IF TFLAG:29 > 5
+		PRINTFORML %CALLNAME:TARGET%  强绝顶
+	ELSE
+		PRINTFORML %CALLNAME:TARGET%  绝顶
+	ENDIF
+		PRINTDATAL
+			DATAFORM 「啊啊，%MASTERNAME:PLAYER%…高潮的表情真棒……」
+			DATAFORM 「很舒服吧？…%MASTERNAME:PLAYER%这样的表情好色情啊…」
+			DATAFORM 「%MASTERNAME:PLAYER%…高潮呻吟的样子…好喜欢…」
+			DATAFORM 「已经去了啊…%MASTERNAME:PLAYER%…觉得满足吗？」
+			DATAFORM 「%MASTERNAME:PLAYER%高潮的表情……真的太犯规了啊……」
+			DATAFORM 「%MASTERNAME:PLAYER%……请让%CSTR:PLAYER:0%看看%CSTR:PLAYER:2%更多高潮的表情……」
+		ENDDATA
+ENDIF	
+PRINTFORMW 

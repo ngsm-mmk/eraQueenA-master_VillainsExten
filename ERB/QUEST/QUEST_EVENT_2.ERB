@@ -1,0 +1,67 @@
+﻿@QUEST_EVENT_1_10
+性格 = 0
+性格名称 =
+CALL KAIGYO
+PRINTL 为了调教出更优秀更符合心意的奴隶，有时会需要用到非常的手段
+PRINTL 不过是一些小伎俩，就能让底下的奴隶保持着新鲜感，何乐而不为呢？
+PRINTL 哦！当然是需要花费些微的代价，不过，对一位优秀的调教师而言，不算什么吧？
+PRINTL 至於洗脑的对象，也是有要求的，需要身心已经完全臣服您的上级奴隶才行
+PRINTL 另外，由於洗脑有增加压力的风险，所以，如果压力太大的奴隶，是不适合洗脑的！
+PRINTL
+PRINTL 那么，先来介绍一下洗脑的种类吧？
+PRINTL 首先是＂性格转换＂，能让奴隶转换成其他的性格，也可顺带清除被调教的记忆哦！
+PRINTL 就是可能会有小小的副作用，比如认不出主人来，说了一些莫名其妙的话…等等
+PRINTL 尽管如此，但是他身体对您的记忆可是不会消失的，调教一下就会回想起来的吧！
+PRINTL
+PRINTL 再来是转换上级陷落属性，如果把亲爱转成娼夫，就不会嫉妒了，是不是很方便？
+PRINTL
+PRINTL 至於Omega，这是专属男奴隶的洗脑，所謂的Omega，就算是男性也能用屁股懷孕呢!
+PRINTL 另外，Omega的发情期为每月的15.30日，这天你的Omega会特别热情并且更容易受孕哦！
+PRINTL
+;需要称号功能on
+SIF FLAG:2 & 2
+PRINTL 最後是洗脑成病娇，嘛，总是有喜欢这方面口味的受众，坏掉的奴隶也别有风情呢！
+PRINTL 那么，話不多说了，来看看价目表吧！
+PRINTL 
+PRINTL       ◊┄┄┄┄┄┄┄ 洗脑价目表 ┄┄┄┄┄┄┄┄◊	
+PRINTL              性格转换＄10万
+PRINTL              转换上级陷落属性＄10万
+PRINTL              洗脑成Omega＄10万 （消除为＄2万）
+;需要称号功能on
+SIF FLAG:2 & 2  
+PRINTL              洗脑成为病娇＄2万 （修复为＄2万）
+DRAWLINE
+IF MONEY < 20000
+	PRINTW
+	PRINTW 啊，您目前的金额无法进行任何一种洗脑呢，不过看看价目表是没问题的哦！
+	PRINTW 期待您下次的光临！！
+	RETURN 0
+ENDIF
+$INPUT_1
+	PRINTL [9000] - 想对奴隶进行洗脑
+	IF 催眠技术 == 0
+	PRINTL [9001] - 想学习催眠的技术
+	ELSE
+	PRINTL [9001] - 想重听催眠的说明
+	PRINTL [9002] - 想重新设置催眠的暗号
+	ENDIF
+	PRINTL [9999] - 没事，离开
+INPUT
+IF RESULT == 9999
+    PRINTW 那么期待您下次的光临。
+	RETURN 0
+ELSEIF RESULT == 9000
+	CALL 洗脑催眠
+ELSEIF RESULT == 9001
+	IF 催眠技术 == 0
+		CALL 学习催眠
+	ELSE
+		CALL 催眠说明
+	ENDIF
+	RESTART
+ELSEIF RESULT == 9002 && 催眠技术
+	CALL 催眠暗号
+	RESTART
+ELSE
+	GOTO INPUT_1
+ENDIF

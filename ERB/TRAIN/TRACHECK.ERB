@@ -1,0 +1,3047 @@
+﻿;-------------------------------------------------
+;自慰棒など付けっぱ无アイテムのチェック
+;-------------------------------------------------
+@EQUIP_CHECK
+;着衣の処理
+CALL EQUIP_CLOTHES
+
+;阴蒂夹装着中
+SIF TEQUIP:11
+	CALL EQUIP_COM42
+
+;飞机杯装着中
+SIF TEQUIP:12
+	CALL EQUIP_COM43
+
+;自慰棒装着中
+SIF TEQUIP:13
+	CALL EQUIP_COM44
+
+;肛塞装着中
+SIF TEQUIP:14
+	CALL EQUIP_COM45
+
+;后庭拉珠使用中
+SIF TEQUIP:15
+	CALL EQUIP_COM46
+
+;振动乳头夹装着中
+SIF TEQUIP:16
+	CALL EQUIP_COM47
+
+;挤奶器装着中
+SIF TEQUIP:17
+	CALL EQUIP_COM49
+
+;眼罩装着中
+SIF TEQUIP:18
+	CALL EQUIP_COM105
+
+;绳子で紧缚中
+SIF TEQUIP:19
+	CALL EQUIP_COM106
+
+;口塞球装着中
+SIF TEQUIP:20
+	CALL EQUIP_COM107
+
+;灌肠＋肛プラグ装着中
+SIF TEQUIP:21
+	CALL EQUIP_COM146
+
+;扩张气球装着中
+SIF TEQUIP:22
+	CALL EQUIP_COM148
+
+;肛门电极装着中
+SIF TEQUIP:23
+	CALL EQUIP_COM149
+
+;乳房电极装着中
+SIF TEQUIP:24
+	CALL EQUIP_COM150
+
+;触手调教中
+SIF TEQUIP:25
+	CALL EQUIP_COM160
+
+;视频拍摄中
+SIF TEQUIP:28
+	CALL EQUIP_COM183
+
+;野外PLAY中
+SIF TEQUIP:29
+	CALL EQUIP_COM184
+
+;羞耻PLAY中
+SIF TEQUIP:30
+	CALL EQUIP_COM186
+
+;浴室PLAY中
+SIF TEQUIP:31
+	CALL EQUIP_COM187
+
+;淋浴使用中
+SIF TEQUIP:32
+	CALL EQUIP_COM188
+
+;新妻PLAY中
+SIF TEQUIP:33
+	CALL EQUIP_COM189
+
+;强精神药の効果発揮中／强精神药の反動処理
+SIF TEQUIP:34
+	CALL EQUIP_COM191
+
+;触手口辱中
+SIF TEQUIP:36
+	CALL EQUIP_COM168
+
+;射精止め中
+SIF TEQUIP:37
+	CALL EQUIP_COM109
+
+;导尿管插入中
+SIF TEQUIP:38
+	CALL EQUIP_COM50
+
+;尿道バルーン插入中
+SIF TEQUIP:39
+	CALL EQUIP_COM153
+
+;触手乳腺插入
+SIF TEQUIP:40
+	CALL EQUIP_COM300
+
+;触手Ｇスポ責め
+SIF TEQUIP:13 == 2
+	CALL EQUIP_COM301
+
+;触手子宮責め
+SIF TEQUIP:13 == 3
+	CALL EQUIP_COM302
+
+;触手前立腺責め
+SIF TEQUIP:14 == 2
+	CALL EQUIP_COM303
+
+;触手膣内産卵
+SIF TEQUIP:41
+	CALL EQUIP_COM307
+
+;触手肠内産卵
+SIF TEQUIP:42
+	CALL EQUIP_COM308
+
+;阴蒂爱抚命令
+SIF TEQUIP:49 == 1
+	CALL EQUIP_COM220
+
+;阴茎爱抚命令
+SIF TEQUIP:49 == 2
+	CALL EQUIP_COM221
+
+;胸爱抚命令
+SIF TEQUIP:44
+	CALL EQUIP_COM222
+
+;手指插入命令
+SIF TEQUIP:45
+	CALL EQUIP_COM223
+
+;肛门爱抚命令
+SIF TEQUIP:46
+	CALL EQUIP_COM224
+
+;插入命令
+SIF TEQUIP:47
+	CALL EQUIP_COM225
+
+;肛插入命令
+SIF TEQUIP:48
+	CALL EQUIP_COM226
+
+;尾巴插入
+SIF TEQUIP:51
+	CALL EQUIP_COM158
+
+;尾巴肛插入
+SIF TEQUIP:52
+	CALL EQUIP_COM159
+
+;水下PLAY中
+SIF TEQUIP:53
+	CALL EQUIP_COM197
+
+RETURN 1
+;-------------------------------------------------
+;主人による调教のボー茄子
+;-------------------------------------------------
+@MASTER_SKILL_CHECK
+;依赖度ボー茄子
+IF ASSIPLAY == 0
+	;正ベクトル
+	IF CFLAG:2 >= 5000
+		TIMES SOURCE:0 , 1.40
+		TIMES SOURCE:1 , 1.40
+		TIMES SOURCE:2 , 1.40
+		TIMES SOURCE:3 , 1.40
+		TIMES SOURCE:4 , 1.50
+		TIMES SOURCE:22 , 1.50
+		TIMES SOURCE:23 , 1.50
+		TIMES SOURCE:24 , 1.50
+
+		TIMES SOURCE:不洁 , 0.50
+		TIMES SOURCE:17 , 0.50
+	ELSEIF CFLAG:2 >= 2000
+		TIMES SOURCE:0 , 1.20
+		TIMES SOURCE:1 , 1.20
+		TIMES SOURCE:2 , 1.20
+		TIMES SOURCE:3 , 1.20
+		TIMES SOURCE:4 , 1.30
+		TIMES SOURCE:22 , 1.30
+		TIMES SOURCE:23 , 1.30
+		TIMES SOURCE:24 , 1.30
+
+		TIMES SOURCE:不洁 , 0.70
+		TIMES SOURCE:17 , 0.70
+	ELSEIF CFLAG:2 >= 1000
+		TIMES SOURCE:0 , 1.10
+		TIMES SOURCE:1 , 1.10
+		TIMES SOURCE:2 , 1.10
+		TIMES SOURCE:3 , 1.10
+		TIMES SOURCE:4 , 1.20
+		TIMES SOURCE:22 , 1.20
+		TIMES SOURCE:23 , 1.20
+		TIMES SOURCE:24 , 1.20
+
+		TIMES SOURCE:不洁 , 0.80
+		TIMES SOURCE:17 , 0.80
+	ELSEIF CFLAG:2 >= 500
+		TIMES SOURCE:4 , 1.10
+		
+		TIMES SOURCE:不洁 , 0.90
+		TIMES SOURCE:17 , 0.90
+	;負ベクトル
+	ELSEIF CFLAG:2 <= -5000
+		TIMES SOURCE:8 , 1.40
+		TIMES SOURCE:9 , 1.40
+		TIMES SOURCE:屈从 , 1.50
+		
+		TIMES SOURCE:16 , 0.50
+		TIMES SOURCE:18 , 0.50
+	ELSEIF CFLAG:2 <= -2000
+		TIMES SOURCE:8 , 1.20
+		TIMES SOURCE:9 , 1.20
+		TIMES SOURCE:屈从 , 1.30
+		
+		TIMES SOURCE:16 , 0.70
+		TIMES SOURCE:18 , 0.70
+	ELSEIF CFLAG:2 <= -1000
+		TIMES SOURCE:8 , 1.10
+		TIMES SOURCE:9 , 1.10
+		TIMES SOURCE:屈从 , 1.20
+		
+		TIMES SOURCE:16 , 0.80
+		TIMES SOURCE:18 , 0.80
+	ELSEIF CFLAG:2 <= -500
+		TIMES SOURCE:屈从 , 1.10
+		
+		TIMES SOURCE:16 , 0.90
+		TIMES SOURCE:18 , 0.90
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;处女喪失時の処理
+;-------------------------------------------------
+@LOST_VIRGIN
+IF TALENT:0 && TFLAG:19
+	PRINTW 处女丧失
+	TALENT:0 = 0
+	;处女喪失フラグ(今回の指令)
+	TFLAG:3 = 1
+	;处女喪失フラグ(今回の调教)
+	TFLAG:31 = 1
+	;处女喪失フラグ(视频拍摄)
+	SIF TEQUIP:28
+		TFLAG:39 = 1
+	;贞操重视
+	IF TALENT:30
+		TIMES SOURCE:4 , 0.60
+		TIMES SOURCE:18 , 10.00
+	;贞操重视+恋慕or相亲相爱（主人による处女喪失のみ）
+	ELSEIF TALENT:30 && TFLAG:19 && (TALENT:3 == 0 && TALENT:6 == 0)
+		TIMES SOURCE:4 , 1.20
+		TIMES SOURCE:18 , 0.50
+	;贞操淡漠
+	ELSEIF TALENT:31
+		TIMES SOURCE:4 , 0.60
+		TIMES SOURCE:18 , 0.50
+	ENDIF
+	;手指插入の慣らしギミック処理
+	IF PALAM:1 >= 80
+		TIMES SOURCE:1 , 1.50
+		TIMES SOURCE:4 , 1.20
+		TIMES SOURCE:7 , 0.80
+		TIMES SOURCE:18 , 0.80
+	ELSEIF PALAM:1 >= 60
+		TIMES SOURCE:1 , 1.40
+		TIMES SOURCE:4 , 1.15
+		TIMES SOURCE:7 , 0.85
+		TIMES SOURCE:18 , 0.85
+	ELSEIF PALAM:1 >= 40
+		TIMES SOURCE:1 , 1.30
+		TIMES SOURCE:4 , 1.10
+		TIMES SOURCE:7 , 0.90
+		TIMES SOURCE:18 , 0.90
+	ELSEIF PALAM:1 >= 20
+		TIMES SOURCE:1 , 1.20
+		TIMES SOURCE:4 , 1.05
+		TIMES SOURCE:7 , 0.95
+		TIMES SOURCE:18 , 0.95
+	ENDIF
+	;陷落素質による処理
+	IF TFLAG:20
+		;恋慕かつ相手が主人
+		IF TALENT:3 && TFLAG:20
+			PRINTFORML %CALLNAME:TARGET%好像因向%PLAYER_NAME(1)%奉献出处女而感到幸福……
+			TFLAG:150 = 2
+			TIMES SOURCE:4 , 2.00
+			TIMES SOURCE:18 , 0.30
+		;相亲相爱かつ相手が主人
+		ELSEIF TALENT:6 && TFLAG:20
+			PRINTFORML %CALLNAME:TARGET%似乎因自己是%PLAYER_NAME(1)%的初夜对象而感到无比幸福……
+			TFLAG:150 = 2
+			TIMES SOURCE:4 , 2.00
+			TIMES SOURCE:18 , 0.10
+		ENDIF
+		;行為によって、爱情经验を加算する
+		;正常位
+		IF SELECTCOM == 60
+			PRINTFORML %EXPNAME:23%+10
+			EXP:23 += 10
+		;后背位
+		ELSEIF SELECTCOM == 61
+			PRINTFORML %EXPNAME:23%+5
+			EXP:23 += 5
+		;骑乘位
+		ELSEIF SELECTCOM == 66
+			PRINTFORML %EXPNAME:23%+5
+			EXP:23 += 5
+		;对面座位
+		ELSEIF SELECTCOM == 68
+			PRINTFORML %EXPNAME:23%+8
+			EXP:23 += 8
+		;背面座位
+		ELSEIF SELECTCOM == 69
+			PRINTFORML %EXPNAME:23%+5
+			EXP:23 += 5
+		;错开内裤插入
+		ELSEIF SELECTCOM == 72
+			PRINTFORML %EXPNAME:23%+5
+			EXP:23 += 8
+		;对面立位
+		ELSEIF SELECTCOM == 74
+			PRINTFORML %EXPNAME:23%+8
+			EXP:23 += 8
+		;背面立位
+		ELSEIF SELECTCOM == 75
+			PRINTFORML %EXPNAME:23%+5
+			EXP:23 += 5
+		;３Ｐ
+		ELSEIF SELECTCOM == 500
+			PRINTFORML %EXPNAME:23%+5
+			EXP:23 += 5
+		;乱れ牡丹
+		ELSEIF SELECTCOM == 504
+			PRINTFORML %EXPNAME:23%+5
+			EXP:23 += 5
+		ENDIF
+	ENDIF
+	;へたくしょん用面識判定の更新
+	CFLAG:PLAYER:(799 + NO:TARGET) |= 32
+	;处女喪失相手の記録
+	IF SELECTCOM == 155	
+		CSTR:TARGET:20 = 被兽奸而失去
+	ELSEIF SELECTCOM == 44
+		CSTR:TARGET:20 = 因自慰棒而失去
+	ELSEIF SELECTCOM == 161
+		CSTR:TARGET:20 = 触手
+	ELSEIF SELECTCOM == 158
+		CSTR:TARGET:20 = 自身的尾巴
+	ELSEIF SELECTCOM == 225
+		CSTR:TARGET:20 = %NAME:ASSI%
+	ELSEIF SELECTCOM == 321
+		CSTR:TARGET:20 = 被轮奸而失去
+	ELSE		
+		CSTR:TARGET:20 = %NAME:PLAYER%
+	ENDIF
+	PRINTL
+ENDIF
+IF !TFLAG:160 && TFLAG:165
+	;恋慕ルート
+	IF KANRAKU(TARGET) == 1
+		PRINTFORML %CALLNAME:TARGET%对于自己能成为%CALLNAME:PLAYER%的初夜对象感到非常开心…
+	;服从ルート
+	ELSEIF KANRAKU(TARGET) == 3
+		PRINTFORML %CALLNAME:TARGET%对于自己能成为%CALLNAME:PLAYER%的初夜对象感到非常荣幸…
+	ELSE
+		IF TALENT:幼稚 || CFLAG:600 == 11
+			PRINTFORML %CALLNAME:TARGET%对于自己是%CALLNAME:PLAYER%的初夜对象感到非常意外…
+		ELSE
+			PRINTFORML %CALLNAME:TARGET%很意外%CALLNAME:PLAYER%竟然是处女…
+		ENDIF
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;童贞喪失時の処理
+;-------------------------------------------------
+@LOST_VIRGIN_DT
+IF TALENT:160 && TFLAG:160 == 1
+	PRINTW 童贞丧失
+	TALENT:160 = 0
+	;贞操重视
+	IF TALENT:30
+		TIMES SOURCE:4 , 0.60
+		TIMES SOURCE:18 , 10.00
+	;贞操重视+恋慕or相亲相爱（主人による童贞喪失のみ）
+	ELSEIF TALENT:30 && (TALENT:3 == 0 && TALENT:6 == 0)
+		TIMES SOURCE:4 , 1.20
+		TIMES SOURCE:18 , 0.50
+	;贞操淡漠
+	ELSEIF TALENT:31
+		TIMES SOURCE:4 , 0.60
+		TIMES SOURCE:18 , 0.50
+	ENDIF
+	;陷落素質による処理
+	IF TFLAG:162
+		;恋慕かつ相手が主人
+		IF TALENT:3
+			PRINTFORML %CALLNAME:TARGET%似乎因向%CALLNAME:PLAYER%献出童贞而感到非常幸福…
+			TFLAG:150 = 2
+			TIMES SOURCE:4 , 2.00
+			TIMES SOURCE:18 , 0.30
+		;相亲相爱かつ相手が主人
+		ELSEIF TALENT:6
+			PRINTFORML %CALLNAME:TARGET%似乎因自己是%CALLNAME:PLAYER%的初夜对象而感到非常幸福…
+		
+			TFLAG:150 = 2
+			TIMES SOURCE:4 , 2.00
+			TIMES SOURCE:18 , 0.10
+		ENDIF
+		;主人处女喪失の場合
+		;恋慕ルート
+		IF TFLAG:165 && KANRAKU(TARGET) == 1
+			PRINTFORML %CALLNAME:TARGET%对于自己是%CALLNAME:PLAYER%的初夜对象感到无比开心…
+		;服从ルート
+		ELSEIF TFLAG:165 && KANRAKU(TARGET) == 3
+			PRINTFORML %CALLNAME:TARGET%对于自己是%CALLNAME:PLAYER%的初夜对象感到无比荣幸…
+		ELSEIF TFLAG:165
+			IF TALENT:幼稚 || CFLAG:600 == 11
+				PRINTFORML %CALLNAME:TARGET%对于自己是%CALLNAME:PLAYER%的初夜对象感到非常意外…
+			ELSE
+				PRINTFORML %CALLNAME:TARGET%很意外%CALLNAME:PLAYER%竟然是处女…
+			ENDIF
+		ENDIF
+		;行為によって、爱情经验を加算する
+		;逆强奸
+		IF SELECTCOM == 211
+			PRINTFORML %EXPNAME:23%+10
+			EXP:23 += 5
+		;逆正常位
+		ELSEIF SELECTCOM == 205
+			PRINTFORML %EXPNAME:23%+5
+			EXP:23 += 10
+		;逆后背位
+		ELSEIF SELECTCOM == 206
+			PRINTFORML %EXPNAME:23%+5
+			EXP:23 += 5
+		ENDIF
+	ENDIF
+	;へたくしょん用面識判定の更新
+	CFLAG:PLAYER:(799 + NO:TARGET) |= 16
+	CFLAG:TARGET:(799 + NO:PLAYER) |= 32
+	;童贞喪失相手の記録
+	IF SELECTCOM == 122	
+		CSTR:TARGET:21 = %NAME:ASSI%
+	ELSEIF SELECTCOM == 321
+		CSTR:TARGET:21 = 被轮奸而失去
+	ELSE
+		CSTR:21 = %NAME:PLAYER%
+	ENDIF
+	PRINTL
+ENDIF
+IF TALENT:PLAYER:160 && TFLAG:160 == 2
+	PRINTFORMW %CALLNAME:PLAYER%失去了童贞
+	TALENT:PLAYER:160 = 0
+	;へたくしょん用面識判定の更新
+	CFLAG:PLAYER:(799 + NO:TARGET) |= 32
+	CFLAG:TARGET:(799 + NO:PLAYER) |= 16
+	;童贞喪失相手の記録
+	CSTR:PLAYER:21 = %NAME:TARGET%
+	PRINTL
+ENDIF
+;-------------------------------------------------
+;后庭处子喪失時の処理
+;-------------------------------------------------
+@LOST_VIRGIN_BACK
+IF TALENT:161 && TFLAG:161 == 1
+	PRINTW 后庭处子丧失
+	TALENT:161 = 0
+	;后庭处子喪失フラグ(视频拍摄)
+	SIF TEQUIP:28 && !TFLAG:39 && TALENT:男性
+		TFLAG:39 = 2
+	;贞操重视
+	IF TALENT:30
+		TIMES SOURCE:4 , 0.60
+		TIMES SOURCE:18 , 10.00
+	;贞操重视+恋慕or相亲相爱（主人による后庭处子喪失のみ）
+	ELSEIF TALENT:30 && (TALENT:3 == 0 && TALENT:6 == 0)
+		TIMES SOURCE:4 , 1.20
+		TIMES SOURCE:18 , 0.50
+	;贞操淡漠
+	ELSEIF TALENT:31
+		TIMES SOURCE:4 , 0.60
+		TIMES SOURCE:18 , 0.50
+	ENDIF
+	;陷落素質による処理
+	IF TFLAG:163
+		;恋慕かつ相手が主人
+		IF TALENT:3
+			PRINTFORML %CALLNAME:TARGET%因向%PLAYER_NAME(1)%献出后庭处子感到非常幸福……
+			TFLAG:150 = 2
+			TIMES SOURCE:4 , 2.00
+			TIMES SOURCE:18 , 0.30
+		;相亲相爱かつ相手が主人
+		ELSEIF TALENT:6
+			PRINTFORML %CALLNAME:TARGET%对于自己是%PLAYER_NAME(1)%的初夜对象这件事感到非常幸福……
+			TFLAG:150 = 2
+			TIMES SOURCE:4 , 2.00
+			TIMES SOURCE:18 , 0.10
+		ENDIF
+		;行為によって、爱情经验を加算する
+		;正常位Ａ
+		IF SELECTCOM == 62
+			PRINTFORML %EXPNAME:23%+10
+			EXP:23 += 10
+		;后背位Ａ
+		ELSEIF SELECTCOM == 63
+			PRINTFORML %EXPNAME:23%+5
+			EXP:23 += 5
+		;骑乘位Ａ
+		ELSEIF SELECTCOM == 67
+			PRINTFORML %EXPNAME:23%+5
+			EXP:23 += 5
+		;对面座位Ａ
+		ELSEIF SELECTCOM == 70
+			PRINTFORML %EXPNAME:23%+8
+			EXP:23 += 8
+		;背面座位Ａ
+		ELSEIF SELECTCOM == 71
+			PRINTFORML %EXPNAME:23%+5
+			EXP:23 += 5
+		;错开内裤插入Ａ
+		ELSEIF SELECTCOM == 73
+			PRINTFORML %EXPNAME:23%+5
+			EXP:23 += 8
+		;对面立位Ａ
+		ELSEIF SELECTCOM == 76
+			PRINTFORML %EXPNAME:23%+8
+			EXP:23 += 8
+		;背面立位Ａ
+		ELSEIF SELECTCOM == 77
+			PRINTFORML %EXPNAME:23%+5
+			EXP:23 += 5
+		;３Ｐ
+		ELSEIF SELECTCOM == 500
+			PRINTFORML %EXPNAME:23%+5
+			EXP:23 += 5
+		ENDIF
+	ENDIF
+	;へたくしょん用面識判定の更新
+	CFLAG:PLAYER:(799 + NO:TARGET) |= 64
+	;后庭处子喪失相手の記録
+	IF SELECTCOM == 155	
+		CSTR:TARGET:22 = 被兽奸而失去
+	ELSEIF SELECTCOM == 162 || SELECTCOM == 167
+		CSTR:TARGET:22 = 触手
+	ELSEIF SELECTCOM == 159
+		CSTR:TARGET:22 = 自身的尾巴
+	ELSEIF SELECTCOM == 226
+		CSTR:TARGET:22 = %NAME:ASSI%
+	ELSEIF SELECTCOM == 321
+		CSTR:TARGET:22 = 被轮奸而失去
+	ELSE		
+		CSTR:TARGET:22 = %NAME:PLAYER%
+	ENDIF
+	PRINTL
+ENDIF
+IF TALENT:PLAYER:161 && TFLAG:161 == 2
+	PRINTFORMW %CALLNAME:PLAYER%失去后庭处子
+	TALENT:PLAYER:161 = 0
+	;へたくしょん用面識判定の更新
+	CFLAG:TARGET:(799 + NO:PLAYER) |= 64
+	;后庭处子喪失相手の記録
+	CSTR:PLAYER:22 = %NAME%
+	PRINTL
+ENDIF
+
+;-------------------------------------------------
+;再生处女喪失のチェック
+;-------------------------------------------------
+IF TALENT:1 && TFLAG:19
+	PRINTW 再生处女丧失
+	TALENT:1 = 0
+	;手指插入の慣らしギミック処理
+	IF PALAM:1 >= 80
+		TIMES SOURCE:7 , 0.80
+	ELSEIF PALAM:1 >= 60
+		TIMES SOURCE:7 , 0.85
+	ELSEIF PALAM:1 >= 40
+		TIMES SOURCE:7 , 0.90
+	ELSEIF PALAM:1 >= 20
+		TIMES SOURCE:7 , 0.95
+	ENDIF
+ENDIF
+
+
+
+;-------------------------------------------------
+;技巧のチェック
+;-------------------------------------------------
+@TECHNIQUE_CHECK
+;行為をしている者の技巧をチェックする
+;奴隶の場合
+IF TFLAG:28 == 1
+	;奴隶のABL:技巧
+	IF ABL:2 == 0
+		TIMES SOURCE:0 , 0.50
+		TIMES SOURCE:1 , 0.50
+		TIMES SOURCE:2 , 0.50
+		TIMES SOURCE:3 , 0.50
+		TIMES SOURCE:5 , 0.50
+		TIMES SOURCE:22 , 0.50
+		TIMES SOURCE:23 , 0.50
+		TIMES SOURCE:24 , 0.50
+	ELSEIF ABL:2 == 1
+		TIMES SOURCE:0 , 0.60
+		TIMES SOURCE:1 , 0.60
+		TIMES SOURCE:2 , 0.60
+		TIMES SOURCE:3 , 0.60
+		TIMES SOURCE:5 , 0.55
+		TIMES SOURCE:22 , 0.55
+		TIMES SOURCE:23 , 0.55
+		TIMES SOURCE:24 , 0.55
+	ELSEIF ABL:2 == 2
+		TIMES SOURCE:0 , 0.80
+		TIMES SOURCE:1 , 0.80
+		TIMES SOURCE:2 , 0.80
+		TIMES SOURCE:3 , 0.80
+		TIMES SOURCE:5 , 0.70
+		TIMES SOURCE:22 , 0.70
+		TIMES SOURCE:23 , 0.70
+		TIMES SOURCE:24 , 0.70
+	ELSEIF ABL:2 == 3
+		TIMES SOURCE:0 , 1.00
+		TIMES SOURCE:1 , 1.00
+		TIMES SOURCE:2 , 1.00
+		TIMES SOURCE:3 , 1.00
+		TIMES SOURCE:5 , 0.90
+		TIMES SOURCE:22 , 0.90
+		TIMES SOURCE:23 , 0.90
+		TIMES SOURCE:24 , 0.90
+	ELSEIF ABL:2 == 4
+		TIMES SOURCE:0 , 1.20
+		TIMES SOURCE:1 , 1.20
+		TIMES SOURCE:2 , 1.20
+		TIMES SOURCE:3 , 1.20
+		TIMES SOURCE:5 , 1.20
+		TIMES SOURCE:22 , 1.20
+		TIMES SOURCE:23 , 1.20
+		TIMES SOURCE:24 , 1.20
+	ELSEIF ABL:2 == 5
+		TIMES SOURCE:0 , 1.50
+		TIMES SOURCE:1 , 1.50
+		TIMES SOURCE:2 , 1.50
+		TIMES SOURCE:3 , 1.50
+		TIMES SOURCE:5 , 1.50
+		TIMES SOURCE:22 , 1.50
+		TIMES SOURCE:23 , 1.50
+		TIMES SOURCE:24 , 1.50
+	ELSEIF ABL:2 == 6
+		TIMES SOURCE:0 , 1.80
+		TIMES SOURCE:1 , 1.80
+		TIMES SOURCE:2 , 1.80
+		TIMES SOURCE:3 , 1.80
+		TIMES SOURCE:5 , 1.80
+		TIMES SOURCE:22 , 1.80
+		TIMES SOURCE:23 , 1.80
+		TIMES SOURCE:24 , 1.80
+	ELSEIF ABL:2 == 7
+		TIMES SOURCE:0 , 2.50
+		TIMES SOURCE:1 , 2.50
+		TIMES SOURCE:2 , 2.50
+		TIMES SOURCE:3 , 2.50
+		TIMES SOURCE:5 , 2.50
+		TIMES SOURCE:22 , 2.50
+		TIMES SOURCE:23 , 2.50
+		TIMES SOURCE:24 , 2.50
+	ELSEIF ABL:2 == 8
+		TIMES SOURCE:0 , 3.00
+		TIMES SOURCE:1 , 3.00
+		TIMES SOURCE:2 , 3.00
+		TIMES SOURCE:3 , 3.00
+		TIMES SOURCE:5 , 3.00
+		TIMES SOURCE:22 , 3.00
+		TIMES SOURCE:23 , 3.00
+		TIMES SOURCE:24 , 3.00
+	ELSEIF ABL:2 == 9
+		TIMES SOURCE:0 , 3.50
+		TIMES SOURCE:1 , 3.50
+		TIMES SOURCE:2 , 3.50
+		TIMES SOURCE:3 , 3.50
+		TIMES SOURCE:5 , 3.50
+		TIMES SOURCE:22 , 3.50
+		TIMES SOURCE:23 , 3.50
+		TIMES SOURCE:24 , 3.50
+	ELSEIF ABL:2 == 10
+		TIMES SOURCE:0 , 5.00
+		TIMES SOURCE:1 , 5.00
+		TIMES SOURCE:2 , 5.00
+		TIMES SOURCE:3 , 5.00
+		TIMES SOURCE:5 , 5.00
+		TIMES SOURCE:22 , 5.00
+		TIMES SOURCE:23 , 5.00
+		TIMES SOURCE:24 , 5.00
+	ENDIF
+;调教者の場合
+ELSEIF TFLAG:28 == 0
+;调教者のABL:技巧
+	IF ABL:PLAYER:2 == 0
+		TIMES SOURCE:0 , 0.50
+		TIMES SOURCE:1 , 0.50
+		TIMES SOURCE:2 , 0.50
+		TIMES SOURCE:3 , 0.50
+		TIMES SOURCE:22 , 0.50
+		TIMES SOURCE:23 , 0.50
+		TIMES SOURCE:24 , 0.50
+	ELSEIF ABL:PLAYER:2 == 1
+		TIMES SOURCE:0 , 0.60
+		TIMES SOURCE:1 , 0.60
+		TIMES SOURCE:2 , 0.60
+		TIMES SOURCE:3 , 0.60
+		TIMES SOURCE:22 , 0.60
+		TIMES SOURCE:23 , 0.60
+		TIMES SOURCE:24 , 0.60
+	ELSEIF ABL:PLAYER:2 == 2
+		TIMES SOURCE:0 , 0.80
+		TIMES SOURCE:1 , 0.80
+		TIMES SOURCE:2 , 0.80
+		TIMES SOURCE:3 , 0.80
+		TIMES SOURCE:22 , 0.80
+		TIMES SOURCE:23 , 0.80
+		TIMES SOURCE:24 , 0.80
+	ELSEIF ABL:PLAYER:2 == 3
+		TIMES SOURCE:0 , 1.00
+		TIMES SOURCE:1 , 1.00
+		TIMES SOURCE:2 , 1.00
+		TIMES SOURCE:3 , 1.00
+		TIMES SOURCE:22 , 1.00
+		TIMES SOURCE:23 , 1.00
+		TIMES SOURCE:24 , 1.00
+	ELSEIF ABL:PLAYER:2 == 4
+		TIMES SOURCE:0 , 1.20
+		TIMES SOURCE:1 , 1.20
+		TIMES SOURCE:2 , 1.20
+		TIMES SOURCE:3 , 1.20
+		TIMES SOURCE:22 , 1.20
+		TIMES SOURCE:23 , 1.20
+		TIMES SOURCE:24 , 1.20
+	ELSEIF ABL:PLAYER:2 == 5
+		TIMES SOURCE:0 , 1.50
+		TIMES SOURCE:1 , 1.50
+		TIMES SOURCE:2 , 1.50
+		TIMES SOURCE:3 , 1.50
+		TIMES SOURCE:22 , 1.50
+		TIMES SOURCE:23 , 1.50
+		TIMES SOURCE:24 , 1.50
+	ELSEIF ABL:PLAYER:2 == 6
+		TIMES SOURCE:0 , 1.80
+		TIMES SOURCE:1 , 1.80
+		TIMES SOURCE:2 , 1.80
+		TIMES SOURCE:3 , 1.80
+		TIMES SOURCE:22 , 1.80
+		TIMES SOURCE:23 , 1.80
+		TIMES SOURCE:24 , 1.80
+	ELSEIF ABL:PLAYER:2 == 7
+		TIMES SOURCE:0 , 2.50
+		TIMES SOURCE:1 , 2.50
+		TIMES SOURCE:2 , 2.50
+		TIMES SOURCE:3 , 2.50
+		TIMES SOURCE:22 , 2.50
+		TIMES SOURCE:23 , 2.50
+		TIMES SOURCE:24 , 2.50
+	ELSEIF ABL:PLAYER:2 == 8
+		TIMES SOURCE:0 , 3.00
+		TIMES SOURCE:1 , 3.00
+		TIMES SOURCE:2 , 3.00
+		TIMES SOURCE:3 , 3.00
+		TIMES SOURCE:22 , 3.00
+		TIMES SOURCE:23 , 3.00
+		TIMES SOURCE:24 , 3.00
+	ELSEIF ABL:PLAYER:2 == 9
+		TIMES SOURCE:0 , 3.50
+		TIMES SOURCE:1 , 3.50
+		TIMES SOURCE:2 , 3.50
+		TIMES SOURCE:3 , 3.50
+		TIMES SOURCE:22 , 3.50
+		TIMES SOURCE:23 , 3.50
+		TIMES SOURCE:24 , 3.50
+	ELSEIF ABL:PLAYER:2 == 10
+		TIMES SOURCE:0 , 5.00
+		TIMES SOURCE:1 , 5.00
+		TIMES SOURCE:2 , 5.00
+		TIMES SOURCE:3 , 5.00
+		TIMES SOURCE:22 , 5.00
+		TIMES SOURCE:23 , 5.00
+		TIMES SOURCE:24 , 5.00
+	ENDIF
+	EXP:PLAYER:70 += 1
+ENDIF
+
+
+;-------------------------------------------------
+;强精神药による绝顶取消
+;-------------------------------------------------
+@ECST_CANCEL
+
+;SOURCE.ERBの绝顶処理を流用
+
+C = 0
+V = 0
+A = 0
+B = 0
+W = 0
+T = 0
+E = 0
+
+;绝顶Ｃ
+IF UP:0 + PALAM:0 >= PALAMLV:4 * 2
+	C = 2
+	DOWN:0 = (PALAMLV:4 * 2 - 1000)
+	PRINTL 強绝顶Ｃ取消
+ELSEIF UP:0 + PALAM:0 >= PALAMLV:4
+	C = 1
+	PALAM:0 = 5000
+	UP:0 = 0
+	PRINTL 绝顶Ｃ取消
+ENDIF
+;DOWN:1で下げても绝顶以上なら
+;その値-1になるように調整（10000で绝顶なら9999）
+SIF UP:0 + PALAM:0 - DOWN:0 >= PALAMLV:4
+	DOWN:0 = UP:0 + PALAM:0 - PALAMLV:4 + 1
+
+;绝顶Ｖ
+IF UP:1 + PALAM:1 >= PALAMLV:4 * 2
+	DOWN:1 = (PALAMLV:4 * 2 - 1000)
+	PRINTL 強绝顶Ｖ取消
+ELSEIF UP:1 + PALAM:1 >= PALAMLV:4
+	V = 1
+	DOWN:1 = (PALAMLV:4 - 1000)
+	PRINTL 绝顶Ｖ取消
+ENDIF
+;DOWN:1で下げても绝顶以上なら
+;その値-1になるように調整（10000で绝顶なら9999）
+SIF UP:1 + PALAM:1 - DOWN:1 >= PALAMLV:4
+	DOWN:1 = UP:1 + PALAM:1 - PALAMLV:4 + 1
+
+;绝顶Ａ
+IF UP:2 + PALAM:2 >= PALAMLV:4 * 2
+	A = 2
+	DOWN:2 = (PALAMLV:4 * 2 - 1000)
+	PRINTL 強绝顶Ａ取消
+ELSEIF UP:2 + PALAM:2 >= PALAMLV:4
+	A = 1
+	DOWN:2 = (PALAMLV:4 - 1000)
+	PRINTL 绝顶Ａ取消
+ENDIF
+;DOWN:2で下げても绝顶以上なら
+;その値-1になるように調整（10000で绝顶なら9999）
+SIF UP:2 + PALAM:2 - DOWN:2 >= PALAMLV:4
+	DOWN:2 = UP:2 + PALAM:2 - PALAMLV:4 + 1
+
+;绝顶Ｂ
+IF UP:3 + PALAM:3 >= PALAMLV:4 * 2
+	B = 2
+	DOWN:3 = (PALAMLV:4 * 2 - 1000)
+	PRINTL 強绝顶Ｂ取消
+ELSEIF UP:3 + PALAM:3 >= PALAMLV:4
+	B = 1
+	DOWN:3 = (PALAMLV:4 - 1000)
+	PRINTL 绝顶Ｂ取消
+ENDIF
+;DOWN:3で下げても绝顶以上なら
+;その値-1になるように調整（10000で绝顶なら9999）
+SIF UP:3 + PALAM:3 - DOWN:3 >= PALAMLV:4
+	DOWN:3 = UP:3 + PALAM:3 - PALAMLV:4 + 1
+
+;绝顶Ｗ
+IF UP:22 + PALAM:22 >= PALAMLV:4 * 2
+	W = 2
+	DOWN:22 = (PALAMLV:4 * 2 - 1000)
+	PRINTL 強绝顶Ｗ取消
+ELSEIF UP:22 + PALAM:22 >= PALAMLV:4
+	W = 1
+	DOWN:22 = (PALAMLV:4 - 1000)
+	PRINTL 绝顶Ｗ取消
+ENDIF
+
+SIF UP:22 + PALAM:22 - DOWN:22 >= PALAMLV:4
+	DOWN:22 = UP:22 + PALAM:22 - PALAMLV:4 + 1
+
+;绝顶Ｔ
+IF UP:23 + PALAM:23 >= PALAMLV:4 * 2
+	T = 2
+	DOWN:23 = (PALAMLV:4 * 2 - 1000)
+	PRINTL 強绝顶Ｔ取消
+ELSEIF UP:23 + PALAM:23 >= PALAMLV:4
+	T = 1
+	DOWN:23 = (PALAMLV:4 - 1000)
+	PRINTL 绝顶Ｔ取消
+ENDIF
+
+SIF UP:23 + PALAM:23 - DOWN:23 >= PALAMLV:4
+	DOWN:23 = UP:23 + PALAM:23 - PALAMLV:4 + 1
+
+;绝顶Ｅ
+IF UP:24 + PALAM:24 >= PALAMLV:4 * 2
+	E = 2
+	DOWN:24 = (PALAMLV:4 * 2 - 1000)
+	PRINTL 強绝顶Ｅ取消
+ELSEIF UP:24 + PALAM:24 >= PALAMLV:4
+	E = 1
+	DOWN:24 = (PALAMLV:4 - 1000)
+	PRINTL 绝顶Ｅ取消
+ENDIF
+
+SIF UP:24 + PALAM:24 - DOWN:24 >= PALAMLV:4
+	DOWN:24 = UP:24 + PALAM:24 - PALAMLV:4 + 1
+
+;止められた绝顶回数をTFLAG:44～TFLAG:47に記録
+TFLAG:44 += C
+TFLAG:45 += V
+TFLAG:46 += A
+TFLAG:47 += B
+TFLAG:422 += W
+TFLAG:423 += T
+TFLAG:424 += E
+
+RETURN 1
+
+;-------------------------------------------------
+;绝顶処理
+;-------------------------------------------------
+@ORGASM_ADD
+#DIM 絕頂數
+C = 0
+V = 0
+A = 0
+B = 0
+W = 0
+T = 0
+E = 0
+TFLAG:32 = 0
+;强精神药の副作用を適用する
+IF TEQUIP:34 == 1
+	CALL REACT_DRUG
+ENDIF
+
+;绝顶Ｃ
+IF UP:0 + PALAM:0 >= PALAMLV:4 * 2
+	C = 2
+	DOWN:0 = (PALAMLV:4 * 2 - 1000)
+	PRINTL 強绝顶Ｃ
+	TFLAG:32 = 1
+ELSEIF UP:0 + PALAM:0 >= PALAMLV:4
+	C = 1
+	DOWN:0 = (PALAMLV:4 - 1000)
+	PRINTL 绝顶Ｃ
+	TFLAG:32 = 1
+ENDIF
+;DOWN:0で下げても绝顶以上なら
+;その値-1になるように調整（10000で绝顶なら9999）
+SIF UP:0 + PALAM:0 - DOWN:0 >= PALAMLV:4
+	DOWN:0 = UP:0 + PALAM:0 - PALAMLV:4 + 1
+
+TFLAG:48 = 0
+;男性奴隶で、「Ｃ绝顶だが射精してない」という場合を避けるための処理
+IF TALENT:男性 && TFLAG:32 == 1
+	;今回の射精値の増加量を先に計算してみる（射精值）（「奴隶の射精チェック」のところと同じ）
+	射精值 = UP:0 + UP:1 / 2 + UP:2 / 2 + UP:3 / 3
+	;自制力
+	SIF TALENT:20
+		射精值 /= 2
+	;接受快感
+	SIF TALENT:70
+		TIMES 射精值 , 1.20
+	;否定快感（淫乱、娼妇で无效）
+	SIF TALENT:71 && (TALENT:4 == 0 && TALENT:7 == 0)
+		TIMES 射精值 , 0.80
+	;媚薬
+	SIF TEQUIP:26
+		射精值 *= 2
+	;利尿剂
+	SIF TEQUIP:27
+		射精值 /= 2
+	;Omega發情期
+	SIF 發情期 && TALENT:164
+		TIMES 射精值 , 1.20
+	;射精の再装填期間中は射精槽の増加は20分の1に
+	SIF CFLAG:TARGET:9 > 0
+		射精值 /= 20
+	;射精の限界が来ている場合は、射精槽の増加はしない
+	IF CFLAG:TARGET:11 <= 0
+		射精值 = 0
+	ENDIF
+	;今回射精可能なら特になにもしなくていい
+	IF BASE:2 + 射精值 > MAXBASE:2
+	;今回射精不可で射精の限界が来ていないなら､強制に射精させる　射精値は半分に。一回普通に射精したことにする
+	ELSEIF CFLAG:TARGET:11 > 0
+		;そのフラグを立てる
+		TFLAG:48 = 1
+	ENDIF
+ENDIF
+
+
+;绝顶Ｖ
+IF UP:1 + PALAM:1 >= PALAMLV:4 * 2
+	V = 2
+	DOWN:1 = (PALAMLV:4 * 2 - 1000)
+	PRINTL 強绝顶Ｖ
+	TFLAG:32 = 2
+ELSEIF UP:1 + PALAM:1 >= PALAMLV:4
+	V = 1
+	DOWN:1 = (PALAMLV:4 - 1000)
+	PRINTL 绝顶Ｖ
+	TFLAG:32 = 2
+ENDIF
+;DOWN:1で下げても绝顶以上なら
+;その値-1になるように調整（10000で绝顶なら9999）
+SIF UP:1 + PALAM:1 - DOWN:1 >= PALAMLV:4
+	DOWN:1 = UP:1 + PALAM:1 - PALAMLV:4 + 1
+
+;绝顶Ａ
+IF UP:2 + PALAM:2 >= PALAMLV:4 * 2
+	A = 2
+	DOWN:2 = (PALAMLV:4 * 2 - 1000)
+	PRINTL 強绝顶Ａ
+	TFLAG:32 = 3
+	SIF !SOUCHAKU(3)
+		CFLAG:50 += 2
+ELSEIF UP:2 + PALAM:2 >= PALAMLV:4
+	A = 1
+	DOWN:2 = (PALAMLV:4 - 1000)
+	PRINTL 绝顶Ａ
+	TFLAG:32 = 3
+	SIF !SOUCHAKU(3)
+		CFLAG:50 += 1
+ENDIF
+;DOWN:2で下げても绝顶以上なら
+;その値-1になるように調整（10000で绝顶なら9999）
+SIF UP:2 + PALAM:2 - DOWN:2 >= PALAMLV:4
+	DOWN:2 = UP:2 + PALAM:2 - PALAMLV:4 + 1
+
+;绝顶Ｂ
+IF UP:3 + PALAM:3 >= PALAMLV:4 * 2
+	B = 2
+	DOWN:3 = (PALAMLV:4 * 2 - 1000)
+	PRINTL 強绝顶Ｂ
+	TFLAG:32 = 4
+	SIF !SOUCHAKU(4)
+		CFLAG:51 += 2
+ELSEIF UP:3 + PALAM:3 >= PALAMLV:4
+	B = 1
+	DOWN:3 = (PALAMLV:4 - 1000)
+	PRINTL 绝顶Ｂ
+	TFLAG:32 = 4
+	SIF !SOUCHAKU(4)
+		CFLAG:51 += 1
+ENDIF
+;DOWN:3で下げても绝顶以上なら
+;その値-1になるように調整（10000で绝顶なら9999）
+SIF UP:3 + PALAM:3 - DOWN:3 >= PALAMLV:4
+	DOWN:3 = UP:3 + PALAM:3 - PALAMLV:4 + 1
+
+;绝顶Ｗ
+IF UP:22 + PALAM:22 >= PALAMLV:4 * 2
+	W = 2
+	DOWN:22 = (PALAMLV:4 * 2 - 1000)
+	PRINTL 強绝顶Ｗ
+	;★奴隷の単一絶頂　0:絶頂無しか二重以上　1:Ｃ絶頂　2:Ｖ絶頂　3:Ａ絶頂　4:Ｂ絶頂　5:ＡＢ絶頂(男用)  6：W  7：T  8：E
+	TFLAG:32 = 6
+ELSEIF UP:22 + PALAM:22 >= PALAMLV:4
+	W = 1
+	DOWN:22 = (PALAMLV:4 - 1000)
+	PRINTL 绝顶Ｗ
+	TFLAG:32 = 6
+ENDIF
+SIF UP:22 + PALAM:22 - DOWN:22 >= PALAMLV:4
+	DOWN:22 = UP:22 + PALAM:22 - PALAMLV:4 + 1
+
+;绝顶Ｔ
+IF UP:23 + PALAM:23 >= PALAMLV:4 * 2
+	T = 2
+	DOWN:23 = (PALAMLV:4 * 2 - 1000)
+	PRINTL 強绝顶Ｔ
+	;★奴隷の単一絶頂　0:絶頂無しか二重以上　1:Ｃ絶頂　2:Ｖ絶頂　3:Ａ絶頂　4:Ｂ絶頂　5:ＡＢ絶頂(男用)  6：W  7：T  8：E
+	TFLAG:32 = 7
+ELSEIF UP:23 + PALAM:23 >= PALAMLV:4
+	T = 1
+	DOWN:23 = (PALAMLV:4 - 1000)
+	PRINTL 绝顶Ｔ
+	TFLAG:32 = 7
+ENDIF
+SIF UP:23 + PALAM:23 - DOWN:23 >= PALAMLV:4
+	DOWN:23 = UP:23 + PALAM:23 - PALAMLV:4 + 1
+
+;绝顶Ｅ
+IF UP:24 + PALAM:24 >= PALAMLV:4 * 2
+	E = 2
+	DOWN:24 = (PALAMLV:4 * 2 - 1000)
+	PRINTL 強绝顶Ｅ
+	;★奴隷の単一絶頂　0:絶頂無しか二重以上　1:Ｃ絶頂　2:Ｖ絶頂　3:Ａ絶頂　4:Ｂ絶頂　5:ＡＢ絶頂(男用)  6：W  7：T  8：E
+	TFLAG:32 = 8
+ELSEIF UP:24 + PALAM:24 >= PALAMLV:4
+	E = 1
+	DOWN:24 = (PALAMLV:4 - 1000)
+	PRINTL 绝顶Ｅ
+	TFLAG:32 = 8
+ENDIF
+SIF UP:24 + PALAM:24 - DOWN:24 >= PALAMLV:4
+	DOWN:24 = UP:24 + PALAM:24 - PALAMLV:4 + 1
+;-------------------------------------------------
+;绝顶時の追加処理
+;-------------------------------------------------
+TFLAG:29 = C + V + A + B + W + T + E
+
+;快乐刻印の処理
+;绝顶の部位と強度の合計が一定以上で刻印を取得する
+R = C+V*2+A*2+B+W+T+E
+;Rが4以上で快乐刻印３に相当
+IF R >= 4 && MARK:1 < 3
+	TFLAG:200 = 3
+;Rが3以上で快乐刻印２に相当
+ELSEIF R >= 3 && MARK:1 < 2
+	TFLAG:200 = 2
+;Rが2以上で快乐刻印１に相当
+ELSEIF R >= 2 && MARK:1 < 1
+	TFLAG:200 = 1
+ENDIF
+
+絕頂數 = 0
+SIF C
+絕頂數 += 1
+SIF V
+絕頂數 += 1
+SIF A
+絕頂數 += 1
+SIF B
+絕頂數 += 1
+SIF W
+絕頂數 += 1
+SIF T
+絕頂數 += 1
+SIF E
+絕頂數 += 1
+IF 絕頂數 > 4
+	PRINTL 超 多 重 绝 顶
+	PRINTL (分别得到10倍的珠子)
+	C *= 10
+	V *= 10
+	A *= 10
+	B *= 10
+	W *= 10
+	T *= 10
+	E *= 10
+ELSEIF 絕頂數 == 4
+	PRINTL 四 重 绝 顶
+	PRINTL (分别得到8倍的珠子)
+	C *= 8
+	V *= 8
+	A *= 8
+	B *= 8
+	W *= 8
+	T *= 8
+	E *= 8
+ELSEIF 絕頂數 == 3
+	PRINTL 三 重 绝 顶
+	PRINTL (分别得到4倍的珠子)
+	C *= 4
+	V *= 4
+	A *= 4
+	B *= 4
+	W *= 4
+	T *= 4
+	E *= 4
+ELSEIF 絕頂數 == 2
+	PRINTL 双重绝顶
+	PRINTL (分别得到2倍的珠子)
+	C *= 6
+	V *= 6
+	A *= 6
+	B *= 6
+	W *= 6
+	T *= 6
+	E *= 6
+ENDIF
+	TFLAG:32 = 0
+;IF C && A && B && (V || W || T || E)
+;	PRINTL 四 重 绝 顶
+;	PRINTL (分别得到8倍的珠子)
+;	C *= 8
+;	V *= 8
+;	A *= 8
+;	B *= 8
+;	TFLAG:32 = 0
+;ELSEIF C && V && A
+;	PRINTL Ｃ＆Ｖ＆Ａ绝顶
+;	PRINTL (分别得到4倍的珠子)
+;	C *= 4
+;	V *= 4
+;	A *= 4
+;	TFLAG:32 = 0
+;ELSEIF B && V && A
+;	PRINTL Ｂ＆Ｖ＆Ａ绝顶
+;	PRINTL (分别得到4倍的珠子)
+;	B *= 4
+;	V *= 4
+;	A *= 4
+;	TFLAG:32 = 0
+;ELSEIF C && B && A
+;	IF TALENT:140
+;		PRINTL 三 重 绝 顶
+;	ELSE
+;		PRINTL Ｃ＆Ｂ＆Ａ绝顶
+;	ENDIF
+;	PRINTL (分别得到4倍的珠子)
+;	C *= 4
+;	B *= 4
+;	A *= 4
+;	TFLAG:32 = 0
+;ELSEIF C && V && B
+;	PRINTL Ｃ＆Ｖ＆Ｂ绝顶
+;	PRINTL (分别得到4倍的珠子)
+;	C *= 4
+;	V *= 4
+;	B *= 4
+;	TFLAG:32 = 0
+;ELSEIF C && V
+;	PRINTL Ｃ＆Ｖ绝顶
+;	PRINTL (分别得到2倍的珠子)
+;	C *= 2
+;	V *= 2
+;	TFLAG:32 = 0
+;ELSEIF C && A
+;	PRINTL Ｃ＆Ａ绝顶
+;	PRINTL (分别得到2倍的珠子)
+;	C *= 2
+;	A *= 2
+;	TFLAG:32 = 0
+;ELSEIF V && A
+;	PRINTL Ｖ＆Ａ绝顶
+;	PRINTL (分别得到2倍的珠子)
+;	V *= 2
+;	A *= 2
+;	TFLAG:32 = 0
+;ELSEIF C && B
+;	PRINTL Ｃ＆Ｂ绝顶
+;	PRINTL (分别得到2倍的珠子)
+;	C *= 2
+;	B *= 2
+;	TFLAG:32 = 0
+;ELSEIF W && T && E
+;	PRINTL Ｗ＆Ｔ＆Ｅ绝顶
+;	PRINTL (分别得到2倍的珠子)
+;	W *= 2
+;	T *= 2
+;	E *= 2
+;	TFLAG:32 = 0
+;ELSEIF V && B
+;	PRINTL Ｖ＆Ｂ绝顶
+;	PRINTL (分别得到2倍的珠子)
+;	V *= 2
+;	B *= 2
+;	TFLAG:32 = 0
+;ELSEIF A && B
+;	PRINTL Ａ＆Ｂ绝顶
+;	PRINTL (分别得到2倍的珠子)
+;	A *= 2
+;	B *= 2
+;	TFLAG:32 = 5
+;ENDIF
+
+IF C
+	SOURCE:露出 += 500 * C
+	SOURCE:屈从 += 200 * C
+	SOURCE:18 += 150 * C
+	LOSEBASE:0 += 20
+	LOSEBASE:1 += 10
+ENDIF
+IF V
+	SOURCE:11 += 800 * V
+	SOURCE:12 += 500 * V
+	SOURCE:露出 += 700 * V
+	SOURCE:屈从 += 400 * V
+	SOURCE:18 += 300 * V
+	LOSEBASE:0 += 40
+	LOSEBASE:1 += 20
+ENDIF
+IF A
+	SOURCE:11 += 500 * A
+	SOURCE:12 += 700 * A
+	SOURCE:露出 += 900 * A
+	SOURCE:屈从 += 500 * A
+	SOURCE:18 += 400 * A
+	LOSEBASE:0 += 60
+	LOSEBASE:1 += 30
+ENDIF
+IF B
+	SOURCE:露出 += 500 * B
+	SOURCE:屈从 += 200 * B
+	SOURCE:18 += 150 * B
+	LOSEBASE:0 += 20
+	LOSEBASE:1 += 10
+ENDIF
+
+IF W && (TALENT:201 || TALENT:202 || TALENT:203 || TALENT:204)
+	SOURCE:露出 += 500 * W
+	SOURCE:屈从 += 200 * W
+	SOURCE:18 += 150 * W
+	LOSEBASE:0 += 20
+	LOSEBASE:1 += 10
+ENDIF
+
+IF T && (TALENT:207 || TALENT:208 || TALENT:209 || TALENT:210)
+	SOURCE:露出 += 500 * T
+	SOURCE:屈从 += 200 * T
+	SOURCE:18 += 150 * T
+	LOSEBASE:0 += 20
+	LOSEBASE:1 += 10
+ENDIF
+
+IF E 
+	SOURCE:露出 += 500 * E
+	SOURCE:屈从 += 200 * E
+	SOURCE:18 += 150 * E
+	LOSEBASE:0 += 20
+	LOSEBASE:1 += 10
+ENDIF
+
+;绝顶による欲望ＬＶアップ
+L = 0
+SIF C >= 2 || B >= 2 || V || A || W >= 2 || T >= 2 || E >= 2
+	L = 1
+SIF V >= 2 || A >= 2
+	L = 2
+SIF (C >= 2 && B >= 2) || (C >= 2 && V) || (C >= 2 && A) || (B >= 2 && V) || (B >= 2 && A) && (V && A) || (W >= 2 && T >= 2 && E >= 2)
+	L = 2
+SIF (C && B && V) || (C && B && A) || (C && V && A) || (V && A && B)
+	L = 3
+SIF C && V && A && B
+	L = 4
+;自制力があると１下がる
+SIF TALENT:20
+	L -= 1
+
+IF ABL:1 < L
+	ABL:1 = L
+	PRINTS ABLNAME:1
+	PRINT 的等级
+	PRINT 达到了LV
+	PRINTV L
+	PRINTL ！
+	;欲望の上昇による[性压抑]の消滅をチェック
+	CALL YOKUBO_UP_CHECK
+ENDIF
+
+;NOWEXにデータを入れる（绝顶時口上に使う）
+NOWEX:0 = C
+NOWEX:1 = V
+NOWEX:2 = A
+NOWEX:3 = B
+
+;绝顶回数を増やす
+EX:0 += C
+EX:1 += V
+EX:2 += A
+EX:3 += B
+EX:22 += W
+EX:23 += T
+EX:24 += E
+
+;绝顶经验を増やす
+EXP:2 += C+V+A+B+W+T+E
+
+;精飲绝顶処理へ
+CALL SEIIN_START
+
+RETURN 1
+
+;-------------------------------------------------
+;强精神药の副作用
+;-------------------------------------------------
+@REACT_DRUG
+;仕様説明：
+;@ECST_CANCELでEX:11～EX:14に記録してきた绝顶回数を解放します。
+;パッチ詰め合わせではTFLAG:44～TFLAG:47を代わりに使用。内訳は
+;TFLAG:44 = EX:11(Ｃ绝顶処理)の代わり、TFLAG:45 = EX:12(Ｖ绝顶処理)の代わり、
+;TFLAG:46 = EX:13(Ａ绝顶処理)の代わり、TFLAG:47 = EX:14(Ｂ绝顶処理)の代わり
+;記録してきた绝顶回数１回につき、該当する部位の快ソース（UP:0,1,2,3）を２倍にします。
+;１回の指令でひとつの部位につき１回ずつこの倍化処理を行い、
+;EX:11～EX:14の合計が０になったとき、反動が解除されます。
+;-------------------------------------------------
+;快Ｃの処理
+IF TFLAG:44 > 0 && UP:0 > 0
+	UP:0 *= 2
+	TFLAG:44 -= 1
+ENDIF
+;快Ｖの処理
+IF TFLAG:45 > 0 && UP:1 > 0
+	UP:1 *= 2
+	TFLAG:45 -= 1
+ENDIF
+;快Ａの処理
+IF TFLAG:46 > 0 && UP:2 > 0
+	UP:2 *= 2
+	TFLAG:46 -= 1
+ENDIF
+;快Ｂの処理
+IF TFLAG:47 > 0 && UP:3 > 0
+	UP:3 *= 2
+	TFLAG:47 -= 1
+ENDIF
+;---------------
+;TFLAG:422：強精神薬パッチのＷ絶頂処理の代わり
+;TFLAG:423：強精神薬パッチのＴ絶頂処理の代わり
+;TFLAG:424：強精神薬パッチのＥ絶頂処理の代わり
+;---------------
+;快Ｗの処理
+IF TFLAG:422 > 0 && UP:22 > 0
+	UP:22 *= 2
+	TFLAG:422 -= 1
+ENDIF
+;快Ｔの処理
+IF TFLAG:423 > 0 && UP:23 > 0
+	UP:23 *= 2
+	TFLAG:423 -= 1
+ENDIF
+;快Ｅの処理
+IF TFLAG:424 > 0 && UP:24 > 0
+	UP:24 *= 2
+	TFLAG:424 -= 1
+ENDIF
+
+;反動の終了チェック
+SIF TFLAG:44 + TFLAG:45 + TFLAG:46 + TFLAG:47 + TFLAG:422 + TFLAG:423 + TFLAG:424 == 0
+	TEQUIP:34 = 0
+
+RETURN 1
+
+
+;-------------------------------------------------
+;奴隶の射精チェック
+;-------------------------------------------------
+@TARGET_EJAC_CHECK
+SIF TALENT:137 == 0 && TALENT:139 == 0 && TALENT:140 == 0
+	RETURN 0
+
+;Ｖ快とＡ快とＢ快による影響を軽減
+;新增人外相关
+;A = UP:0 + UP:1 + UP:2 + UP:3　（元）
+射精值 = UP:0 + UP:1 / 2 + UP:2 / 2 + UP:3 / 3 + UP:22 / 4 + UP:23 / 4 + UP:24 / 4
+
+;自制力
+SIF TALENT:20
+	射精值 /= 2
+
+;接受快感
+SIF TALENT:70
+	TIMES 射精值 , 1.20
+
+;否定快感（淫乱、娼妇で无效）
+SIF TALENT:71 && (TALENT:4 == 0 && TALENT:7 == 0)
+	TIMES 射精值 , 0.80
+
+;媚薬
+SIF TEQUIP:26
+	射精值 *= 2
+
+;利尿剂
+SIF TEQUIP:27
+	射精值 /= 2
+	
+;Omega發情期
+SIF 發情期 && TALENT:164
+	TIMES 射精值 , 1.20
+
+;射精の再装填期間中は射精槽の増加は20分の1に
+SIF CFLAG:TARGET:9 > 0
+	射精值 /= 20
+
+;射精の限界が来ている場合は、射精槽の増加はしない
+IF CFLAG:TARGET:11 <= 0
+	射精值 = 0
+	BASE:2 = 0
+ENDIF
+
+BASE:2 += 射精值
+
+S = BASE:2
+EJAC = MAXBASE:2
+
+;男性の場合、どこか绝顶してないと、射精できないようにする。
+IF (S > EJAC) && TALENT:140 && (UP:0 + PALAM:0 < PALAMLV:4) && (UP:1 + PALAM:1 < PALAMLV:4) && (UP:2 + PALAM:2 < PALAMLV:4) && (UP:3 + PALAM:3 < PALAMLV:4) && (UP:22 + PALAM:22 < PALAMLV:4) && (UP:23 + PALAM:23 < PALAMLV:4) && (UP:24 + PALAM:24 < PALAMLV:4)
+	BASE:2 = 9999
+	S = 9999
+ENDIF
+
+IF  S > EJAC * 2
+	E = 2
+ELSEIF S > EJAC
+	E = 1
+;男性Ｃ绝顶強制射精用
+ELSEIF TFLAG:48 == 1
+	E = 1
+ELSE
+	E = 0
+ENDIF
+;踏まれながら射精の回数計算
+SIF (SELECTCOM == 123 || SELECTCOM == 115) && E > 0
+	CFLAG:28 += 1
+;強空射精
+IF E == 2 && (TEQUIP:37 || TEQUIP:39 || TALENT:114)
+	SOURCE:7 += ((BASE:2 * 30) / MAXBASE:2)
+	SOURCE:11 += ((BASE:2 * 60) / MAXBASE:2)
+	TIMES SOURCE:7 , 1.20
+	TIMES SOURCE:11 , 1.20
+	PRINTFORML %CALLNAME:TARGET%強空射精
+	BASE:2 -= EJAC*2
+	NOWEX:40 += 2
+	EX:40 += 2
+
+;空射精
+ELSEIF E == 1 && (TEQUIP:37 || TEQUIP:39 || TALENT:114)
+	SOURCE:7 += ((BASE:2 * 15) / MAXBASE:2)
+	SOURCE:11 += ((BASE:2 * 30) / MAXBASE:2)
+	TIMES SOURCE:7 , 1.10
+	TIMES SOURCE:11 , 1.10
+	PRINTFORML %CALLNAME:TARGET%空射精
+	IF TFLAG:48 == 1
+		BASE:2 /= 2
+	ELSE
+		BASE:2 -= EJAC
+	ENDIF
+	NOWEX:40 += 1
+	EX:40 += 1
+
+;大量射精
+ELSEIF E == 2
+	LOSEBASE:0 += 20
+	LOSEBASE:1 += 100
+	SOURCE:液体 += 5000
+	
+	;eraQueenAでは奴隶は皆元は男性という设定なので、不洁ソースの増える値を半分にした
+	;男の場合、不洁ソース（不快）を下げないと「不快」が上がりすぎたような気がするので。
+	IF EXP:3 < EXPLV:1
+		SOURCE:露出 += 10000
+		SOURCE:屈从 += 5000
+		SOURCE:不洁 += 1000
+	ELSEIF EXP:3 < EXPLV:2
+		SOURCE:露出 += 5000
+		SOURCE:屈从 += 3000
+		SOURCE:不洁 += 750
+	ELSEIF EXP:3 < EXPLV:3
+		SOURCE:露出 += 3000
+		SOURCE:屈从 += 1500
+		SOURCE:不洁 += 500
+	ELSEIF EXP:3 < EXPLV:4
+		SOURCE:露出 += 1500
+		SOURCE:屈从 += 800
+		SOURCE:不洁 += 350
+	ELSEIF EXP:3 < EXPLV:5
+		SOURCE:露出 += 1000
+		SOURCE:屈从 += 500
+		SOURCE:不洁 += 200
+	ELSE
+		SOURCE:露出 += 500
+		SOURCE:屈从 += 150
+	ENDIF
+
+
+
+	PRINTS CALLNAME:TARGET
+	PRINTL 大量射精
+	PRINTL 精液经验＋１
+	PRINTL 射精经验＋２
+	IF EXP:3 == 0 && TALENT:140 == 0
+		EXP:50 += 1
+		PRINTL 异常经验＋1
+	ENDIF
+	EXP:20 += 1
+	EXP:3 += 2
+	;爱抚系、对面做爱なら调教者に精液经验を
+	IF (SELECTCOM >= 0 && SELECTCOM <= 9) || SELECTCOM == 12 || SELECTCOM == 13 || (SELECTCOM >= 40 && SELECTCOM <= 44) || SELECTCOM == 47 || SELECTCOM == 48 || SELECTCOM == 49 || SELECTCOM == 50 || SELECTCOM == 60 || SELECTCOM == 62 || SELECTCOM == 66 || SELECTCOM == 67 || SELECTCOM == 68 || SELECTCOM == 70 || SELECTCOM == 74 || SELECTCOM == 75 || SELECTCOM == 123 || SELECTCOM == 126 || SELECTCOM == 127 || SELECTCOM == 501 || SELECTCOM == 502 || SELECTCOM == 503 || SELECTCOM == 505 || SELECTCOM == 508 || SELECTCOM == 514 || SELECTCOM == 517 || SELECTCOM == 518 || SELECTCOM == 590 || SELECTCOM == 592 || SELECTCOM == 593
+		IF ASSIPLAY
+			PRINTFORML %CALLNAME:PLAYER%的精液经验＋２
+			EXP:PLAYER:20 += 2
+		ELSE
+			EXP:MASTER:20 += 2
+		ENDIF
+	ENDIF
+
+	CALL IN_VAGINA_CHECK_T
+
+	;Ｐに精液汚れ
+	STAIN:2 |= 4
+	
+	;着衣時、服に精液汚れが付く（着衣做爱のときは下着には付かない）
+	IF TEQUIP:4
+		STAIN:12 |= 4
+	ELSEIF TEQUIP:6
+		STAIN:14 |= 4
+	ELSEIF TEQUIP:2 == 0 && (TEQUIP:0 == 2 || TEQUIP:0 == 4)
+		STAIN:8 |= 4
+	ENDIF
+	IF SEXPLAY(TARGET) == 1 || SEXPLAY(TARGET) == 2
+	ELSE
+		SIF TEQUIP:2
+			STAIN:10 |= 4
+	ENDIF
+
+	BASE:2 -= EJAC*2
+	SIF BASE:2 >= EJAC
+		BASE:2 = EJAC-1
+	;调教对象が射精フラグ
+	TFLAG:10 = 2
+	NOWEX:5 += 1
+	EX:5 += 1
+;通常の射精
+ELSEIF E == 1
+	LOSEBASE:1 += 40
+	SOURCE:液体 += 2000
+	IF EXP:3 < EXPLV:1
+		SOURCE:露出 += 5000
+		SOURCE:屈从 += 2500
+		SOURCE:不洁 += 450
+	ELSEIF EXP:3 < EXPLV:2
+		SOURCE:露出 += 2500
+		SOURCE:屈从 += 2000
+		SOURCE:不洁 += 350
+	ELSEIF EXP:3 < EXPLV:3
+		SOURCE:露出 += 1000
+		SOURCE:屈从 += 800
+		SOURCE:不洁 += 250
+	ELSEIF EXP:3 < EXPLV:4
+		SOURCE:露出 += 800
+		SOURCE:屈从 += 600
+		SOURCE:不洁 += 175
+	ELSEIF EXP:3 < EXPLV:5
+		SOURCE:露出 += 400
+		SOURCE:屈从 += 400
+		SOURCE:不洁 += 100
+	ELSE
+		SOURCE:露出 += 200
+		SOURCE:屈从 += 250
+	ENDIF
+
+
+	PRINTS CALLNAME:TARGET
+	PRINTL 射精
+	PRINTL 射精经验＋１
+	IF EXP:3 == 0 && TALENT:140 == 0
+		EXP:50 += 1
+		PRINTL 异常经验＋1
+	ENDIF
+	EXP:3 += 1
+	;爱抚系、对面做爱なら调教者に精液经验を
+	IF (SELECTCOM >= 0 && SELECTCOM <= 9) || SELECTCOM == 12 || SELECTCOM == 13 || (SELECTCOM >= 40 && SELECTCOM <= 44) || SELECTCOM == 47 || SELECTCOM == 48 || SELECTCOM == 49 || SELECTCOM == 50 || SELECTCOM == 60 || SELECTCOM == 62 || SELECTCOM == 66 || SELECTCOM == 67 || SELECTCOM == 68 || SELECTCOM == 70 || SELECTCOM == 74 || SELECTCOM == 75 || SELECTCOM == 123 || SELECTCOM == 126 || SELECTCOM == 127 || SELECTCOM == 501 || SELECTCOM == 502 || SELECTCOM == 503 || SELECTCOM == 505 || SELECTCOM == 508 || SELECTCOM == 514 || SELECTCOM == 517 || SELECTCOM == 518 || SELECTCOM == 590 || SELECTCOM == 592 || SELECTCOM == 593
+		IF ASSIPLAY
+			PRINTFORML %CALLNAME:PLAYER%的精液经验＋１
+			EXP:PLAYER:20 += 1
+		ELSE
+			EXP:MASTER:20 += 1
+		ENDIF
+	ENDIF
+	CALL IN_VAGINA_CHECK_T
+
+	;Ｐに精液汚れ
+	STAIN:2 |= 4
+	
+	;着衣時、服に精液汚れが付く(着衣做爱時は下着には付かない）
+	IF SEXPLAY(TARGET) == 1 || SEXPLAY(TARGET) == 2
+		IF TEQUIP:4
+			STAIN:12 |= 4
+		ELSEIF TEQUIP:6
+			STAIN:14 |= 4
+		ELSEIF TEQUIP:0 == 2 || TEQUIP:0 == 4
+			STAIN:8 |= 4
+		ENDIF
+	ELSE
+		IF TEQUIP:2
+			STAIN:10 |= 4
+		ELSEIF TEQUIP:4
+			STAIN:12 |= 4
+		ELSEIF TEQUIP:6
+			STAIN:14 |= 4
+		ELSEIF TEQUIP:0 == 2 || TEQUIP:0 == 4
+			STAIN:8 |= 4
+		ENDIF
+	ENDIF
+	IF TFLAG:48 == 1
+		BASE:2 /= 2
+	ELSE
+		BASE:2 -= EJAC
+		SIF BASE:2 >= EJAC
+			BASE:2 = EJAC-1
+	ENDIF
+	;调教对象が射精フラグ
+	TFLAG:10 = 1
+	NOWEX:5 += 1
+	EX:5 += 1
+ENDIF
+
+;射精には再装填の期間を設ける
+;通常射精時
+SIF E == 1
+	CFLAG:TARGET:9 = 3
+;大量射精時
+SIF E == 2
+	CFLAG:TARGET:9 = 5
+
+;射精残弾減少
+SIF E > 0
+	CFLAG:TARGET:11 -= 1
+
+;-------------------------------------------------
+;调教对象の喷乳チェック
+;-------------------------------------------------
+@TARGET_MILK_CHECK
+SIF TALENT:149 == 0
+	RETURN 0
+
+A = UP:0 / 5 + UP:1 / 5 + UP:2 / 5 + UP:3 * 3 + UP:22 / 5 + UP:23 / 5 + UP:24 / 5
+
+;自制力
+SIF TALENT:20
+	A /= 2
+
+;接受快感
+SIF TALENT:70
+	TIMES A , 1.20
+
+;否定快感（淫乱、娼妇で无效）
+SIF TALENT:71 && (TALENT:4 == 0 && TALENT:7 == 0)
+	TIMES A , 0.80
+
+;B敏感
+SIF TALENT:108
+	TIMES A , 1.20
+
+;媚薬
+SIF TEQUIP:26
+	A *= 2
+
+;利尿剂
+SIF TEQUIP:27
+	A /= 2
+
+;Omega發情期
+SIF 發情期 && TALENT:164
+	TIMES A , 1.20
+
+;调教者が幼儿退行
+SIF TALENT:PLAYER:150
+	TIMES A , 1.20
+
+;调教者が幼稚
+SIF TALENT:PLAYER:151
+	TIMES A , 1.20
+
+;贫乳
+SIF TALENT:109
+	TIMES A , 0.50
+
+;喷乳成瘾のレベルを見る
+IF ABL:19 == 0
+	TIMES A , 1.00
+ELSEIF ABL:19 == 1
+	TIMES A , 1.05
+ELSEIF ABL:19 == 2
+	TIMES A , 1.10
+ELSEIF ABL:19 == 3
+	TIMES A , 1.20
+ELSEIF ABL:19 == 4
+	TIMES A , 1.30
+ELSE
+	TIMES A , 1.50
+ENDIF
+
+A = 500 + A / 2
+BASE:3 += A
+
+S = BASE:3
+EJAC = MAXBASE:3
+
+IF  S > EJAC * 2
+	E = 2
+ELSEIF S > EJAC
+	E = 1
+ELSE
+	E = 0
+ENDIF
+
+;大量喷乳
+IF E == 2
+	LOSEBASE:0 += 20
+	LOSEBASE:1 += 100
+	SOURCE:液体 += 4000
+	IF EXP:54 < EXPLV:1
+		SOURCE:露出 += 10000
+		SOURCE:屈从 += 5000
+		SOURCE:不洁 += 2000
+	ELSEIF EXP:54 < EXPLV:2
+		SOURCE:露出 += 5000
+		SOURCE:屈从 += 3000
+		SOURCE:不洁 += 1500
+	ELSEIF EXP:54 < EXPLV:3
+		SOURCE:露出 += 3000
+		SOURCE:屈从 += 1500
+		SOURCE:不洁 += 1000
+	ELSEIF EXP:54 < EXPLV:4
+		SOURCE:露出 += 1500
+		SOURCE:屈从 += 800
+		SOURCE:不洁 += 700
+	ELSEIF EXP:54 < EXPLV:5
+		SOURCE:露出 += 1000
+		SOURCE:屈从 += 500
+		SOURCE:不洁 += 400
+	ELSE
+		SOURCE:露出 += 500
+		SOURCE:屈从 += 300
+	ENDIF
+
+	PRINTFORML %NAME:TARGET%的奶头里喷射出大量的乳汁
+	PRINTL 喷乳经验＋２
+	IF EXP:54 == 0 && TALENT:155 == 0
+		EXP:50 += 1
+		PRINTL 异常经验＋1
+	ENDIF
+	EXP:54 += 2
+	;Ｂに母乳汚れ
+	STAIN:5 |= 16
+	
+	;着衣時、服に母乳汚れ
+	SIF TEQUIP:3
+		STAIN:11 |= 16
+	IF TEQUIP:5
+		STAIN:13 |= 16
+	ELSEIF TEQUIP:6
+		STAIN:14 |= 16
+	ELSEIF TEQUIP:0 == 2
+		STAIN:8 |= 16
+	ELSEIF TEQUIP:4
+		STAIN:12 |= 16
+	ELSEIF TEQUIP:2
+		STAIN:10 |= 16
+	ENDIF
+
+	BASE:3 -= EJAC*2
+	SIF BASE:3 >= EJAC
+		BASE:3 = EJAC-1
+
+	;调教对象が喷乳フラグ
+	TFLAG:11 += 2
+	;挤奶器で母乳が集められているかチェック
+	SIF TEQUIP:17
+		TFLAG:35 += 2
+
+	NOWEX:4 += 1
+	EX:4 += 1
+;通常の喷乳
+ELSEIF E == 1
+	LOSEBASE:1 += 40
+	SOURCE:液体 += 1000
+	IF EXP:54 < EXPLV:1
+		SOURCE:露出 += 5000
+		SOURCE:屈从 += 2500
+		SOURCE:不洁 += 900
+	ELSEIF EXP:54 < EXPLV:2
+		SOURCE:露出 += 2500
+		SOURCE:屈从 += 2000
+		SOURCE:不洁 += 700
+	ELSEIF EXP:54 < EXPLV:3
+		SOURCE:露出 += 1000
+		SOURCE:屈从 += 800
+		SOURCE:不洁 += 500
+	ELSEIF EXP:54 < EXPLV:4
+		SOURCE:露出 += 800
+		SOURCE:屈从 += 600
+		SOURCE:不洁 += 350
+	ELSEIF EXP:54 < EXPLV:5
+		SOURCE:露出 += 400
+		SOURCE:屈从 += 400
+		SOURCE:不洁 += 200
+	ELSE
+		SOURCE:露出 += 200
+		SOURCE:屈从 += 250
+	ENDIF
+
+	PRINTFORML %NAME:TARGET%的乳孔里分泌出乳汁
+	PRINTL 喷乳经验＋１
+	IF EXP:54 == 0
+		EXP:50 += 1
+		PRINTL 异常经验＋1
+	ENDIF
+	EXP:54 += 1
+	;Ｂに母乳汚れ
+	STAIN:5 |= 16
+
+	;着衣時、服に母乳汚れ
+	IF TEQUIP:3
+		STAIN:11 |= 16
+	ELSEIF TEQUIP:5
+		STAIN:13 |= 16
+	ELSEIF TEQUIP:6
+		STAIN:14 |= 16
+	ELSEIF TEQUIP:0 == 2
+		STAIN:8 |= 16
+	ENDIF
+
+	BASE:3 -= EJAC
+	SIF BASE:3 >= EJAC
+		BASE:3 = EJAC-1
+
+	;调教对象が喷乳フラグ
+	TFLAG:11 += 1
+	;挤奶器で母乳が集められているかチェック
+	SIF TEQUIP:17
+		TFLAG:35 += 1
+
+	NOWEX:4 += 1
+	EX:4 += 1
+ENDIF
+
+;-------------------------------------------------
+;同性の場合のチェック
+;-------------------------------------------------
+@SOURCE_SEX_CHECK
+SIF (MALE(TARGET) == 0 && MALE(PLAYER)) || (MALE(TARGET) && MALE(PLAYER) == 0)
+	RETURN 0
+
+;百合
+IF MALE(TARGET) == 0 && MALE(PLAYER) == 0
+	;ABL:百合属性をみる
+	IF ABL:11 == 0
+		TIMES SOURCE:屈从 , 1.20
+		TIMES SOURCE:17 , 1.20
+	ELSEIF ABL:11 == 1
+		TIMES SOURCE:6 , 1.10
+	ELSEIF ABL:11 == 2
+		TIMES SOURCE:6 , 1.20
+		TIMES SOURCE:屈从 , 0.90
+		TIMES SOURCE:17 , 0.90
+	ELSEIF ABL:11 == 3
+		TIMES SOURCE:6 , 1.30
+		TIMES SOURCE:屈从 , 0.80
+		TIMES SOURCE:17 , 0.80
+	ELSEIF ABL:11 == 4
+		TIMES SOURCE:6 , 1.40
+		TIMES SOURCE:屈从 , 0.70
+		TIMES SOURCE:17 , 0.70
+	ELSEIF ABL:11 == 5
+		TIMES SOURCE:6 , 1.50
+		TIMES SOURCE:屈从 , 0.60
+		TIMES SOURCE:17 , 0.60
+	ELSEIF ABL:11 == 6
+		TIMES SOURCE:6 , 1.60
+		TIMES SOURCE:屈从 , 0.50
+		TIMES SOURCE:17 , 0.50
+	ELSEIF ABL:11 == 7
+		TIMES SOURCE:6 , 1.70
+		TIMES SOURCE:屈从 , 0.40
+		TIMES SOURCE:17 , 0.40
+	ELSEIF ABL:11 == 8
+		TIMES SOURCE:6 , 1.80
+		TIMES SOURCE:屈从 , 0.30
+		TIMES SOURCE:17 , 0.30
+	ELSEIF ABL:11 == 9
+		TIMES SOURCE:6 , 1.90
+		TIMES SOURCE:屈从 , 0.20
+		TIMES SOURCE:17 , 0.20
+	ELSE
+		TIMES SOURCE:6 , 2.00
+		TIMES SOURCE:屈从 , 0.10
+		TIMES SOURCE:17 , 0.10
+	ENDIF
+	
+	;ABL:百合成瘾をみる
+	IF ABL:17 == 1
+		SOURCE:9 += 100
+		TIMES SOURCE:0 , 1.10
+		TIMES SOURCE:1 , 1.10
+		TIMES SOURCE:2 , 1.10
+		TIMES SOURCE:3 , 1.10
+		TIMES SOURCE:22 , 1.10
+		TIMES SOURCE:23 , 1.10
+		TIMES SOURCE:24 , 1.10
+		TIMES SOURCE:6 , 1.10
+		TIMES SOURCE:屈从 , 0.90
+		TIMES SOURCE:不洁 , 0.90
+		TIMES SOURCE:17 , 0.90
+	ELSEIF ABL:17 == 2
+		SOURCE:9 += 200
+		TIMES SOURCE:0 , 1.20
+		TIMES SOURCE:1 , 1.20
+		TIMES SOURCE:2 , 1.20
+		TIMES SOURCE:3 , 1.20
+		TIMES SOURCE:22 , 1.20
+		TIMES SOURCE:23 , 1.20
+		TIMES SOURCE:24 , 1.20
+		TIMES SOURCE:6 , 1.20
+		TIMES SOURCE:屈从 , 0.80
+		TIMES SOURCE:不洁 , 0.80
+		TIMES SOURCE:17 , 0.80
+	ELSEIF ABL:17 == 3
+		SOURCE:9 += 350
+		TIMES SOURCE:0 , 1.30
+		TIMES SOURCE:1 , 1.30
+		TIMES SOURCE:2 , 1.30
+		TIMES SOURCE:3 , 1.30
+		TIMES SOURCE:22 , 1.30
+		TIMES SOURCE:23 , 1.30
+		TIMES SOURCE:24 , 1.30
+		TIMES SOURCE:6 , 1.30
+		TIMES SOURCE:屈从 , 0.70
+		TIMES SOURCE:不洁 , 0.70
+		TIMES SOURCE:17 , 0.70
+	ELSEIF ABL:17 == 4
+		SOURCE:7 += 500
+		TIMES SOURCE:0 , 1.40
+		TIMES SOURCE:1 , 1.40
+		TIMES SOURCE:2 , 1.40
+		TIMES SOURCE:3 , 1.40
+		TIMES SOURCE:22 , 1.40
+		TIMES SOURCE:23 , 1.40
+		TIMES SOURCE:24 , 1.40
+		TIMES SOURCE:6 , 1.40
+		TIMES SOURCE:屈从 , 0.60
+		TIMES SOURCE:不洁 , 0.60
+		TIMES SOURCE:17 , 0.60
+	ELSEIF ABL:17 == 5
+		SOURCE:9 += 750
+		TIMES SOURCE:0 , 1.40
+		TIMES SOURCE:1 , 1.40
+		TIMES SOURCE:2 , 1.40
+		TIMES SOURCE:3 , 1.40
+		TIMES SOURCE:22 , 1.40
+		TIMES SOURCE:23 , 1.40
+		TIMES SOURCE:24 , 1.40
+		TIMES SOURCE:6 , 1.40
+		TIMES SOURCE:屈从 , 0.60
+		TIMES SOURCE:不洁 , 0.60
+		TIMES SOURCE:17 , 0.60
+	ELSEIF ABL:17 == 6
+		SOURCE:9 += 1000
+		TIMES SOURCE:0 , 1.50
+		TIMES SOURCE:1 , 1.50
+		TIMES SOURCE:2 , 1.50
+		TIMES SOURCE:3 , 1.50
+		TIMES SOURCE:22 , 1.50
+		TIMES SOURCE:23 , 1.50
+		TIMES SOURCE:24 , 1.50
+		TIMES SOURCE:6 , 1.50
+		TIMES SOURCE:屈从 , 0.50
+		TIMES SOURCE:不洁 , 0.50
+		TIMES SOURCE:17 , 0.50
+	ELSEIF ABL:17 == 7
+		SOURCE:9 += 1200
+		TIMES SOURCE:0 , 1.60
+		TIMES SOURCE:1 , 1.60
+		TIMES SOURCE:2 , 1.60
+		TIMES SOURCE:3 , 1.60
+		TIMES SOURCE:22 , 1.60
+		TIMES SOURCE:23 , 1.60
+		TIMES SOURCE:24 , 1.60
+		TIMES SOURCE:6 , 1.60
+		TIMES SOURCE:屈从 , 0.40
+		TIMES SOURCE:不洁 , 0.40
+		TIMES SOURCE:17 , 0.40
+	ELSEIF ABL:17 == 8
+		SOURCE:9 += 1500
+		TIMES SOURCE:0 , 1.70
+		TIMES SOURCE:1 , 1.70
+		TIMES SOURCE:2 , 1.70
+		TIMES SOURCE:3 , 1.70
+		TIMES SOURCE:22 , 1.70
+		TIMES SOURCE:23 , 1.70
+		TIMES SOURCE:24 , 1.70
+		TIMES SOURCE:6 , 1.70
+		TIMES SOURCE:屈从 , 0.30
+		TIMES SOURCE:不洁 , 0.30
+		TIMES SOURCE:17 , 0.30
+	ELSEIF ABL:17 == 9
+		SOURCE:9 += 1800
+		TIMES SOURCE:0 , 1.80
+		TIMES SOURCE:1 , 1.80
+		TIMES SOURCE:2 , 1.80
+		TIMES SOURCE:3 , 1.80
+		TIMES SOURCE:22 , 1.80
+		TIMES SOURCE:23 , 1.80
+		TIMES SOURCE:24 , 1.80
+		TIMES SOURCE:6 , 1.80
+		TIMES SOURCE:屈从 , 0.20
+		TIMES SOURCE:不洁 , 0.20
+		TIMES SOURCE:17 , 0.20
+	ELSEIF ABL:17 >= 10
+		SOURCE:9 += 2500
+		TIMES SOURCE:0 , 1.90
+		TIMES SOURCE:1 , 1.90
+		TIMES SOURCE:2 , 1.90
+		TIMES SOURCE:3 , 1.90
+		TIMES SOURCE:22 , 1.90
+		TIMES SOURCE:23 , 1.90
+		TIMES SOURCE:24 , 1.90
+		TIMES SOURCE:6 , 1.90
+		TIMES SOURCE:屈从 , 0.10
+		TIMES SOURCE:不洁 , 0.10
+		TIMES SOURCE:17 , 0.10
+	ENDIF
+
+	;调教者のABL:百合属性
+	IF ABL:PLAYER:11 == 0
+		TIMES SOURCE:4 , 0.50
+		TIMES SOURCE:6 , 0.50
+	ELSEIF ABL:PLAYER:11 == 1
+		TIMES SOURCE:4 , 0.70
+		TIMES SOURCE:6 , 0.70
+	ELSEIF ABL:PLAYER:11 == 2
+		TIMES SOURCE:4 , 0.90
+		TIMES SOURCE:6 , 0.90
+	ELSEIF ABL:PLAYER:11 == 3
+		TIMES SOURCE:4 , 1.10
+		TIMES SOURCE:6 , 1.10
+	ELSEIF ABL:PLAYER:11 == 4
+		TIMES SOURCE:4 , 1.20
+		TIMES SOURCE:6 , 1.20
+	ELSEIF ABL:PLAYER:11 == 5
+		TIMES SOURCE:4 , 1.30
+		TIMES SOURCE:6 , 1.30
+	ELSEIF ABL:PLAYER:11 == 6
+		TIMES SOURCE:4 , 1.40
+		TIMES SOURCE:6 , 1.40
+	ELSEIF ABL:PLAYER:11 == 7
+		TIMES SOURCE:4 , 1.50
+		TIMES SOURCE:6 , 1.50
+	ELSEIF ABL:PLAYER:11 == 8
+		TIMES SOURCE:4 , 1.60
+		TIMES SOURCE:6 , 1.60
+	ELSEIF ABL:PLAYER:11 == 9
+		TIMES SOURCE:4 , 1.80
+		TIMES SOURCE:6 , 1.80
+	ELSE
+		TIMES SOURCE:4 , 2.00
+		TIMES SOURCE:6 , 2.00
+	ENDIF
+
+	;调教者のABL:百合成瘾
+	IF ABL:PLAYER:17 == 1
+		TIMES SOURCE:4 , 1.10
+		TIMES SOURCE:5 , 1.10
+		TIMES SOURCE:6 , 1.10
+	ELSEIF ABL:PLAYER:17 == 2
+		TIMES SOURCE:4 , 1.20
+		TIMES SOURCE:5 , 1.20
+		TIMES SOURCE:6 , 1.20
+	ELSEIF ABL:PLAYER:17 == 3
+		TIMES SOURCE:4 , 1.30
+		TIMES SOURCE:5 , 1.30
+		TIMES SOURCE:6 , 1.30
+	ELSEIF ABL:PLAYER:17 == 4
+		TIMES SOURCE:4 , 1.40
+		TIMES SOURCE:5 , 1.40
+		TIMES SOURCE:6 , 1.40
+	ELSEIF ABL:PLAYER:17 == 5
+		TIMES SOURCE:4 , 1.50
+		TIMES SOURCE:5 , 1.50
+		TIMES SOURCE:6 , 1.50
+	ELSEIF ABL:PLAYER:17 == 6
+		TIMES SOURCE:4 , 1.60
+		TIMES SOURCE:5 , 1.60
+		TIMES SOURCE:6 , 1.60
+	ELSEIF ABL:PLAYER:17 == 7
+		TIMES SOURCE:4 , 1.70
+		TIMES SOURCE:5 , 1.70
+		TIMES SOURCE:6 , 1.70
+	ELSEIF ABL:PLAYER:17 == 8
+		TIMES SOURCE:4 , 1.80
+		TIMES SOURCE:5 , 1.80
+		TIMES SOURCE:6 , 1.80
+	ELSEIF ABL:PLAYER:17 == 9
+		TIMES SOURCE:4 , 1.90
+		TIMES SOURCE:5 , 1.90
+		TIMES SOURCE:6 , 1.90
+	ELSEIF ABL:PLAYER:17 >= 10
+		TIMES SOURCE:4 , 2.00
+		TIMES SOURCE:5 , 2.00
+		TIMES SOURCE:6 , 2.00
+	ENDIF
+
+	;调教者の自制力
+	IF TALENT:PLAYER:20
+		TIMES SOURCE:5 , 0.50
+		TIMES SOURCE:6 , 0.50
+	ENDIF
+ENDIF
+
+;ゲイ
+IF MALE(TARGET) && MALE(PLAYER)
+	;ABL:同性倾向をみる
+	IF ABL:20 == 0
+		TIMES SOURCE:屈从 , 1.20
+		TIMES SOURCE:17 , 1.20
+	ELSEIF ABL:20 == 1
+		TIMES SOURCE:6 , 1.10
+	ELSEIF ABL:20 == 2
+		TIMES SOURCE:6 , 1.20
+		TIMES SOURCE:屈从 , 0.90
+		TIMES SOURCE:17 , 0.90
+	ELSEIF ABL:20 == 3
+		TIMES SOURCE:6 , 1.30
+		TIMES SOURCE:屈从 , 0.80
+		TIMES SOURCE:17 , 0.80
+	ELSEIF ABL:20 == 4
+		TIMES SOURCE:6 , 1.40
+		TIMES SOURCE:屈从 , 0.70
+		TIMES SOURCE:17 , 0.70
+	ELSEIF ABL:20 == 5
+		TIMES SOURCE:6 , 1.50
+		TIMES SOURCE:屈从 , 0.60
+		TIMES SOURCE:17 , 0.60
+	ELSEIF ABL:20 == 6
+		TIMES SOURCE:6 , 1.60
+		TIMES SOURCE:屈从 , 0.50
+		TIMES SOURCE:17 , 0.50
+	ELSEIF ABL:20 == 7
+		TIMES SOURCE:6 , 1.70
+		TIMES SOURCE:屈从 , 0.40
+		TIMES SOURCE:17 , 0.40
+	ELSEIF ABL:20 == 8
+		TIMES SOURCE:6 , 1.80
+		TIMES SOURCE:屈从 , 0.30
+		TIMES SOURCE:17 , 0.30
+	ELSEIF ABL:20 == 9
+		TIMES SOURCE:6 , 1.90
+		TIMES SOURCE:屈从 , 0.20
+		TIMES SOURCE:17 , 0.20
+	ELSE
+		TIMES SOURCE:6 , 2.00
+		TIMES SOURCE:屈从 , 0.10
+		TIMES SOURCE:17 , 0.10
+	ENDIF
+	
+	;ABL:男同成瘾をみる
+	IF ABL:21 == 1
+		SOURCE:9 += 100
+		TIMES SOURCE:0 , 1.10
+		TIMES SOURCE:1 , 1.10
+		TIMES SOURCE:2 , 1.10
+		TIMES SOURCE:3 , 1.10
+		TIMES SOURCE:22 , 1.10
+		TIMES SOURCE:23 , 1.10
+		TIMES SOURCE:24 , 1.10
+		TIMES SOURCE:6 , 1.10
+		TIMES SOURCE:屈从 , 0.90
+		TIMES SOURCE:不洁 , 0.90
+		TIMES SOURCE:17 , 0.90
+	ELSEIF ABL:21 == 2
+		SOURCE:9 += 200
+		TIMES SOURCE:0 , 1.20
+		TIMES SOURCE:1 , 1.20
+		TIMES SOURCE:2 , 1.20
+		TIMES SOURCE:3 , 1.20
+		TIMES SOURCE:22 , 1.20
+		TIMES SOURCE:23 , 1.20
+		TIMES SOURCE:24 , 1.20
+		TIMES SOURCE:6 , 1.20
+		TIMES SOURCE:屈从 , 0.80
+		TIMES SOURCE:不洁 , 0.80
+		TIMES SOURCE:17 , 0.80
+	ELSEIF ABL:21 == 3
+		SOURCE:9 += 350
+		TIMES SOURCE:0 , 1.30
+		TIMES SOURCE:1 , 1.30
+		TIMES SOURCE:2 , 1.30
+		TIMES SOURCE:3 , 1.30
+		TIMES SOURCE:22 , 1.30
+		TIMES SOURCE:23 , 1.30
+		TIMES SOURCE:24 , 1.30
+		TIMES SOURCE:6 , 1.30
+		TIMES SOURCE:屈从 , 0.70
+		TIMES SOURCE:不洁 , 0.70
+		TIMES SOURCE:17 , 0.70
+	ELSEIF ABL:21 == 4
+		SOURCE:7 += 500
+		TIMES SOURCE:0 , 1.40
+		TIMES SOURCE:1 , 1.40
+		TIMES SOURCE:2 , 1.40
+		TIMES SOURCE:3 , 1.40
+		TIMES SOURCE:22 , 1.40
+		TIMES SOURCE:23 , 1.40
+		TIMES SOURCE:24 , 1.40
+		TIMES SOURCE:6 , 1.40
+		TIMES SOURCE:屈从 , 0.60
+		TIMES SOURCE:不洁 , 0.60
+		TIMES SOURCE:17 , 0.60
+	ELSEIF ABL:21 == 5
+		SOURCE:9 += 750
+		TIMES SOURCE:0 , 1.40
+		TIMES SOURCE:1 , 1.40
+		TIMES SOURCE:2 , 1.40
+		TIMES SOURCE:3 , 1.40
+		TIMES SOURCE:22 , 1.40
+		TIMES SOURCE:23 , 1.40
+		TIMES SOURCE:24 , 1.40
+		TIMES SOURCE:6 , 1.40
+		TIMES SOURCE:屈从 , 0.60
+		TIMES SOURCE:不洁 , 0.60
+		TIMES SOURCE:17 , 0.60
+	ELSEIF ABL:21 == 6
+		SOURCE:9 += 1000
+		TIMES SOURCE:0 , 1.50
+		TIMES SOURCE:1 , 1.50
+		TIMES SOURCE:2 , 1.50
+		TIMES SOURCE:3 , 1.50
+		TIMES SOURCE:22 , 1.50
+		TIMES SOURCE:23 , 1.50
+		TIMES SOURCE:24 , 1.50
+		TIMES SOURCE:6 , 1.50
+		TIMES SOURCE:屈从 , 0.50
+		TIMES SOURCE:不洁 , 0.50
+		TIMES SOURCE:17 , 0.50
+	ELSEIF ABL:21 == 7
+		SOURCE:9 += 1200
+		TIMES SOURCE:0 , 1.60
+		TIMES SOURCE:1 , 1.60
+		TIMES SOURCE:2 , 1.60
+		TIMES SOURCE:3 , 1.60
+		TIMES SOURCE:22 , 1.60
+		TIMES SOURCE:23 , 1.60
+		TIMES SOURCE:24 , 1.60
+		TIMES SOURCE:6 , 1.60
+		TIMES SOURCE:屈从 , 0.40
+		TIMES SOURCE:不洁 , 0.40
+		TIMES SOURCE:17 , 0.40
+	ELSEIF ABL:21 == 8
+		SOURCE:9 += 1500
+		TIMES SOURCE:0 , 1.70
+		TIMES SOURCE:1 , 1.70
+		TIMES SOURCE:2 , 1.70
+		TIMES SOURCE:3 , 1.70
+		TIMES SOURCE:22 , 1.70
+		TIMES SOURCE:23 , 1.70
+		TIMES SOURCE:24 , 1.70
+		TIMES SOURCE:6 , 1.70
+		TIMES SOURCE:屈从 , 0.30
+		TIMES SOURCE:不洁 , 0.30
+		TIMES SOURCE:17 , 0.30
+	ELSEIF ABL:21 == 9
+		SOURCE:9 += 1800
+		TIMES SOURCE:0 , 1.80
+		TIMES SOURCE:1 , 1.80
+		TIMES SOURCE:2 , 1.80
+		TIMES SOURCE:3 , 1.80
+		TIMES SOURCE:22 , 1.80
+		TIMES SOURCE:23 , 1.80
+		TIMES SOURCE:24 , 1.80
+		TIMES SOURCE:6 , 1.80
+		TIMES SOURCE:屈从 , 0.20
+		TIMES SOURCE:不洁 , 0.20
+		TIMES SOURCE:17 , 0.20
+	ELSEIF ABL:21 >= 10
+		SOURCE:9 += 2500
+		TIMES SOURCE:0 , 1.90
+		TIMES SOURCE:1 , 1.90
+		TIMES SOURCE:2 , 1.90
+		TIMES SOURCE:3 , 1.90
+		TIMES SOURCE:22 , 1.90
+		TIMES SOURCE:23 , 1.90
+		TIMES SOURCE:24 , 1.90
+		TIMES SOURCE:6 , 1.90
+		TIMES SOURCE:屈从 , 0.10
+		TIMES SOURCE:不洁 , 0.10
+		TIMES SOURCE:17 , 0.10
+	ENDIF
+
+	;调教者のABL:同性倾向
+	IF ABL:PLAYER:20 == 0
+		TIMES SOURCE:4 , 0.50
+		TIMES SOURCE:6 , 0.50
+	ELSEIF ABL:PLAYER:20 == 1
+		TIMES SOURCE:4 , 0.70
+		TIMES SOURCE:6 , 0.70
+	ELSEIF ABL:PLAYER:20 == 2
+		TIMES SOURCE:4 , 0.90
+		TIMES SOURCE:6 , 0.90
+	ELSEIF ABL:PLAYER:20 == 3
+		TIMES SOURCE:4 , 1.10
+		TIMES SOURCE:6 , 1.10
+	ELSEIF ABL:PLAYER:20 == 4
+		TIMES SOURCE:4 , 1.20
+		TIMES SOURCE:6 , 1.20
+	ELSEIF ABL:PLAYER:20 == 5
+		TIMES SOURCE:4 , 1.30
+		TIMES SOURCE:6 , 1.30
+	ELSEIF ABL:PLAYER:20 == 6
+		TIMES SOURCE:4 , 1.40
+		TIMES SOURCE:6 , 1.40
+	ELSEIF ABL:PLAYER:20 == 7
+		TIMES SOURCE:4 , 1.50
+		TIMES SOURCE:6 , 1.50
+	ELSEIF ABL:PLAYER:20 == 8
+		TIMES SOURCE:4 , 1.60
+		TIMES SOURCE:6 , 1.60
+	ELSEIF ABL:PLAYER:20 == 9
+		TIMES SOURCE:4 , 1.80
+		TIMES SOURCE:6 , 1.80
+	ELSE
+		TIMES SOURCE:4 , 2.00
+		TIMES SOURCE:6 , 2.00
+	ENDIF
+
+	;调教者のABL:男同成瘾
+	IF ABL:PLAYER:21 == 1
+		TIMES SOURCE:4 , 1.10
+		TIMES SOURCE:5 , 1.10
+		TIMES SOURCE:6 , 1.10
+	ELSEIF ABL:PLAYER:21 == 2
+		TIMES SOURCE:4 , 1.20
+		TIMES SOURCE:5 , 1.20
+		TIMES SOURCE:6 , 1.20
+	ELSEIF ABL:PLAYER:21 == 3
+		TIMES SOURCE:4 , 1.30
+		TIMES SOURCE:5 , 1.30
+		TIMES SOURCE:6 , 1.30
+	ELSEIF ABL:PLAYER:21 == 4
+		TIMES SOURCE:4 , 1.40
+		TIMES SOURCE:5 , 1.40
+		TIMES SOURCE:6 , 1.40
+	ELSEIF ABL:PLAYER:21 == 5
+		TIMES SOURCE:4 , 1.50
+		TIMES SOURCE:5 , 1.50
+		TIMES SOURCE:6 , 1.50
+	ELSEIF ABL:PLAYER:21 == 6
+		TIMES SOURCE:4 , 1.60
+		TIMES SOURCE:5 , 1.60
+		TIMES SOURCE:6 , 1.60
+	ELSEIF ABL:PLAYER:21 == 7
+		TIMES SOURCE:4 , 1.70
+		TIMES SOURCE:5 , 1.70
+		TIMES SOURCE:6 , 1.70
+	ELSEIF ABL:PLAYER:21 == 8
+		TIMES SOURCE:4 , 1.80
+		TIMES SOURCE:5 , 1.80
+		TIMES SOURCE:6 , 1.80
+	ELSEIF ABL:PLAYER:21 == 9
+		TIMES SOURCE:4 , 1.90
+		TIMES SOURCE:5 , 1.90
+		TIMES SOURCE:6 , 1.90
+	ELSEIF ABL:PLAYER:21 >= 10
+		TIMES SOURCE:4 , 2.00
+		TIMES SOURCE:5 , 2.00
+		TIMES SOURCE:6 , 2.00
+	ENDIF
+
+	;调教者の自制力
+	IF TALENT:PLAYER:20
+		TIMES SOURCE:5 , 0.50
+		TIMES SOURCE:6 , 0.50
+	ENDIF
+ENDIF
+
+
+
+@PLAYER_SKILL_CHECK
+;调教者のTALENT:性开放をみる
+IF TALENT:PLAYER:33
+	TIMES SOURCE:0 , 1.20
+	TIMES SOURCE:1 , 1.20
+	TIMES SOURCE:2 , 1.20
+	TIMES SOURCE:3 , 1.20
+	TIMES SOURCE:22 , 1.20
+	TIMES SOURCE:23 , 1.20
+	TIMES SOURCE:24 , 1.20
+	TIMES SOURCE:4 , 1.20
+ENDIF
+;调教者のTALENT:男女通吃をみる
+IF TALENT:PLAYER:81
+	TIMES SOURCE:4 , 1.20
+	TIMES SOURCE:5 , 1.20
+	TIMES SOURCE:6 , 1.20
+ENDIF
+;调教者のTALENT:施虐狂をみる
+SIF TALENT:PLAYER:83
+	TIMES SOURCE:8 , 1.50
+;调教者のTALENT:小恶魔をみる
+SIF TALENT:PLAYER:87
+	TIMES SOURCE:露出 , 1.50
+;调教者のTALENT:魅惑をみる
+IF TALENT:PLAYER:93
+	TIMES SOURCE:不洁 , 0.50
+	TIMES SOURCE:17 , 0.50
+
+	TIMES SOURCE:0 , 1.20
+	TIMES SOURCE:1 , 1.20
+	TIMES SOURCE:2 , 1.20
+	TIMES SOURCE:3 , 1.20
+	TIMES SOURCE:22 , 1.20
+	TIMES SOURCE:23 , 1.20
+	TIMES SOURCE:24 , 1.20
+	TIMES SOURCE:5 , 1.20
+ENDIF
+;调教者のTALENT:谜之魅力をみる
+IF TALENT:PLAYER:94
+	TIMES SOURCE:不洁 , 0.50
+	TIMES SOURCE:17 , 0.50
+
+	TIMES SOURCE:0 , 1.20
+	TIMES SOURCE:1 , 1.20
+	TIMES SOURCE:2 , 1.20
+	TIMES SOURCE:3 , 1.20
+	TIMES SOURCE:22 , 1.20
+	TIMES SOURCE:23 , 1.20
+	TIMES SOURCE:24 , 1.20
+	TIMES SOURCE:5 , 1.20
+	TIMES SOURCE:6 , 1.50
+ENDIF
+
+;-------------------------------------------------
+;绝顶時の放尿処理
+;-------------------------------------------------
+@ORGASM_ADD_URINE
+SIF TFLAG:29 == 0
+	RETURN 0
+;放尿フラグ
+U = 0
+
+IF TFLAG:29 >= 7 && TEQUIP:27 && TALENT:57
+	PRINTFORML %EXPNAME:31%＋５
+	EXP:31 += 5
+	U = 5
+ELSEIF TFLAG:29 >= 7 && TEQUIP:27
+	PRINTFORML %EXPNAME:31%＋４
+	EXP:31 += 4
+	U = 4
+ELSEIF TFLAG:29 >= 7 && TALENT:57
+	PRINTFORML %EXPNAME:31%＋３
+	EXP:31 += 3
+	U = 3
+ELSEIF TFLAG:29 >= 5 && TEQUIP:27 && TALENT:57
+	PRINTFORML %EXPNAME:31%＋４
+	EXP:31 += 4
+	U = 4
+ELSEIF TFLAG:29 >= 5 && TEQUIP:27
+	PRINTFORML %EXPNAME:31%＋３
+	EXP:31 += 3
+	U = 3
+ELSEIF TFLAG:29 >= 5 && TALENT:57
+	PRINTFORML %EXPNAME:31%＋２
+	EXP:31 += 2
+	U = 2
+ELSEIF TFLAG:29 >= 3 && TEQUIP:27 && TALENT:57
+	PRINTFORML %EXPNAME:31%＋３
+	EXP:31 += 3
+	U = 3
+ELSEIF TFLAG:29 >= 3 && TEQUIP:27
+	PRINTFORML %EXPNAME:31%＋２
+	EXP:31 += 2
+	U = 2
+ELSEIF TFLAG:29 >= 3 && TALENT:57
+	PRINTFORML %EXPNAME:31%＋１
+	EXP:31 += 1
+	U = 1
+ELSEIF TFLAG:29 >= 1 && TEQUIP:27 && TALENT:57
+	PRINTFORML %EXPNAME:31%＋２
+	EXP:31 += 2
+	U = 2
+ELSEIF TFLAG:29 >= 1 && TEQUIP:27
+	PRINTFORML %EXPNAME:31%＋１
+	EXP:31 += 1
+	U = 1
+ELSEIF TFLAG:29 >= 7 && TEQUIP:27 && TEQUIP:38 && TALENT:57
+	PRINTFORML %EXPNAME:31%＋６
+	EXP:31 += 6
+	U = 6
+ELSEIF TFLAG:29 >= 7 && TEQUIP:27 && TEQUIP:38
+	PRINTFORML %EXPNAME:31%＋５
+	EXP:31 += 5
+	U = 5
+ELSEIF TFLAG:29 >= 7 && TALENT:57 && TEQUIP:38
+	PRINTFORML %EXPNAME:31%＋４
+	EXP:31 += 4
+	U = 4
+ELSEIF TFLAG:29 >= 7 && TEQUIP:38
+	PRINTFORML %EXPNAME:31%＋３
+	EXP:31 += 3
+	U = 3
+ELSEIF TFLAG:29 >= 5 && TEQUIP:27 && TALENT:57 && TEQUIP:38
+	PRINTFORML %EXPNAME:31%＋５
+	EXP:31 += 5
+	U = 5
+ELSEIF TFLAG:29 >= 5 && TEQUIP:27 && TEQUIP:38
+	PRINTFORML %EXPNAME:31%＋４
+	EXP:31 += 4
+ELSEIF TFLAG:29 >= 5 && TALENT:57 && TEQUIP:38
+	PRINTFORML %EXPNAME:31%＋３
+	EXP:31 += 3
+	U = 3
+ELSEIF TFLAG:29 >= 5 && TEQUIP:38
+	PRINTFORML %EXPNAME:31%＋２
+	EXP:31 += 2
+	U = 2
+ELSEIF TFLAG:29 >= 3 && TEQUIP:27 && TALENT:57 && TEQUIP:38
+	PRINTFORML %EXPNAME:31%＋４
+	EXP:31 += 4
+	U = 4
+ELSEIF TFLAG:29 >= 3 && TEQUIP:27 && TEQUIP:38
+	PRINTFORML %EXPNAME:31%＋３
+	EXP:31 += 3
+	U = 3
+ELSEIF TFLAG:29 >= 3 && TALENT:57 && TEQUIP:38
+	PRINTFORML %EXPNAME:31%＋２
+	EXP:31 += 2
+	U = 2
+ELSEIF TFLAG:29 >= 3 && TEQUIP:38
+	PRINTFORML %EXPNAME:31%＋１
+	EXP:31 += 1
+	U = 1
+ELSEIF TFLAG:29 >= 1 && TEQUIP:27 && TALENT:57 && TEQUIP:38
+	PRINTFORML %EXPNAME:31%＋３
+	EXP:31 += 3
+	U = 3
+ELSEIF TFLAG:29 >= 1 && TEQUIP:27 && TEQUIP:38
+	PRINTFORML %EXPNAME:31%＋２
+	EXP:31 += 2
+	U = 2
+ENDIF
+
+;Ｐに尿汚れ
+SIF U >= 1
+	STAIN:2 |= 128
+
+;着衣時、服に尿汚れ
+IF U >= 4
+	SIF TEQUIP:2
+		STAIN:10 |= 128
+	SIF TEQUIP:4
+		STAIN:12 |= 128
+	SIF TEQUIP:6
+		STAIN:14 |= 128
+	SIF TEQUIP:0 == 2 || TEQUIP:0 == 4
+		STAIN:8 |= 128
+	SIF TEQUIP:1
+		STAIN:9 |= 128
+ELSEIF U >= 2
+	SIF TEQUIP:2
+		STAIN:10 |= 128
+	IF TEQUIP:4
+		STAIN:12 |= 128
+	ELSEIF TEQUIP:6
+		STAIN:14 |= 128
+	ELSEIF TEQUIP:0 == 2 || TEQUIP:0 == 4
+		STAIN:8 |= 128
+	ELSEIF TEQUIP:1
+		STAIN:9 |= 128
+	ENDIF
+ELSEIF U >= 1
+	IF TEQUIP:2
+		STAIN:10 |= 128
+	ELSEIF TEQUIP:4
+		STAIN:12 |= 128
+	ELSEIF TEQUIP:6
+		STAIN:14 |= 128
+	ELSEIF TEQUIP:0 == 2 || TEQUIP:0 == 4
+		STAIN:8 |= 128
+	ELSEIF TEQUIP:1
+		STAIN:9 |= 128
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;刻印取得のチェック
+;-------------------------------------------------
+@MARK_GOT_CHECK
+;-------------------------------------------------
+;痛苦刻印
+;-------------------------------------------------
+IF UP:10 >= 2000 && UP:10 < 4000 && MARK:0 <= 0
+	MARK:0 = 1
+	TFLAG:22 = 1
+ELSEIF UP:10 >= 4000 && UP:10 < 8000 && MARK:0 <= 1
+	MARK:0 = 2
+	TFLAG:22 = 2
+	;刚强・缺乏感情の場合は痛苦刻印による顺从アップは无
+	IF ABL:0 == 0 && TALENT:12 == 0 && TALENT:22 == 0
+		ABL:0 = 1
+		TFLAG:25 = 1
+	ENDIF
+ELSEIF UP:10 >= 8000 && MARK:0 <= 2
+	MARK:0 = 3
+	TFLAG:22 = 3
+	;刚强・缺乏感情の場合は痛苦刻印による顺从アップは无
+	IF ABL:0 == 0 && TALENT:12 == 0 && TALENT:22 == 0
+		ABL:0 = 1
+		TFLAG:25 = 1
+	ENDIF
+	IF TALENT:PLAYER:83
+		EXP:50 += 2
+	ELSEIF TALENT:PLAYER:53 && SELECTCOM == 104
+		EXP:50 += 2
+	ELSE
+		EXP:50 += 1
+	ENDIF
+ENDIF
+
+
+;-------------------------------------------------
+;快乐刻印
+;-------------------------------------------------
+IF TFLAG:200 == 1 && MARK:1 <= 0
+	MARK:1 = 1
+	TFLAG:23 = 1
+ELSEIF TFLAG:200 == 2 && MARK:1 <= 1
+	MARK:1 = 2
+	TFLAG:23 = 2
+ELSEIF TFLAG:200 == 3 && MARK:1 <= 2
+	MARK:1 = 3
+	TFLAG:23 = 3
+	;自制力・缺乏感情の場合は快乐刻印による顺从アップは无
+	IF ABL:0 == 0 && TALENT:20 == 0 && TALENT:22 == 0
+		ABL:0 = 1
+		TFLAG:25 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;屈服刻印
+;-------------------------------------------------
+A = UP:0 + UP:1 + UP:2 + UP:3 + UP:22 + UP:23 + UP:24
+
+;快乐によるLvUPは10番+取得した屈服刻印のレベルのTFLAGを与える
+IF A >= 1000 && A < 2400 && MARK:1 > MARK:2 && MARK:2 <= 0
+	MARK:2 = 1
+	TFLAG:24 = 11
+ELSEIF A >= 2400 && A < 6000 && MARK:1 > MARK:2 && MARK:2 <= 1
+	MARK:2 = 2
+	TFLAG:24 = 12
+	;缺乏感情の場合は屈服刻印による顺从アップは无
+	IF ABL:0 == 0 && TALENT:22 == 0
+		ABL:0 = 1
+		TFLAG:25 = 1
+	ENDIF
+ELSEIF A >= 6000 && MARK:1 > MARK:2 && MARK:2 <= 2
+	MARK:2 = 3
+	TFLAG:24 = 13
+	;缺乏感情の場合は屈服刻印による顺从アップは无
+	IF ABL:0 <= 1 && TALENT:22 == 0
+		ABL:0 = 2
+		TFLAG:25 = 1
+	ENDIF
+ENDIF
+
+
+A = UP:10 + UP:11
+
+;痛苦と恐怖によるLvUPは20番+取得した屈服刻印のレベルのTFLAGを与える
+IF A >= 1000 && A < 2400 && MARK:2 <= 0
+	MARK:2 = 1
+	TFLAG:24 = 21
+ELSEIF A >= 2400 && A < 6000 && MARK:2 <= 1
+	MARK:2 = 2
+	TFLAG:24 = 22
+	;缺乏感情の場合は屈服刻印による顺从アップは无
+	IF ABL:0 == 0 && TALENT:22 == 0
+		ABL:0 = 1
+		TFLAG:25 = 1
+	ENDIF
+ELSEIF A >= 6000 && MARK:2 <= 2
+	MARK:2 = 3
+	TFLAG:24 = 23
+	;缺乏感情の場合は屈服刻印による顺从アップは无
+	IF ABL:0 <= 1 && TALENT:22 == 0
+		ABL:0 = 2
+		TFLAG:25 = 1
+	ENDIF
+ENDIF
+
+
+A = UP:5 + UP:7
+
+;恭顺と屈服によるLvUPは30番+取得した屈服刻印のレベルのTFLAGを与える
+IF A >= 1000 && A < 2400 && MARK:2 <= 0
+	MARK:2 = 1
+	TFLAG:24 = 31
+ELSEIF A >= 2400 && A < 6000 && MARK:2 <= 1
+	MARK:2 = 2
+	TFLAG:24 = 32
+	;缺乏感情の場合は屈服刻印による顺从アップは无
+	IF ABL:0 == 0 && TALENT:22 == 0
+		ABL:0 = 1
+		TFLAG:25 = 1
+	ENDIF
+ELSEIF A >= 6000 && MARK:2 <= 2
+	MARK:2 = 3
+	TFLAG:24 = 33
+	;缺乏感情の場合は屈服刻印による顺从アップは无
+	IF ABL:0 <= 1 && TALENT:22 == 0
+		ABL:0 = 2
+		TFLAG:25 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;反抗刻印
+;------------------------------------------------- 
+A = UP:12 + UP:13
+;创伤・自暴自弃性格 與催眠反发数值/4
+SIF CFLAG:600 == 68 || CFLAG:7000
+	A /= 4
+;逆推中，反发数值为0	
+SIF TEQUIP:PLAYER:60
+A = 0
+IF A >= 500 && A < 1200 && MARK:3 <= 0 && MARK:4 <= 0 && TFLAG:150 == 0
+	MARK:3 = 1
+	MARK:4 = 1
+	TFLAG:21 = 1
+ELSEIF A >= 1200 && A < 3000 && MARK:3 <= 1 && MARK:4 <= 1 && TFLAG:150 == 0
+	MARK:3 = 2
+	MARK:4 = 2
+	TFLAG:21 = 2
+	;缺乏感情の場合は反抗刻印による顺从ダウンは无
+	IF ABL:0 == 1 && TALENT:22 == 0
+		ABL:0 = 0
+		TFLAG:25 = 1
+	ELSEIF ABL:0 == 2 && TALENT:22 == 0
+		ABL:0 = 1
+		TFLAG:25 = 2
+	ENDIF
+ELSEIF A >= 3000 && MARK:4 <= 3 && MARK:4 <= 2 && TFLAG:150 == 0
+	MARK:3 = 3
+	MARK:4 = 3
+	TFLAG:21 = 3
+	;缺乏感情の場合は反抗刻印による顺从ダウンは无
+	IF ABL:0 > 0 && ABL:0 <= 2 && TALENT:22 == 0
+		ABL:0 = 0
+		TFLAG:25 = 1
+	ELSEIF ABL:0 == 3 && TALENT:22 == 0
+		ABL:0 = 2
+		TFLAG:25 = 2
+	ENDIF
+ENDIF
+TFLAG:150 = 0
+
+;-------------------------------------------------
+;顺从の上昇による[抵抗]の消滅をチェック
+;-------------------------------------------------
+@JUJUN_UP_CHECK
+IF ABL:0 >= 3 && TALENT:34
+	PRINTS NAME:TARGET
+	PRINT 失去了[
+	PRINTS TALENTNAME:34
+	PRINTL ]
+	TALENT:34 = 0
+	PRINTW 否定之珠减半了
+	JUEL:100 /= 2
+	SETBIT CFLAG:25, 0
+ENDIF
+
+;-------------------------------------------------
+;欲望の上昇による[性压抑]の消滅をチェック
+;-------------------------------------------------
+@YOKUBO_UP_CHECK
+IF ABL:1 >= 3 && TALENT:32
+	PRINTS NAME:TARGET
+	PRINT 失去了[
+	PRINTS TALENTNAME:32
+	PRINTL ]
+	TALENT:32 = 0
+	PRINTW 否定之珠减半了
+	JUEL:100 /= 2
+	SETBIT CFLAG:25, 1
+ENDIF
+
+;-------------------------------------------------
+;料理技能の上昇による[不擅料理(メシマズ)]の消滅をチェック
+;-------------------------------------------------
+@RYOURI_UP_CHECK
+IF ABL:12 >= 5 && TALENT:44
+	PRINTS NAME:TARGET
+	PRINT 失去了[
+	PRINTS TALENTNAME:44
+	PRINTL ]
+	TALENT:44 = 0
+	PRINTW 爱情经验＋５０
+	EXP:TARGET:23 += 50
+	SETBIT CFLAG:25, 2
+ENDIF
+
+;-------------------------------------------------
+;性成瘾の上昇による[厌恶身体接触]の消滅をチェック
+;-------------------------------------------------
+@SKINSHIP_UP_CHECK
+IF ABL:18 >= 3 && TALENT:66
+	PRINTS NAME:TARGET
+	PRINT 失去了[
+	PRINTS TALENTNAME:66
+	PRINTL ]
+	TALENT:66 = 0
+	PRINTW 爱情经验＋１０
+	EXP:TARGET:23 += 10
+	SETBIT CFLAG:25, 3
+ENDIF
+
+;-------------------------------------------------
+;痛苦快乐经验、侍奉快乐经验のチェック
+;-------------------------------------------------
+@EXP_GOT_CHECK
+;侍奉系である、侍奉快乐のチェック
+A = UP:0+UP:1+UP:2+UP:3
+E = 0
+
+IF UP:6 < 100
+	A = 0
+ELSEIF UP:6 < 300
+	A *= 2
+ELSEIF UP:6 < 700
+	A *= 3
+ELSEIF UP:6 < 1500
+	A *= 4
+ELSE
+	A *= 5
+ENDIF
+
+IF TFLAG:100
+	IF A >= 12000
+		E = 16
+		TIMES UP:11 , 0.65
+		TIMES UP:12 , 0.30
+	ELSEIF A >= 8000
+		E = 12
+		TIMES UP:11 , 0.70
+		TIMES UP:12 , 0.40
+	ELSEIF A >= 5000
+		E = 8
+		TIMES UP:11 , 0.75
+		TIMES UP:12 , 0.50
+	ELSEIF A >= 3000
+		E = 4
+		TIMES UP:11 , 0.80
+		TIMES UP:12 , 0.60
+	ELSEIF A >= 2000
+		E = 2
+		TIMES UP:11 , 0.85
+		TIMES UP:12 , 0.70
+	ELSEIF A >= 1000
+		E = 1
+		TIMES UP:11 , 0.90
+		TIMES UP:12 , 0.80
+	ENDIF
+	IF E
+		PRINT 侍奉快乐经验+
+		PRINTVL E
+		EXP:21 += E
+		TFLAG:26 = E
+	ENDIF
+ENDIF
+
+;痛苦快乐のチェック
+E = 0
+IF UP:6 >= 3000 && UP:10 >= 2000
+	E = 16
+	TIMES UP:11 , 0.65
+ELSEIF UP:6 >= 2500 && UP:10 >= 1500
+	E = 12
+	TIMES UP:11 , 0.70
+ELSEIF UP:6 >= 1500 && UP:10 >= 1000
+	E = 8
+	TIMES UP:11 , 0.75
+ELSEIF UP:6 >= 1000 && UP:10 >= 500
+	E = 4
+	TIMES UP:11 , 0.80
+ELSEIF UP:6 >= 600 && UP:10 >= 300
+	E = 2
+	TIMES UP:11 , 0.85
+ELSEIF UP:6 >= 300 && UP:10 >= 100
+	E = 1
+	TIMES UP:11 , 0.90
+ENDIF
+IF E > 0
+	PRINT 痛苦快乐经验+
+	PRINTVL E
+	EXP:30 += E
+	TFLAG:27 = E
+	;嗜虐快乐经验
+	E = ABL:PLAYER:10+ABL:9
+	E -= 1
+	IF E > 0
+		PRINTFORM %CALLNAME:PLAYER%的
+		PRINT 嗜虐快乐经验+
+		PRINTVL E
+		EXP:PLAYER:32 += E
+		TFLAG:28 = E
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;润滑で服を汚したかのチェック
+;-------------------------------------------------
+@JUNKATU_TYAKUI
+
+;下身内衣か下身外衣を付けているとき
+IF TEQUIP:2
+	STAIN:10 |= STAIN:2
+	STAIN:10 |= STAIN:3
+	STAIN:10 |= STAIN:4
+	STAIN:10 |= STAIN:6
+	SIF STAIN:10 & 1
+		STAIN:10 -= 1
+	SIF STAIN:10 & 2
+		STAIN:10 -= 2
+	SIF STAIN:10 & 8
+		STAIN:10 -= 8
+ELSEIF TEQUIP:4
+	STAIN:12 |= STAIN:2
+	STAIN:12 |= STAIN:3
+	STAIN:12 |= STAIN:4
+	STAIN:12 |= STAIN:6
+	SIF STAIN:12 & 1
+		STAIN:12 -= 1
+	SIF STAIN:12 & 2
+		STAIN:12 -= 2
+	SIF STAIN:12 & 8
+		STAIN:12 -= 8
+ENDIF
+
+;润滑３以上欲望3以上で着衣に愛液汚れ
+IF PALAM:4 >= 3 && PALAM:6 >= 3
+	IF TEQUIP:2
+		STAIN:10 |= 1
+	ELSEIF TEQUIP:4
+		STAIN:12 |= 1
+	ELSEIF TEQUIP:6
+		STAIN:14 |= 1
+	ELSEIF TEQUIP:0 == 2 || TEQUIP:0 == 4
+		STAIN:8 |= 1
+	ENDIF
+ENDIF
+

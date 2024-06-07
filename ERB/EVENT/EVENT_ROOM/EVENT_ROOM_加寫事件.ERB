@@ -1,0 +1,340 @@
+﻿@和平看書(ARG)
+	IF CFLAG:ARG:12 > 0 || CFLAG:ARG:2414 == 1 || CFLAG:ARG:119 || TALENT:ARG:育儿中
+        PRINTW 一个人看了书…
+	ELSE
+		PRINTFORMW 和%CALLNAME:ARG%一起看了书…
+		IF (TALENT:ARG:3 || TALENT:ARG:6)
+			PRINTL 爱情经验＋1
+			EXP:ARG:23 += 1
+		ENDIF
+		JUEL:ARG:5 += 80
+		PRINTFORMW %PALAMNAME:5%之珠＋80
+	ENDIF
+	CFLAG:ARG:2415 += 1
+@小黃書(ARG)
+	PRINTFORML
+	PRINTFORMW 这本书很奇怪，封皮上居然一片空白，没有标题
+	PRINTFORMW 而%CALLNAME:ARG%一看见%PLAYER_NAME()%手上的书籍
+	PRINTFORMW 慌慌张张地想要抢过来阻止%PLAYER_NAME()%翻阅
+	PRINTFORMW 看到他紧张的样子，%PLAYER_NAME()%更感兴趣了，所以拆掉了封皮
+	PRINTFORML
+	PRINTFORM 原来在空白封皮底下包裹的是
+	SELECTCASE  RAND:7
+		CASE 0
+			PRINTFORMW 『哥布林与骑士神官们不得不说的因缘』
+		CASE 1
+			PRINTFORMW 『掌控官能的黑丝诱惑』
+		CASE 2
+			PRINTFORMW 『電車上面的禁忌PLAY』
+		CASE 3
+			PRINTFORMW 『甜蜜的射精管理』
+		CASE 4
+			PRINTFORMW 『皮鞭与蜡烛的掌控艺术』
+		CASE 5
+			PRINTFORMW 『拯救梦魔後被以身相许的我』
+		CASE 6
+			PRINTFORMW 『空气全被媚药污染的世界』
+	ENDSELECT
+	PRINTFORMW 这种一看到标题就知道内容绝对不正经的书籍
+	PRINTFORMW %PLAYER_NAME()%露出一幅"哈！被我发现了吧"的表情
+	PRINTFORM 翻开书籍
+	IF RAND:2
+		PRINTFORMW 故意大声地念出里面羞耻的情节
+		PRINTFORMW 还坏心眼地要求%CALLNAME:ARG%说出读後感等等……
+	ELSE
+		PRINTFORMW 要求%CALLNAME:ARG%演示一下里面羞耻的桥段
+		PRINTFORMW 当%CALLNAME:ARG%棒读着想要蒙混过去时，%PLAYER_NAME()%还会摇头喊"卡"
+		PRINTFORMW 就这样一直戏弄着尴尬不止的%CALLNAME:ARG%……
+	ENDIF
+		PRINTFORMW ………………　
+		PRINTFORMW …………
+		PRINTFORMW ……
+	IF (TALENT:ARG:3 || TALENT:ARG:6)
+		PRINTL 爱情经验＋1
+		EXP:ARG:23 += 1
+	ENDIF
+	JUEL:ARG:9 += 50
+	PRINTFORMW %PALAMNAME:9%之珠＋50
+	CFLAG:ARG:2415 += 1
+@A片(ARG)
+	PRINTFORMW 电视萤幕上映出性爱的场面，同时夸张的呻吟声响起
+	SELECTCASE  RAND:3
+		CASE 0
+			PRINTFORMW %PLAYER_NAME()%拉着尴尬眼神闪躲的%CALLNAME:ARG%一起观看
+			PRINTFORMW 貌似在看正经节目那样地点评演员的外貌身材，以及表情动作等等
+			PRINTFORMW 但是手却很不规矩的在%CALLNAME:ARG%身上游走……
+		CASE 1
+			PRINTFORMW %PLAYER_NAME()%便认真地看起电视来，还时不时认真地点点头
+			PRINTFORMW %CALLNAME:ARG%看着%PLAYER_NAME()%看得这么专注
+			PRINTFORMW 甚至把自己置之不理，不知为何，心里不舒服了起来
+			PRINTFORMW 故意拉起%PLAYER_NAME()%的手往自己身上抚摸……
+		CASE 2
+			PRINTFORMW 吸引了%PLAYER_NAME()%与%CALLNAME:ARG%的目光
+			PRINTFORMW 里面展示的内容居然是调教过程中从没尝试过的体位
+			PRINTFORMW %CALLNAME:ARG%露出一脸"这也办得到吗？"的惊愕表情
+			PRINTFORMW 而%PLAYER_NAME()%则默默地点点头，打算下次调教来试试看好了……
+	ENDSELECT
+	IF (TALENT:ARG:3 || TALENT:ARG:6)
+		PRINTL 爱情经验＋1
+		EXP:ARG:23 += 1
+	ENDIF
+     JUEL:ARG:6 += 50
+     PRINTFORMW %PALAMNAME:6%之珠＋50
+	  CFLAG:ARG:2415 += 1
+@衣柜H(ARG)
+	IF RAND:2
+		PRINTFORMW 一打开衣柜，就看见送给%CALLNAME:ARG%的%CSTR:ARG:40%正放在很显眼的地方
+		PRINTFORMW 应该是很中意吧？这么猜想的%PLAYER_NAME()%便顺手将那套衣服拿出来
+		PRINTFORMW 要求%CALLNAME:ARG%当场换上，并摆几个Pose看看穿起来效果如何
+		PRINTFORM %CALLNAME:ARG%
+		IF  NO:ARG == 200
+			PRINTFORM 一边扶额一边无奈地看着%PLAYER_NAME()%，最後还是
+		ELSEIF TALENT:ARG :胆怯 || TALENT:ARG :自卑  || TALENT:ARG :害羞
+			PRINTFORM 满脸通红地看着%PLAYER_NAME()%，羞涩地
+		ELSEIF TALENT:ARG :刚强 ||  TALENT:ARG :自制力  ||  TALENT:ARG :难以越过的底线
+			PRINTFORM 还是拿%PLAYER_NAME()%没办法，无奈地
+		ELSEIF TALENT:ARG :直率 ||  TALENT:ARG :高傲  ||  TALENT:ARG :自大 || TALENT:ARG :傲娇
+			PRINTFORM 先是狠狠瞪了%PLAYER_NAME()%一眼，最後还是咬牙地
+		ELSEIF TALENT:ARG :无动于衷 ||  TALENT:ARG :缺乏感情
+			PRINTFORM 无言地盯视着%PLAYER_NAME()%，最後还是顺从地
+		ELSE
+			PRINTFORM 皱着眉头看着%PLAYER_NAME()%，最後还是无可奈何地
+		ENDIF
+		PRINTFORMW 换上了%CSTR:ARG:40%……
+		PRINTFORML
+		IF CSTR:ARG:40 == "女仆装"
+			IF TALENT:ARG:137 || TALENT:ARG:140
+				; 女装经验+1
+				CFLAG:ARG:113 += 1
+				PRINTFORMW 果然让男性穿上女仆装之後，羞耻感异样地爆表呀！
+				PRINTFORMW 看着%CALLNAME:ARG%浑身不自在，回避着%PLAYER_NAME()%目光的样子
+				PRINTFORMW 之後%PLAYER_NAME()%不是乱掀裙子就是进行一些无理的要求
+				PRINTFORMW 使劲地折腾羞耻又无奈的%CALLNAME:ARG%……
+			ELSE
+				PRINTFORMW 黑白配色与繁杂的花边，加上绝对领域的丝袜，果然女仆装就是王道啊！
+				PRINTFORMW %PLAYER_NAME()%满意地欣赏%CALLNAME:ARG%的装扮
+				PRINTFORMW 同时让%CALLNAME:ARG%称呼主人，进行一些"主仆"应有的活动……
+			ENDIF
+		ELSEIF CSTR:ARG:40 == "兔女郎装" && (TALENT:ARG:137 || TALENT:ARG:140)
+			IF TALENT:ARG:137 || TALENT:ARG:140
+				; 女装经验+1
+				CFLAG:ARG:113 += 1
+				PRINTFORMW 果然让男性穿上兔女郎装"之後，羞耻感异样地爆表呀！
+				PRINTFORMW 紧身的衣服让%CALLNAME:ARG%浑身不自在，下身性器的形状明显被勾勒出来
+				PRINTFORMW 之後%PLAYER_NAME()%就故意学那些欢场的老色狼那样，对%CALLNAME:ARG%上下其手地性骚扰
+				PRINTFORMW 使劲地折腾羞耻又无奈的%CALLNAME:ARG%……
+			ELSE
+				PRINTFORMW 可爱的兎耳朵及尾巴，还有这高V紧身露出黑丝大长腿的装扮
+				PRINTFORMW 难怪是各大娱乐场所不可或缺的装扮之一
+				PRINTFORMW %PLAYER_NAME()%满意地欣赏%CALLNAME:ARG%的装扮
+				PRINTFORMW 之後就故意学那些欢场的老色狼那样，对%CALLNAME:ARG%上下其手地性骚扰了……
+			ENDIF
+		ELSEIF CSTR:ARG:40 == "女王装" && (TALENT:ARG:137 || TALENT:ARG:140)
+			 ; 女装经验+1
+			CFLAG:ARG:113 += 1
+		ELSEIF CSTR:ARG:40 == "护士服" && (TALENT:ARG:137 || TALENT:ARG:140)
+			IF TALENT:ARG:137 || TALENT:ARG:140
+				; 女装经验+1
+				CFLAG:ARG:113 += 1
+				PRINTFORMW 虽然也有男护士裤装，但是为了情趣，送的当然是护士短裙装
+				PRINTFORMW 在%PLAYER_NAME()%的坚持下，%CALLNAME:ARG%不甘不愿地穿上了纯白的护士短裙加上白丝袜
+				PRINTFORMW 然後%PLAYER_NAME()%就开始扮演病人的角色，要求%CALLNAME:ARG%进行各种的"医疗服务"
+				PRINTFORMW 使劲地折腾羞耻又无奈的%CALLNAME:ARG%……
+			ELSE
+				PRINTFORMW 	让%CALLNAME:ARG%换上了纯白的护士短裙加上白丝袜
+				PRINTFORMW 这样纯洁的形象，难怪人们又称护士为白衣天使
+				PRINTFORMW %PLAYER_NAME()%满意地欣赏%CALLNAME:ARG%的装扮
+				PRINTFORMW 然後%PLAYER_NAME()%就开始扮演病人的角色，要求%CALLNAME:ARG%进行各种"医疗服务"了……
+			ENDIF
+		ELSEIF CSTR:ARG:40 == "情趣内衣"
+			PRINTFORMW 细细的带子勾勒出性器的模样，就算是穿着直接做爱也完全没障碍的样子
+			PRINTFORMW 该遮的地方完全没遮，这就是这套衣服布料少却还卖的这么贵的原因吗？
+			PRINTFORMW %PLAYER_NAME()%一边看着%CALLNAME:ARG%一边这么想着……
+		ELSEIF CSTR:ARG:40 == "军装" || CSTR:ARG:40 == "医生白袍"
+			PRINTFORMW 穿上%CSTR:ARG:40%的%CALLNAME:ARG%带上了禁慾的气质
+			PRINTFORMW 果然，愈是整齐的装扮愈让人有想脱掉的欲望啊……
+		ENDIF
+		PRINTFORML
+		JUEL:ARG:5 += 50	
+		PRINTFORMW %PALAMNAME:5%之珠＋50
+	ELSE
+		PRINTW 打开了衣柜，在衣柜里面看到了几样"特别"的东西……
+		PRINTFORM 不顾%CALLNAME:ARG%
+		IF  NO:ARG == 200
+			PRINTFORM 想阻止又无可奈何的模样，
+		ELSEIF TALENT:ARG :胆怯 || TALENT:ARG :自卑  || TALENT:ARG :害羞
+			PRINTFORM 脸红到要滴出血的模样，
+		ELSEIF TALENT:ARG :刚强 ||  TALENT:ARG :自制力  ||  TALENT:ARG :难以越过的底线
+			PRINTFORM 皱着眉头紧咬下唇的模样，
+		ELSEIF TALENT:ARG :直率 ||  TALENT:ARG :高傲  ||  TALENT:ARG :自大 || TALENT:ARG :傲娇
+			PRINTFORM 拼命伸手想阻止%PLAYER_NAME()%的模样，
+		ELSEIF TALENT:ARG :无动于衷 ||  TALENT:ARG :缺乏感情
+			PRINTFORM 面无表情又微微颤抖的样子，
+		ELSE
+			PRINTFORM 欲言又止想要阻止的模样，
+		ENDIF
+		PRINTFORMW 将里面藏着的东西拿了出来……
+		PRINTFORMW %PLAYER_NAME()%拿起那个道具啧啧有声，询问%CALLNAME:ARG%平常就是用这个自慰吗？
+		PRINTFORMW 故意问一些用起来感觉如何，比起调教又如何等等，一些让人尴尬到想要钻地洞的问题
+		PRINTFORMW 最後还强迫%CALLNAME:ARG%换上之前送给他的%CSTR:ARG:40%之後
+		PRINTFORMW 好好展示一下这个道具的使用方法……
+		PRINTFORMW ………………
+		PRINTFORMW …………
+		PRINTFORMW ……
+		JUEL:ARG:6 += 50
+		EXP:ARG:10 += 1
+		EXP:ARG:11 += 1
+		PRINTFORMW 自慰与调教自慰的经验 + 1
+		PRINTFORMW %PALAMNAME:6%之珠＋50
+	ENDIF
+	CFLAG:ARG:2415 += 1
+@展示柜摆饰(ARG)
+		PRINTFORMW 展示柜放着上次送给%CALLNAME:ARG%的%CSTR:ARG:45%
+		IF TALENT:ARG:喜欢花草 && CSTR:ARG:45 == "花瓶"
+			PRINTFORMW 被%CALLNAME:ARG%好好地利用了起来，插上了新鲜的花朵
+		ELSEIF TALENT:ARG:美术属性 && (CSTR:ARG:45 == "雕塑" || CSTR:ARG:45 == "手办")
+			PRINTFORMW 似乎常常被%CALLNAME:ARG%拿来作为美术练习的参考目标
+		ELSEIF TALENT:ARG:喜欢花草 && CSTR:ARG:45 == "盆栽"
+			PRINTFORMW %CALLNAME:ARG%似乎有好好地浇水，生长得很好
+		ELSEIF TALENT:ARG:机械迷 && CSTR:ARG:45 == "手办"
+			PRINTFORMW 关节的地方似乎有点松脱的样子，欸？该不会想要拆开来改造吧？
+		ELSEIF CSTR:ARG:45 == "相框"
+			PRINTFORMW 上面放上了偷拍%PLAYER_NAME()%的相片
+			PRINTFORMW 到底是什么时候被偷拍的呢？%PLAYER_NAME()%歪着头思考着
+			PRINTFORMW 发现%PLAYER_NAME()%正盯视着%CSTR:ARG:45%出神
+			PRINTFORM %CALLNAME:ARG%
+			IF  NO:ARG == 200
+				PRINTFORMW 一幅若无其事的模样，认为放上%PLAYER_NAME()%的照片是理所当然的事情……
+			ELSEIF TALENT:ARG :胆怯 || TALENT:ARG :自卑  || TALENT:ARG :害羞
+				PRINTFORMW 像是做错事那样低下头来，但是却没有想要换掉照片的意思……
+			ELSEIF TALENT:ARG :刚强 ||  TALENT:ARG :自制力  ||  TALENT:ARG :难以越过的底线
+				PRINTFORMW 认真地跟%PLAYER_NAME()%一起看着照片，甚至讨论着拍照的技巧……
+			ELSEIF TALENT:ARG :高傲  ||  TALENT:ARG :自大 || TALENT:ARG :傲娇
+				PRINTFORMW 一幅很勉强的模样，说是没东西可放，才放着%PLAYER_NAME()%的照片……
+			ELSEIF TALENT:ARG :无动于衷 ||  TALENT:ARG :缺乏感情
+				PRINTFORMW 面无表情，似乎没什么要解释的样子……
+			ELSE
+				PRINTFORMW 露出有点忐忑又不知该怎么解释的样子……
+			ENDIF
+		ELSEIF CSTR:ARG:45 == "项链"
+			PRINTFORMW 欸？是不喜欢这个样式吗？怎么没戴上？%PLAYER_NAME()%这样子询问着
+			PRINTFORMW %CALLNAME:ARG%马上解释说，是怕一直戴着会让金属氧化所以舍不得常常戴着
+			PRINTFORMW %PLAYER_NAME()%笑着说，如果氧化了会再买新的，所以让%CALLNAME:ARG%放心
+			PRINTFORMW 说完，便顺手拿了起来，亲自帮%PLAYER_NAME()%系上了%CSTR:ARG:45%……
+		ELSEIF CSTR:ARG:45 == "戒指"
+			PRINTFORMW 欸？是不喜欢这个样式吗？怎么没戴上？%PLAYER_NAME()%这样子询问着
+			PRINTFORMW %CALLNAME:ARG%有点忧郁一幅欲言又止的样子
+			PRINTFORMW 在%PLAYER_NAME()%的追问之下，%CALLNAME:ARG%终於说出了原因
+			PRINTFORMW 原因是因为不合"无名指"的尺寸……
+			PRINTFORMW 呃……%PLAYER_NAME()%尴尬的摸摸头，唔……果然戒指不能随便乱送的呀……
+		ELSEIF CSTR:ARG:45 == "耳环"
+			PRINTFORMW 欸？是不喜欢这个样式吗？怎么没戴上？%PLAYER_NAME()%这样子询问着
+			IF TALENT:137 || TALENT:140
+				PRINTFORMW %CALLNAME:ARG%自己又没有耳洞，所以没办法戴
+				PRINTFORMW %PLAYER_NAME()%尴尬地对自己的粗心大意道了歉
+				PRINTFORMW 说完，便咬了一下%CALLNAME:ARG%的耳垂，答应帮他打上耳洞……
+			ELSE
+				PRINTFORMW %CALLNAME:ARG%马上解释说，是怕戴上後，万一掉了会心疼
+				PRINTFORMW %PLAYER_NAME()%笑着说，如果丢了会再买新的，所以让%CALLNAME:ARG%放心
+				PRINTFORMW 说完，便顺手拿了起来，亲自帮%PLAYER_NAME()%戴上了%CSTR:ARG:45%……
+			ENDIF
+		ELSEIF CSTR:ARG:45 == "手表"
+			PRINTFORMW 欸？是不喜欢这个样式吗？怎么没戴上？%PLAYER_NAME()%这样子询问着
+			PRINTFORMW %CALLNAME:ARG%有点忧郁一幅欲言又止的样子
+			PRINTFORMW 在%PLAYER_NAME()%的追问之下，%CALLNAME:ARG%终於说出了原因
+			PRINTFORMW 说戴上%CSTR:ARG:45%之後，就会一直想起%PLAYER_NAME()%，然後觉得每分每秒都过得特别缓慢
+			PRINTFORMW %PLAYER_NAME()%只好无奈地摸摸%CALLNAME:ARG%的头安抚了一下……
+		ELSE	
+			PRINTFORMW 看来%CALLNAME:ARG%并不讨厌这个礼物的样子，有好好地放在展示柜上面……
+		ENDIF
+		JUEL:ARG:5 += 50	
+		PRINTFORMW %PALAMNAME:5%之珠＋50
+		CFLAG:ARG:2415 += 1
+@送飾品(ARG)
+PRINTFORML 要送什么样的飾品？
+PRINTFORM 房间的装饰品：
+PRINTBUTTON "[  花瓶  ]", 01
+PRINTBUTTON "  [  雕塑  ]", 02
+PRINTBUTTON "  [  盆栽  ]", 03
+PRINTBUTTON "  [  手办  ]", 04
+PRINTBUTTON "  [  相框  ]", 05
+PRINTFORML 
+PRINTFORM 个人用的首饰：
+PRINTBUTTON "[  项链  ]", 06
+PRINTBUTTON "  [  戒指  ]", 07
+PRINTBUTTON "  [  耳环  ]", 08
+PRINTBUTTON "  [  手表  ]", 09
+PRINTBUTTON "  [自己输入]", 10
+INPUT
+IF RESULT == 1
+	CSTR:ARG:45 = 花瓶
+ELSEIF RESULT == 2
+	CSTR:ARG:45 = 雕塑
+ELSEIF RESULT == 3
+	CSTR:ARG:45 = 盆栽
+ELSEIF RESULT == 4
+	CSTR:ARG:45 = 手办
+ELSEIF RESULT == 5
+	CSTR:ARG:45 = 相框
+ELSEIF RESULT == 6
+	CSTR:ARG:45 = 项链
+ELSEIF RESULT == 7
+	CSTR:ARG:45 = 戒指
+ELSEIF RESULT == 8
+	CSTR:ARG:45 = 耳环
+ELSEIF RESULT == 9
+	CSTR:ARG:45 = 手表
+ELSEIF RESULT == 10
+	INPUTS
+	CSTR:ARG:45 = %RESULTS%
+ENDIF
+@送衣服(ARG)
+PRINTFORML 要送什么样的衣服？
+PRINTBUTTON "[  礼服  ]", 01
+PRINTBUTTON "  [ 女仆装 ]", 02
+PRINTBUTTON "  [兔女郎装]", 03
+PRINTBUTTON "  [ 女王装 ]", 04
+PRINTBUTTON "  [ 拘束装 ]", 05
+PRINTFORML
+PRINTBUTTON "[ 哥特装 ]", 06
+PRINTBUTTON "  [情趣内衣]", 07
+PRINTBUTTON "  [  泳装  ]", 08
+PRINTBUTTON "  [ 学生服 ]", 09
+PRINTBUTTON "  [ 水手服 ]", 10
+PRINTFORML
+PRINTBUTTON "[  军装  ]", 11
+PRINTBUTTON "  [医生白袍]", 12
+PRINTBUTTON "  [ 护士服 ]", 13
+PRINTBUTTON "  [自己输入]", 14
+INPUT
+IF RESULT == 1
+	CSTR:ARG:40 = 礼装
+ELSEIF RESULT == 2
+	CSTR:ARG:40 = 女仆服
+ELSEIF RESULT == 3
+	CSTR:ARG:40 = 兔女郎装
+ELSEIF RESULT == 4
+	CSTR:ARG:40 = 女王装
+ELSEIF RESULT == 5
+	CSTR:ARG:40 = 拘束装
+ELSEIF RESULT == 6
+	CSTR:ARG:40 = 哥特装
+ELSEIF RESULT == 7
+	CSTR:ARG:40 = 情趣内衣
+ELSEIF RESULT == 8
+	CSTR:ARG:40 = 泳装
+ELSEIF RESULT == 9
+	CSTR:ARG:40 = 学生服
+ELSEIF RESULT == 10
+	CSTR:ARG:40 = 水手服
+ELSEIF RESULT == 11
+	CSTR:ARG:40 = 军装
+ELSEIF RESULT == 12
+	CSTR:ARG:40 = 医生白袍
+ELSEIF RESULT == 13
+	CSTR:ARG:40 = 护士服
+ELSEIF RESULT == 14
+	INPUTS
+	CSTR:ARG:40 = %RESULTS%
+ENDIF
+				

@@ -1,0 +1,465 @@
+﻿;-------------------------------------------------
+;自慰
+;爱抚系指令、レベル3
+;-------------------------------------------------
+@COM11
+;-------------------------------------------------
+;特殊派生処理
+;-------------------------------------------------
+;竿がある
+;竿の有無で分岐
+;前回と今回の调教者が同じ
+IF (ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0)
+	IF TALENT:TARGET:140 || TALENT:TARGET:139 || TALENT:TARGET:137
+		;前指令が骑乘位の場合は騎乗阴茎自慰にジャンプ
+		SIF PREVCOM == 66 && TFLAG:60
+			JUMP COM592
+		;前指令が骑乘位肛交の場合も騎乗阴茎自慰にジャンプ
+		SIF PREVCOM == 67 && TFLAG:60
+			JUMP COM592
+	ENDIF
+ENDIF
+;口交时自慰
+IF PREVCOM == 81
+	CALL COM_ABLE530
+	JUMP COM530
+ENDIF
+;舔陰时自慰
+IF PREVCOM == 120 || PREVCOM == 79
+	CALL COM_ABLE531
+	JUMP COM531
+ENDIF
+;自慰
+;自慰棒、肛塞、视频拍摄の時に内容変化
+;视频拍摄中なら公開自慰
+;淋浴使用中なら淋浴自慰
+;読心中なら読心自慰
+;自慰棒、肛塞、或いは両方装备で自慰棒自慰
+PRINT 命其
+SIF TEQUIP:28
+	PRINT 公开
+SIF TEQUIP:32
+	PRINT 淋浴时
+IF TEQUIP:13 && TEQUIP:14
+	PRINT 用二穴自慰棒
+ELSEIF TEQUIP:13
+	PRINT 用自慰棒
+ELSEIF TEQUIP:14
+	PRINT 用肛塞
+ENDIF
+
+IF TEQUIP:28 || TEQUIP:32 || TEQUIP:13 || TEQUIP:14
+	PRINTL 自慰
+ELSE
+	PRINTL 自慰
+ENDIF
+
+;-------------------------------------------------
+;実行できるかの判定
+;-------------------------------------------------
+A = 0
+S = 0
+
+;すべての命令に共通の要素を考慮
+;(顺从が高いと命令に従いやすいなど)
+CALL COM_ORDER
+
+;ABL:欲望
+IF ABL:1
+	SIF S
+		PRINT  + 
+	A += ABL:1 * 3
+	PRINTS ABLNAME:1
+	PRINTV 'LV,ABL:1,'(,ABL:1 * 3,')
+	S = 1
+ENDIF
+;ABL:露出癖
+IF ABL:8
+	SIF S
+		PRINT  + 
+	A += ABL:8 * 4
+	PRINTS ABLNAME:8
+	PRINTV 'LV,ABL:8,'(,ABL:8 * 4,')
+	S = 1
+ENDIF
+;ABL:自慰成瘾
+IF ABL:15
+	SIF S
+		PRINT  + 
+	A += ABL:15 * 3
+	PRINTS ABLNAME:15
+	PRINTV 'LV,ABL:15,'(,ABL:15 * 3,')
+	S = 1
+ENDIF
+
+IF MARK:1
+	SIF S
+		PRINT  + 
+	A += MARK:1 * 3
+	PRINTS MARKNAME:1
+	PRINTV 'LV,MARK:1,'(,MARK:1 * 3,')
+	S = 1
+ENDIF
+
+
+;PALAM:情欲
+IF PALAM:6 < PALAMLV:1
+	L = 0
+ELSEIF PALAM:6 < PALAMLV:2
+	L = 1
+ELSEIF PALAM:6 < PALAMLV:3
+	L = 2
+ELSEIF PALAM:6 < PALAMLV:4
+	L = 3
+ELSEIF PALAM:6 < PALAMLV:5
+	L = 4
+ELSE
+	L = 5
+ENDIF
+IF L
+	SIF S
+		PRINT  + 
+	A += L * 3
+	PRINTS PALAMNAME:6
+	PRINTV 'LV,L,'(,L * 3,')
+	S = 1
+ENDIF
+;自制力
+IF TALENT:20
+	PRINT  - 
+	A -= 5
+	PRINTS TALENTNAME:20
+	PRINTV '(,5,')
+	S = 1
+ENDIF
+;害羞
+IF TALENT:35
+	PRINT  - 
+	A -= 5
+	PRINTS TALENTNAME:35
+	PRINTV '(,5,')
+	S = 1
+ENDIF
+;不知羞耻
+IF TALENT:36
+	SIF S
+		PRINT  + 
+	A += 2
+	PRINTS TALENTNAME:36
+	PRINTV '(,2,')
+	S = 1
+ENDIF
+;容易自慰
+IF TALENT:60
+	SIF S
+		PRINT  + 
+	A += 5
+	PRINTS TALENTNAME:60
+	PRINTV '(,5,')
+	S = 1
+ENDIF
+;厌恶身体接触
+IF TALENT:66
+	PRINT  + 
+	A += 2
+	PRINTS TALENTNAME:66
+	PRINTV '(,2,')
+	S = 1
+ENDIF
+;接受快感
+IF TALENT:70
+	SIF S
+		PRINT  + 
+	A += 5
+	PRINTS TALENTNAME:70
+	PRINTV '(,5,')
+	S = 1
+ENDIF
+;否定快感（淫乱、娼妇で无效）
+IF TALENT:71 && (TALENT:4 == 0 && TALENT:7 == 0)
+	PRINT  - 
+	A -= 5
+	PRINTS TALENTNAME:71
+	PRINTV '(,5,')
+	S = 1
+ENDIF
+
+;媚薬
+IF TEQUIP:26
+	SIF S
+		PRINT  + 
+	A += 8
+	PRINTS ITEMNAME:41
+	PRINTV '(,8,')
+	S = 1
+ENDIF
+
+;合計を表示(33以上で実行)
+PRINT  = 
+PRINTV A
+
+;困难度上昇
+;公開で+10、自慰棒で+5、肛塞で+5、淋浴で＋3
+V = 33
+SIF TEQUIP:28
+	V += 10
+SIF TEQUIP:32
+	V += 3
+SIF TEQUIP:13
+	V += 5
+SIF TEQUIP:14
+	V += 5
+
+SIF A < V
+	PRINT  < 
+SIF A == V
+	PRINT  = 
+SIF A > V
+	PRINT  > 
+PRINT 实行值
+PRINTV V
+;実行不可口上/実行判定操作
+IF A < V
+	CALL KOJO_DENIAL
+	WAIT
+	RETURN 0
+ELSE
+	PRINTL
+ENDIF
+
+
+STR:0 = 命其自慰
+
+
+;丝袜びりびりフラグ
+IF TEQUIP:1 == 5 || TEQUIP:1 == 6
+	TFLAG:55 = 1
+ENDIF
+
+
+;実行者が奴隶であるフラグ
+TFLAG:28 = 1
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 5
+LOSEBASE:1 += 50
+
+SOURCE:0 = 80
+SOURCE:3 = 80
+SOURCE:5 = 100
+SOURCE:8 = 200
+SOURCE:9 = 200
+SOURCE:10 = 20
+SOURCE:13 = 400
+SOURCE:14 = 500
+SOURCE:17 = 300
+SOURCE:18 = 250
+;自慰棒
+IF TEQUIP:13
+	SOURCE:14 += 100
+	SOURCE:18 += 100
+	TIMES SOURCE:0 , 0.70
+	TIMES SOURCE:3 , 0.70
+ENDIF
+;肛塞
+IF TEQUIP:14
+	SOURCE:14 += 150
+	SOURCE:18 += 150
+	TIMES SOURCE:0 , 0.70
+	TIMES SOURCE:3 , 0.70
+ENDIF
+;淋浴
+IF TEQUIP:32
+	SOURCE:0 += 50
+	SOURCE:13 += 100
+	SOURCE:14 += 50
+	SOURCE:18 += 80
+ENDIF
+;ビデオ
+IF TEQUIP:28
+	SOURCE:10 += 50
+	SOURCE:11 += 100
+	SOURCE:18 += 200
+ENDIF
+
+
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 400
+
+;中毒による中毒充足のソースは先に処理しておく
+;自慰成瘾を見る
+IF ABL:15 == 1
+	TIMES SOURCE:0 , 1.00
+	TIMES SOURCE:1 , 1.00
+	TIMES SOURCE:2 , 1.00
+	TIMES SOURCE:3 , 1.00
+	TIMES SOURCE:9 , 0.00
+ELSEIF ABL:15 == 2
+	TIMES SOURCE:0 , 1.10
+	TIMES SOURCE:1 , 1.10
+	TIMES SOURCE:2 , 1.10
+	TIMES SOURCE:3 , 1.10
+	TIMES SOURCE:9 , 0.30
+ELSEIF ABL:15 == 3
+	TIMES SOURCE:0 , 1.20
+	TIMES SOURCE:1 , 1.20
+	TIMES SOURCE:2 , 1.20
+	TIMES SOURCE:3 , 1.20
+	TIMES SOURCE:9 , 0.60
+ELSEIF ABL:15 == 4
+	TIMES SOURCE:0 , 1.30
+	TIMES SOURCE:1 , 1.30
+	TIMES SOURCE:2 , 1.30
+	TIMES SOURCE:3 , 1.30
+	TIMES SOURCE:9 , 0.90
+ELSEIF ABL:15 == 5
+	TIMES SOURCE:0 , 1.50
+	TIMES SOURCE:1 , 1.50
+	TIMES SOURCE:2 , 1.50
+	TIMES SOURCE:3 , 1.50
+	TIMES SOURCE:9 , 1.20
+ELSEIF ABL:15 == 6
+	TIMES SOURCE:0 , 1.70
+	TIMES SOURCE:1 , 1.70
+	TIMES SOURCE:2 , 1.50
+	TIMES SOURCE:3 , 1.50
+	TIMES SOURCE:9 , 1.50
+ELSEIF ABL:15 == 7
+	TIMES SOURCE:0 , 2.00
+	TIMES SOURCE:1 , 2.00
+	TIMES SOURCE:2 , 1.70
+	TIMES SOURCE:3 , 1.70
+	TIMES SOURCE:9 , 1.80
+ELSEIF ABL:15 == 8
+	TIMES SOURCE:0 , 2.30
+	TIMES SOURCE:1 , 2.30
+	TIMES SOURCE:2 , 2.00
+	TIMES SOURCE:3 , 2.00
+	TIMES SOURCE:9 , 2.30
+ELSEIF ABL:15 == 9
+	TIMES SOURCE:0 , 2.50
+	TIMES SOURCE:1 , 2.50
+	TIMES SOURCE:2 , 2.50
+	TIMES SOURCE:3 , 2.50
+	TIMES SOURCE:9 , 3.00
+ELSEIF ABL:15 >= 10
+	TIMES SOURCE:0 , 3.50
+	TIMES SOURCE:1 , 3.50
+	TIMES SOURCE:2 , 3.50
+	TIMES SOURCE:3 , 3.50
+	TIMES SOURCE:9 , 5.00
+ENDIF
+
+
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;手套をしているとき
+IF TEQUIP:0 == 1
+	;奴隶の特殊１⇔奴隶のＢの汚れが移动
+	STAIN:8 |= STAIN:5
+	STAIN:5 |= STAIN:8
+	IF TEQUIP:13 || TEQUIP:14
+	ELSEIF TALENT:140
+		;奴隶の特殊１⇔奴隶のＣの汚れが移动
+		STAIN:8 |= STAIN:2
+		STAIN:2 |= STAIN:8
+	ELSE
+		;奴隶の特殊１⇔奴隶のＶの汚れが移动
+		STAIN:8 |= STAIN:3
+		STAIN:3 |= STAIN:8
+	ENDIF
+ELSE
+	;奴隶の指⇔奴隶のＢの汚れが移动
+	STAIN:1 |= STAIN:5
+	STAIN:5 |= STAIN:1
+	IF TEQUIP:13 || TEQUIP:14
+	ELSEIF TALENT:140
+		;奴隶の指⇔奴隶のＣの汚れが移动
+		STAIN:1 |= STAIN:2
+		STAIN:2 |= STAIN:1
+	ELSE
+		;奴隶の指⇔奴隶のＶの汚れが移动
+		STAIN:1 |= STAIN:3
+		STAIN:3 |= STAIN:1
+	ENDIF
+ENDIF
+
+;淋浴自慰の場合汚れを重置、润滑更に半分。
+IF TEQUIP:32 == 1
+	STAIN:1 = 0
+	STAIN:2 = 2
+	STAIN:3 = 1
+	STAIN:4 = 8
+	STAIN:5 = 0
+	STAIN:7 = 0
+	STAIN:8 = 0
+	STAIN:9 = 0
+	STAIN:12 = 0
+	STAIN:13 = 0
+	STAIN:14 = 0
+	STAIN:15 = 0
+	STAIN:16 = 0
+	STAIN:17 = 0
+	PALAM:4 /= 2
+ENDIF
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;视频拍摄時は经验にプラス
+IF TEQUIP:28
+	EXP:10 += 2
+	PRINTL 自慰经验＋２
+	EXP:11 += 2
+	PRINTL 调教自慰经验＋２
+ELSE
+	EXP:10 += 1
+	PRINTL 自慰经验＋１
+	EXP:11 += 1
+	PRINTL 调教自慰经验＋１
+ENDIF
+;公開自慰時は异常经验付加
+IF TEQUIP:28 && CFLAG:3 == 0
+	EXP:50 += 1
+	PRINTL 公开自慰初体验的异常经验＋１
+	CFLAG:3 = 1
+ENDIF
+
+TFLAG:90 = 0
+;摄影時の调教内容チェック
+IF TEQUIP:13 && TEQUIP:14
+	TFLAG:90 = 993
+ELSEIF TEQUIP:13
+	TFLAG:90 = 991
+ELSEIF TEQUIP:14
+	TFLAG:90 = 992
+ELSEIF TEQUIP:32
+	TFLAG:90 = 994
+ENDIF
+
+;蔷薇经验とか加算
+CALL COM_EXP(3)
+
+
+;依赖度ベクトル
+TFLAG:33 = 3
+
+;依赖度補正値(服从で1、隶属で2）
+IF TALENT:5 && ASSIPLAY == 0
+	TFLAG:30 += 1
+ELSEIF TALENT:8 && ASSIPLAY == 0
+	TFLAG:30 += 2
+ENDIF
+
+
+RETURN 1
+

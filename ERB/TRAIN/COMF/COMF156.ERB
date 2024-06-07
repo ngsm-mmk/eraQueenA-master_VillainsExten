@@ -1,0 +1,262 @@
+﻿;-------------------------------------------------
+;烙印
+;严厉な调教指令
+;-------------------------------------------------
+@COM156
+PRINTL 烙印
+STR:0 = 烙印
+
+R = 0
+;奴隶の体を検分
+PRINTL
+PRINTFORM %PLAYER_NAME()%让%CALLNAME%全裸站立，
+IF TALENT:159 == 0
+	PRINTFORML 以舔舐般的视线欣赏着这具毫无瑕疵的崭新身体。
+ELSE
+		IF TALENT:159 >= 15
+			PRINTFORM 望着这副已被彻底改造得面目全非的姿态
+		ELSEIF TALENT:159 == 14
+			PRINTFORM 望着这副被烙着%CSTR:56%和穿环装饰点缀了的姿态
+		ELSEIF TALENT:159 == 13
+			PRINTFORM 望着这副留下了%PLAYER_NAME()%名字与%CSTR:56%字样跟丑陋伤疤的身形
+		ELSEIF TALENT:159 == 11
+			PRINTFORM 望着这副伤疤与穿环交错，如家畜般烙着%CSTR:56%的模样
+		ELSEIF TALENT:159 == 7	
+			PRINTFORM 望着这副伤疤与穿环交错，还被纹上了%PLAYER_NAME()%名字的姿态
+		ELSEIF TALENT:159 == 12
+			PRINTFORM 望着这副赤裸裸昭示着已经是属于%PLAYER_NAME()%之物的身体
+		ELSEIF TALENT:159 == 10
+			PRINTFORM 望着这副被烙印上%CSTR:56%字样还穿了反光的环的身姿
+		ELSEIF TALENT:159 == 9
+			PRINTFORM 望着这副留下丑陋伤疤和如家畜般烙着%CSTR:56%的模样
+		ELSEIF TALENT:159 == 6
+			PRINTFORM 望着这副纹上了%PLAYER_NAME()%名字，还被埋入了金属的身姿
+		ELSEIF TALENT:159 == 5
+			PRINTFORM 望着这副残留着丑陋伤疤跟%PLAYER_NAME()%名字的身体
+		ELSEIF TALENT:159 == 3
+			PRINTFORM 望着这副带着一看就令人感到疼痛的伤痕，身上的环还闪闪发光的身姿
+		ELSEIF TALENT:159 == 8
+			PRINTFORM 望着这副如家畜般烙着%CSTR:56%的身体
+		ELSEIF TALENT:159 == 4
+			PRINTFORM 望着这副被纹上了%PLAYER_NAME()%的名字的身体
+		ELSEIF TALENT:159 == 2
+			PRINTFORM 望着这副浑身的环都在闪闪发光的身姿
+		ELSEIF TALENT:159 == 1
+			IF  CFLAG:600 == 68
+				PRINTFORM 望着这副被他人刻上痕迹的旧伤疤
+			ELSE
+				PRINTFORM 望着这副残留着盘根错节的丑陋伤疤的身体
+			ENDIF
+		ELSE
+			PRINTFORM 望着这副被打上烙印的身姿
+		ENDIF
+		PRINTFORML 陷入沉思……
+		PRINTFORM 啊啊，这已经是无法卖出去的商品了——
+		;恋慕、相亲相爱、服从、隶属
+		IF TALENT:3 || TALENT:6 || TALENT:5 || TALENT:8
+			PRINTFORML 这么说了后，本来满脸喜色的%CALLNAME%的眼神黯淡了
+		ELSEIF TALENT:4 || TALENT:7
+			PRINTFORML 这么咕哝了一句
+			PRINTFORML 然而即便听到这种话，%CALLNAME%也没产生什么反应，看起来毫无兴致
+		ELSE
+			IF TALENT:反抗 || TALENT:刚强 || TALENT:高傲 || TALENT:自大 || TALENT:抵抗
+				PRINTFORML 听到这句话的%CALLNAME%一言不发，紧紧地盯着这边
+			ELSE
+				PRINTFORML 听到这句话的%CALLNAME%顿时脸色大变，眼泪在眼眶里打转
+			ENDIF
+		ENDIF
+ENDIF
+PRINTFORM %CALLNAME%
+IF TALENT:159
+	PRINTFORML 不安地看向这边。到底还会被怎么样呢——像是在这样猜疑着
+ELSE
+	PRINTFORML 不安地看向这边，像是在担心自己接下来的命运
+ENDIF
+PRINTFORML 
+;どの烙印か
+PRINTFORML 那么，要做些什么呢…
+PRINTL 
+PRINTL [0] -   放弃
+SIF (TALENT:159 & 1) == 0
+	PRINTL [1] -   制造伤痕
+SIF (TALENT:159 & 2) == 0
+	PRINTL [2] -   身体穿环
+SIF (TALENT:159 & 4) == 0
+	PRINTL [3] -   刻上主人的名字
+SIF (TALENT:159 & 8) == 0
+	PRINTL [4] -   留下烙印
+$INPUT_LOOP_RAKUIN
+INPUT
+IF RESULT == 0
+	PRINTFORMW 今天就算了吧…
+	TFLAG:51 = 1
+	R = 0
+ELSEIF RESULT == 1 && (TALENT:159 & 1) == 0
+	PRINTFORM 拿起刀走向%CALLNAME%时，%CALLNAME%
+	IF TALENT:5 || TALENT:6 || TALENT:8
+		PRINTFORML 害怕得挣扎起来，
+		PRINTFORMW 但最终还是接受了说着“这是作为%CSTR:MASTER:0%所有物的证据”的%PLAYER_NAME()%的刀刃
+	ELSE
+		PRINTFORML 害怕得激烈挣扎，但当刀刃抵上
+		IF TALENT:137 || TALENT:139 || TALENT:140
+			PRINTFORM 男根
+		ELSE
+			PRINTFORM 脖颈
+		ENDIF
+		PRINTFORMW 以示威胁后，%CALLNAME%不得不放弃抵抗，咬牙承受%PLAYER_NAME()%的刀刃
+	ENDIF
+	R = 1
+ELSEIF RESULT == 2 && (TALENT:159 & 2) == 0
+	IF TALENT:5 || TALENT:6 || TALENT:8
+		PRINTFORMW 想着这样就能拥有作为%PLAYER_NAME()%所有物的证明，%CALLNAME%努力忍受着在身体上开洞的疼痛
+	ELSE
+		PRINTFORMW 用事先准备好的药让不断抵抗的%CALLNAME%陷入昏迷，随即开始在%CALLNAME%的身体上穿环
+	ENDIF
+	R = 2
+ELSEIF RESULT == 3 && (TALENT:159 & 4) == 0
+	IF TALENT:5 || TALENT:6 || TALENT:8
+		PRINTFORML 想着可以在身上留下%PLAYER_NAME()%的名字，
+		PRINTFORMW %CALLNAME%闭上眼忍受着被针刺穿的疼痛
+	ELSE
+		PRINTFORMW 用事先准备好的药让不断抵抗的%CALLNAME%陷入昏迷，随即开始在%CALLNAME%的身体上刻下%PLAYER_NAME()%的名字
+	ENDIF
+	R = 3
+ELSEIF RESULT == 4 && (TALENT:159 & 8) == 0
+	$INPUTS_LOOP2
+	PRINTFORML 要烙印上什么字词？
+	PRINTFORML
+	PRINTBUTTON "[ 肉便器]", 31
+	PRINTBUTTON "  [ 泄欲专用]", 32
+	PRINTBUTTON "  [ 欢迎中出]", 33
+	PRINTBUTTON "  [ 发情牝犬]", 34
+	PRINTBUTTON "  [ 自己输入]", 35
+	INPUT
+	SELECTCASE RESULT
+		CASE 31
+			CSTR:56 = 【肉便器】
+		CASE 32
+			CSTR:56 =  【泄欲专用】
+		CASE 33
+			CSTR:56 = 【欢迎中出】
+		CASE 34
+			CSTR:56 = 【发情牝犬】
+		CASE 35
+			PRINTFORML 请输入要烙印的字词
+			INPUTS
+			CSTR:56 = %"【"+RESULTS+"】"%
+		CASEELSE
+			GOTO INPUTS_LOOP2
+	ENDSELECT
+	PRINTFORM 脸色歪曲，惊惧不已地求饶着的%CALLNAME%并没有得到同情，
+	IF TALENT:5 || TALENT:6 || TALENT:8
+		PRINTFORML 作为所有物的证据，
+	ELSE
+		PRINTFORML 强行被按压住后，
+	ENDIF
+	PRINTFORMW %PLAYER_NAME()%将充分加热过且刻着%CSTR:56%的烙铁印在了%CALLNAME%的身上……
+	R = 4
+ELSE
+	GOTO INPUT_LOOP_RAKUIN
+ENDIF
+TFLAG:52 = 1
+IF R > 0
+	;へたくしょん用面識判定の更新
+	CFLAG:PLAYER:(799 + NO:TARGET) |= 1024
+	CFLAG:TARGET:(799 + NO:PLAYER) |= 2048
+ENDIF
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;どの烙印を付けたか
+IF R == 0
+	;付けない
+	;消費体力、气力
+	LOSEBASE:0 += 0
+	LOSEBASE:1 += 150
+	;恐惧、露出、屈从、反抗
+	SOURCE:8 += 500
+	SOURCE:13 += 300
+	SOURCE:14 += 300
+	SOURCE:18 += 500
+ELSE
+	PRINTL
+	;消費体力、气力
+	LOSEBASE:0 += 500
+	LOSEBASE:1 += 400
+	;疼痛、恐惧、屈从、逸脱、反抗
+	SOURCE:7 += 6000
+	SOURCE:8 += 6000
+	SOURCE:14 += 2000
+	SOURCE:17 += 800
+	SOURCE:18 += 2500
+	;初烙印のとき异常经验、屈从・逸脱・反抗のソース
+	IF TALENT:TARGET:159 == 0
+		EXP:50 += 1
+		PRINTL 异常经验＋１
+		SOURCE:14 += 500
+		SOURCE:17 += 800
+		SOURCE:18 += 2000
+	ENDIF
+	IF R == 1
+		;傷痕
+		TALENT:TARGET:159 |= 1
+	ELSEIF R == 2
+		;身体穿环
+		TALENT:TARGET:159 |= 2
+	ELSEIF R == 3
+		;刺青
+		TALENT:TARGET:159 |= 4
+	ELSEIF R == 4
+		;焼き印
+		TALENT:TARGET:159 |= 8
+	ENDIF
+	PRINTFORML %CALLNAME:TARGET%的身体被打上了【烙印】
+ENDIF
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;すでに烙印を付けられていて、今回は付けなかったとき气力減、屈从、反抗のソース追加
+IF TALENT:159 > 0 && R == 0
+	LOSEBASE:1 += 100
+	SOURCE:14 += 2000
+	SOURCE:18 += 700
+ENDIF
+;恋慕・相亲相爱・服从・隶属で烙印がついているとき恭顺のソース追加、恐惧と反抗のソース減少
+IF TALENT:159 && (TALENT:3 || TALENT:5 || TALENT:6 || TALENT:8)
+	SOURCE:12 = 2000
+	TIMES SOURCE:8 , 0.80
+	TIMES SOURCE:18 , 0.50
+ENDIF
+R = 0
+;痛苦のパラメータによる痛苦のソース増加は先に処理しておく
+IF PALAM:10 < PALAMLV:1
+	TIMES SOURCE:7 , 1.00
+ELSEIF PALAM:10 < PALAMLV:2
+	TIMES SOURCE:7 , 1.50
+ELSEIF PALAM:10 < PALAMLV:3
+	TIMES SOURCE:7 , 2.00
+ELSEIF PALAM:10 < PALAMLV:4
+	TIMES SOURCE:7 , 2.50
+ELSEIF PALAM:10 >= PALAMLV:4
+	TIMES SOURCE:7 , 3.00
+ENDIF
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;蔷薇经验とか加算
+CALL COM_EXP(5)
+
+;依赖度ベクトル
+TFLAG:33 = 3
+
+;依赖度補正値(恋慕・服从で1、相亲相爱・隶属で2）
+IF TALENT:3 || TALENT:5
+	TFLAG:30 += 1
+ELSEIF TALENT:6 || TALENT:8
+	TFLAG:30 += 2
+ENDIF
+
+
+RETURN 1
+

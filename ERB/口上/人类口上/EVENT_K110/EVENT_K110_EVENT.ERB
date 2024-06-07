@@ -1,0 +1,388 @@
+﻿;-------------------------------------------------
+;イベント口上集 CFLAG 261～299を使用
+;-------------------------------------------------
+@KOJO_MESSAGE_EVENT_K10
+;書きかえたい場所の「（基本の地の文を显示）」を消して変えてもいいです
+;表示される基本の地の文はEVENT_M_EVENT.ERB、を参照して下さい
+;TFLAG:13に入ってる数字イコール@EVENT_MESSAGE_XXのXXです。
+;まだテンプレが無いイベントの口上を書く場合は最初に　IF TFLAG:13 == XX　というように書いてください
+
+;-------------------------------------------------
+;调教後百合プ雷
+;-------------------------------------------------
+IF TFLAG:13 == 4
+
+	;贞操对和服腰带あり
+	IF TEQUIP:2 == 5
+		;PRINTFORML 
+	ELSE
+		;初めて
+		IF CFLAG:264 == 0
+			;PRINTFORMW 
+			;CFLAG:264 = 1
+		;それ以外
+		ELSEIF CFLAG:264 < 1 || FLAG:7 == 2
+			;PRINTFORMW 
+			;CFLAG:264 = 1
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;强精神药の反動
+;-------------------------------------------------
+IF TFLAG:13 == 6
+
+	IF CFLAG:266 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:266 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;调教後搾乳
+;-------------------------------------------------
+IF TFLAG:13 == 7
+
+	IF CFLAG:267 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:267 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;调教後自慰
+;-------------------------------------------------
+IF TFLAG:13 == 8
+
+	;贞操对和服腰带あり
+	IF TEQUIP:2 == 5
+		;PRINTFORML 
+	ELSE
+		IF CFLAG:268 < 1 || FLAG:7 == 2
+			;PRINTFORMW 
+			;CFLAG:268 = 1
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;黄色のキャンディ使用時
+;-------------------------------------------------
+IF TFLAG:13 == 10
+
+	IF CFLAG:270 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:270 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;怀孕発覚時
+;-------------------------------------------------
+IF TFLAG:13 == 11
+	SIF CFLAG:271 >= 1 && FLAG:7 != 2
+		RETURN 0
+
+	;PRINTFORMW 
+	;CFLAG:271 = 1
+ENDIF
+
+;-------------------------------------------------
+;分娩時
+;-------------------------------------------------
+IF TFLAG:13 == 12
+
+	IF CFLAG:272 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:272 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;育児室
+;-------------------------------------------------
+IF TFLAG:13 == 13
+
+	;分娩前
+	IF TALENT:153
+		IF CFLAG:273 < 1 || FLAG:7 == 2
+			;PRINTFORMW 
+			;CFLAG:273 = 1
+		ENDIF
+	;分娩後
+	ELSE
+		IF CFLAG:273 < 3 || FLAG:7 == 2
+			;PRINTFORMW 
+			;CFLAG:273 = 3
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;親離れ時
+;-------------------------------------------------
+IF TFLAG:13 == 14
+
+	IF CFLAG:274 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:274 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;拍卖時
+;-------------------------------------------------
+IF TFLAG:13 == 18
+    PRINTL
+    PRINTL
+    PRINTL
+	;反抗刻印Lv3
+	IF MARK:3 == 3
+		PRINTFORMW 「就凭%CSTR:1%也想让%CSTR:0%臣服，做梦去吧」
+		PRINTFORMW %CALLNAME:TARGET%哼了一声，扭头就走
+	;それ以外
+	ELSE
+		IF TALENT:病娇
+            PRINTFORMW 「%MASTERNAME%已经不想再见到%CSTR:0%了吗？」
+            PRINTFORMW %CALLNAME:TARGET%哭丧着脸，扑过来死死抱住%CALLNAME:MASTER%的手臂
+            PRINTFORMW 「绝不放手，从喜欢上%MASTERNAME%的一刻就决定要赖上一辈子了，休想用这种方式甩掉%CSTR:0%！」
+            PRINTFORMW 把%CALLNAME:TARGET%的手指一根根掰开费了不少力气，随后命人将\@ MALE(TARGET) ? 他 # 她 \@拖走
+            PRINTFORMW 「不，不…不不不不不不！！%MASTERNAME%！！！」
+            PRINTFORMW 「放开%CSTR:0%，让%CSTR:0%回去，你们根本没有资格碰%CSTR:0%，%CSTR:0%是%MASTERNAME%的恋人…！」
+            PRINTFORMW 警卫们只是完成自己的工作，当然不会在乎%CALLNAME:TARGET%说的是什么
+            PRINTFORMW 下命令的是%CALLNAME:MASTER%，就已经说明那位大人的态度了
+            PRINTFORMW 「%MASTERNAME%…%MASTERNAME%……%MASTERNAME%%MASTERNAME%%MASTERNAME%%MASTERNAME%………」
+            PRINTFORMW %CALLNAME:TARGET%的身影逐渐消失，唯有\@ MALE(TARGET) ? 他 # 她 \@病态的呐喊回荡在走廊里
+            PRINTFORML ………………
+            PRINTFORML …………
+            PRINTFORMW ……
+            PRINTFORMW 那之后听说%CALLNAME:TARGET%遇到了极为可怕的主人，无论\@ MALE(TARGET) ? 他 # 她 \@怎样撒娇都不会动容，反而愈加严厉
+            PRINTFORMW %CALLNAME:TARGET%每天都活在恐慌之中，一见到外人就瑟瑟发抖的模样令\@ MALE(TARGET) ? 他 # 她 \@的主人倍感无趣
+            PRINTFORMW 没过多久，%CALLNAME:TARGET%被退回了商会，然而下面的情况太过惨烈，多半是不能再用了
+            PRINTFORMW %CALLNAME:TARGET%沦落到在暗巷用嘴给混混们服务
+            PRINTFORMW 也不是没有揭开\@ MALE(TARGET) ? 他 # 她 \@的衣服想用下面的人，但看到那里的情形，无一例外全都打消了念头
+            PRINTFORMW 再后来，已经听不到关于%CALLNAME:TARGET%的消息了
+        ELSEIF TALENT:幼稚
+            IF TALENT:恋慕 || TALENT:相亲相爱
+                PRINTFORMW 「临走前可以吻%CSTR:0%一下吗？」
+                PRINTFORMW 「嘿嘿，大满足～♪  那%CSTR:0%去去就回噢！」
+            ELSEIF TALENT:淫乱 || TALENT:娼妇
+                PRINTFORMW 「啾%UNICODE(0x2661) *1%…离别之吻%UNICODE(0x2661) *1%」
+                PRINTFORMW 「要常来看%CSTR:0%啊，%MASTERNAME%！」
+            ELSEIF TALENT:服从 || TALENT:隶属
+                PRINTFORMW 「正好有想买来送给%MASTERNAME%的东西♪」
+            ELSE
+                PRINTFORMW 「成天在屋子里闷死了，快，快带%CSTR:0%出去吧」
+            ENDIF
+            PRINTFORMW %CALLNAME:TARGET%像是期待着什么一样，自觉跟商人走了
+        ELSEIF TALENT:崩溃 || TALENT:疯癫
+        	PRINTFORMW 「不行哦，随便把%CSTR:0%带走的话，%MASTERNAME%找不到会着急的」
+        	PRINTFORMW 「%MASTERNAME%已经同意了？骗人，怎么可能，不要说这种一听就是谎言的谎话」
+        	PRINTFORMW 「一群蠢货，%CSTR:0%才不会上当呢」
+        	PRINTFORMW 「你们根本不知道%MASTERNAME%有多么喜欢%CSTR:0%」
+        	PRINTFORMW 「每天晚上没有%CSTR:0%的陪伴，%MASTERNAME%都睡不着觉」
+        	PRINTFORMW 「而且%MASTERNAME%说过%CSTR:0%是这里最可爱的」
+        	PRINTFORMW 「下次就算要骗，也请想个机智点的说辞」
+        	PRINTFORMW 跟精神有问题的%CALLNAME:TARGET%解释也没有意义，商人让警卫们强行把\@ MALE(TARGET) ? 他 # 她 \@拖走了
+        ELSEIF TALENT:恋慕 || TALENT:相亲相爱
+            PRINTFORMW 「讨厌…讨厌！%CSTR:0%才不要去服侍%MASTERNAME%以外的人！」
+            PRINTFORML %CALLNAME:TARGET%把靠近自己的警卫都赶开了
+            PRINTFORMW 然后朝%PLAYER_NAME()%投来可怜兮兮的眼神
+            PRINTFORMW 「%MASTERNAME%…真的不要%CSTR:0%了吗？」
+            PRINTFORMW 迟迟没有得到答复，%CALLNAME:TARGET%的脸色渐渐灰败
+            PRINTFORMW 「哈哈，看来是%CSTR:0%太任性了…」
+            PRINTFORMW 「明明已经招%MASTERNAME%厌烦了，还自满地以为自己是%MASTERNAME%最喜欢的那个」
+            PRINTFORMW 「%CSTR:0%真是个…彻头彻尾的大笨蛋啊…」
+            PRINTFORML 说罢%CALLNAME:TARGET%突然冲到%PLAYER_NAME()%面前
+            PRINTFORMW 重重地亲了一下%PLAYER_NAME()%的唇
+            PRINTFORMW 「…这是最后一次的任性。往后就两不相欠了」
+            PRINTFORMW %CALLNAME:TARGET%笑嘻嘻地抽离身子，步履轻快地跟着商人走了
+        ELSEIF TALENT:服从 || TALENT:隶属
+            PRINTFORMW 「见不到%CSTR:3%，%CSTR:0%会很寂寞的啊…」
+            PRINTFORMW 「不知道要怎样才能让新主人满足%CSTR:0%的要求，好烦恼啊」
+            PRINTFORMW %CALLNAME:TARGET%撇了撇嘴，跟着商人离开了
+        ELSEIF TALENT:淫乱 || TALENT:娼妇
+            PRINTFORMW 「哎～要去侍奉%CSTR:3%以外的人吗～%CSTR:0%才不要呢…」
+            PRINTFORMW 「以上，是骗人的哦%UNICODE(0x2661) *1%」
+            PRINTFORMW 「早就想尝尝其他主人的滋味了，是更加粗暴，还是更加背德呢？」
+            PRINTFORMW 「不过可以肯定的是，一定不会像%MASTERNAME%那样…让%CSTR:0%喜欢得要命…」
+            PRINTFORMW 到最后也不知%CALLNAME:TARGET%说的是真是假，只能目送着\@ MALE(TARGET) ? 他 # 她 \@笑嘻嘻地跟人离去
+        ELSE
+            PRINTFORMW 「要换别的主人…不，不要，好可怕……」
+            PRINTFORMW 「已经不想遭遇这种事了，为什么不能放过%CSTR:0%…」
+            PRINTFORMW %CALLNAME:TARGET%一脸恐慌，被商人强行拖走了
+        ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;ビデオ拍卖時
+;-------------------------------------------------
+IF TFLAG:13 == 19
+
+	IF CFLAG:278 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:278 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;衣服变更時 CFLAG:283（を適当に適用） 
+;T:A = Y　　　　着脱する衣服を限定する時
+;A = X　　　　　着脱部位全体を示す時
+;TEQUIP:A = Y　 今何を着ているか（着てない場合は0）
+;を組み合わせます。分かりにくくてスマン。
+;-------------------------------------------------
+IF TFLAG:13 == 25
+
+	;脱がしたときの口上
+	IF  Y == 0 && CFLAG:283 == 0 || FLAG:7 == 2
+		;贞操带取下
+		IF A == 2 && T:2 == 5
+			;PRINTFORMW 
+		;贞操带以外の下着取下
+		ELSEIF A == 2
+			;PRINTFORMW 
+		ENDIF
+		;CFLAG:283 = 1
+	;着せた時の口上
+	ELSEIF CFLAG:283 < 2 || FLAG:7 == 2
+		;女装：男性キャラ
+		IF (TALENT:137 || TALENT:140) && (T:1 == 4 || T:1 == 6 || T:2 == 1 || T:2 == 4 || T:2 == 6 || T:3 == 1 || T:3 == 2 || T:4 == 1 || T:4 == 6 || T:6 == 2 || T:6 == 3 || T:6 == 4 || T:6 == 6 || T:6 == 9 || T:6 == 10 || T:9 == 9)
+			;PRINTFORML 
+		ENDIF
+		;贞操带施錠
+		IF T:2 == 5
+			;PRINTFORML 
+		ENDIF
+		;CFLAG:283 = 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;朝料理イベント時 CFLAG:284 を、使用できるように確保してみる
+;書きかえたい場所の「」を消してごっそり変えてもいいかも
+;表示される基本の地の文はEVENT_M.ERBを参照にして下さい
+;-------------------------------------------------
+IF TFLAG:13 == 26
+	;最初から弁当を食べる時
+	IF K == 1
+
+		PRINTFORM 
+	;売るのをやめて食べる時
+	ELSEIF K == 2
+
+		PRINTFORM 
+	;主人が弁当を作るとき
+	ELSEIF K == 3
+
+		PRINTFORM 
+	;食後の運動(性的な意味で)直前
+	ELSEIF K == 4
+
+		PRINTFORM 
+	;毒を盛られた
+	ELSEIF K == 5
+
+		PRINTFORM 
+	;毒を見抜いたので弱みを握るイベント（相性のいい子に食べさせるver）
+	ELSEIF K == 6
+
+		PRINTFORM 
+	;毒を見抜いたので弱みを握るイベント（問い詰めるver）
+	ELSEIF K == 7
+
+		PRINTFORM 
+	;毒殺された
+	ELSEIF K == 8
+
+		PRINTFORM 
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_ENDING関係
+;-------------------------------------------------
+;-------------------------------------------------
+;条件设定
+;-------------------------------------------------
+@EVENTTURNEND
+#LATER
+SIF TARGET < 0
+	RETURN 0
+;キャラ性格が10でないと駄目
+SIF CFLAG:600 != 10
+	RETURN 0
+;特殊ハーレムエンド用条件判定構文
+;XX内に条件とするキャラの性格タイプ番号を入れてXXXにキャラ数を入れると、好きな組み合わせのハーレムエンドを设定できる
+;ハーレムエンドの条件を満たしたとき、ここの特殊ハーレムエンドの条件も満たしている場合、ハーレムエンドから派生する
+;A = 0
+;B = 0
+;REPEAT CHARANUM
+;	IF NO:COUNT == XX || NO:COUNT == XX || NO:COUNT == XX || NO:COUNT == XX || NO:COUNT == XX
+;		SIF TALENT:COUNT:6 || TALENT:COUNT:7 || TALENT:COUNT:8
+;			A += 1
+;		SIF TALENT:COUNT:3 || TALENT:COUNT:4 || TALENT:COUNT:5 || TALENT:COUNT:6 || TALENT:COUNT:7 || TALENT:COUNT:8
+;			B += 1
+;	ENDIF
+;REND
+;SIF A && A+B >= XXX
+;	CFLAG:21 = 2
+;単体エンド用分岐フラグ、単体エンドのある进阶素质のみコメントアウトを解除する
+;SIF TALENT:相亲相爱
+;	CFLAG:21 = 1
+;SIF TALENT:娼妇
+;	CFLAG:21 = 1
+;SIF TALENT:隶属
+;	CFLAG:21 = 1
+;-------------------------------------------------
+;エンド本文
+;-------------------------------------------------
+@KOJO_MESSAGE_ENDING_K10
+;恋慕単体エンド
+;IF TALENT:相亲相爱 && CFLAG:21 == 1
+	;DRAWLINE
+	;PRINTFORMW …………
+	;PRINTFORMW ………
+	;PRINTFORMW ……
+	;PRINTFORMW 
+
+	;PRINTFORMW 
+	;PRINTFORMW 　　　　　　　　―― Ending No.111A (○○エンド)
+;淫乱単体エンド
+;ELSEIF TALENT:娼妇 && CFLAG:21 == 1
+	;DRAWLINE
+	;PRINTFORMW …………
+	;PRINTFORMW ………
+	;PRINTFORMW ……
+	;PRINTFORMW 
+
+	;PRINTFORMW 
+	;PRINTFORMW 　　　　　　　　―― Ending No.111B (○○エンド)
+;服从単体エンド
+;ELSEIF TALENT:隶属 && CFLAG:21 == 1
+	;DRAWLINE
+	;PRINTFORMW …………
+	;PRINTFORMW ………
+	;PRINTFORMW ……
+	;PRINTFORMW 
+
+	;PRINTFORMW 
+	;PRINTFORMW 　　　　　　　　―― Ending No.111C (○○エンド)
+;ENDIF
+
+;特殊ハーレムエンド
+;IF CFLAG:21 == 2
+	;DRAWLINE
+	;PRINTFORMW …………
+	;PRINTFORMW ………
+	;PRINTFORMW ……
+	;PRINTFORMW 
+
+	;PRINTFORMW 
+	;PRINTFORMW 　　　　　　　　―― Ending No.2X2 (○○エンド)
+;ENDIF
+
+;CALL GAME_CONTINUE
+;RETURN 0

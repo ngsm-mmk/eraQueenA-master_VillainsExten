@@ -1,0 +1,745 @@
+﻿@SLAVE_CUSTOM_GAIKEN_TOKUCHO
+
+$INPUT_LOOP_GAIKEN
+CALL KAIGYO
+PRINTFORML %NAME%有什么外表上的鲜明特征吗？
+PRINTL （○＝有  ×＝没有）
+PRINT [306] 
+IF TALENT:长发
+	PRINT ○ 
+ELSE
+	PRINT × 
+ENDIF
+PRINTL 头发很长
+
+PRINT [309] 
+IF TALENT:呆毛
+	PRINT ○ 
+ELSE
+	PRINT × 
+ENDIF
+PRINTL 有呆毛
+
+PRINT [308] 
+IF TALENT:眼镜
+	PRINT ○ 
+ELSE
+	PRINT × 
+ENDIF
+PRINTL 戴着眼镜
+
+PRINT [307] 
+IF TALENT:白肤
+	PRINT ○ 
+ELSE
+	PRINT × 
+ENDIF
+PRINTL 肤色白皙
+
+PRINT [312] 
+IF TALENT:黑皮
+	PRINT ○ 
+ELSE
+	PRINT × 
+ENDIF
+PRINTL 肤色很深
+
+PRINT [310] 
+IF TALENT:美人
+	PRINT ○ 
+ELSE
+	PRINT × 
+ENDIF
+PRINTL 是纤细的美人
+
+PRINT [311] 
+IF TALENT:伪娘
+	PRINT ○ 
+ELSE
+	PRINT × 
+ENDIF
+PRINTL 虽然性别男但外貌是女性
+
+PRINTL [100] ■设定完毕■ 
+
+INPUT
+IF RESULT == 100
+ELSEIF RESULT >= 306 && RESULT <= 312
+	TALENT:RESULT = !TALENT:RESULT
+	GOTO INPUT_LOOP_GAIKEN
+ELSE
+	GOTO INPUT_LOOP_GAIKEN
+ENDIF
+
+
+$INPUT_LOOP_TOKUCHO
+CALL KAIGYO
+PRINTFORML 还有别的性格特征吗？
+PRINTL （○＝有  ×＝没有）
+
+PRINT [317] 
+IF TALENT:喜欢读书
+	PRINT ○ 
+ELSE
+	PRINT × 
+ENDIF
+PRINTL 喜欢读书
+
+PRINT [318] 
+IF TALENT:喜欢运动
+	PRINT ○ 
+ELSE
+	PRINT × 
+ENDIF
+PRINTL 喜欢运动
+
+PRINT [325] 
+IF TALENT:机械迷
+	PRINT ○ 
+ELSE
+	PRINT × 
+ENDIF
+PRINTL 喜欢摆弄机械
+
+PRINT [326] 
+IF TALENT:喜欢花草
+	PRINT ○ 
+ELSE
+	PRINT × 
+ENDIF
+PRINTL 喜欢侍弄花草
+
+PRINT [328] 
+IF TALENT:喜欢扫除
+	PRINT ○ 
+ELSE
+	PRINT × 
+ENDIF
+PRINTL 喜欢扫除
+
+PRINT [319] 
+IF TALENT:美术属性
+	PRINT ○ 
+ELSE
+	PRINT × 
+ENDIF
+PRINTL 从事美术工作
+
+PRINT [320] 
+IF TALENT:音乐属性
+	PRINT ○ 
+ELSE
+	PRINT × 
+ENDIF
+PRINTL 从事音乐工作
+
+PRINT [321] 
+IF TALENT:魔法／占卜属性
+	PRINT ○ 
+ELSE
+	PRINT × 
+ENDIF
+PRINTL 从事魔法、占卜工作
+
+PRINT [322] 
+IF TALENT:化学属性
+	PRINT ○ 
+ELSE
+	PRINT × 
+ENDIF
+PRINTL 从事化学工作
+
+PRINT [323] 
+IF TALENT:理系
+	PRINT ○ 
+ELSE
+	PRINT × 
+ENDIF
+PRINTL 理系人类
+
+PRINT [324] 
+IF TALENT:文系
+	PRINT ○ 
+ELSE
+	PRINT × 
+ENDIF
+PRINTL 文系人类
+
+PRINT [327] 
+IF TALENT:擅长裁缝
+	PRINT ○ 
+ELSE
+	PRINT × 
+ENDIF
+PRINTL 擅长缝纫
+
+
+PRINT [329] 
+IF TALENT:说教癖
+	PRINT ○ 
+ELSE
+	PRINT × 
+ENDIF
+PRINTL 有说教癖
+
+
+PRINT [330] 
+IF TALENT:信仰虔诚
+	PRINT ○ 
+ELSE
+	PRINT × 
+ENDIF
+PRINTL 有很深的信仰
+
+PRINT [331] 
+IF TALENT:冒冒失失
+	PRINT ○ 
+ELSE
+	PRINT × 
+ENDIF
+PRINTL 莽撞轻率
+
+PRINT [334] 
+IF TALENT:绅士
+	PRINT ○ 
+ELSE
+	PRINT × 
+ENDIF
+PRINTL 对女性很温柔的绅士
+
+PRINT [335] 
+IF TALENT:嫉妒心
+	PRINT ○ 
+ELSE
+	PRINT × 
+ENDIF
+PRINTL 比较难搞的性格
+
+PRINT [336] 
+IF TALENT:情绪不安定
+	PRINT ○ 
+ELSE
+	PRINT × 
+ENDIF
+PRINTL 情绪不安定，精神容易出问题
+
+PRINTL [100] ■设定完毕■ 
+
+INPUT
+IF RESULT == 100
+ELSEIF (RESULT >= 317 && RESULT <= 331) || (RESULT >= 334 && RESULT <= 336)
+	TALENT:RESULT = !TALENT:RESULT
+	GOTO INPUT_LOOP_TOKUCHO
+ELSE
+	GOTO INPUT_LOOP_TOKUCHO
+ENDIF
+
+
+IF TALENT:喜欢运动
+	$INPUTS_LOOP_SPORTS
+	CALL KAIGYO
+	PRINTFORML %NAME%是喜欢运动的类型，那么他特别喜欢、擅长的体育运动是什么呢？
+	PRINTL 
+	PRINTL [11] 网球
+	PRINTL [12] 篮球
+	PRINTL [13] 足球
+	PRINTL [14] 芭蕾
+	PRINTL [15] 棒球
+	PRINTL [16] 柔道
+	PRINTL [17] 空手道
+	PRINTL [18] 弓道
+	PRINTL [19] 舞蹈
+	PRINTL [20] --输入其他体育运动--
+	PRINTL [99] 全都喜欢（没有特别擅长的）
+	INPUT
+	SELECTCASE RESULT
+		CASE 11
+			CSTR:11 = 网球
+		CASE 12
+			CSTR:11 = 篮球
+		CASE 13
+			CSTR:11 = 足球
+		CASE 14
+			CSTR:11 = 芭蕾
+		CASE 15
+			CSTR:11 = 棒球
+		CASE 16
+			CSTR:11 = 柔道
+		CASE 17
+			CSTR:11 = 空手道
+		CASE 18
+			CSTR:11 = 弓道
+		CASE 19
+			CSTR:11 = 舞蹈
+		CASE 20
+			INPUTS
+			CSTR:11 = %RESULTS%
+	ENDSELECT
+	IF RESULT != 99 && RESULT >= 11 && RESULT <= 20
+		PRINTFORML 「%CSTR:11%」这样可以吗？
+		PRINTL
+		PRINTL [0] 是
+		PRINTL [1] 否
+		$INPUT_LOOP_SPORTS2
+		INPUT
+		SIF RESULT != 0 && RESULT != 1
+			GOTO INPUT_LOOP_SPORTS2
+		SIF RESULT == 1
+			GOTO INPUTS_LOOP_SPORTS
+	ELSEIF RESULT == 99
+		CSTR:11 = 
+	ELSE
+		GOTO INPUTS_LOOP_SPORTS
+	ENDIF
+ENDIF
+
+
+IF TALENT:美术属性
+	$INPUTS_LOOP_ART
+	CALL KAIGYO
+	PRINTFORML %NAME%从事美术工作，那么他特别喜欢、擅长的美术技能是什么呢？
+	PRINTL 
+	PRINTL [11] 绘画
+	PRINTL [12] 雕刻
+	PRINTL [13] 书法
+	PRINTL [14] 水墨画
+	PRINTL [15] 建筑
+	PRINTL [16] 工艺
+	PRINTL [17] 摄影
+	PRINTL [18] 漫画
+	PRINTL [20] --输入其他美术技能--
+	PRINTL [99] 全都喜欢（没有特别擅长的）
+	INPUT
+	SELECTCASE RESULT
+		CASE 11
+			CSTR:12 = 绘画
+		CASE 12
+			CSTR:12 = 雕刻
+		CASE 13
+			CSTR:12 = 书法
+		CASE 14
+			CSTR:12 = 水墨画
+		CASE 15
+			CSTR:12 = 建筑
+		CASE 16
+			CSTR:12 = 工艺
+		CASE 17
+			CSTR:12 = 摄影
+			ABL:摄影技能 = 2
+			EXP:摄影经验 = 20
+		CASE 18
+			CSTR:12 = 漫画
+		CASE 20
+			INPUTS
+			CSTR:12 = %RESULTS%
+	ENDSELECT
+	IF RESULT != 99 && ((RESULT >= 11 && RESULT <= 18) || RESULT == 20)
+		PRINTFORML 「%CSTR:12%」这样可以吗？
+		PRINTL
+		PRINTL [0] 是
+		PRINTL [1] 否
+		$INPUT_LOOP_ART2
+		INPUT
+		SIF RESULT != 0 && RESULT != 1
+			GOTO INPUT_LOOP_ART2
+		IF RESULT == 1
+			ABL:摄影技能 = 0
+			EXP:摄影经验 = 0
+			GOTO INPUTS_LOOP_ART
+		ENDIF
+	ELSEIF RESULT == 99
+		CSTR:12 = 
+	ELSE
+		GOTO INPUTS_LOOP_ART
+	ENDIF
+ENDIF
+
+IF TALENT:音乐属性
+	CALL KAIGYO
+	PRINTFORML %NAME%从事音乐工作，那他擅长唱歌吗？
+	PRINTL
+	PRINTL [0] 擅长
+	PRINTL [1] 不擅长，好像并不喜欢
+	$INPUT_LOOP_UTA
+	INPUT
+	SIF RESULT != 0 && RESULT != 1
+		GOTO INPUT_LOOP_UTA
+	IF RESULT == 0
+		TALENT:擅长歌唱 = 1
+		EXP:歌唱经验 = 20
+		ABL:歌唱技能 = 2
+	ELSEIF RESULT == 1
+		TALENT:擅长歌唱 = 0
+	ENDIF
+	$INPUT_LOOP_MUSIC
+	CALL KAIGYO
+	PRINTFORML %NAME%有特别喜欢和擅长的乐器吗？
+	PRINTL 
+	PRINTL [11] 钢琴
+	PRINTL [12] 吉他
+	PRINTL [13] 小提琴
+	PRINTL [14] 琵琶
+	PRINTL [15] 二胡
+	PRINTL [16] 萧
+	PRINTL [17] 萨克斯
+	PRINTL [18] 竖笛
+	PRINTL [20] --输入其他乐器名--
+	PRINTL [99] 全都喜欢（没有特别擅长的）
+	INPUT
+	SELECTCASE RESULT
+		CASE 11
+			CSTR:13 = 钢琴
+		CASE 12
+			CSTR:13 = 吉他
+		CASE 13
+			CSTR:13 = 小提琴
+		CASE 14
+			CSTR:13 = 琵琶
+		CASE 15
+			CSTR:13 = 二胡
+		CASE 16
+			CSTR:13 = 萧
+		CASE 17
+			CSTR:13 = 萨克斯
+		CASE 18
+			CSTR:13 = 竖笛
+		CASE 20
+			PRINTL ＜请输入乐器的名称＞
+			INPUTS
+			CSTR:13 = %RESULTS%
+	ENDSELECT
+	IF RESULT != 99 && ((RESULT >= 11 && RESULT <= 13) || RESULT == 20)
+		PRINTFORML 「%CSTR:13%」这样可以吗？
+		PRINTL
+		PRINTL [0] 是
+		PRINTL [1] 否
+		$INPUT_LOOP_MUSIC2
+		INPUT
+		SIF RESULT != 0 && RESULT != 1
+			GOTO INPUT_LOOP_MUSIC2
+		SIF RESULT == 1
+			GOTO INPUT_LOOP_MUSIC
+	ELSEIF RESULT == 99
+		CSTR:13 = 
+	ELSE
+		GOTO INPUT_LOOP_MUSIC
+	ENDIF
+ENDIF
+
+;相性の初期値
+REPEAT CHARANUM
+	RELATION:(NO:COUNT) = 100
+	RELATION:COUNT:(NO:TARGET) = 100
+REND
+
+IF CHARANUM > 2
+	;関係设定
+	REPEAT 30
+		PRINTL
+	REND
+	PRINTFORML %NAME%与已在家中的奴隶有什么关系吗？
+	;現在のページを示す
+	LOCAL:1 = 1
+	;最大ページ数を示す
+	LOCAL:2 = (CHARANUM / 10) + 1
+	$INPUT_LOOP_KANKEI
+	REPEAT CHARANUM - 1
+		SIF COUNT != 0 && COUNT >= (LOCAL:1*10 - 9) && COUNT <= (LOCAL:1*10) && CFLAG:(NO:COUNT + 2000) == 0 && CFLAG:COUNT:(NO:TARGET + 2000) == 0
+			PRINTFORML 和[{COUNT,2}] %NAME:COUNT%有关系
+	REND
+	PRINTLC [1000] 没有什么特别的
+	IF LOCAL:2 >= 2
+		PRINTFORML ＜page.{LOCAL:1}/{LOCAL:2}＞
+		DRAWLINE
+		PRINTFORMLC \@(LOCAL:1 <= 1) ? %" " * 16% # [1001]上一页\@
+		PRINTFORMLC \@(LOCAL:1 >= LOCAL:2) ? %" " * 16% # [1009]下一页\@
+	ENDIF
+	
+	INPUT
+	IF RESULT == 1000
+	ELSEIF RESULT == 1001 && LOCAL:1 > 1
+		LOCAL:1 -= 1
+		GOTO INPUT_LOOP_KANKEI
+	ELSEIF RESULT == 1009 && LOCAL:1 < LOCAL:2
+		LOCAL:1 += 1
+		GOTO INPUT_LOOP_KANKEI
+	ELSEIF RESULT >= 1 && RESULT < CHARANUM
+		B = RESULT
+		PRINTFORML %NAME:B%是%NAME%的……
+		PRINT [20] 仅只是认识的人
+		PRINTL   [19] 朋友
+		PRINT [ 1] 哥哥            
+		PRINTL [ 2] 弟弟
+		PRINT [ 5] 父亲            
+		PRINTL [ 7] 儿子
+		PRINT [ 9] 家人            
+		PRINTL [21] 竹马
+		PRINT [25] 同事            
+		PRINTL [26] 社团伙伴
+		PRINT [27] 同僚            
+		PRINTL [28] 同学
+		PRINT [11] 前辈            
+		PRINTL [12] 后辈
+		PRINT [13] 上司            
+		PRINTL [14] 部下
+		PRINT [15] 老师            
+		PRINTL [16] 学生
+		PRINT [17] 师父            
+		PRINTL [18] 徒弟
+		PRINT [23] 主人            
+		PRINTL [24] 仆从
+		PRINTL [10] 同一人物
+		PRINTL [29] 两人是恋人
+		PRINTFORML [22] %NAME%对%NAME:B%单相思中
+		PRINTFORML [98] %NAME:B%对%NAME%单相思中
+		INPUT
+		IF RESULT >= 1 && RESULT <= 29 || RESULT == 98
+			SELECTCASE RESULT
+				CASE 1
+					CFLAG:(NO:B + 2000) = 1
+					CFLAG:B:(NO:TARGET + 2000) = 2
+					PRINTFORML %NAME:B%是%NAME%的哥哥
+				CASE 2
+					CFLAG:(NO:B + 2000) = 2
+					CFLAG:B:(NO:TARGET + 2000) = 1
+					PRINTFORML %NAME:B%是%NAME%的弟弟
+				CASE 5
+					CFLAG:(NO:B + 2000) = 5
+					CFLAG:B:(NO:TARGET + 2000) = 7
+					PRINTFORML %NAME:B%是%NAME%的父亲
+				CASE 7
+					CFLAG:(NO:B + 2000) = 7
+					CFLAG:B:(NO:TARGET + 2000) = 5
+					PRINTFORML %NAME:B%是%NAME%的儿子
+				CASE 9
+					CFLAG:(NO:B + 2000) = 9
+					CFLAG:B:(NO:TARGET + 2000) = 9
+					PRINTFORML %NAME:B%是%NAME%的家人
+				CASE 10
+					CFLAG:(NO:B + 2000) = 10
+					CFLAG:B:(NO:TARGET + 2000) = 10
+					PRINTFORML %NAME:B%和%NAME%是同一个人
+				CASE 11
+					CFLAG:(NO:B + 2000) = 11
+					CFLAG:B:(NO:TARGET + 2000) = 12
+					PRINTFORML %NAME:B%是%NAME%的前辈
+				CASE 12
+					CFLAG:(NO:B + 2000) = 12
+					CFLAG:B:(NO:TARGET + 2000) = 11
+					PRINTFORML %NAME:B%是%NAME%的后辈
+				CASE 13
+					CFLAG:(NO:B + 2000) = 13
+					CFLAG:B:(NO:TARGET + 2000) = 14
+					PRINTFORML %NAME:B%是%NAME%的上司
+				CASE 14
+					CFLAG:(NO:B + 2000) = 14
+					CFLAG:B:(NO:TARGET + 2000) = 13
+					PRINTFORML %NAME:B%是%NAME%的部下
+				CASE 15
+					CFLAG:(NO:B + 2000) = 15
+					CFLAG:B:(NO:TARGET + 2000) = 16
+					PRINTFORML %NAME:B%是%NAME%的老师
+				CASE 16
+					CFLAG:(NO:B + 2000) = 16
+					CFLAG:B:(NO:TARGET + 2000) = 15
+					PRINTFORML %NAME:B%是%NAME%的学生
+				CASE 17
+					CFLAG:(NO:B + 2000) = 17
+					CFLAG:B:(NO:TARGET + 2000) = 18
+					PRINTFORML %NAME:B%是%NAME%的师父
+				CASE 18
+					CFLAG:(NO:B + 2000) = 18
+					CFLAG:B:(NO:TARGET + 2000) = 17
+					PRINTFORML %NAME:B%是%NAME%的徒弟
+				CASE 19
+					CFLAG:(NO:B + 2000) = 19
+					CFLAG:B:(NO:TARGET + 2000) = 19
+					PRINTFORML %NAME:B%和%NAME%是朋友
+				CASE 20
+					CFLAG:(NO:B + 2000) = 20
+					CFLAG:B:(NO:TARGET + 2000) = 20
+					PRINTFORML %NAME:B%和%NAME%仅只是认识而已
+				CASE 21
+					CFLAG:(NO:B + 2000) = 21
+					CFLAG:B:(NO:TARGET + 2000) = 21
+					PRINTFORML %NAME:B%和%NAME%是竹马
+				CASE 22
+					CFLAG:(NO:B + 2000) = 22
+					PRINTFORML %NAME:B%是%NAME%单相思的对象
+				CASE 23
+					CFLAG:(NO:B + 2000) = 23
+					CFLAG:B:(NO:TARGET + 2000) = 24
+					PRINTFORML %NAME:B%是%NAME%的主人
+				CASE 24
+					CFLAG:(NO:B + 2000) = 24
+					CFLAG:B:(NO:TARGET + 2000) = 23
+					PRINTFORML %NAME:B%是%NAME%的仆从
+				CASE 25
+					CFLAG:(NO:B + 2000) = 25
+					CFLAG:B:(NO:TARGET + 2000) = 25
+					PRINTFORML %NAME:B%和%NAME%是同事
+				CASE 26
+					CFLAG:(NO:B + 2000) = 26
+					CFLAG:B:(NO:TARGET + 2000) = 26
+					PRINTFORML %NAME:B%和%NAME%是社团伙伴
+				CASE 27
+					CFLAG:(NO:B + 2000) = 27
+					CFLAG:B:(NO:TARGET + 2000) = 27
+					PRINTFORML %NAME:B%和%NAME%是同僚
+				CASE 28
+					CFLAG:(NO:B + 2000) = 28
+					CFLAG:B:(NO:TARGET + 2000) = 28
+					PRINTFORML %NAME:B%和%NAME%是同学
+				CASE 98
+					CFLAG:B:(NO:TARGET + 2000) = 22
+					PRINTFORML %NAME%是%NAME:B%单相思的对象
+				CASE 29
+					CFLAG:(NO:B + 2000) = 29
+					CFLAG:B:(NO:TARGET + 2000) = 29
+					PRINTFORML %NAME%和%NAME:B%是恋人
+			ENDSELECT
+			PRINTL 这样可以吗？
+			PRINTL [0] 是
+			PRINTL [1] 否
+			$INPUT_LOOP_KANKEI2
+			INPUT
+			SIF RESULT != 0 && RESULT != 1
+				GOTO INPUT_LOOP_KANKEI2
+			IF RESULT == 1
+				CFLAG:(NO:B + 2000) = 0
+				CFLAG:B:(NO:TARGET + 2000) = 0
+				RELATION:(NO:B) = 100
+				RELATION:B:(NO:TARGET) = 100
+				GOTO INPUT_LOOP_KANKEI
+			ELSEIF RESULT == 0
+				;家族関係は状态で表示されるため、ここで色々記録
+				IF CFLAG:(NO:B + 2000) == 1
+					IF STRLENS(CSTR:33)
+						CSTR:33 = %CSTR:33%、%NAME:B%
+					ELSE
+						CSTR:33 = %NAME:B%
+					ENDIF
+					IF STRLENS(CSTR:B:34)
+						CSTR:B:34 = %CSTR:B:34%、%NAME%
+					ELSE
+						CSTR:B:34 = %NAME%
+					ENDIF
+				ELSEIF CFLAG:B:(NO:TARGET + 2000) == 2
+					IF STRLENS(CSTR:34)
+						CSTR:34 = %CSTR:34%、%NAME:B%
+					ELSE
+						CSTR:34 = %NAME:B%
+					ENDIF
+					IF STRLENS(CSTR:B:33)
+						CSTR:B:33 = %CSTR:B:33%、%NAME%
+					ELSE
+						CSTR:B:33 = %NAME%
+					ENDIF
+				ELSEIF CFLAG:(NO:B + 2000) == 5
+					IF STRLENS(CSTR:32)
+						CSTR:32 = %CSTR:32%、%NAME:B%
+					ELSE
+						CSTR:32 = %NAME:B%
+					ENDIF
+					IF STRLENS(CSTR:B:30)
+						CSTR:B:30 = %CSTR:B:30%、%NAME%
+					ELSE
+						CSTR:B:30 = %NAME%
+					ENDIF				
+				ELSEIF CFLAG:(NO:B + 2000) == 7
+					IF STRLENS(CSTR:30)
+						CSTR:30 = %CSTR:30%、%NAME:B%
+					ELSE
+						CSTR:30 = %NAME:B%
+					ENDIF
+					IF STRLENS(CSTR:B:32)
+						CSTR:B:32 = %CSTR:B:32%、%NAME%
+					ELSE
+						CSTR:B:32 = %NAME%
+					ENDIF					
+				ENDIF
+				;関係性により初期相性(と同性倾向)を決める。片思いや恋人は130、ほかはカスタム
+				IF CFLAG:(NO:B + 2000) == 22
+					RELATION:(NO:B) = 130
+					RELATION:B:(NO:TARGET) = 100
+					ABL:同性倾向 = 3
+				ELSEIF CFLAG:B:(NO:TARGET + 2000) == 22
+					RELATION:B:(NO:TARGET) = 130
+					RELATION:(NO:B) = 100
+					SIF ABL:B:同性倾向 < 3
+						ABL:B:同性倾向 = 3
+				ELSEIF CFLAG:(NO:B + 2000) == 29
+					RELATION:(NO:B) = 130
+					RELATION:B:(NO:TARGET) = 130
+					ABL:同性倾向 = 3
+					SIF ABL:B:同性倾向 < 3
+						ABL:B:同性倾向 = 3
+				ELSE
+					PRINTL 
+					PRINTL 
+					PRINTFORML %NAME%和%NAME:B%的关系程度是…？
+					PRINTL 
+					PRINTL [1] 不好也不坏
+					PRINTL 
+					PRINTL [2] 关系还不错
+					PRINTL [3] 很要好
+					PRINTL [4] 非常要好
+					PRINTL 
+					PRINTL [5] 有点不合
+					PRINTL [6] 不好相处
+					PRINTL [7] 非常不合
+					$INPUT_LOOP_KANKEI4
+					INPUT
+					IF RESULT == 1
+						RELATION:(NO:B) = 100
+						RELATION:B:(NO:TARGET) = 100
+					ELSEIF RESULT == 2
+						RELATION:(NO:B) = 105
+						RELATION:B:(NO:TARGET) = 105
+					ELSEIF RESULT == 3
+						RELATION:(NO:B) = 110
+						RELATION:B:(NO:TARGET) = 110
+					ELSEIF RESULT == 4
+						RELATION:(NO:B) = 120
+						RELATION:B:(NO:TARGET) = 120
+					ELSEIF RESULT == 5
+						RELATION:(NO:B) = 95
+						RELATION:B:(NO:TARGET) = 95
+					ELSEIF RESULT == 6
+						RELATION:(NO:B) = 90
+						RELATION:B:(NO:TARGET) = 90
+					ELSEIF RESULT == 7
+						RELATION:(NO:B) = 80
+						RELATION:B:(NO:TARGET) = 80
+					ELSE
+						GOTO INPUT_LOOP_KANKEI4
+					ENDIF
+				ENDIF
+			ENDIF
+			IF CHARANUM > 3
+				PRINTL 
+				PRINTL 
+				PRINTFORML 还有其他和%NAME%有关系的奴隶吗？
+				PRINTL [0] 还有
+				PRINTL [1] 没有了
+				$INPUT_LOOP_KANKEI3
+				INPUT
+				SIF RESULT != 0 && RESULT != 1
+					GOTO INPUT_LOOP_KANKEI3
+				IF RESULT == 0
+					PRINTFORML 其他和%NAME%有关系的奴隶是？
+					GOTO INPUT_LOOP_KANKEI
+				ENDIF
+			ENDIF
+		ENDIF
+	ELSE
+		GOTO INPUT_LOOP_KANKEI
+	ENDIF
+ENDIF
+
+
+;改行x30
+@KAIGYO
+REPEAT 30
+	PRINTL 
+REND

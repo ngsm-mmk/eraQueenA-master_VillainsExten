@@ -1,0 +1,369 @@
+﻿;--------------------------------------------------
+;触手玩弄前列腺
+;--------------------------------------------------
+;触手肛からのコンボ的扱い
+@COM303
+PRINTL 触手玩弄前列腺
+STR:0 = 触手玩弄前列腺
+
+
+IF TEQUIP:14 == 3
+	A = 50
+ELSEIF TEQUIP:14 == 2
+	A = 40
+ELSE
+	A = 25
+ENDIF
+
+
+;EXP:触手经验をみる
+IF EXP:55 < EXPLV:1
+	TIMES A , 2.00
+	B = 0
+ELSEIF EXP:55 < EXPLV:2
+	TIMES A , 1.50
+	B = 50
+ELSEIF EXP:55 < EXPLV:3
+	TIMES A , 1.20
+	B = 120
+ELSEIF EXP:55 < EXPLV:4
+	TIMES A , 1.00
+	B = 350
+ELSEIF EXP:55 < EXPLV:5
+	TIMES A , 0.80
+	B = 900
+ELSE
+	TIMES A , 0.60
+	B = 2000
+ENDIF
+
+LOSEBASE:0 += A
+LOSEBASE:1 += A*3
+
+;调教对象が后庭处子だった場合の喪失フラグ
+IF TALENT:161
+	TFLAG:161 = 1
+ENDIF
+;-------------------------------------------------
+;ソースの計算
+;-------------------------------------------------
+C = 1
+
+SOURCE:9 = 200
+SOURCE:10 = 500
+SOURCE:17 = 2000
+
+;ABL:A感覚をみる
+IF ABL:5 == 0
+	SOURCE:2 = 150
+	SOURCE:14 = 100
+ELSEIF ABL:5 == 1
+	SOURCE:2 = 200
+	SOURCE:14 = 180
+ELSEIF ABL:5 == 2
+	SOURCE:2 = 600
+	SOURCE:14 = 250
+ELSEIF ABL:5 == 3
+	SOURCE:2 = 2000
+	SOURCE:14 = 380
+ELSEIF ABL:5 == 4
+	SOURCE:2 = 2600
+	SOURCE:14 = 500
+ELSE
+	SOURCE:2 = 3400
+	SOURCE:14 = 800
+ENDIF
+
+;EXP:A经验をみる
+;处女はありえない
+IF EXP:1 < EXPLV:2
+	TIMES SOURCE:2 , 0.60
+	SOURCE:7 = 100
+ELSEIF EXP:1 < EXPLV:3
+	TIMES SOURCE:2 , 1.00
+	SOURCE:7 = 10
+ELSEIF EXP:1 < EXPLV:4
+	TIMES SOURCE:2 , 1.20
+	SOURCE:7 = 0
+ELSEIF EXP:1 < EXPLV:5
+	TIMES SOURCE:2 , 1.30
+	SOURCE:7 = 0
+ELSE
+	TIMES SOURCE:2 , 1.80
+	SOURCE:7 = 0
+ENDIF
+
+;PALAM:润滑をみる
+IF PALAM:4 < PALAMLV:1
+	TIMES SOURCE:2 , 0.10
+	SOURCE:7 += 1000
+	TIMES SOURCE:7 , 3.00
+ELSEIF PALAM:7 < PALAMLV:2
+	TIMES SOURCE:2 , 0.40
+	SOURCE:7 += 300
+	TIMES SOURCE:7 , 1.00
+ELSEIF PALAM:4 < PALAMLV:3
+	TIMES SOURCE:2 , 1.00
+	TIMES SOURCE:7 , 0.50
+ELSEIF PALAM:4 < PALAMLV:4
+	TIMES SOURCE:2 , 1.40
+	TIMES SOURCE:7 , 0.20
+ELSE
+	TIMES SOURCE:2 , 1.80
+	TIMES SOURCE:7 , 0.10
+ENDIF
+
+;小人体形
+SIF TALENT:142
+	TIMES SOURCE:7 , 2.00
+
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 500
+
+
+;PALAM:情欲をみる
+IF PALAM:6 < PALAMLV:1
+	TIMES SOURCE:2 , 0.60
+	TIMES SOURCE:9 , 0.90
+	TIMES SOURCE:10 , 0.90
+	TIMES SOURCE:18 , 1.80
+ELSEIF PALAM:6 < PALAMLV:2
+	TIMES SOURCE:2 , 0.80
+	TIMES SOURCE:9 , 1.00
+	TIMES SOURCE:10 , 1.00
+	TIMES SOURCE:18 , 1.50
+ELSEIF PALAM:6 < PALAMLV:3
+	TIMES SOURCE:2 , 1.00
+	TIMES SOURCE:9 , 1.10
+	TIMES SOURCE:10 , 1.10
+	TIMES SOURCE:18 , 1.00
+ELSEIF PALAM:6 < PALAMLV:4
+	TIMES SOURCE:2 , 1.20
+	TIMES SOURCE:9 , 1.20
+	TIMES SOURCE:10 , 1.20
+	TIMES SOURCE:18 , 0.60
+ELSE
+	TIMES SOURCE:2 , 1.50
+	TIMES SOURCE:9 , 1.30
+	TIMES SOURCE:10 , 1.30
+	TIMES SOURCE:18 , 0.30
+ENDIF
+
+;A敏感、钝感をみる
+;快A自体のチェックは後でまとめてやる
+IF TALENT:105
+	TIMES SOURCE:7 , 1.50
+	TIMES SOURCE:14 , 1.50
+	TIMES SOURCE:17 , 1.50
+ELSEIF TALENT:106
+	TIMES SOURCE:7 , 0.60
+	TIMES SOURCE:14 , 0.60
+	TIMES SOURCE:17 , 0.60
+ENDIF
+
+SOURCE:5 = B/2
+SOURCE:15 = A*150
+SOURCE:8 = B/4
+
+IF TEQUIP:14 == 2
+	C += 1
+ELSEIF TEQUIP:14 == 3
+	C += 2
+ENDIF
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;触手なら、触手体液がAに付く
+SIF TEQUIP:25
+	STAIN:4 |= 32
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+EXP:1 += C
+PRINTFORML %EXPNAME:1%＋{C}
+觸手 = 1
+
+;触手装着中は依赖度ベクトル強制变更
+;依赖度ベクトル
+TFLAG:33 = 5
+
+;依赖度補正値(服从で1、隶属で2　強制变更なので、これまでの数値を重置）
+IF TALENT:5 && ASSIPLAY == 0
+	TFLAG:30 = 2
+ELSEIF TALENT:8 && ASSIPLAY == 0
+	TFLAG:30 = 4
+ENDIF
+
+CALL KOJO_MESSAGE_COM
+IF TEQUIP:14 == 2
+ELSEIF TEQUIP:14 == 3
+	TEQUIP:14 = 2
+ELSE
+	TEQUIP:14 = 2
+ENDIF
+RETURN 1
+
+;--------------------------------------------------
+;触手插入中(前立腺責め)
+;--------------------------------------------------
+@EQUIP_COM303
+PRINTL ＜触手前列腺责罚中＞
+
+IF TEQUIP:14 == 3
+	A = 25
+ELSEIF TEQUIP:14 == 2
+	A = 20
+ELSE
+	A = 12
+ENDIF
+
+;EXP:触手经验をみる
+IF EXP:55 < EXPLV:1
+	TIMES A , 2.00
+	D = 0
+ELSEIF EXP:55 < EXPLV:2
+	TIMES A , 1.50
+	D = 25
+ELSEIF EXP:55 < EXPLV:3
+	TIMES A , 1.20
+	D = 60
+ELSEIF EXP:55 < EXPLV:4
+	TIMES A , 1.00
+	D = 180
+ELSEIF EXP:55 < EXPLV:5
+	TIMES A , 0.80
+	D = 450
+ELSE
+	TIMES A , 0.60
+	D = 1000
+ENDIF
+
+LOSEBASE:0 += A
+LOSEBASE:1 += A*3
+
+
+;调教对象が后庭处子だった場合の喪失フラグ
+IF TALENT:161
+	TFLAG:161 = 1
+ENDIF
+
+
+;ABL:A感覚をみる
+IF ABL:5 == 0
+	A = 40
+ELSEIF ABL:5 == 1
+	A = 120
+ELSEIF ABL:5 == 2
+	A = 300
+ELSEIF ABL:5 == 3
+	A = 500
+ELSEIF ABL:5 == 4
+	A = 650
+ELSE
+	A = 850
+ENDIF
+
+;EXP:A经验をみる
+;处女はありえない
+IF EXP:1 < EXPLV:2
+	TIMES A , 0.60
+	B = 150
+ELSEIF EXP:1 < EXPLV:3
+	TIMES A , 1.00
+	B = 20
+ELSEIF EXP:1 < EXPLV:4
+	TIMES A , 1.20
+	B = 0
+ELSEIF EXP:1 < EXPLV:5
+	TIMES A , 1.40
+	B = 0
+ELSE
+	TIMES A , 1.60
+	B = 0
+ENDIF
+
+;PALAM:润滑をみる
+IF PALAM:4 < PALAMLV:1
+	TIMES A , 0.10
+	B += 400
+	TIMES B , 3.00
+	C += 1000
+ELSEIF PALAM:4 < PALAMLV:2
+	TIMES A , 0.40
+	B += 150
+	TIMES B , 1.00
+	C += 200
+ELSEIF PALAM:4 < PALAMLV:3
+	TIMES A , 1.00
+	TIMES B , 0.50
+	C += 80
+ELSEIF PALAM:4 < PALAMLV:4
+	TIMES A , 1.40
+	TIMES B , 0.20
+ELSE
+	TIMES A , 1.80
+	TIMES B , 0.10
+ENDIF
+
+;PALAM:情欲をみる
+IF PALAM:6 < PALAMLV:1
+	TIMES A , 0.80
+ELSEIF PALAM:6 < PALAMLV:2
+	TIMES A , 0.90
+ELSEIF PALAM:6 < PALAMLV:3
+	TIMES A , 1.00
+ELSEIF PALAM:6 < PALAMLV:4
+	TIMES A , 1.10
+ELSE
+	TIMES A , 1.20
+ENDIF
+
+;ABL:顺从をみる
+IF ABL:0 == 0
+	TIMES A , 0.80
+ELSEIF ABL:0 == 1
+	TIMES A , 0.90
+ELSEIF ABL:0 == 2
+	TIMES A , 1.00
+ELSEIF ABL:0 == 3
+	TIMES A , 1.10
+ELSEIF ABL:0 == 4
+	TIMES A , 1.20
+ELSE
+	TIMES A , 1.30
+ENDIF
+
+;小人体型
+SIF TALENT:142
+	TIMES B , 2.00
+
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 500
+
+;贞操重视持ちで服从、隶属持ち以外には常に反抗のソースを追加する（做爱系のみ）
+SIF TALENT:30 && (TALENT:5 == 0 && TALENT:8 == 0)
+	SOURCE:18 += 1000
+
+SOURCE:2 += A/2
+SOURCE:5 += A/5
+SOURCE:7 += B
+SOURCE:15 += D*50
+SOURCE:17 += C/2
+SOURCE:18 += C
+
+SIF FLAG:6
+	PRINTFORM 触手抚弄着%CALLNAME:TARGET%的肠壁…
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+EXP:1 += 2
+PRINTL 
+PRINTFORML %EXPNAME:1%＋2
+觸手 += 2
+
+RETURN 1
+
+

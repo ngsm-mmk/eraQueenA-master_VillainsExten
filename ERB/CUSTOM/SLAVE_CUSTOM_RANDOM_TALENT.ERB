@@ -1,0 +1,246 @@
+﻿@SLAVE_CUSTOM_RANDOM_TALENT
+;-----------------------------------------------------------
+;非エスパーモード、カスタム奴隶の身体の具合を決める。
+;-----------------------------------------------------------
+;完全に随机にはしなくないので、
+;キャラ的苗字と名前と一人称でソースとなる数値を適当に出す
+;文字列を直接に数字に変換する方法がないようなので、こんな苦し紛れのやり方にｗｗ
+A = 1
+B = 1
+C = 1
+D = 0
+;苗字の最初の文字が「高」より大きかったら、A + 1　という感じで…
+A = CSTR:4 >= "阿" ? A + 1 # A
+A = CSTR:4 >= "伊" ? A + 1 # A
+A = CSTR:4 >= "威" ? A + 1 # A
+A = CSTR:4 >= "艾" ? A + 1 # A
+A = CSTR:4 >= "奥" ? A + 1 # A
+A = CSTR:4 >= "卡" ? A + 1 # A
+A = CSTR:4 >= "萨" ? A + 1 # A
+A = CSTR:4 >= "塔" ? A + 1 # A
+A = CSTR:4 >= "纳" ? A + 1 # A
+A = CSTR:4 >= "哈" ? A + 1 # A
+A = CSTR:4 >= "马" ? A + 1 # A
+A = CSTR:4 >= "亚" ? A + 1 # A
+A = CSTR:4 >= "拉" ? A + 1 # A
+A = CSTR:4 >= "高" ? A + 1 # A
+A = CSTR:4 >= "佐" ? A + 1 # A
+A = CSTR:4 >= "木" ? A + 1 # A
+A = CSTR:4 >= "林" ? A + 1 # A
+A = CSTR:4 >= "芦" ? A + 1 # A
+A = CSTR:4 >= "威" ? A + 1 # A
+A = CSTR:4 >= "英" ? A + 1 # A
+A = CSTR:4 >= "魁" ? A + 1 # A
+A = CSTR:4 >= "机" ? A + 1 # A
+A = CSTR:4 >= "掘" ? A + 1 # A
+A = CSTR:4 >= "后" ? A + 1 # A
+A = CSTR:4 >= "察" ? A + 1 # A
+A = CSTR:4 >= "宗" ? A + 1 # A
+A = CSTR:4 >= "拭" ? A + 1 # A
+A = CSTR:4 >= "船" ? A + 1 # A
+A = CSTR:4 >= "谷" ? A + 1 # A
+A = CSTR:4 >= "钉" ? A + 1 # A
+A = CSTR:4 >= "年" ? A + 1 # A
+A = CSTR:4 >= "彦" ? A + 1 # A
+A = CSTR:4 >= "丰" ? A + 1 # A
+A = CSTR:4 >= "友" ? A + 1 # A
+A = CSTR:4 >= "朗" ? A + 1 # A
+A = CSTR:4 >= "传" ? A + 1 # A
+A = CSTR:4 >= "广" ? A + 1 # A
+A = CSTR:4 >= "黑" ? A + 1 # A
+A = CSTR:5 >= "莲" ? A + 1 # A
+A = CSTR:5 >= "小" ? A + 1 # A
+A = CSTR:5 >= "堂" ? A + 1 # A
+A = CSTR:5 >= "欧" ? A + 1 # A
+A = CSTR:5 >= "克" ? A + 1 # A
+A = CSTR:5 >= "索" ? A + 1 # A
+A = CSTR:5 >= "托" ? A + 1 # A
+A = CSTR:5 >= "罗" ? A + 1 # A
+A = CSTR:5 >= "霍" ? A + 1 # A
+A = CSTR:5 >= "莫" ? A + 1 # A
+A = CSTR:5 >= "尤" ? A + 1 # A
+A = CSTR:5 >= "洛" ? A + 1 # A
+A = CSTR:5 >= "琥" ? A + 1 # A
+A = CSTR:5 >= "和" ? A + 1 # A
+A = CSTR:5 >= "辽" ? A + 1 # A
+A = CSTR:5 >= "亮" ? A + 1 # A
+A = CSTR:5 >= "璃" ? A + 1 # A
+A = CSTR:5 >= "悠" ? A + 1 # A
+A = CSTR:5 >= "勇" ? A + 1 # A
+A = CSTR:5 >= "智" ? A + 1 # A
+A = CSTR:5 >= "苍" ? A + 1 # A
+A = CSTR:5 >= "奏" ? A + 1 # A
+A = CSTR:5 >= "真" ? A + 1 # A
+A = CSTR:5 >= "骏" ? A + 1 # A
+A = CSTR:5 >= "皇" ? A + 1 # A
+A = CSTR:5 >= "庆" ? A + 1 # A
+A = CSTR:5 >= "瑛" ? A + 1 # A
+A = CSTR:5 >= "飒" ? A + 1 # A
+A = CSTR:5 >= "琉" ? A + 1 # A
+A = CSTR:5 >= "央" ? A + 1 # A
+A = CSTR:5 >= "隼" ? A + 1 # A
+A = CSTR:5 >= "理" ? A + 1 # A
+A = CSTR:5 >= "海" ? A + 1 # A
+A = CSTR:5 >= "一" ? A + 1 # A
+A = CSTR:5 >= "太" ? A + 1 # A
+A = CSTR:5 >= "歩" ? A + 1 # A
+A = CSTR:5 >= "树" ? A + 1 # A
+
+B = CSTR:4 >= "渡" ? B + 1 # B
+B = CSTR:4 >= "伊" ? B + 1 # B
+B = CSTR:4 >= "西" ? B + 1 # B
+B = CSTR:4 >= "东" ? B + 1 # B
+B = CSTR:4 >= "松" ? B + 1 # B
+B = CSTR:4 >= "古" ? B + 1 # B
+B = CSTR:4 >= "八" ? B + 1 # B
+B = CSTR:4 >= "白" ? B + 1 # B
+B = CSTR:4 >= "上" ? B + 1 # B
+B = CSTR:4 >= "小" ? B + 1 # B
+B = CSTR:4 >= "中" ? B + 1 # B
+B = CSTR:4 >= "平" ? B + 1 # B
+B = CSTR:4 >= "牧" ? B + 1 # B
+B = CSTR:4 >= "寺" ? B + 1 # B
+B = CSTR:4 >= "武" ? B + 1 # B
+B = CSTR:4 >= "水" ? B + 1 # B
+B = CSTR:4 >= "角" ? B + 1 # B
+B = CSTR:4 >= "森" ? B + 1 # B
+B = CSTR:4 >= "长" ? B + 1 # B
+B = CSTR:4 >= "稻" ? B + 1 # B
+B = CSTR:4 >= "若" ? B + 1 # B
+B = CSTR:4 >= "神" ? B + 1 # B
+B = CSTR:4 >= "西" ? B + 1 # B
+B = CSTR:4 >= "黒" ? B + 1 # B
+B = CSTR:4 >= "土" ? B + 1 # B
+B = CSTR:4 >= "金" ? B + 1 # B
+B = CSTR:4 >= "川" ? B + 1 # B
+B = CSTR:4 >= "吉" ? B + 1 # B
+B = CSTR:5 >= "翔" ? B + 1 # B
+B = CSTR:5 >= "阳" ? B + 1 # B
+B = CSTR:5 >= "大" ? B + 1 # B
+B = CSTR:5 >= "玛" ? B + 1 # B
+B = CSTR:5 >= "吉" ? B + 1 # B
+B = CSTR:5 >= "基" ? B + 1 # B
+B = CSTR:5 >= "安" ? B + 1 # B
+B = CSTR:5 >= "考" ? B + 1 # B
+B = CSTR:5 >= "塞" ? B + 1 # B
+B = CSTR:5 >= "布" ? B + 1 # B
+B = CSTR:5 >= "尼" ? B + 1 # B
+B = CSTR:5 >= "恩" ? B + 1 # B
+B = CSTR:5 >= "修" ? B + 1 # B
+B = CSTR:5 >= "卢" ? B + 1 # B
+B = CSTR:5 >= "科" ? B + 1 # B
+B = CSTR:5 >= "列" ? B + 1 # B
+B = CSTR:5 >= "治" ? B + 1 # B
+B = CSTR:5 >= "未" ? B + 1 # B
+B = CSTR:5 >= "海" ? B + 1 # B
+B = CSTR:5 >= "叶" ? B + 1 # B
+B = CSTR:5 >= "贵" ? B + 1 # B
+B = CSTR:5 >= "银" ? B + 1 # B
+B = CSTR:5 >= "启" ? B + 1 # B
+B = CSTR:5 >= "源" ? B + 1 # B
+B = CSTR:5 >= "孝" ? B + 1 # B
+B = CSTR:5 >= "佐" ? B + 1 # B
+B = CSTR:5 >= "三" ? B + 1 # B
+B = CSTR:5 >= "室" ? B + 1 # B
+B = CSTR:5 >= "修" ? B + 1 # B
+B = CSTR:5 >= "尚" ? B + 1 # B
+B = CSTR:5 >= "信" ? B + 1 # B
+B = CSTR:5 >= "圣" ? B + 1 # B
+B = CSTR:5 >= "前" ? B + 1 # B
+B = CSTR:5 >= "泷" ? B + 1 # B
+B = CSTR:5 >= "置" ? B + 1 # B
+B = CSTR:5 >= "拓" ? B + 1 # B
+B = CSTR:5 >= "哲" ? B + 1 # B
+B = CSTR:5 >= "日" ? B + 1 # B
+B = CSTR:5 >= "忍" ? B + 1 # B
+B = CSTR:5 >= "斐" ? B + 1 # B
+B = CSTR:5 >= "敏" ? B + 1 # B
+B = CSTR:5 >= "保" ? B + 1 # B
+B = CSTR:5 >= "磨" ? B + 1 # B
+B = CSTR:5 >= "靖" ? B + 1 # B
+B = CSTR:5 >= "悠" ? B + 1 # B
+B = CSTR:5 >= "侑" ? B + 1 # B
+B = CSTR:5 >= "力" ? B + 1 # B
+B = CSTR:5 >= "龙" ? B + 1 # B
+B = CSTR:5 >= "烈" ? B + 1 # B
+B = CSTR:5 >= "真" ? B + 1 # B
+B = CSTR:5 >= "岛" ? B + 1 # B
+B = CSTR:5 >= "田" ? B + 1 # B
+B = CSTR:5 >= "藤" ? B + 1 # B
+B = CSTR:5 >= "仓" ? B + 1 # B
+
+C = CSTR:0 >= "我" ? C + 1 # C
+C = CSTR:0 >= "人家" ? C + 1 # C
+C = CSTR:0 >= "本大爷" ? C + 1 # C
+C = CSTR:0 >= "爷" ? C + 1 # C
+C = CSTR:0 >= "孤" ? C + 1 # C
+C = CSTR:0 >= "余" ? C + 1 # C
+C = CSTR:0 >= "吾" ? C + 1 # C
+C = CSTR:0 >= "吾辈" ? C + 1 # C
+C = CSTR:0 >= "老子" ? C + 1 # C
+C = CSTR:0 >= "在下" ? C + 1 # C
+
+DEBUGPRINTFORML A={A}
+DEBUGPRINTFORML B={B}
+DEBUGPRINTFORML C={C}
+;容易湿
+D = (A + B) % 6
+IF D == 0
+	TALENT:不易湿 = 1
+ELSEIF D == 3 || D == 5
+	TALENT:容易湿 = 1
+ENDIF
+;包茎
+D = (A + A + B + B - C) % 6
+SIF TALENT:矮小体型 || TALENT:伪娘
+	D = (B + C) % 3
+SIF TALENT:幼稚
+	D = C % 2
+SIF D == 1
+	TALENT:包茎 = 1
+;容易自慰　５分の一
+D = (A*B*2) % 5
+SIF D == 2
+	TALENT:容易自慰 = 1
+;シャッフルしてみる
+IF A > B
+	D = A
+	A = B
+	B = D
+ENDIF
+;サイズ決め
+D = ((B + C) * A) % 5
+IF D == 2
+	TALENT:短小 = 1
+ELSEIF D == 0
+	TALENT:巨根 = 1
+	IF (A % 4) == 3
+		TALENT:巨根 = 0
+		TALENT:尺寸傲人 = 1
+	ENDIF
+ENDIF
+;Ｃ感度
+D = ((A + C) * B ) % 7
+IF D == 1
+	TALENT:Ｃ钝感 = 1
+ELSEIF D == 2 || D == 4
+	TALENT:Ｃ敏感 = 1
+ENDIF
+;Ａ感度
+D = ((B + C) * A) % 4
+IF D == 2
+	TALENT:Ａ钝感 = 1
+ELSEIF D == 3
+	TALENT:Ａ敏感 = 1
+ENDIF
+;Ｂ感度
+D = (A + B - C) % 5
+IF D == 1
+	TALENT:Ｂ钝感 = 1
+ELSEIF D == 4
+	TALENT:Ｂ敏感 = 1
+ENDIF
+A = 0
+B = 0
+C = 0
+D = 0

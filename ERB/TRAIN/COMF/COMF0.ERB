@@ -1,0 +1,149 @@
+﻿;-------------------------------------------------
+;爱抚
+;爱抚系指令　レベル2
+;-------------------------------------------------
+@COM0
+;-------------------------------------------------
+;特殊派生処理
+;-------------------------------------------------
+;前回と今回の调教者が同じ
+IF !TEQUIP:60
+IF (ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0)
+	;前回の调教が插入系のとき
+	IF (PREVCOM >= 60 && PREVCOM <= 77 && PREVCOM != 65) || PREVCOM == 503 || PREVCOM == 504 || PREVCOM == 506 || PREVCOM == 507 || PREVCOM == 515 || PREVCOM == 516 || PREVCOM == 517 || PREVCOM == 518 || PREVCOM == 591
+		;调教者技巧5以上、禁断知識持ち以外は体型2段階小さかったら駄目、男奴隶限定、助手命令无
+		IF ABL:PLAYER:2 >= 5 && (TALENT:男性 || TALENT:双性 || TALENT:扶她) && !TEQUIP:44 && !TEQUIP:45 && !TEQUIP:46 && !TEQUIP:47 && !TEQUIP:48 && !TEQUIP:49 && !TEQUIP:17 && !TEQUIP:24 && !TEQUIP:38
+			IF TALENT:PLAYER:58 == 0 && (TEQUIP:4 || TEQUIP:5 || TEQUIP:6) && (TEQUIP:2 || TEQUIP:3)
+			ELSE
+				;三点攻へ
+				SIF BUILD2(PLAYER, TARGET) > -2 || TALENT:PLAYER:144
+					JUMP COM595
+			ENDIF
+		ENDIF
+	ENDIF
+ENDIF
+ENDIF
+PRINTL 爱抚
+STR:0 = 爱抚
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 5
+LOSEBASE:1 += 50
+
+SOURCE:0 = 80
+;奴隶男の場合
+IF TALENT:140
+	SOURCE:3 = 50
+ELSE
+	SOURCE:3 = 80
+ENDIF
+SOURCE:4 = 50
+SOURCE:5 = 60
+SOURCE:10 = 10
+SOURCE:13 = 20
+SOURCE:15 = 30
+SOURCE:17 = 20
+SOURCE:18 = 20
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 20
+
+;舌を使う调教では、调教者の善用舌头によって、快感のソース増加
+IF TALENT:PLAYER:52
+	TIMES SOURCE:0 , 1.50
+	TIMES SOURCE:3 , 1.50
+	TIMES SOURCE:4 , 1.50
+ENDIF
+;猫舌は減少
+IF TALENT:PLAYER:54
+	TIMES SOURCE:0 , 0.75
+	TIMES SOURCE:3 , 0.75
+	TIMES SOURCE:4 , 0.75
+ENDIF
+
+;手指灵巧持ちで着衣のとき
+IF TALENT:MASTER:58 && (TEQUIP:2 || TEQUIP:3 || TEQUIP:4 || TEQUIP:5 || TEQUIP:6)
+	SIF TEQUIP:2
+		TIMES SOURCE:0 , 0.80
+	SIF TEQUIP:3
+		TIMES SOURCE:3 , 0.70
+	IF TEQUIP:4
+		TIMES SOURCE:0 , 0.60
+		;下着を着けずに上衣だけのとき
+		SIF TEQUIP:2 == 0
+			TIMES SOURCE:17 , 1.50
+	ENDIF
+	SIF TEQUIP:5
+		TIMES SOURCE:3 , 0.70
+	IF TEQUIP:6
+		TIMES SOURCE:0 , 0.60
+		TIMES SOURCE:3 , 0.60
+	ENDIF
+	TIMES SOURCE:4 , 0.90
+	TIMES SOURCE:5 , 0.60
+	TIMES SOURCE:17 , 0.50
+ENDIF
+
+;喜欢身体接触だと情爱のソース追加
+IF TALENT:65
+	SOURCE:4 += 50
+ENDIF
+
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;接吻をする場合
+;助手プ雷の場合、男奴隶で、助手に同性倾向が2未満だと接吻しない。
+IF KANRAKU(TARGET) > 0 && (STAIN:0 < 2 || STAIN:0 == 16 || STAIN:0 == 17 || TALENT:MASTER:64) && TEQUIP:20 == 0 && TEQUIP:25 == 0 && (!ASSIPLAY || ABL:PLAYER:同性倾向 > 1 || !MALE(TARGET))
+;奴隶の口の汚れがあるとき接吻はない（愛液と母乳よごれはＯＫ、脏污无视か助手调教時は問題无）
+;口塞球使用中も无
+	;污臭钝感
+	SIF TALENT:61
+		SOURCE:15 /= 4
+	;污臭敏感
+	SIF TALENT:62
+		SOURCE:15 *= 3
+	;自尊心
+	SIF TALENT:15
+		SOURCE:15 *= 2
+	IF STAIN:PLAYER:0
+	;主人の口の汚れがあると不洁150%
+		SOURCE:15 *= 3
+		SOURCE:15 /= 2
+	ENDIF
+	;奴隶の口⇔调教者の口の汚れが移动
+	STAIN:0 |= STAIN:PLAYER:0
+	STAIN:PLAYER:0 |= STAIN:0
+ELSE
+	SOURCE:15 = 0
+	SOURCE:0 /= 2
+	SOURCE:4 /= 4
+	SOURCE:10 /= 2
+ENDIF
+
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;蔷薇经验とか加算
+CALL COM_EXP(5)
+
+
+;调教者が猫舌持ちの場合は、调教者に嗜虐快乐经验を追加
+IF TALENT:PLAYER:54
+	EXP:PLAYER:32 += 1
+	PRINTFORML %CALLNAME:PLAYER%的%EXPNAME:32%＋１
+ENDIF
+
+;依赖度ベクトル
+TFLAG:33 = 2
+
+RETURN 1
+

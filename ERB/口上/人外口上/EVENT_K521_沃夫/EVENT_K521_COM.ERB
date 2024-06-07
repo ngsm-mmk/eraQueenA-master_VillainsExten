@@ -1,0 +1,4710 @@
+﻿;--------------------------------------------------
+;@KOJO_MESSAGE_COM関係
+;指令実行時に出力されます
+;口上を追加しない指令は無記入でも構いません
+;--------------------------------------------------
+@KOJO_MESSAGE_COM_K521
+;助手が调教した時に口上をスキップする（好みに応じて使う、行頭の;を消すとスキップするようになる）
+;SIF ASSI > 0 && ASSIPLAY
+;	RETURN 0
+;口塞球着用か触手口辱中、崩溃中は地の文を表示して口上をスキップする
+IF (TEQUIP:20 && SELECTCOM != 107) || (TEQUIP:36 && SELECTCOM != 168) || TALENT:崩溃
+	CALL TRAIN_MESSAGE
+	SIF TFLAG:51 == 0 && FLAG:10 == 1
+		CALL PANT_VOICE2(10)
+	RETURN 0
+ENDIF
+;キャラの言葉遣いを決定する。
+
+;-------------------------------------------------
+;指令実行時のセリフ CFLAG 300～500
+;-------------------------------------------------
+;=================================================
+;爱抚系指令
+;=================================================
+;-------------------------------------------------
+;0,爱抚(触手プ雷の場合を除く)
+;-------------------------------------------------
+IF SELECTCOM == 0 && TEQUIP:触手 == 0
+	;T:XXXは今回の调教で、この指令を実行した回数。
+	;调教结束時に对応するCFLAG:XXX（このキャラでこの指令の合計実行回数）に加算します。
+	T:300 += 1
+	;共通の地の文（EVENT_M_COM）と汎用状況説明文の呼び出し。必要ない時は消していい。
+	CALL TRAIN_MESSAGE
+	;今回は汎用状況説明文を表示させたくない場合：共通の地の文を呼び出す前にTFLAG:52 = 1と付け加える
+	IF T:300 == 1
+		;初めてこの指令を選んだ時＆感度がまだ低く、痛くない＆未陷落
+		IF CFLAG:300 == 0 && C:4 <= 1 && D == 0 && !KANRAKU(TARGET)
+			;PRINTFORML
+			;PRINTFORML
+			;専用の台詞を書いて、汎用喘ぎを表示させたくない場合、台詞の最後にRETURN 0を付ける
+			;RETURN 0
+		;もう選んだことあるが、今回の调教では初めてこの指令を選んだ時
+		ELSE
+			IF (TALENT:恋慕 || TALENT:相亲相爱)
+			ELSEIF (TALENT:淫乱 || TALENT:娼妇)
+			ELSEIF (TALENT:服从 || TALENT:隶属)
+			;未陷落
+			ELSE
+				;痛くて感じる余裕が無い（AかVに装着系がある）&受虐狂ではない
+				IF D >= 1 && C:4 <= 2 && TALENT:84 != 1 && ABL:9 < 3 && D != 2	
+					;PRINTFORML
+					;RETURN 0
+				ELSEIF C:4 == 1 || (C:4 == 2 && ((PALAM_COMPARE(0) && C:0 > 0) || ((PALAM:3 + UP:3) >= (PALAM:1 + UP:1) && (PALAM:3 + UP:3) >= (PALAM:2 + UP:2) && (PALAM:3 + UP:3) >= (PALAM:0 + UP:0) && C:3 > 0))) && D == 0
+					;殆どか、あまり感じていない､反抗刻印 < 3　屈服刻印 < 3
+					IF (PALAM:0 + UP:0) < 500 && (PALAM:0 + UP:0) < 500 && MARK:反抗刻印 < 3 && MARK:屈服刻印 < 3
+						;PRINTFORML
+						;RETURN 0
+					;Cで少し感じ始めたか、感じてきている
+					ELSEIF ((PALAM:0 + UP:0) >= 500 && (PALAM:0 + UP:0) < 3000) && (PALAM:0 + UP:0) >= (PALAM:3 + UP:3)
+						;PRINTFORML
+						;RETURN 0
+					;Cで感じている
+					ELSEIF (PALAM:0 + UP:0) >= 3000 && (PALAM:0 + UP:0) >= (PALAM:3 + UP:3)
+						;PRINTFORML
+						;RETURN 0
+					;Bで少し感じ始めたか、感じてきている
+					ELSEIF  (PALAM:3 + UP:3) >= 500 && (PALAM:3 + UP:3) < 3000
+						;PRINTFORML
+						;RETURN 0
+					;Bで感じている
+					ELSE
+						;PRINTFORML
+						;RETURN 0
+					ENDIF
+				;Ｃだけ绝顶寸前
+				ELSEIF C:0 == 4 && C:1 < 4 && C:2 < 4 && C:3 < 4 && D == 0
+					IF MARK:反抗刻印 == 3
+						;PRINTFORML
+						;RETURN 0
+					ELSE
+						;PRINTFORML
+						;RETURN 0
+					ENDIF
+				ENDIF
+			ENDIF
+		ENDIF
+	;今回の调教で二回目以降　([T:XXX < 3]というように条件を付け加えると、二回目は出るが三回目以降は出ない)
+	ELSEIF T:300 < 3 || FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;1,舔阴
+;-------------------------------------------------
+IF SELECTCOM == 1
+	T:301 += 1
+	CALL TRAIN_MESSAGE
+ENDIF
+;-------------------------------------------------
+;2,口交
+;-------------------------------------------------
+IF SELECTCOM == 2
+	T:302 += 1
+	;共通の地の文（EVENT_M_COM）と汎用状況説明文の呼び出し。必要ない時は消していい。
+	CALL TRAIN_MESSAGE
+	;今回は汎用状況説明文を表示させたくない場合：共通の地の文を呼び出す前にTFLAG:52 = 1と付け加える
+	IF T:302 == 1
+		;初めてこの指令を選んだ時
+		IF CFLAG:302 == 0
+		;専用の台詞を書いて、汎用喘ぎを表示させたくない場合、台詞の最後にRETURN 0を付ける
+		;RETURN 0
+		;もう選んだことあるが、今回の调教では初めてこの指令を選んだ時
+		ELSE
+			;Ｃ系用　現在のパラで口上を分岐する
+			;痛くて感じる余裕が無い&受虐狂ではない
+			IF D >= 1 && C:4 <= 2 && TALENT:84 != 1 && ABL:9 < 3
+			;Ｃ責めメインの時
+			ELSEIF C:4 == 1 || (C:4 == 2 && PALAM_COMPARE(0) && C:0 > 0) && D == 0
+				;殆どか、あまり感じていない
+				IF (PALAM:0 + UP:0) < 500
+				;少し感じ始めたか、感じてきている
+				ELSEIF (PALAM:0 + UP:0) < 3000
+				;感じている
+				ELSE
+				ENDIF
+			;Ｃだけ绝顶寸前
+			ELSEIF C:0 == 4 && C:1 < 4 && C:2 < 4 && C:3 < 4 && D == 0
+			ENDIF
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF T:302 < 3 || FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;3,手指插入
+;-------------------------------------------------
+IF SELECTCOM == 3
+	T:303 += 1
+	CALL TRAIN_MESSAGE
+	IF T:303 == 1
+		IF CFLAG:303 == 0
+		ELSE
+		ENDIF
+	ELSEIF T:303 < 3 || FLAG:7 == 2
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;4,舔肛
+;-------------------------------------------------
+IF SELECTCOM == 4
+	T:304 += 1
+	;共通の地の文（EVENT_M_COM）と汎用状況説明文の呼び出し。必要ない時は消していい。
+	CALL TRAIN_MESSAGE
+	;今回は汎用状況説明文を表示させたくない場合：共通の地の文を呼び出す前にTFLAG:52 = 1と付け加える
+	IF T:304 == 1
+		;初めてこの指令を選んだ時
+		IF CFLAG:304 == 0
+		;専用の台詞を書いて、汎用喘ぎを表示させたくない場合、台詞の最後にRETURN 0を付ける
+		;RETURN 0
+		;もう選んだことあるが、今回の调教では初めてこの指令を選んだ時
+		ELSE
+			;舔肛用　現在のパラで口上を分岐する
+			;痛くて感じる余裕が無い&受虐狂ではない
+			IF D >= 1 && C:4 <= 2 && TALENT:84 != 1 && ABL:9 < 3
+			;Ａ責めメインの時
+			ELSEIF C:4 == 1 || (C:4 == 2 && (PALAM:2 + UP:2) >= (PALAM:1 + UP:1) && (PALAM:2 + UP:2) >= (PALAM:3 + UP:3) && (PALAM:2 + UP:2) >= (PALAM:0 + UP:0) && C:2 > 0) && D == 0
+				;殆どか、あまり感じていない
+				IF (PALAM:2 + UP:2) < 500
+				;少し感じ始めたか、感じてきている
+				ELSEIF (PALAM:2 + UP:2) < 3000
+				;感じている
+				ELSE
+				ENDIF
+			;Ａだけ绝顶寸前
+			ELSEIF C:2 == 4 && C:1 < 4 && C:3 < 4 && C:0 < 4 && D == 0
+			ENDIF
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF T:304 < 3 || FLAG:7 == 2
+		;舔肛用　現在のパラで口上を分岐する
+		;痛くて感じる余裕が無い&受虐狂ではない
+		IF D >= 1 && C:4 <= 2 && TALENT:84 != 1 && ABL:9 < 3
+		;Ａ責めメインの時
+		ELSEIF C:4 == 1 || (C:4 == 2 && (PALAM:2 + UP:2) >= (PALAM:1 + UP:1) && (PALAM:2 + UP:2) >= (PALAM:3 + UP:3) && (PALAM:2 + UP:2) >= (PALAM:0 + UP:0) && C:2 > 0) && D == 0
+			;殆どか、あまり感じていない
+			IF (PALAM:2 + UP:2) < 500
+			;少し感じ始めたか、感じてきている
+			ELSEIF (PALAM:2 + UP:2) < 3000
+			;感じている
+			ELSE
+			ENDIF
+		;Ａだけ绝顶寸前
+		ELSEIF C:2 == 4 && C:1 < 4 && C:3 < 4 && C:0 < 4 && D == 0
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;5,肛门爱抚
+;-------------------------------------------------
+IF SELECTCOM == 5
+	T:305 += 1
+	;共通の地の文（EVENT_M_COM）と汎用状況説明文の呼び出し。必要ない時は消していい。
+	CALL TRAIN_MESSAGE
+	;今回は汎用状況説明文を表示させたくない場合：共通の地の文を呼び出す前にTFLAG:52 = 1と付け加える
+	IF T:305 == 1
+		;初めてこの指令を選んだ時
+		IF CFLAG:305 == 0
+		;専用の台詞を書いて、汎用喘ぎを表示させたくない場合、台詞の最後にRETURN 0を付ける
+		;RETURN 0
+		;もう選んだことあるが、今回の调教では初めてこの指令を選んだ時
+		ELSE
+			;Ａ系用　現在のパラで口上を分岐する
+			;Ａ以外のところが痛くて感じる余裕が無い&受虐狂ではない
+			IF D >= 1 && C:4 <= 2 && TALENT:84 != 1 && ABL:9 < 3 && D:1 == 0
+			;Ａ責めメインの時
+			ELSEIF C:4 == 1 || (C:4 == 2 && (PALAM:2 + UP:2) >= (PALAM:1 + UP:1) && (PALAM:2 + UP:2) >= (PALAM:3 + UP:3) && (PALAM:2 + UP:2) >= (PALAM:0 + UP:0) && C:2 > 0) && D <= 1
+				;经验が足りなくてとにかくかなり痛い
+				IF EXP:Ａ经验 < 10 && (PALAM:2 + UP:2) < 3000 || (EXP:Ａ经验 < 30 && (PALAM:2 + UP:2) < 1500)
+				;段々痛くなくなるが、最初はまだ痛む
+				ELSEIF EXP:Ａ经验 >= 30 && EXP:Ａ经验 < 75 && (PALAM:2 + UP:2) < 500
+				;痛くもなく感じてもない。慣れてきた。
+				ELSEIF (PALAM:2 + UP:2) < 500
+				;疼痛以外の何かを感じている
+				ELSEIF (PALAM:2 + UP:2) < 1500
+				;疼痛ながら感じている
+				ELSEIF (PALAM:2 + UP:2) < 3000 && EXP:Ａ经验 < 75
+				;感じている
+				ELSEIF (PALAM:2 + UP:2) < 3000
+				;後ろで明らかに感じている
+				ELSEIF (PALAM:2 + UP:2) < 6000
+				;快感に震えている
+				ELSEIF (PALAM:2 + UP:2) < 8000
+				ENDIF
+			;Ａだけ绝顶寸前
+			ELSEIF C:2 == 4 && C:1 < 4 && C:3 < 4 && C:0 < 4 && D == 0
+			ENDIF
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF T:305 < 3 || FLAG:7 == 2
+		;Ａ系用　現在のパラで口上を分岐する
+		;Ａ以外のところが痛くて感じる余裕が無い&受虐狂ではない
+		IF D >= 1 && C:4 <= 2 && TALENT:84 != 1 && ABL:9 < 3 && D:1 == 0
+		;Ａ責めメインの時
+		ELSEIF C:4 == 1 || (C:4 == 2 && (PALAM:2 + UP:2) >= (PALAM:1 + UP:1) && (PALAM:2 + UP:2) >= (PALAM:3 + UP:3) && (PALAM:2 + UP:2) >= (PALAM:0 + UP:0) && C:2 > 0) && D <= 1
+			;经验が足りなくてとにかくかなり痛い
+			IF EXP:Ａ经验 < 10 && (PALAM:2 + UP:2) < 3000 || (EXP:Ａ经验 < 30 && (PALAM:2 + UP:2) < 1500)
+			;段々痛くなくなるが、最初はまだ痛む
+			ELSEIF EXP:Ａ经验 >= 30 && EXP:Ａ经验 < 75 && (PALAM:2 + UP:2) < 500
+			;痛くもなく感じてもない。慣れてきた。
+			ELSEIF (PALAM:2 + UP:2) < 500
+			;疼痛以外の何かを感じている
+			ELSEIF (PALAM:2 + UP:2) < 1500
+			;疼痛ながら感じている
+			ELSEIF (PALAM:2 + UP:2) < 3000 && EXP:Ａ经验 < 75
+			;感じている
+			ELSEIF (PALAM:2 + UP:2) < 3000
+			;後ろで明らかに感じている
+			ELSEIF (PALAM:2 + UP:2) < 6000
+			;快感に震えている
+			ELSEIF (PALAM:2 + UP:2) < 8000
+			ENDIF
+		;Ａだけ绝顶寸前
+		ELSEIF C:2 == 4 && C:1 < 4 && C:3 < 4 && C:0 < 4 && D == 0
+		ENDIF
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;6,揉胸
+;-------------------------------------------------
+IF SELECTCOM == 6
+	T:306 += 1
+	CALL TRAIN_MESSAGE
+	IF T:306 == 1
+		;初めて
+		IF CFLAG:306 == 0
+		;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;Ｂ系用　現在のパラで口上を分岐する
+			;痛くて感じる余裕が無い&受虐狂ではない
+			IF D >= 1 && C:4 <= 2 && TALENT:84 != 1 && ABL:9 < 3
+			;Ｂ責めメインの時
+			ELSEIF C:4 == 1 || (C:4 == 2 && (PALAM:3 + UP:3) >= (PALAM:1 + UP:1) && (PALAM:3 + UP:3) >= (PALAM:2 + UP:2) && (PALAM:3 + UP:3) >= (PALAM:0 + UP:0) && C:3 > 0) && D == 0
+				;殆どか、あまり感じていない
+				IF (PALAM:3 + UP:3) < 500
+				;少し感じ始めたか、感じてきている
+				ELSEIF (PALAM:3 + UP:3) < 3000
+				;感じている
+				ELSE
+				ENDIF
+			;Ｂだけ绝顶寸前
+			ELSEIF C:3 == 4 && C:1 < 4 && C:2 < 4 && C:0 < 4 && D == 0
+			ENDIF
+		ENDIF
+	;二回目以降
+	ELSEIF T:306 < 3 || FLAG:7 == 2
+		;Ｂ系用　現在のパラで口上を分岐する
+		;痛くて感じる余裕が無い&受虐狂ではない
+		IF D >= 1 && C:4 <= 2 && TALENT:84 != 1 && ABL:9 < 3
+		;Ｂ責めメインの時
+		ELSEIF C:4 == 1 || (C:4 == 2 && (PALAM:3 + UP:3) >= (PALAM:1 + UP:1) && (PALAM:3 + UP:3) >= (PALAM:2 + UP:2) && (PALAM:3 + UP:3) >= (PALAM:0 + UP:0) && C:3 > 0) && D == 0
+			;殆どか、あまり感じていない
+			IF (PALAM:3 + UP:3) < 500
+			;少し感じ始めたか、感じてきている
+			ELSEIF (PALAM:3 + UP:3) < 3000
+			;感じている
+			ELSE
+			ENDIF
+		;Ｂだけ绝顶寸前
+		ELSEIF C:3 == 4 && C:1 < 4 && C:2 < 4 && C:0 < 4 && D == 0
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;7,玩弄乳头
+;-------------------------------------------------
+IF SELECTCOM == 7
+	T:307 += 1
+	CALL TRAIN_MESSAGE
+	IF T:307 == 1
+		;初めて
+		IF CFLAG:307 == 0
+		;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;Ｂ系用　現在のパラで口上を分岐する
+			;痛くて感じる余裕が無い&受虐狂ではない
+			IF D >= 1 && C:4 <= 2 && TALENT:84 != 1 && ABL:9 < 3
+			;Ｂ責めメインの時
+			ELSEIF C:4 == 1 || (C:4 == 2 && (PALAM:3 + UP:3) >= (PALAM:1 + UP:1) && (PALAM:3 + UP:3) >= (PALAM:2 + UP:2) && (PALAM:3 + UP:3) >= (PALAM:0 + UP:0) && C:3 > 0) && D == 0
+				;殆どか、あまり感じていない
+				IF (PALAM:3 + UP:3) < 500
+				;少し感じ始めたか、感じてきている
+				ELSEIF (PALAM:3 + UP:3) < 3000
+				;感じている
+				ELSE
+				ENDIF
+			;Ｂだけ绝顶寸前
+			ELSEIF C:3 == 4 && C:1 < 4 && C:2 < 4 && C:0 < 4 && D == 0
+			ENDIF
+		ENDIF
+	;二回目以降
+	ELSEIF T:307 < 3 || FLAG:7 == 2
+		;Ｂ系用　現在のパラで口上を分岐する
+		;痛くて感じる余裕が無い&受虐狂ではない
+		IF D >= 1 && C:4 <= 2 && TALENT:84 != 1 && ABL:9 < 3
+		;Ｂ責めメインの時
+		ELSEIF C:4 == 1 || (C:4 == 2 && (PALAM:3 + UP:3) >= (PALAM:1 + UP:1) && (PALAM:3 + UP:3) >= (PALAM:2 + UP:2) && (PALAM:3 + UP:3) >= (PALAM:0 + UP:0) && C:3 > 0) && D == 0
+			;殆どか、あまり感じていない
+			IF (PALAM:3 + UP:3) < 500
+			;少し感じ始めたか、感じてきている
+			ELSEIF (PALAM:3 + UP:3) < 3000
+			;感じている
+			ELSE
+			ENDIF
+		;Ｂだけ绝顶寸前
+		ELSEIF C:3 == 4 && C:1 < 4 && C:2 < 4 && C:0 < 4 && D == 0
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;8,胸爱抚
+;-------------------------------------------------
+IF SELECTCOM == 8
+	T:308 += 1
+	CALL TRAIN_MESSAGE
+	IF T:308 == 1
+		;初めて
+		IF CFLAG:308 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			IF C:4 == 1 || (C:4 == 2 && (PALAM:3 + UP:3) >= (PALAM:1 + UP:1) && (PALAM:3 + UP:3) >= (PALAM:2 + UP:2) && (PALAM:3 + UP:3) >= (PALAM:0 + UP:0) && C:3 > 0) && D == 0
+				IF (PALAM:3 + UP:3) < 500
+					;RETURN 0
+				ELSEIF (PALAM:3 + UP:3) < 3000
+					;RETURN 0
+				ELSE
+					;RETURN 0
+				ENDIF
+			;Ｂだけ绝顶寸前
+			ELSEIF C:3 == 4 && C:1 < 4 && C:2 < 4 && C:0 < 4 && D == 0
+				;RETURN 0
+			ENDIF
+		ENDIF
+	;二回目以降
+	ELSEIF T:308 < 3 || FLAG:7 == 2
+		IF C:4 == 1 || (C:4 == 2 && (PALAM:3 + UP:3) >= (PALAM:1 + UP:1) && (PALAM:3 + UP:3) >= (PALAM:2 + UP:2) && (PALAM:3 + UP:3) >= (PALAM:0 + UP:0) && C:3 > 0) && D == 0
+			IF (PALAM:3 + UP:3) < 500
+				;RETURN 0
+			ELSEIF (PALAM:3 + UP:3) < 3000
+				;RETURN 0
+			ELSE
+				;RETURN 0
+			ENDIF
+		;Ｂだけ绝顶寸前
+		ELSEIF C:3 == 4 && C:1 < 4 && C:2 < 4 && C:0 < 4 && D == 0
+			;RETURN 0
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;9,秘穴张开
+;-------------------------------------------------
+IF SELECTCOM == 9
+	T:309 += 1
+	CALL TRAIN_MESSAGE
+	IF T:309 == 1
+		IF CFLAG:309 == 0
+		ELSE
+		ENDIF
+	ELSEIF T:309 < 3 || FLAG:7 == 2
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;10,胸自慰
+;-------------------------------------------------
+IF SELECTCOM == 10
+	T:310 += 1
+	CALL TRAIN_MESSAGE
+	IF T:310 == 1
+		;初めて
+		IF CFLAG:310 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			IF C:4 == 1 || (C:4 == 2 && (PALAM:3 + UP:3) >= (PALAM:1 + UP:1) && (PALAM:3 + UP:3) >= (PALAM:2 + UP:2) && (PALAM:3 + UP:3) >= (PALAM:0 + UP:0) && C:3 > 0) && D == 0
+				IF (PALAM:3 + UP:3) < 500
+					;RETURN 0
+				ELSEIF (PALAM:3 + UP:3) < 3000
+					;RETURN 0
+				ELSE
+					;RETURN 0
+				ENDIF
+			;Ｂだけ绝顶寸前
+			ELSEIF C:3 == 4 && C:1 < 4 && C:2 < 4 && C:0 < 4 && D == 0
+				;RETURN 0
+			ENDIF
+		ENDIF
+	;二回目以降
+	ELSEIF T:310 < 3 || FLAG:7 == 2
+		IF C:4 == 1 || (C:4 == 2 && (PALAM:3 + UP:3) >= (PALAM:1 + UP:1) && (PALAM:3 + UP:3) >= (PALAM:2 + UP:2) && (PALAM:3 + UP:3) >= (PALAM:0 + UP:0) && C:3 > 0) && D == 0
+			IF (PALAM:3 + UP:3) < 500
+				;RETURN 0
+			ELSEIF (PALAM:3 + UP:3) < 3000
+				;RETURN 0
+			ELSE
+				;RETURN 0
+			ENDIF
+		;Ｂだけ绝顶寸前
+		ELSEIF C:3 == 4 && C:1 < 4 && C:2 < 4 && C:0 < 4 && D == 0
+			;RETURN 0
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;11,自慰
+;-------------------------------------------------
+IF SELECTCOM == 11
+	T:311 += 1
+	CALL TRAIN_MESSAGE
+	IF T:311 == 1
+		IF CFLAG:311 == 0
+		ELSE
+		ENDIF
+	ELSEIF T:311 < 3 || FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;12,くるん爱抚（アホっ毛をいじる）
+;-------------------------------------------------
+IF SELECTCOM == 12
+	T:312 += 1
+	CALL TRAIN_MESSAGE
+	IF T:312 == 1
+		IF CFLAG:312 == 0
+		ELSE
+		ENDIF
+	ELSEIF T:312 < 3 || FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;13,阴茎爱抚
+;-------------------------------------------------
+IF SELECTCOM == 13
+	T:313 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:313 == 1
+		;初めて
+		IF CFLAG:313 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			IF C:4 == 1 || (C:4 == 2 && PALAM_COMPARE(0) && C:0 > 0) && D == 0
+				;殆どか、あまり感じていない
+				IF (PALAM:0 + UP:0) < 500
+					;RETURN 0
+				;少し感じ始めたか、感じてきている
+				ELSEIF (PALAM:0 + UP:0) < 3000
+					;RETURN 0
+				;感じている
+				ELSE
+					;RETURN 0
+				ENDIF
+			;Ｃだけ绝顶寸前
+			ELSEIF C:0 == 4 && C:1 < 4 && C:2 < 4 && C:3 < 4 && D == 0
+				;RETURN 0
+			ENDIF
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF T:313 < 3 || FLAG:7 == 2
+		IF C:4 == 1 || (C:4 == 2 && PALAM_COMPARE(0) && C:0 > 0) && D == 0
+			;殆どか、あまり感じていない
+			IF (PALAM:0 + UP:0) < 500
+				;RETURN 0
+			;少し感じ始めたか、感じてきている
+			ELSEIF (PALAM:0 + UP:0) < 3000
+				;RETURN 0
+			;感じている
+			ELSE
+				;RETURN 0
+			ENDIF
+		;Ｃだけ绝顶寸前
+		ELSEIF C:0 == 4 && C:1 < 4 && C:2 < 4 && C:3 < 4 && D == 0
+			;RETURN 0
+		ENDIF	
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;14,アナニー
+;-------------------------------------------------
+IF SELECTCOM == 14
+	T:466 += 1
+	CALL TRAIN_MESSAGE
+	IF T:466 == 1
+		IF CFLAG:466 == 0
+		ELSE
+		ENDIF
+	ELSEIF T:466 < 3 || FLAG:7 == 2
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;15,抚摸翅膀
+;-------------------------------------------------
+IF SELECTCOM == 15
+	T:495 += 1
+	CALL TRAIN_MESSAGE
+	IF T:495 == 1
+		IF CFLAG:495 == 0
+		ELSE
+		ENDIF
+	ELSEIF T:495 < 3 || FLAG:7 == 2
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;16,抚摸尾巴
+;-------------------------------------------------
+IF SELECTCOM == 16
+	T:496 += 1
+	CALL TRAIN_MESSAGE
+	IF T:496 == 1
+		IF CFLAG:496 == 0
+		ELSE
+		ENDIF
+	ELSEIF T:496 < 3 || FLAG:7 == 2
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;17,抚摸兽耳
+;-------------------------------------------------
+IF SELECTCOM == 17
+	T:497 += 1
+	CALL TRAIN_MESSAGE
+	IF T:497 == 1
+		IF CFLAG:497 == 0
+		ELSE
+		ENDIF
+	ELSEIF T:497 < 3 || FLAG:7 == 2
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;18,舔耳朵
+;-------------------------------------------------
+IF SELECTCOM == 18
+	T:494 += 1
+	CALL TRAIN_MESSAGE
+	IF T:494 == 1
+		IF CFLAG:494 == 0
+		ELSE
+		ENDIF
+	ELSEIF T:494 < 3 || FLAG:7 == 2
+	ENDIF
+ENDIF
+;=================================================
+;日常系指令
+;=================================================
+;-------------------------------------------------
+;20,接吻
+;-------------------------------------------------
+IF SELECTCOM == 20
+	T:314 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:314 == 1
+		;初めて
+		IF CFLAG:314 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF T:314 < 3 || FLAG:7 == 2
+		;未陷落、屈服2以下
+		IF !KANRAKU(TARGET) && MARK:屈服刻印 < 3
+            IF !RAND:4
+                PRINTFORML 「…不管被吻多少次…都是…没有用的…」
+            ELSEIF !RAND:3
+                PRINTFORML 「…无论接吻多少次…都是…没有用的…」
+            ELSEIF !RAND:2
+                PRINTFORML 「…不论吻多少次…%CSTR:0%的心都是…不会动摇的…」
+            ELSE
+                PRINTFORML 「…无论接吻多少次…这颗心也…不会动摇…」
+            ENDIF
+			RETURN 0
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;21,什么也不做
+;-------------------------------------------------
+IF SELECTCOM == 21
+	T:315 += 1
+	CALL TRAIN_MESSAGE
+ENDIF
+
+;-------------------------------------------------
+;22,会话
+;-------------------------------------------------
+IF SELECTCOM == 22
+	T:316 += 1
+	CALL TRAIN_MESSAGE
+ENDIF
+
+;-------------------------------------------------
+;23,礼物
+;-------------------------------------------------
+IF SELECTCOM == 23
+	T:317 += 1
+	CALL TRAIN_MESSAGE
+ENDIF
+
+
+;-------------------------------------------------
+;24,身体接触
+;-------------------------------------------------
+IF SELECTCOM == 24
+	T:318 += 1
+	CALL TRAIN_MESSAGE
+ENDIF
+
+
+;-------------------------------------------------
+;25,悠闲度过
+;-------------------------------------------------
+IF SELECTCOM == 25
+	T:319 += 1
+	CALL TRAIN_MESSAGE
+ENDIF
+
+
+;-------------------------------------------------
+;26,家务
+;-------------------------------------------------
+IF SELECTCOM == 26
+	T:320 += 1
+	CALL TRAIN_MESSAGE
+ENDIF
+;-------------------------------------------------
+;27,歌唱练习
+;-------------------------------------------------
+IF SELECTCOM == 27
+	T:321 += 1
+	CALL TRAIN_MESSAGE
+ENDIF
+
+;-------------------------------------------------
+;28,痛骂
+;-------------------------------------------------
+IF SELECTCOM == 28
+	T:322 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:316 == 1
+		;初めて
+		IF CFLAG:316 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF T:322 < 3 || FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;29,观看视频
+;-------------------------------------------------
+IF SELECTCOM == 29
+	T:323 += 1
+	CALL TRAIN_MESSAGE
+ENDIF
+
+;-------------------------------------------------
+;30,暴力を振るう
+;-------------------------------------------------
+IF SELECTCOM == 30
+	T:324 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:324 == 1
+		;初めて
+		IF CFLAG:324 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF T:324 < 3 || FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;31,化形（无需口上）
+;-------------------------------------------------
+IF SELECTCOM == 31
+	T:498 += 1
+	CALL TRAIN_MESSAGE
+ENDIF
+;-------------------------------------------------
+;32,变化体型（无需口上）
+;-------------------------------------------------
+IF SELECTCOM == 32
+	T:499 += 1
+	CALL TRAIN_MESSAGE
+ENDIF
+;-------------------------------------------------
+;33,助手化形（无需口上）
+;-------------------------------------------------
+IF SELECTCOM == 33
+	T:500 += 1
+	CALL TRAIN_MESSAGE
+ENDIF
+;-------------------------------------------------
+;34,助手变化体型（无需口上）
+;-------------------------------------------------
+IF SELECTCOM == 34
+	T:501 += 1
+	CALL TRAIN_MESSAGE
+ENDIF
+;=================================================
+;道具使用指令
+;=================================================
+;40,跳蛋
+;-------------------------------------------------
+IF SELECTCOM == 40
+	T:325 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:325 == 1
+		;初めて
+		IF CFLAG:325 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			IF C:4 == 1 || (C:4 == 2 && PALAM_COMPARE(0) && C:0 > 0) && D == 0
+				;殆どか、あまり感じていない
+				IF (PALAM:0 + UP:0) < 500
+					;RETURN 0
+				;少し感じ始めたか、感じてきている
+				ELSEIF (PALAM:0 + UP:0) < 3000
+					;RETURN 0
+				;感じている
+				ELSE
+					;RETURN 0
+				ENDIF
+			;Ｃだけ绝顶寸前
+			ELSEIF C:0 == 4 && C:1 < 4 && C:2 < 4 && C:3 < 4 && D == 0
+				;RETURN 0
+			ENDIF
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF T:325 < 3 || FLAG:7 == 2
+		IF C:4 == 1 || (C:4 == 2 && PALAM_COMPARE(0) && C:0 > 0) && D == 0
+			;殆どか、あまり感じていない
+			IF (PALAM:0 + UP:0) < 500
+				;RETURN 0
+			;少し感じ始めたか、感じてきている
+			ELSEIF (PALAM:0 + UP:0) < 3000
+				;RETURN 0
+			;感じている
+			ELSE
+				;RETURN 0
+			ENDIF
+		;Ｃだけ绝顶寸前
+		ELSEIF C:0 == 4 && C:1 < 4 && C:2 < 4 && C:3 < 4 && D == 0
+			;RETURN 0
+		ENDIF	
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;41,电动按摩棒
+;-------------------------------------------------
+IF SELECTCOM == 41
+	T:326 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:326 == 1
+		;初めて
+		IF CFLAG:326 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			IF C:4 == 1 || (C:4 == 2 && PALAM_COMPARE(0) && C:0 > 0) && D == 0
+				;殆どか、あまり感じていない
+				IF (PALAM:0 + UP:0) < 500
+					;RETURN 0
+				;少し感じ始めたか、感じてきている
+				ELSEIF (PALAM:0 + UP:0) < 3000
+					;RETURN 0
+				;感じている
+				ELSE
+					;RETURN 0
+				ENDIF
+			;Ｃだけ绝顶寸前
+			ELSEIF C:0 == 4 && C:1 < 4 && C:2 < 4 && C:3 < 4 && D == 0
+				;RETURN 0
+			ENDIF
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF T:326 < 3 || FLAG:7 == 2
+		IF C:4 == 1 || (C:4 == 2 && PALAM_COMPARE(0) && C:0 > 0) && D == 0
+			;殆どか、あまり感じていない
+			IF (PALAM:0 + UP:0) < 500
+				;RETURN 0
+			;少し感じ始めたか、感じてきている
+			ELSEIF (PALAM:0 + UP:0) < 3000
+				;RETURN 0
+			;感じている
+			ELSE
+				;RETURN 0
+			ENDIF
+		;Ｃだけ绝顶寸前
+		ELSEIF C:0 == 4 && C:1 < 4 && C:2 < 4 && C:3 < 4 && D == 0
+			;RETURN 0
+		ENDIF	
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;42,阴蒂夹
+;-------------------------------------------------
+IF SELECTCOM == 42 && TEQUIP:11 == 0
+	T:327 += 1
+	CALL TRAIN_MESSAGE
+	IF T:327 == 1
+		IF CFLAG:327 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ELSEIF SELECTCOM == 42 && TEQUIP:11 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;43,飞机杯
+;-------------------------------------------------
+IF SELECTCOM == 43 && TEQUIP:12 == 0
+	T:328 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:328 == 1
+		;初めて
+		IF CFLAG:328 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			IF C:4 == 1 || (C:4 == 2 && PALAM_COMPARE(0) && C:0 > 0) && D == 0
+				;殆どか、あまり感じていない
+				IF (PALAM:0 + UP:0) < 500
+					;RETURN 0
+				;少し感じ始めたか、感じてきている
+				ELSEIF (PALAM:0 + UP:0) < 3000
+					;RETURN 0
+				;感じている
+				ELSE
+					;RETURN 0
+				ENDIF
+			;Ｃだけ绝顶寸前
+			ELSEIF C:0 == 4 && C:1 < 4 && C:2 < 4 && C:3 < 4 && D == 0
+				;RETURN 0
+			ENDIF
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		IF C:4 == 1 || (C:4 == 2 && PALAM_COMPARE(0) && C:0 > 0) && D == 0
+			;殆どか、あまり感じていない
+			IF (PALAM:0 + UP:0) < 500
+				;RETURN 0
+			;少し感じ始めたか、感じてきている
+			ELSEIF (PALAM:0 + UP:0) < 3000
+				;RETURN 0
+			;感じている
+			ELSE
+				;RETURN 0
+			ENDIF
+		;Ｃだけ绝顶寸前
+		ELSEIF C:0 == 4 && C:1 < 4 && C:2 < 4 && C:3 < 4 && D == 0
+			;RETURN 0
+		ENDIF	
+	ENDIF
+ELSEIF SELECTCOM == 43 && TEQUIP:12 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;44,自慰棒
+;-------------------------------------------------
+IF SELECTCOM == 44 && TEQUIP:13 == 0
+	T:329 += 1
+	CALL TRAIN_MESSAGE
+	IF T:329 == 1
+		;初めて
+		IF CFLAG:329 == 0
+			;处女
+			IF TALENT:0
+			
+			;それ以外
+			ELSE
+			
+			ENDIF
+		;今回の调教で初めて
+		ELSE
+		ENDIF
+	;二回目以降
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ELSEIF SELECTCOM == 44 && TEQUIP:13 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;45,肛塞
+;-------------------------------------------------
+IF SELECTCOM == 45 && TEQUIP:14 == 0
+	T:330 += 1
+	CALL TRAIN_MESSAGE
+	IF T:330 == 1
+		;初めて
+		IF CFLAG:330 == 0
+			IF TALENT:后庭处子
+			
+			;それ以外
+			ELSE
+			
+			ENDIF
+		;今回の调教で初めて
+		ELSE
+			;Ａ系用　現在のパラで口上を分岐する
+			;Ａ以外のところが痛くて感じる余裕が無い&受虐狂ではない
+			IF D >= 1 && C:4 <= 2 && TALENT:84 != 1 && ABL:9 < 3 && D:1 == 0
+			;Ａ責めメインの時
+			ELSEIF C:4 == 1 || (C:4 == 2 && (PALAM:2 + UP:2) >= (PALAM:1 + UP:1) && (PALAM:2 + UP:2) >= (PALAM:3 + UP:3) && (PALAM:2 + UP:2) >= (PALAM:0 + UP:0) && C:2 > 0) && D != 2
+				;经验が足りなくてとにかくかなり痛い
+				IF EXP:Ａ经验 < 10 && (PALAM:2 + UP:2) < 3000 || (EXP:Ａ经验 < 30 && (PALAM:2 + UP:2) < 1500)
+				;段々痛くなくなるが、最初はまだ痛む
+				ELSEIF EXP:Ａ经验 >= 30 && EXP:Ａ经验 < 75 && (PALAM:2 + UP:2) < 500
+				;痛くもなく感じてもない。慣れてきた。
+				ELSEIF (PALAM:2 + UP:2) < 500
+				;疼痛以外の何かを感じている
+				ELSEIF (PALAM:2 + UP:2) < 1500
+				;疼痛ながら感じている
+				ELSEIF (PALAM:2 + UP:2) < 3000 && EXP:Ａ经验 < 75
+				;感じている
+				ELSEIF (PALAM:2 + UP:2) < 3000
+				;後ろで明らかに感じている
+				ELSEIF (PALAM:2 + UP:2) < 6000
+				;快感に震えている
+				ELSEIF (PALAM:2 + UP:2) < 8000
+				ENDIF
+			;Ａだけ绝顶寸前
+			ELSEIF C:2 == 4 && C:1 < 4 && C:3 < 4 && C:0 < 4 && D != 2
+			ENDIF
+		ENDIF
+	;二回目以降
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ELSEIF SELECTCOM == 45 && TEQUIP:14 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;46,后庭拉珠
+;-------------------------------------------------
+IF SELECTCOM == 46 && TEQUIP:15 == 0
+	T:331 += 1
+	CALL TRAIN_MESSAGE
+	IF T:331 == 1
+		;初めて
+		IF CFLAG:331 == 0
+			IF TALENT:后庭处子
+			
+			;それ以外
+			ELSE
+			
+			ENDIF
+		;今回の调教で初めて
+		ELSE
+			;Ａ系用　現在のパラで口上を分岐する
+			;Ａ以外のところが痛くて感じる余裕が無い&受虐狂ではない
+			IF D >= 1 && C:4 <= 2 && TALENT:84 != 1 && ABL:9 < 3 && D:1 == 0
+			;Ａ責めメインの時
+			ELSEIF C:4 == 1 || (C:4 == 2 && (PALAM:2 + UP:2) >= (PALAM:1 + UP:1) && (PALAM:2 + UP:2) >= (PALAM:3 + UP:3) && (PALAM:2 + UP:2) >= (PALAM:0 + UP:0) && C:2 > 0) && D != 2
+				;经验が足りなくてとにかくかなり痛い
+				IF EXP:Ａ经验 < 10 && (PALAM:2 + UP:2) < 3000 || (EXP:Ａ经验 < 30 && (PALAM:2 + UP:2) < 1500)
+				;段々痛くなくなるが、最初はまだ痛む
+				ELSEIF EXP:Ａ经验 >= 30 && EXP:Ａ经验 < 75 && (PALAM:2 + UP:2) < 500
+				;痛くもなく感じてもない。慣れてきた。
+				ELSEIF (PALAM:2 + UP:2) < 500
+				;疼痛以外の何かを感じている
+				ELSEIF (PALAM:2 + UP:2) < 1500
+				;疼痛ながら感じている
+				ELSEIF (PALAM:2 + UP:2) < 3000 && EXP:Ａ经验 < 75
+				;感じている
+				ELSEIF (PALAM:2 + UP:2) < 3000
+				;後ろで明らかに感じている
+				ELSEIF (PALAM:2 + UP:2) < 6000
+				;快感に震えている
+				ELSEIF (PALAM:2 + UP:2) < 8000
+				ENDIF
+			;Ａだけ绝顶寸前
+			ELSEIF C:2 == 4 && C:1 < 4 && C:3 < 4 && C:0 < 4 && D != 2
+			ENDIF
+		ENDIF
+	;二回目以降
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ELSEIF SELECTCOM == 46 && TEQUIP:15 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;47,振动乳头夹
+;-------------------------------------------------
+IF SELECTCOM == 47 && TEQUIP:16 == 0
+	T:332 += 1
+	CALL TRAIN_MESSAGE
+	IF T:332 == 1
+		;初めて
+		IF CFLAG:332 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			IF C:4 == 1 || (C:4 == 2 && (PALAM:3 + UP:3) >= (PALAM:1 + UP:1) && (PALAM:3 + UP:3) >= (PALAM:2 + UP:2) && (PALAM:3 + UP:3) >= (PALAM:0 + UP:0) && C:3 > 0) && D == 0
+				IF (PALAM:3 + UP:3) < 500
+					;RETURN 0
+				ELSEIF (PALAM:3 + UP:3) < 3000
+					;RETURN 0
+				ELSE
+					;RETURN 0
+				ENDIF
+			;Ｂだけ绝顶寸前
+			ELSEIF C:3 == 4 && C:1 < 4 && C:2 < 4 && C:0 < 4 && D == 0
+				;RETURN 0
+			ENDIF
+		ENDIF
+	;二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ELSEIF SELECTCOM == 47 && TEQUIP:16 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;48,乳头跳蛋
+;-------------------------------------------------
+IF SELECTCOM == 48
+	T:333 += 1
+	CALL TRAIN_MESSAGE
+	IF T:333 == 1
+		;初めて
+		IF CFLAG:333 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			IF C:4 == 1 || (C:4 == 2 && (PALAM:3 + UP:3) >= (PALAM:1 + UP:1) && (PALAM:3 + UP:3) >= (PALAM:2 + UP:2) && (PALAM:3 + UP:3) >= (PALAM:0 + UP:0) && C:3 > 0) && D == 0
+				IF (PALAM:3 + UP:3) < 500
+					;RETURN 0
+				ELSEIF (PALAM:3 + UP:3) < 3000
+					;RETURN 0
+				ELSE
+					;RETURN 0
+				ENDIF
+			;Ｂだけ绝顶寸前
+			ELSEIF C:3 == 4 && C:1 < 4 && C:2 < 4 && C:0 < 4 && D == 0
+				;RETURN 0
+			ENDIF
+		ENDIF
+	;二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;49,挤奶器
+;-------------------------------------------------
+IF SELECTCOM == 49 && TEQUIP:17 == 0
+	T:334 += 1
+	CALL TRAIN_MESSAGE
+	IF T:334 == 1
+		;初めて
+		IF CFLAG:334 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			IF C:4 == 1 || (C:4 == 2 && (PALAM:3 + UP:3) >= (PALAM:1 + UP:1) && (PALAM:3 + UP:3) >= (PALAM:2 + UP:2) && (PALAM:3 + UP:3) >= (PALAM:0 + UP:0) && C:3 > 0) && D == 0
+				IF (PALAM:3 + UP:3) < 500
+					;RETURN 0
+				ELSEIF (PALAM:3 + UP:3) < 3000
+					;RETURN 0
+				ELSE
+					;RETURN 0
+				ENDIF
+			;Ｂだけ绝顶寸前
+			ELSEIF C:3 == 4 && C:1 < 4 && C:2 < 4 && C:0 < 4 && D == 0
+				;RETURN 0
+			ENDIF
+		ENDIF
+	;二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ELSEIF SELECTCOM == 49 && TEQUIP:17 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;50,导尿管
+;-------------------------------------------------
+IF SELECTCOM == 50 && TEQUIP:38 == 0
+	T:335 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:335 == 1
+		;初めて
+		IF CFLAG:335 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			IF C:4 == 1 || (C:4 == 2 && PALAM_COMPARE(0) && C:0 > 0) && D == 0
+				;殆どか、あまり感じていない
+				IF (PALAM:0 + UP:0) < 500
+					;RETURN 0
+				;少し感じ始めたか、感じてきている
+				ELSEIF (PALAM:0 + UP:0) < 3000
+					;RETURN 0
+				;感じている
+				ELSE
+					;RETURN 0
+				ENDIF
+			;Ｃだけ绝顶寸前
+			ELSEIF C:0 == 4 && C:1 < 4 && C:2 < 4 && C:3 < 4 && D == 0
+				;RETURN 0
+			ENDIF
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2	
+	ENDIF
+ELSEIF SELECTCOM == 50 && TEQUIP:38 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+	ENDIF
+ENDIF
+
+;=================================================
+;做爱系指令
+;=================================================
+;-------------------------------------------------
+;60,正常位
+;-------------------------------------------------
+IF SELECTCOM == 60
+	T:336 += 1
+	CALL TRAIN_MESSAGE
+	IF T:336 == 1
+		;初めて
+		IF CFLAG:336 == 0
+			;处女
+			IF TALENT:0
+			
+			;それ以外
+			ELSE
+			
+			ENDIF
+		;今回の调教で初めて
+		ELSE
+		ENDIF
+	;二回目以降
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;61,后背位
+;-------------------------------------------------
+IF SELECTCOM == 61
+	T:337 += 1
+	CALL TRAIN_MESSAGE
+	IF T:337 == 1
+		;初めて
+		IF CFLAG:337 == 0
+			;处女
+			IF TALENT:0
+			
+			;それ以外
+			ELSE
+			
+			ENDIF
+		;今回の调教で初めて
+		ELSE
+		ENDIF
+	;二回目以降
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;62,正常位肛交
+;-------------------------------------------------
+IF SELECTCOM == 62
+	T:338 += 1
+	CALL TRAIN_MESSAGE
+	IF T:338 == 1
+		;初めて
+		IF CFLAG:338 == 0
+			IF TALENT:后庭处子
+				;RETURN 0
+			;それ以外
+			ELSE
+				;RETURN 0
+			ENDIF
+		;今回の调教で初めて
+		ELSE
+			;Ａ系用　現在のパラで口上を分岐する
+			;Ａ責めメインの時
+			IF C:4 == 1 || (C:4 == 2 && (PALAM:2 + UP:2) >= (PALAM:1 + UP:1) && (PALAM:2 + UP:2) >= (PALAM:3 + UP:3) && (PALAM:2 + UP:2) >= (PALAM:0 + UP:0) && C:2 > 0) && D == 0
+				;经验が足りなくてとにかくかなり痛い
+				IF EXP:Ａ经验 < 10 && (PALAM:2 + UP:2) < 3000 || (EXP:Ａ经验 < 30 && (PALAM:2 + UP:2) < 1500)
+					;RETURN 0
+				;段々痛くなくなるが、最初はまだ痛む
+				ELSEIF EXP:Ａ经验 >= 30 && EXP:Ａ经验 < 75 && (PALAM:2 + UP:2) < 500
+					;RETURN 0
+				;痛くもなく感じてもない。慣れてきた。
+				ELSEIF (PALAM:2 + UP:2) < 500
+					;RETURN 0
+				;疼痛ながら何かを感じている
+				ELSEIF (PALAM:2 + UP:2) < 1500 || ((PALAM:2 + UP:2) < 3000 && EXP:Ａ经验 < 75)
+					;RETURN 0
+				;感じている
+				ELSEIF (PALAM:2 + UP:2) < 3000
+					;RETURN 0
+				;後ろで明らかに感じている
+				ELSE
+					;RETURN 0
+				ENDIF
+			;Ａだけ绝顶寸前
+			ELSEIF C:2 == 4 && C:1 < 4 && C:3 < 4 && C:0 < 4 && D == 0
+			ENDIF
+		ENDIF
+	;二回目以降
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;63,后背位肛交
+;-------------------------------------------------
+IF SELECTCOM == 63
+	T:339 += 1
+	CALL TRAIN_MESSAGE
+	IF T:339 == 1
+		;初めて
+		IF CFLAG:339 == 0
+			IF TALENT:后庭处子
+				;RETURN 0
+			;それ以外
+			ELSE
+				;RETURN 0
+			ENDIF
+		;今回の调教で初めて
+		ELSE
+			;Ａ系用　現在のパラで口上を分岐する
+			;Ａ責めメインの時
+			IF C:4 == 1 || (C:4 == 2 && (PALAM:2 + UP:2) >= (PALAM:1 + UP:1) && (PALAM:2 + UP:2) >= (PALAM:3 + UP:3) && (PALAM:2 + UP:2) >= (PALAM:0 + UP:0) && C:2 > 0) && D == 0
+				;经验が足りなくてとにかくかなり痛い
+				IF EXP:Ａ经验 < 10 && (PALAM:2 + UP:2) < 3000 || (EXP:Ａ经验 < 30 && (PALAM:2 + UP:2) < 1500)
+					;RETURN 0
+				;段々痛くなくなるが、最初はまだ痛む
+				ELSEIF EXP:Ａ经验 >= 30 && EXP:Ａ经验 < 75 && (PALAM:2 + UP:2) < 500
+					;RETURN 0
+				;痛くもなく感じてもない。慣れてきた。
+				ELSEIF (PALAM:2 + UP:2) < 500
+					;RETURN 0
+				;疼痛ながら何かを感じている
+				ELSEIF (PALAM:2 + UP:2) < 1500 || ((PALAM:2 + UP:2) < 3000 && EXP:Ａ经验 < 75)
+					;RETURN 0
+				;感じている
+				ELSEIF (PALAM:2 + UP:2) < 3000
+					;RETURN 0
+				;後ろで明らかに感じている
+				ELSE
+					;RETURN 0
+				ENDIF
+			;Ａだけ绝顶寸前
+			ELSEIF C:2 == 4 && C:1 < 4 && C:3 < 4 && C:0 < 4 && D == 0
+			ENDIF
+		ENDIF
+	;二回目以降
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;65,乳头奸
+;-------------------------------------------------
+IF SELECTCOM == 65
+	T:340 += 1
+	CALL TRAIN_MESSAGE
+	IF T:340 == 1
+		;初めて
+		IF CFLAG:340 == 0
+		;今回の调教で初めて
+		ELSE
+		ENDIF
+	;二回目以降
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;66,骑乘位
+;-------------------------------------------------
+IF SELECTCOM == 66
+	T:341 += 1
+	CALL TRAIN_MESSAGE
+	IF T:341 == 1
+		;初めて
+		IF CFLAG:341 == 0
+			;处女
+			IF TALENT:0
+			
+			;それ以外
+			ELSE
+			
+			ENDIF
+		;今回の调教で初めて
+		ELSE
+		ENDIF
+	;二回目以降
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;67,骑乘位肛交
+;-------------------------------------------------
+IF SELECTCOM == 67
+	T:342 += 1
+	CALL TRAIN_MESSAGE
+	IF T:342 == 1
+		;初めて
+		IF CFLAG:342 == 0
+			IF TALENT:后庭处子
+				;RETURN 0
+			;それ以外
+			ELSE
+				;RETURN 0
+			ENDIF
+		;今回の调教で初めて
+		ELSE
+
+		ENDIF
+	;二回目以降
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;68,对面座位
+;-------------------------------------------------
+IF SELECTCOM == 68
+	T:343 += 1
+	CALL TRAIN_MESSAGE
+	IF T:343 == 1
+		;初めて
+		IF CFLAG:343 == 0
+			;处女
+			IF TALENT:0
+			
+			;それ以外
+			ELSE
+			
+			ENDIF
+		;今回の调教で初めて
+		ELSE
+		ENDIF
+	;二回目以降
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;69,背面座位
+;-------------------------------------------------
+IF SELECTCOM == 69
+	T:344 += 1
+	CALL TRAIN_MESSAGE
+	IF T:344 == 1
+		;初めて
+		IF CFLAG:344 == 0
+			;处女
+			IF TALENT:0
+			
+			;それ以外
+			ELSE
+			
+			ENDIF
+		;今回の调教で初めて
+		ELSE
+		ENDIF
+	;二回目以降
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;70,对面座位肛交
+;-------------------------------------------------
+IF SELECTCOM == 70
+	T:345 += 1
+	CALL TRAIN_MESSAGE
+	IF T:345 == 1
+		;初めて
+		IF CFLAG:345 == 0
+			IF TALENT:后庭处子
+				;RETURN 0
+			;それ以外
+			ELSE
+				;RETURN 0
+			ENDIF
+		;今回の调教で初めて
+		ELSE
+			;Ａ系用　現在のパラで口上を分岐する
+			;Ａ責めメインの時
+			IF C:4 == 1 || (C:4 == 2 && (PALAM:2 + UP:2) >= (PALAM:1 + UP:1) && (PALAM:2 + UP:2) >= (PALAM:3 + UP:3) && (PALAM:2 + UP:2) >= (PALAM:0 + UP:0) && C:2 > 0) && D == 0
+				;经验が足りなくてとにかくかなり痛い
+				IF EXP:Ａ经验 < 10 && (PALAM:2 + UP:2) < 3000 || (EXP:Ａ经验 < 30 && (PALAM:2 + UP:2) < 1500)
+					;RETURN 0
+				;段々痛くなくなるが、最初はまだ痛む
+				ELSEIF EXP:Ａ经验 >= 30 && EXP:Ａ经验 < 75 && (PALAM:2 + UP:2) < 500
+					;RETURN 0
+				;痛くもなく感じてもない。慣れてきた。
+				ELSEIF (PALAM:2 + UP:2) < 500
+					;RETURN 0
+				;疼痛ながら何かを感じている
+				ELSEIF (PALAM:2 + UP:2) < 1500 || ((PALAM:2 + UP:2) < 3000 && EXP:Ａ经验 < 75)
+					;RETURN 0
+				;感じている
+				ELSEIF (PALAM:2 + UP:2) < 3000
+					;RETURN 0
+				;後ろで明らかに感じている
+				ELSE
+					;RETURN 0
+				ENDIF
+			;Ａだけ绝顶寸前
+			ELSEIF C:2 == 4 && C:1 < 4 && C:3 < 4 && C:0 < 4 && D == 0
+			ENDIF
+		ENDIF
+	;二回目以降
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;71,背面座位肛交
+;-------------------------------------------------
+IF SELECTCOM == 71
+	T:346 += 1
+	CALL TRAIN_MESSAGE
+	IF T:346 == 1
+		;初めて
+		IF CFLAG:346 == 0
+			IF TALENT:后庭处子
+				;RETURN 0
+			;それ以外
+			ELSE
+				;RETURN 0
+			ENDIF
+		;今回の调教で初めて
+		ELSE
+			;Ａ系用　現在のパラで口上を分岐する
+			;Ａ責めメインの時
+			IF C:4 == 1 || (C:4 == 2 && (PALAM:2 + UP:2) >= (PALAM:1 + UP:1) && (PALAM:2 + UP:2) >= (PALAM:3 + UP:3) && (PALAM:2 + UP:2) >= (PALAM:0 + UP:0) && C:2 > 0) && D == 0
+				;经验が足りなくてとにかくかなり痛い
+				IF EXP:Ａ经验 < 10 && (PALAM:2 + UP:2) < 3000 || (EXP:Ａ经验 < 30 && (PALAM:2 + UP:2) < 1500)
+					;RETURN 0
+				;段々痛くなくなるが、最初はまだ痛む
+				ELSEIF EXP:Ａ经验 >= 30 && EXP:Ａ经验 < 75 && (PALAM:2 + UP:2) < 500
+					;RETURN 0
+				;痛くもなく感じてもない。慣れてきた。
+				ELSEIF (PALAM:2 + UP:2) < 500
+					;RETURN 0
+				;疼痛ながら何かを感じている
+				ELSEIF (PALAM:2 + UP:2) < 1500 || ((PALAM:2 + UP:2) < 3000 && EXP:Ａ经验 < 75)
+					;RETURN 0
+				;感じている
+				ELSEIF (PALAM:2 + UP:2) < 3000
+					;RETURN 0
+				;後ろで明らかに感じている
+				ELSE
+					;RETURN 0
+				ENDIF
+			;Ａだけ绝顶寸前
+			ELSEIF C:2 == 4 && C:1 < 4 && C:3 < 4 && C:0 < 4 && D == 0
+			ENDIF
+		ENDIF
+	;二回目以降
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;74,对面立位
+;-------------------------------------------------
+IF SELECTCOM == 74
+	T:347 += 1
+	CALL TRAIN_MESSAGE
+	IF T:347 == 1
+		;初めて
+		IF CFLAG:347 == 0
+			;处女
+			IF TALENT:0
+			
+			;それ以外
+			ELSE
+			
+			ENDIF
+		;今回の调教で初めて
+		ELSE
+		ENDIF
+	;二回目以降
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;75,对面立位肛
+;-------------------------------------------------
+IF SELECTCOM == 75
+	T:348 += 1
+	CALL TRAIN_MESSAGE
+	IF T:348 == 1
+		;初めて
+		IF CFLAG:348 == 0
+			IF TALENT:后庭处子
+				;RETURN 0
+			;それ以外
+			ELSE
+				;RETURN 0
+			ENDIF
+		;今回の调教で初めて
+		ELSE
+			;Ａ系用　現在のパラで口上を分岐する
+			;Ａ責めメインの時
+			IF C:4 == 1 || (C:4 == 2 && (PALAM:2 + UP:2) >= (PALAM:1 + UP:1) && (PALAM:2 + UP:2) >= (PALAM:3 + UP:3) && (PALAM:2 + UP:2) >= (PALAM:0 + UP:0) && C:2 > 0) && D == 0
+				;经验が足りなくてとにかくかなり痛い
+				IF EXP:Ａ经验 < 10 && (PALAM:2 + UP:2) < 3000 || (EXP:Ａ经验 < 30 && (PALAM:2 + UP:2) < 1500)
+					;RETURN 0
+				;段々痛くなくなるが、最初はまだ痛む
+				ELSEIF EXP:Ａ经验 >= 30 && EXP:Ａ经验 < 75 && (PALAM:2 + UP:2) < 500
+					;RETURN 0
+				;痛くもなく感じてもない。慣れてきた。
+				ELSEIF (PALAM:2 + UP:2) < 500
+					;RETURN 0
+				;疼痛ながら何かを感じている
+				ELSEIF (PALAM:2 + UP:2) < 1500 || ((PALAM:2 + UP:2) < 3000 && EXP:Ａ经验 < 75)
+					;RETURN 0
+				;感じている
+				ELSEIF (PALAM:2 + UP:2) < 3000
+					;RETURN 0
+				;後ろで明らかに感じている
+				ELSE
+					;RETURN 0
+				ENDIF
+			;Ａだけ绝顶寸前
+			ELSEIF C:2 == 4 && C:1 < 4 && C:3 < 4 && C:0 < 4 && D == 0
+			ENDIF
+		ENDIF
+	;二回目以降
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;76,背面立位
+;-------------------------------------------------
+IF SELECTCOM == 76
+	T:349 += 1
+	CALL TRAIN_MESSAGE
+	IF T:349 == 1
+		;初めて
+		IF CFLAG:349 == 0
+			;处女
+			IF TALENT:0
+			
+			;それ以外
+			ELSE
+			
+			ENDIF
+		;今回の调教で初めて
+		ELSE
+		ENDIF
+	;二回目以降
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;77,背面立位肛
+;-------------------------------------------------
+IF SELECTCOM == 77
+	T:350 += 1
+	CALL TRAIN_MESSAGE
+	IF T:350 == 1
+		;初めて
+		IF CFLAG:350 == 0
+			IF TALENT:后庭处子
+				;RETURN 0
+			;それ以外
+			ELSE
+				;RETURN 0
+			ENDIF
+		;今回の调教で初めて
+		ELSE
+			;Ａ系用　現在のパラで口上を分岐する
+			;Ａ責めメインの時
+			IF C:4 == 1 || (C:4 == 2 && (PALAM:2 + UP:2) >= (PALAM:1 + UP:1) && (PALAM:2 + UP:2) >= (PALAM:3 + UP:3) && (PALAM:2 + UP:2) >= (PALAM:0 + UP:0) && C:2 > 0) && D == 0
+				;经验が足りなくてとにかくかなり痛い
+				IF EXP:Ａ经验 < 10 && (PALAM:2 + UP:2) < 3000 || (EXP:Ａ经验 < 30 && (PALAM:2 + UP:2) < 1500)
+					;RETURN 0
+				;段々痛くなくなるが、最初はまだ痛む
+				ELSEIF EXP:Ａ经验 >= 30 && EXP:Ａ经验 < 75 && (PALAM:2 + UP:2) < 500
+					;RETURN 0
+				;痛くもなく感じてもない。慣れてきた。
+				ELSEIF (PALAM:2 + UP:2) < 500
+					;RETURN 0
+				;疼痛ながら何かを感じている
+				ELSEIF (PALAM:2 + UP:2) < 1500 || ((PALAM:2 + UP:2) < 3000 && EXP:Ａ经验 < 75)
+					;RETURN 0
+				;感じている
+				ELSEIF (PALAM:2 + UP:2) < 3000
+					;RETURN 0
+				;後ろで明らかに感じている
+				ELSE
+					;RETURN 0
+				ENDIF
+			;Ａだけ绝顶寸前
+			ELSEIF C:2 == 4 && C:1 < 4 && C:3 < 4 && C:0 < 4 && D == 0
+			ENDIF
+		ENDIF
+	;二回目以降
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;=================================================
+;侍奉系指令
+;=================================================
+;-------------------------------------------------
+;80,手交命令
+;-------------------------------------------------
+IF SELECTCOM == 80
+	T:351 += 1
+	CALL TRAIN_MESSAGE
+	IF T:351 == 1
+		IF CFLAG:351 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;81,口交命令
+;-------------------------------------------------
+IF SELECTCOM == 81
+	T:352 += 1
+	CALL TRAIN_MESSAGE
+	IF T:352 == 1
+		IF CFLAG:352 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;82,乳交命令
+;-------------------------------------------------
+IF SELECTCOM == 82
+	T:353 += 1
+	CALL TRAIN_MESSAGE
+	IF T:353 == 1
+		IF CFLAG:353 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;83,素股させる
+;-------------------------------------------------
+IF SELECTCOM == 83
+	T:354 += 1
+	CALL TRAIN_MESSAGE
+	IF T:354 == 1
+		IF CFLAG:354 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;84,泡泡浴
+;-------------------------------------------------
+IF SELECTCOM == 84
+	T:355 += 1
+	CALL TRAIN_MESSAGE
+	IF T:355 == 1
+		IF CFLAG:355 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;85,足交命令
+;-------------------------------------------------
+IF SELECTCOM == 85
+	T:356 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:356 == 1
+		IF CFLAG:356 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;86,舔足命令
+;-------------------------------------------------
+IF SELECTCOM == 86
+	T:357 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:357 == 1
+		;初めて
+		IF CFLAG:357 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;87,縦乳交命令
+;-------------------------------------------------
+IF SELECTCOM == 87
+	T:358 += 1
+	CALL TRAIN_MESSAGE
+	IF T:358 == 1
+		IF CFLAG:358 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;88,乳夹口交命令
+;-------------------------------------------------
+IF SELECTCOM == 88
+	T:359 += 1
+	CALL TRAIN_MESSAGE
+	IF T:359 == 1
+		IF CFLAG:359 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;89,饮用母乳
+;-------------------------------------------------
+IF SELECTCOM == 89
+	T:360 += 1
+	CALL TRAIN_MESSAGE
+	IF T:360 == 1
+		IF CFLAG:360 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;90,阴茎摩擦头发
+;-------------------------------------------------
+IF SELECTCOM == 90
+	T:361 += 1
+	CALL TRAIN_MESSAGE
+	IF T:361 == 1
+		IF CFLAG:361 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;91,使之舔手指
+;-------------------------------------------------
+IF SELECTCOM == 91
+	T:362 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:362 == 1
+		;初めて
+		IF CFLAG:362 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;92,腋交
+;-------------------------------------------------
+IF SELECTCOM == 92
+	T:363 += 1
+	CALL TRAIN_MESSAGE
+	IF T:363 == 1
+		IF CFLAG:363 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;93,乳を飲ませる
+;-------------------------------------------------
+IF SELECTCOM == 93
+	T:467 += 1
+	CALL TRAIN_MESSAGE
+	IF T:467 == 1
+		IF CFLAG:467 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;94,尾交（鱼尾不可）
+;-------------------------------------------------
+IF SELECTCOM == 94
+	T:504 += 1
+	CALL TRAIN_MESSAGE
+	IF T:504 == 1
+		IF CFLAG:504 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;95,耳交（限定兽耳）
+;-------------------------------------------------
+IF SELECTCOM == 95
+	T:505 += 1
+	CALL TRAIN_MESSAGE
+	IF T:505 == 1
+		IF CFLAG:505 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+;=================================================
+;SM系指令
+;=================================================
+;-------------------------------------------------
+;100,打屁股
+;-------------------------------------------------
+IF SELECTCOM == 100
+	T:364 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:364 == 1
+		;初めて
+		IF CFLAG:364 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;101,打胸部
+;-------------------------------------------------
+IF SELECTCOM == 101
+	T:365 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:365 == 1
+		;初めて
+		IF CFLAG:365 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;102,鞭子
+;-------------------------------------------------
+IF SELECTCOM == 102
+	T:366 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:366 == 1
+		;初めて
+		IF CFLAG:366 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;103,蜡烛
+;-------------------------------------------------
+IF SELECTCOM == 103
+	T:367 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:367 == 1
+		;初めて
+		IF CFLAG:367 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;104,针
+;-------------------------------------------------
+IF SELECTCOM == 104
+	T:368 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:368 == 1
+		;初めて
+		IF CFLAG:368 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;105,眼罩
+;-------------------------------------------------
+IF SELECTCOM == 105 && TEQUIP:18 == 0
+	T:369 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:369 == 1
+		;初めて
+		IF CFLAG:369 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ELSEIF SELECTCOM == 105 && TEQUIP:18 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;106,绳子
+;-------------------------------------------------
+IF SELECTCOM == 106 && TEQUIP:19 == 0
+	T:370 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:370 == 1
+		;初めて
+		IF CFLAG:370 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ELSEIF SELECTCOM == 106 && TEQUIP:19 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+		
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;107,口塞球
+;-------------------------------------------------
+IF SELECTCOM == 107 && TEQUIP:20 == 0
+	T:371 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:371 == 1
+		;初めて
+		IF CFLAG:371 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ELSEIF SELECTCOM == 107 && TEQUIP:20 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+		
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;108,拷問
+;-------------------------------------------------
+IF SELECTCOM == 108
+	T:372 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:372 == 1
+		;初めて
+		IF CFLAG:372 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;109,禁止射精
+;-------------------------------------------------
+IF SELECTCOM == 109
+	T:373 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:373 == 1
+		;初めて
+		IF CFLAG:373 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;110,家具にする
+;-------------------------------------------------
+IF SELECTCOM == 110
+	T:374 += 1
+	;共通の地の文 
+	CALL TRAIN_MESSAGE
+ENDIF
+
+;-------------------------------------------------
+;111,剃毛
+;-------------------------------------------------
+IF SELECTCOM == 111
+	T:375 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:375 == 1
+		;初めて
+		IF CFLAG:375 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;112,首絞め
+;-------------------------------------------------
+IF SELECTCOM == 112
+	T:376 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:376 == 1
+		;初めて
+		IF CFLAG:376 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;113,顔騎圧迫
+;-------------------------------------------------
+IF SELECTCOM == 113
+	T:377 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:377 == 1
+		;初めて
+		IF CFLAG:377 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;114,金蹴り
+;-------------------------------------------------
+IF SELECTCOM == 114
+	T:468 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:468 == 1
+		;初めて
+		IF CFLAG:468 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;115,電気アンマ
+;-------------------------------------------------
+IF SELECTCOM == 115
+	T:469 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:469 == 1
+		;初めて
+		IF CFLAG:469 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+;=================================================
+;元 助手による指令、及び百合プ雷
+;=================================================
+;-------------------------------------------------
+;120,強制舔阴
+;-------------------------------------------------
+IF SELECTCOM == 120
+	T:378 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:378 == 1
+		;初めて
+		IF CFLAG:378 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;121,磨镜
+;-------------------------------------------------
+IF SELECTCOM == 121
+	T:472 += 1
+	CALL TRAIN_MESSAGE
+	IF T:472 == 1
+		IF CFLAG:472 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;122,使之侵犯助手
+;-------------------------------------------------
+IF SELECTCOM == 122
+	T:473 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:473 == 1
+		;初めて
+		IF CFLAG:473 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;123,足交
+;-------------------------------------------------
+IF SELECTCOM == 123
+	T:474 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:474 == 1
+		;初めて
+		IF CFLAG:474 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;124,Ｗ口交
+;-------------------------------------------------
+IF SELECTCOM == 124
+	T:475 += 1
+	CALL TRAIN_MESSAGE
+	IF T:475 == 1
+		IF CFLAG:475 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;125,Ｗ乳交
+;-------------------------------------------------
+IF SELECTCOM == 125
+	T:476 += 1
+	CALL TRAIN_MESSAGE
+	IF T:476 == 1
+		IF CFLAG:476 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;126,互相推搡胸部
+;-------------------------------------------------
+IF SELECTCOM == 126
+	T:477 += 1
+	CALL TRAIN_MESSAGE
+	IF T:477 == 1
+		IF CFLAG:477 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;127,阴茎相互摩擦
+;-------------------------------------------------
+IF SELECTCOM == 127
+	T:478 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:478 == 1
+		;初めて
+		IF CFLAG:478 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;=================================================
+;严厉な调教指令
+;=================================================
+;-------------------------------------------------
+;140,强制口交
+;-------------------------------------------------
+IF SELECTCOM == 140
+	T:479 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:479 == 1
+		;初めて
+		IF CFLAG:479 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;141,拳交
+;-------------------------------------------------
+IF SELECTCOM == 141
+	T:480 += 1
+	CALL TRAIN_MESSAGE
+	IF T:480 == 1
+		IF CFLAG:480 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;142,肛门拳交
+;-------------------------------------------------
+IF SELECTCOM == 142
+	T:481 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:481 == 1
+		;初めて
+		IF CFLAG:481 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;143,两穴拳交
+;-------------------------------------------------
+IF SELECTCOM == 143
+	T:482 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:482 == 1
+		;初めて
+		IF CFLAG:482 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;144,放尿
+;-------------------------------------------------
+IF SELECTCOM == 144
+	T:483 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:483 == 1
+		;初めて
+		IF CFLAG:483 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;145,肛门侍奉強制
+;-------------------------------------------------
+IF SELECTCOM == 145
+	T:484 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:484 == 1
+		;初めて
+		IF CFLAG:484 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;146,灌肠器＋塞头
+;-------------------------------------------------
+IF SELECTCOM == 146 && TEQUIP:21 == 0
+	T:485 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:485 == 1
+		;初めて
+		IF CFLAG:485 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ELSEIF SELECTCOM == 146 && TEQUIP:21 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;147,空气灌肠
+;-------------------------------------------------
+IF SELECTCOM == 147
+	T:486 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:486 == 1
+		;初めて
+		IF CFLAG:486 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;148,扩张气球
+;-------------------------------------------------
+IF SELECTCOM == 148 && TEQUIP:22 == 0
+	T:487 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:487 == 1
+		;初めて
+		IF CFLAG:487 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ELSEIF SELECTCOM == 148 && TEQUIP:22 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;149,肛门电极
+;-------------------------------------------------
+IF SELECTCOM == 149 && TEQUIP:23 == 0
+	T:488 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:488 == 1
+		;初めて
+		IF CFLAG:488 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ELSEIF SELECTCOM == 149 && TEQUIP:23 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;150,乳房电极
+;-------------------------------------------------
+IF SELECTCOM == 150 && TEQUIP:24 == 0
+	T:489 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:489 == 1
+		;初めて
+		IF CFLAG:489 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ELSEIF SELECTCOM == 150 && TEQUIP:24 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;151,鳗鱼池
+;-------------------------------------------------
+IF SELECTCOM == 151
+	T:490 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:490 == 1
+		;初めて
+		IF CFLAG:490 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;152,虫子池
+;-------------------------------------------------
+IF SELECTCOM == 152
+	T:491 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:491 == 1
+		;初めて
+		IF CFLAG:491 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+
+;-------------------------------------------------
+;153,尿道バルーン	CFLAG:435
+;-------------------------------------------------
+IF SELECTCOM == 153
+	T:379 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:379 == 1
+		;初めて
+		IF CFLAG:379 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;154,肉便器
+;-------------------------------------------------
+IF SELECTCOM == 154
+	T:380 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:380 == 1
+		;初めて
+		IF CFLAG:380 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;155,兽姦
+;-------------------------------------------------
+IF SELECTCOM == 155
+	T:381 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:381 == 1
+		;初めて
+		IF CFLAG:381 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;156,烙印　CFLAG:448
+;R = 0なにもしない、R = 1傷痕、R = 2身体穿环、R = 3刺青、 R = 4焼き印
+;-------------------------------------------------
+IF SELECTCOM == 156
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	SIF R != 0
+		T:382 += 1
+ENDIF
+
+;-------------------------------------------------
+;157,饮尿　CFLAG:477
+;-------------------------------------------------
+IF SELECTCOM == 157
+	T:383 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:383 == 1
+		;初めて
+		IF CFLAG:383 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;158,尾巴插入
+;-------------------------------------------------
+IF SELECTCOM == 158 && TEQUIP:51 == 0
+	T:502 += 1
+	CALL TRAIN_MESSAGE
+	IF T:502 == 1
+		;初めて
+		IF CFLAG:502 == 0
+			;处女
+			IF TALENT:0
+
+			;それ以外
+			ELSE
+
+			ENDIF
+		;今回の调教で初めて
+		ELSE
+		ENDIF
+	;二回目以降
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ELSEIF SELECTCOM == 158 && TEQUIP:51 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;159,尾巴肛插入
+;-------------------------------------------------
+IF SELECTCOM == 159 && TEQUIP:52 == 0
+	T:503 += 1
+	CALL TRAIN_MESSAGE
+	IF T:503 == 1
+		;初めて
+		IF CFLAG:503 == 0
+			IF TALENT:后庭处子
+
+			;それ以外
+			ELSE
+
+			ENDIF
+		;今回の调教で初めて
+		ELSE
+			;Ａ系用　現在のパラで口上を分岐する
+			;Ａ以外のところが痛くて感じる余裕が無い&受虐狂ではない
+			IF D >= 1 && C:4 <= 2 && TALENT:84 != 1 && ABL:9 < 3 && D:1 == 0
+			;Ａ責めメインの時
+			ELSEIF C:4 == 1 || (C:4 == 2 && (PALAM:2 + UP:2) >= (PALAM:1 + UP:1) && (PALAM:2 + UP:2) >= (PALAM:3 + UP:3) && (PALAM:2 + UP:2) >= (PALAM:0 + UP:0) && C:2 > 0) && D != 2
+				;经验が足りなくてとにかくかなり痛い
+				IF EXP:Ａ经验 < 10 && (PALAM:2 + UP:2) < 3000 || (EXP:Ａ经验 < 30 && (PALAM:2 + UP:2) < 1500)
+				;段々痛くなくなるが、最初はまだ痛む
+				ELSEIF EXP:Ａ经验 >= 30 && EXP:Ａ经验 < 75 && (PALAM:2 + UP:2) < 500
+				;痛くもなく感じてもない。慣れてきた。
+				ELSEIF (PALAM:2 + UP:2) < 500
+				;疼痛以外の何かを感じている
+				ELSEIF (PALAM:2 + UP:2) < 1500
+				;疼痛ながら感じている
+				ELSEIF (PALAM:2 + UP:2) < 3000 && EXP:Ａ经验 < 75
+				;感じている
+				ELSEIF (PALAM:2 + UP:2) < 3000
+				;後ろで明らかに感じている
+				ELSEIF (PALAM:2 + UP:2) < 6000
+				;快感に震えている
+				ELSEIF (PALAM:2 + UP:2) < 8000
+				ENDIF
+			;Ａだけ绝顶寸前
+			ELSEIF C:2 == 4 && C:1 < 4 && C:3 < 4 && C:0 < 4 && D != 2
+			ENDIF
+		ENDIF
+	;二回目以降
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ELSEIF SELECTCOM == 159 && TEQUIP:52 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+	ENDIF
+ENDIF
+;=================================================
+;触手系指令
+;=================================================
+;-------------------------------------------------
+;160,触手召喚
+;-------------------------------------------------
+IF SELECTCOM == 160 && TEQUIP:25 == 0
+	T:384 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:384 == 1
+		;初めて
+		IF CFLAG:384 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ELSEIF SELECTCOM == 160 && TEQUIP:25 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;161,触手插入
+;-------------------------------------------------
+IF SELECTCOM == 161
+	T:385 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:385 == 1
+		;初めて
+		IF CFLAG:385 == 0
+			;处女
+			IF TALENT:0
+				
+			;それ以外
+			ELSE
+				
+			ENDIF
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;162,触手插肛
+;-------------------------------------------------
+IF SELECTCOM == 162
+	T:386 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:386 == 1
+		;初めて
+		IF CFLAG:386 == 0
+			IF TALENT:后庭处子
+				
+			;それ以外
+			ELSE
+				
+			ENDIF
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;163,触手揉阴
+;-------------------------------------------------
+IF SELECTCOM == 163
+	T:387 += 1
+	CALL TRAIN_MESSAGE
+	IF T:387 == 1
+		IF CFLAG:387 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;164,触手揉乳
+;-------------------------------------------------
+IF SELECTCOM == 164
+	T:388 += 1
+	CALL TRAIN_MESSAGE
+	IF T:388 == 1
+		;初めて
+		IF CFLAG:388 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			IF C:4 == 1 || (C:4 == 2 && (PALAM:3 + UP:3) >= (PALAM:1 + UP:1) && (PALAM:3 + UP:3) >= (PALAM:2 + UP:2) && (PALAM:3 + UP:3) >= (PALAM:0 + UP:0) && C:3 > 0) && D == 0
+				IF (PALAM:3 + UP:3) < 500
+					;RETURN 0
+				ELSEIF (PALAM:3 + UP:3) < 3000
+					;RETURN 0
+				ELSE
+					;RETURN 0
+				ENDIF
+			;Ｂだけ绝顶寸前
+			ELSEIF C:3 == 4 && C:1 < 4 && C:2 < 4 && C:0 < 4 && D == 0
+				;RETURN 0
+			ENDIF
+		ENDIF
+	;二回目以降
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;165,触手挤奶
+;-------------------------------------------------
+IF SELECTCOM == 165
+	T:389 += 1
+	CALL TRAIN_MESSAGE
+	IF T:389 == 1
+		IF CFLAG:389 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;166,触手紧缚
+;-------------------------------------------------
+IF SELECTCOM == 166
+	T:390 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:390 == 1
+		;初めて
+		IF CFLAG:390 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;167,触手灌肠
+;-------------------------------------------------
+IF SELECTCOM == 167
+	T:391 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:391 == 1
+		;初めて
+		IF CFLAG:391 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;168,触手口辱
+;-------------------------------------------------
+IF SELECTCOM == 168 && TEQUIP:36 == 0
+	T:392 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:392 == 1
+		;初めて
+		IF CFLAG:392 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ELSEIF SELECTCOM == 168 && TEQUIP:36 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;169,触手玩弄阴茎
+;-------------------------------------------------
+IF SELECTCOM == 169
+	T:393 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:393 == 1
+		;初めて
+		IF CFLAG:393 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			IF C:4 == 1 || (C:4 == 2 && PALAM_COMPARE(0) && C:0 > 0) && D == 0
+				;殆どか、あまり感じていない
+				IF (PALAM:0 + UP:0) < 500
+					;RETURN 0
+				;少し感じ始めたか、感じてきている
+				ELSEIF (PALAM:0 + UP:0) < 3000
+					;RETURN 0
+				;感じている
+				ELSE
+					;RETURN 0
+				ENDIF
+			;Ｃだけ绝顶寸前
+			ELSEIF C:0 == 4 && C:1 < 4 && C:2 < 4 && C:3 < 4 && D == 0
+				;RETURN 0
+			ENDIF
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2	
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;170,触手尿道插入
+;-------------------------------------------------
+IF SELECTCOM == 170 && TEQUIP:38 == 0
+	T:394 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:394 == 1
+		;初めて
+		IF CFLAG:394 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ELSEIF SELECTCOM == 170 && TEQUIP:38 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;=================================================
+;特殊指令
+;=================================================
+;-------------------------------------------------
+;180,润滑乳液,
+;-------------------------------------------------
+IF SELECTCOM == 180
+	T:395 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:395 == 1
+		;初めて
+		IF CFLAG:395 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;181,媚薬,
+;-------------------------------------------------
+IF SELECTCOM == 181
+	T:396 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:396 == 1
+		;初めて
+		IF CFLAG:396 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;182,利尿剂,
+;-------------------------------------------------
+IF SELECTCOM == 182
+	T:397 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:397 == 1
+		;初めて
+		IF CFLAG:397 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;183,摄像机,
+;-------------------------------------------------
+IF SELECTCOM == 183 && TEQUIP:28 == 0
+	T:398 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:398 == 1
+		;初めて
+		IF CFLAG:398 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	ENDIF
+ELSEIF SELECTCOM == 183 && TEQUIP:28 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+		
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;184,野外PLAY,
+;-------------------------------------------------
+IF SELECTCOM == 184 && TEQUIP:29 == 0
+	T:399 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:399 == 1
+		;初めて
+		IF CFLAG:399 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	ENDIF
+ELSEIF SELECTCOM == 184 && TEQUIP:29 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+		
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;185,侵犯助手,
+;-------------------------------------------------
+IF SELECTCOM == 185
+	T:400 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:400 == 1
+		;初めて
+		IF CFLAG:400 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;186,羞耻PLAY,
+;-------------------------------------------------
+IF SELECTCOM == 186 && TEQUIP:30 == 0
+	T:401 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:401 == 1
+		;初めて
+		IF CFLAG:401 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	ENDIF
+ELSEIF SELECTCOM == 186 && TEQUIP:30 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+		
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;187,浴室PLAY,
+;-------------------------------------------------
+IF SELECTCOM == 187 && TEQUIP:31 == 0
+	T:402 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:402 == 1
+		;初めて
+		IF CFLAG:402 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	ENDIF
+ELSEIF SELECTCOM == 187 && TEQUIP:31 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+		
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;188,淋浴,
+;-------------------------------------------------
+IF SELECTCOM == 188 && TEQUIP:32 == 0
+	T:403 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:403 == 1
+		;初めて
+		IF CFLAG:403 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	ENDIF
+ELSEIF SELECTCOM == 188 && TEQUIP:32 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+		
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;190,写真摄影,
+;-------------------------------------------------
+IF SELECTCOM == 190
+	T:404 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:404 == 1
+		;初めて
+		IF CFLAG:404 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;191,强精神药,
+;-------------------------------------------------
+IF SELECTCOM == 191 
+	T:405 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:405 == 1
+		;初めて
+		IF CFLAG:405 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;192,避孕套精飲（奴隶）
+;-------------------------------------------------
+IF SELECTCOM == 192
+	T:406 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:406 == 1
+		;初めて
+		IF CFLAG:406 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;193,避孕套精飲（助手）
+;-------------------------------------------------
+IF SELECTCOM == 193
+	T:407 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:407 == 1
+		;初めて
+		IF CFLAG:407 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;194,含精接吻
+;-------------------------------------------------
+IF SELECTCOM == 194
+	T:408 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:408 == 1
+		;初めて
+		IF CFLAG:408 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;195,约会に行く
+;-------------------------------------------------
+IF SELECTCOM == 195
+	T:409 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:409 == 1
+		;初めて
+		IF CFLAG:409 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;196,剥いてやる
+;-------------------------------------------------
+IF SELECTCOM == 196
+	T:410 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+
+ENDIF
+;-------------------------------------------------
+;197,水下PLAY,有潜游技能才会有这个指令
+;-------------------------------------------------
+IF SELECTCOM == 197 && TEQUIP:53 == 0
+	T:506 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:506 == 1
+		;初めて
+		IF CFLAG:506 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	ENDIF
+ELSEIF SELECTCOM == 197 && TEQUIP:53 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+
+	ENDIF
+ENDIF
+;=================================================
+;200番台,逆调教系指令
+;=================================================
+;-------------------------------------------------
+;200,当面手淫
+;-------------------------------------------------
+IF SELECTCOM == 200
+	T:411 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:411 == 1
+		;初めて
+		IF CFLAG:411 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;201,胸を揉ませる
+;-------------------------------------------------
+IF SELECTCOM == 201
+	T:412 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:412 == 1
+		;初めて
+		IF CFLAG:412 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;恋慕ルート、;やさしく
+			IF ABL:7 >= 3 && KANRAKU(TARGET) == 1 && !ASSIPLAY
+
+			;侍奉精神３以上;丹念に
+			ELSEIF ABL:7 >= 3 && (!ASSIPLAY || ABL:同性倾向 >= 1 || !MALE(PLAYER))
+
+			;技巧ゼロ;丹念に乱暴に
+			ELSEIF ABL:2 == 0
+
+			ENDIF
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;202,使之爱抚 
+;-------------------------------------------------
+IF SELECTCOM == 202
+	T:413 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:413 == 1
+		;初めて
+		IF CFLAG:413 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;203,痛骂
+;-------------------------------------------------
+IF SELECTCOM == 203
+	T:414 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:414 == 1
+		;初めて
+		IF CFLAG:414 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;204,索要礼物
+;-------------------------------------------------
+IF SELECTCOM == 204
+	T:415 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:415 == 1
+		;初めて
+		IF CFLAG:415 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;205,逆正常位（女主人对男奴隶の場合は「正常位」になる）
+;-------------------------------------------------
+IF SELECTCOM == 205
+	T:416 += 1
+	;共通の地の文（使う場合は分岐条件を地の文と同じにしないと、辻褄合わなくなる可能性が）
+	CALL TRAIN_MESSAGE
+	IF T:416 == 1
+		;初めて
+		IF CFLAG:416 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;206,逆后背位（女主人对男奴隶の場合は「后背位」になる）
+;-------------------------------------------------
+IF SELECTCOM == 206
+	T:417 += 1
+	;共通の地の文（使う場合は分岐条件を地の文と同じにしないと、辻褄合わなくなる可能性が）
+	CALL TRAIN_MESSAGE
+	IF T:417 == 1
+		;初めて
+		IF CFLAG:417 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;207,使之打屁股
+;-------------------------------------------------
+IF SELECTCOM == 207
+	T:418 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:418 == 1
+		;初めて
+		IF CFLAG:418 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;208,鞭子打たせる
+;-------------------------------------------------
+IF SELECTCOM == 208
+	T:419 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:419 == 1
+		;初めて
+		IF CFLAG:419 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;209,イマラチオする
+;-------------------------------------------------
+IF SELECTCOM == 209
+	T:420 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:420 == 1
+		;初めて
+		IF CFLAG:420 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;210, 舔足
+;-------------------------------------------------
+IF SELECTCOM == 210
+	T:421 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:421 == 1
+		;初めて
+		IF CFLAG:421 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;211,逆强奸 
+;-------------------------------------------------
+IF SELECTCOM == 211
+	T:422 += 1
+	;共通の地の文（使う場合は分岐条件を地の文と同じにしないと、辻褄合わなくなる可能性が）
+	CALL TRAIN_MESSAGE
+	IF T:422 == 1
+		;初めて
+		IF CFLAG:422 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;212,逆强奸肛 
+;-------------------------------------------------
+IF SELECTCOM == 212
+	T:423 += 1
+	;共通の地の文（使う場合は分岐条件を地の文と同じにしないと、辻褄合わなくなる可能性が）
+	CALL TRAIN_MESSAGE
+	IF T:423 == 1
+		;初めて
+		IF CFLAG:423 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;213,逆正常位肛交 （女主人对男奴隶の場合は「正常位肛交」になる）
+;-------------------------------------------------
+IF SELECTCOM == 213
+	T:424 += 1
+	;共通の地の文（使う場合は分岐条件を地の文と同じにしないと、辻褄合わなくなる可能性が）
+	CALL TRAIN_MESSAGE
+	IF T:424 == 1
+		;初めて
+		IF CFLAG:424 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;214,逆后背位肛交（女主人对男奴隶の場合は「后背位肛交」になる）
+;-------------------------------------------------
+IF SELECTCOM == 214
+	T:425 += 1
+	;共通の地の文（使う場合は分岐条件を地の文と同じにしないと、辻褄合わなくなる可能性が）
+	CALL TRAIN_MESSAGE
+	IF T:425 == 1
+		;初めて
+		IF CFLAG:425 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;215,助手に犯させる
+;-------------------------------------------------
+IF SELECTCOM == 215
+	T:426 += 1
+	;共通の地の文（使う場合は分岐条件を地の文と同じにしないと、辻褄合わなくなる可能性が）
+	CALL TRAIN_MESSAGE
+	IF T:426 == 1
+		;初めて
+		IF CFLAG:426 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;=================================================
+;220番台,助手命令指令
+;=================================================
+;-------------------------------------------------
+;220,阴蒂爱抚•助手命令
+;-------------------------------------------------
+IF SELECTCOM == 220 && TEQUIP:49 == 0
+	T:427 += 1
+	;共通の地の文（今は无）
+	CALL TRAIN_MESSAGE
+	IF T:427 == 1
+		;初めて
+		IF CFLAG:427 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+;取下時
+ELSEIF SELECTCOM == 220 && TEQUIP:49 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+		
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;221,阴茎爱抚•助手命令
+;-------------------------------------------------
+IF SELECTCOM == 221 && TEQUIP:49 == 0
+	T:428 += 1
+	;共通の地の文（今は无）
+	CALL TRAIN_MESSAGE
+	IF T:428 == 1
+		;初めて
+		IF CFLAG:428 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+;取下時
+ELSEIF SELECTCOM == 221 && TEQUIP:49 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+		
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;222,胸爱抚•助手命令
+;-------------------------------------------------
+IF SELECTCOM == 222 && TEQUIP:44 == 0
+	T:429 += 1
+	;共通の地の文（今は无）
+	CALL TRAIN_MESSAGE
+	IF T:429 == 1
+		;初めて
+		IF CFLAG:429 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ELSEIF SELECTCOM == 222 && TEQUIP:44 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+		
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;223,手指插入•助手命令
+;-------------------------------------------------
+IF SELECTCOM == 223 && TEQUIP:45 == 0
+	T:430 += 1
+	;共通の地の文（今は无）
+	CALL TRAIN_MESSAGE
+	IF T:430 == 1
+		;初めて
+		IF CFLAG:430 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ELSEIF SELECTCOM == 223 && TEQUIP:45 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+		
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;224,肛门爱抚•助手命令
+;-------------------------------------------------
+IF SELECTCOM == 224 && TEQUIP:46 == 0
+	T:431 += 1
+	;共通の地の文（今は无）
+	CALL TRAIN_MESSAGE
+	IF T:431 == 1
+		;初めて
+		IF CFLAG:431 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ELSEIF SELECTCOM == 224 && TEQUIP:46 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+		
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;225,插入•助手命令
+;-------------------------------------------------
+IF SELECTCOM == 225 && TEQUIP:47 == 0
+	T:432 += 1
+	;共通の地の文（今は无）
+	CALL TRAIN_MESSAGE
+	IF T:432 == 1
+		;初めて
+		IF CFLAG:432 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ELSEIF SELECTCOM == 225 && TEQUIP:47 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+		
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;226,肛插入•助手命令
+;-------------------------------------------------
+IF SELECTCOM == 226 && TEQUIP:48 == 0
+	T:433 += 1
+	;共通の地の文（今は无）
+	CALL TRAIN_MESSAGE
+	IF T:433 == 1
+		;初めて
+		IF CFLAG:433 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ELSEIF SELECTCOM == 226 && TEQUIP:48 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+		
+	ENDIF
+ENDIF
+
+;=================================================
+;300番台,拡張触手指令
+;=================================================
+;-------------------------------------------------
+;300,触手乳腺責め
+;-------------------------------------------------
+IF SELECTCOM == 300
+	T:434 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:434 == 1
+		;初めて
+		IF CFLAG:434 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;301,触手Ｇスポ責め
+;-------------------------------------------------
+IF SELECTCOM == 301
+	T:435 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:435 == 1
+		;初めて
+		IF CFLAG:435 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;302,触手子宮責め
+;-------------------------------------------------
+IF SELECTCOM == 302
+	T:436 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:436 == 1
+		;初めて
+		IF CFLAG:436 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;303,触手前立腺責め
+;-------------------------------------------------
+IF SELECTCOM == 303
+	T:437 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:437 == 1
+		;初めて
+		IF CFLAG:437 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;304,触手ヴァギナ拡張
+;-------------------------------------------------
+IF SELECTCOM == 304
+	T:438 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:438 == 1
+		;初めて
+		IF CFLAG:438 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;305,触手肛拡張
+;-------------------------------------------------
+IF SELECTCOM == 305
+	T:439 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:439 == 1
+		;初めて
+		IF CFLAG:439 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;306,触手両穴拡張
+;-------------------------------------------------
+IF SELECTCOM == 306
+	T:440 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:440 == 1
+		;初めて
+		IF CFLAG:440 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;307,触手产卵
+;-------------------------------------------------
+IF SELECTCOM == 307 && TEQUIP:41 == 0
+	T:441 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:441 == 1
+		;初めて
+		IF CFLAG:441 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ELSEIF SELECTCOM == 307 && TEQUIP:41 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+		
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;308,触手肛産卵
+;-------------------------------------------------
+IF SELECTCOM == 308 && TEQUIP:42 == 0
+	T:442 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:442 == 1
+		;初めて
+		IF CFLAG:442 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ELSEIF SELECTCOM == 308 && TEQUIP:42 == 1
+	IF FLAG:7 >= 1
+		CALL TRAIN_MESSAGE
+		
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;320,人を呼ぶ
+;-------------------------------------------------
+IF SELECTCOM == 320
+	T:470 += 1
+	CALL TRAIN_MESSAGE
+ENDIF
+;-------------------------------------------------
+;321,輪姦
+;-------------------------------------------------
+IF SELECTCOM == 321
+	T:471 += 1
+	CALL TRAIN_MESSAGE
+ENDIF
+;=================================================
+;500番台,派生指令
+;=================================================
+;-------------------------------------------------
+;500,３Ｐ　
+;-------------------------------------------------
+IF SELECTCOM == 500
+	T:443 += 1
+	;共通の地の文（←パターンがすごく多い…）
+	CALL TRAIN_MESSAGE
+	IF T:443 == 1
+		;初めて
+		IF CFLAG:443 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;501,６９式
+;-------------------------------------------------
+IF SELECTCOM == 501
+	T:444 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:444 == 1
+		;初めて
+		IF CFLAG:444 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;502,岩清水
+;-------------------------------------------------
+IF SELECTCOM == 502
+	T:445 += 1
+	CALL TRAIN_MESSAGE
+	IF T:445 == 1
+		IF CFLAG:445 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;503,Gスポット刺激
+;-------------------------------------------------
+IF SELECTCOM == 503
+	T:446 += 1
+	CALL TRAIN_MESSAGE
+	IF T:446 == 1
+		IF CFLAG:446 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;504,乱れ牡丹
+;-------------------------------------------------
+IF SELECTCOM == 504
+	T:447 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:447 == 1
+		;初めて
+		IF CFLAG:447 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;505,骑乘位揉乳自慰
+;-------------------------------------------------
+IF SELECTCOM == 505
+	T:448 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:448 == 1
+		;初めて
+		IF CFLAG:448 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;506,插入Ｇ点玩弄
+;-------------------------------------------------
+IF SELECTCOM == 506
+	T:448 += 1
+	CALL TRAIN_MESSAGE
+	IF T:448 == 1
+		IF CFLAG:448 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;507,插入子宫口玩弄
+;-------------------------------------------------
+IF SELECTCOM == 507
+	T:449 += 1
+	CALL TRAIN_MESSAGE
+	IF T:449 == 1
+		IF CFLAG:449 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;508,６９乳交
+;-------------------------------------------------
+IF SELECTCOM == 508
+	T:450 += 1
+	CALL TRAIN_MESSAGE
+	IF T:450 == 1
+		IF CFLAG:450 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;509,搾乳
+;-------------------------------------------------
+IF SELECTCOM == 509
+	T:451 += 1
+	CALL TRAIN_MESSAGE
+	IF T:451 == 1
+		IF CFLAG:451 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;510,Ｗ素股
+;-------------------------------------------------
+IF SELECTCOM == 510
+	T:452 += 1
+	CALL TRAIN_MESSAGE
+	IF T:452 == 1
+		IF CFLAG:452 == 0
+		ELSE
+		ENDIF
+	ELSEIF FLAG:7 == 2
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;511,双枪口交
+;-------------------------------------------------
+IF SELECTCOM == 511
+	T:453 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:453 == 1
+		;初めて
+		IF CFLAG:453 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;512,二輪刺し
+;-------------------------------------------------
+IF SELECTCOM == 512
+	T:454 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:454 == 1
+		;初めて
+		IF CFLAG:454 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;513,二輪刺し肛
+;-------------------------------------------------
+IF SELECTCOM == 513
+	T:455 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:455 == 1
+		;初めて
+		IF CFLAG:455 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;514,駅弁 CFLAG:445
+;-------------------------------------------------
+IF SELECTCOM == 514
+	T:456 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:456 == 1
+		;初めて
+		IF CFLAG:456 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;515,打屁股做爱　CFLAG:478
+;-------------------------------------------------
+IF SELECTCOM == 515
+	T:457 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:457 == 1
+		;初めて
+		IF CFLAG:457 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;516,打屁股肛　CFLAG:479
+;-------------------------------------------------
+IF SELECTCOM == 516
+	T:458 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:458 == 1
+		;初めて
+		IF CFLAG:458 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;517,首絞め做爱　CFLAG:480
+;-------------------------------------------------
+IF SELECTCOM == 517
+	T:459 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:459 == 1
+		;初めて
+		IF CFLAG:459 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;518,首絞め肛　CFLAG:481
+;-------------------------------------------------
+IF SELECTCOM == 518
+	T:460 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:460 == 1
+		;初めて
+		IF CFLAG:460 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;590,前立腺刺激	
+;-------------------------------------------------
+IF SELECTCOM == 590
+	T:461 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:461 == 1
+		;初めて
+		IF CFLAG:461 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;591,插入前立腺責め
+;-------------------------------------------------
+IF SELECTCOM == 591
+	T:462 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:462 == 1
+		;初めて
+		IF CFLAG:462 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;592,騎乗阴茎自慰
+;-------------------------------------------------
+IF SELECTCOM == 592
+	T:463 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:463 == 1
+		;初めて
+		IF CFLAG:463 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;593,插入中阴茎爱抚
+;-------------------------------------------------
+IF SELECTCOM == 593
+	T:464 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:464 == 1
+		;初めて
+		IF CFLAG:464 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;594,插入中胸爱抚系
+;-------------------------------------------------
+IF SELECTCOM == 594
+	T:492 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:492 == 1
+		;初めて
+		IF CFLAG:492 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;595,三点攻（男性奴隶用）
+;-------------------------------------------------
+IF SELECTCOM == 595
+	T:493 += 1
+	;共通の地の文
+	CALL TRAIN_MESSAGE
+	IF T:493 == 1
+		;初めて
+		IF CFLAG:493 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;600,呼ばせ方变更
+;-------------------------------------------------
+IF SELECTCOM == 600
+	T:465 += 1
+	;共通の地の文（←内容に对応する必要がある）
+	CALL TRAIN_MESSAGE
+	IF T:465 == 1
+		;初めて
+		IF CFLAG:465 == 0
+			;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;RETURN 0
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2
+		;RETURN 0
+	ENDIF
+ENDIF
+;-------------------------------------------------
+CALL EVENT_KX_COM_COMMON

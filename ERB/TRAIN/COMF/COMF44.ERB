@@ -1,0 +1,232 @@
+﻿;-------------------------------------------------
+;自慰棒
+;道具使用指令、レベル2
+;-------------------------------------------------
+@COM44
+;-------------------------------------------------
+;特殊派生処理
+;-------------------------------------------------
+
+
+
+IF TEQUIP:25
+	PRINTL 触手插入
+	STR:0 = 触手插入
+	SELECTCOM = 161
+ELSE
+	PRINTL 自慰棒
+	STR:0 = 自慰棒
+ENDIF
+
+
+;丝袜びりびりフラグ
+IF TEQUIP:1 == 5 || TEQUIP:1 == 6
+	TFLAG:55 = 1
+ENDIF
+
+
+;V经验を伴う指令のフラグ(处女膜再生对応)
+SIF TEQUIP:25 == 1
+	TFLAG:19 = 1
+
+
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 30
+LOSEBASE:1 += 100
+
+SOURCE:1 = 250
+SOURCE:7 = 50
+SOURCE:13 = 20
+SOURCE:17 = 40
+SOURCE:18 = 40
+
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 40
+
+;处女だった場合は、痛苦のソースと反抗のソースを追加する
+IF TALENT:0 == 1
+	SOURCE:7 += 2000
+	SOURCE:18 += 3000
+ENDIF
+
+;再生处女だった場合は、痛苦のソースと反抗のソースを追加する
+IF TALENT:1 == 1
+	SOURCE:7 += 500
+	SOURCE:18 += 1000
+ENDIF
+
+;Vへの痛苦は先に処理しておく
+;EXP:Ｖ经验をみる（处女の反感は別途処理済みなので省略）
+IF EXP:0 < EXPLV:1
+	TIMES SOURCE:7 , 2.50
+ELSEIF EXP:0 < EXPLV:2
+	TIMES SOURCE:7 , 0.80
+	TIMES SOURCE:18 , 1.20
+ELSEIF EXP:0 < EXPLV:3
+	TIMES SOURCE:7 , 0.40
+ELSEIF EXP:0 < EXPLV:4
+	TIMES SOURCE:7 , 0.10
+ELSEIF EXP:0 < EXPLV:5
+	TIMES SOURCE:7 , 0.00
+ELSEIF EXP:0 >= EXPLV:5
+	TIMES SOURCE:7 , 0.00
+ENDIF
+
+;PALAM:润滑をみる
+IF PALAM:4 < PALAMLV:1
+	TIMES SOURCE:7 , 1.20
+	TIMES SOURCE:18 , 1.50
+ELSEIF PALAM:4 < PALAMLV:2
+	TIMES SOURCE:7 , 0.70
+	TIMES SOURCE:18 , 1.20
+ELSEIF PALAM:4 < PALAMLV:3
+	TIMES SOURCE:7 , 0.40
+ELSEIF PALAM:4 < PALAMLV:4
+	TIMES SOURCE:7 , 0.10
+ELSEIF PALAM:4 >= PALAMLV:4
+	TIMES SOURCE:7 , 0.10
+ENDIF
+
+
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;触手插入なら、触手体液が膣内に付く
+SIF TEQUIP:25
+	STAIN:6 |= 32
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;V经验
+EXP:0 += 1
+PRINTL Ｖ经验＋１
+
+;异常经验
+IF TALENT:0 == 1 && TEQUIP:25 == 1
+	EXP:50 += 2
+	PRINTFORML %EXPNAME:50%＋２
+;ELSEIF TALENT:0 == 1
+;	EXP:50 += 1
+;	PRINTFORML %EXPNAME:50%＋１
+ENDIF
+
+;蔷薇经验とか加算
+CALL COM_EXP(1)
+
+
+
+;触手召喚時、触手经验の重置をする
+SIF TEQUIP:25 == 1
+	觸手 = 0
+
+;依赖度ベクトル
+TFLAG:33 = 1
+
+CALL KOJO_MESSAGE_COM
+
+;着脱の処理
+IF TEQUIP:13 == 0
+	TEQUIP:13 = 1
+	;触手插入は触手の汚れを追加
+	IF TEQUIP:25
+		STAIN:3 |= 32
+	ENDIF
+ELSE
+	TEQUIP:13 = 0
+ENDIF
+
+RETURN 1
+
+
+;-------------------------------------------------
+;装着継続の処理
+;-------------------------------------------------
+@EQUIP_COM44
+;自慰棒插入中
+
+;V经验を伴う指令のフラグ(处女膜再生对応)
+TFLAG:19 = 1
+
+IF TEQUIP:25
+	PRINTL ＜触手插入中＞
+ELSE
+	PRINTL ＜自慰棒插入中＞
+ENDIF
+
+LOSEBASE:0 += 10
+LOSEBASE:1 += 50
+
+SOURCE:1 += 125
+SOURCE:13 += 10
+SOURCE:17 += 20
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 20
+
+;Vへの痛苦は先に処理しておく
+;EXP:Ｖ经验をみる（处女はありえない）
+A = 25
+B = 20
+IF EXP:0 < EXPLV:2
+	TIMES A , 0.80
+	TIMES B , 1.20
+ELSEIF EXP:0 < EXPLV:3
+	TIMES A , 0.40
+ELSEIF EXP:0 < EXPLV:4
+	TIMES A , 0.10
+ELSEIF EXP:0 < EXPLV:5
+	TIMES A , 0.00
+ELSEIF EXP:0 >= EXPLV:5
+	TIMES A , 0.00
+ENDIF
+
+;PALAM:润滑をみる
+IF PALAM:4 < PALAMLV:1
+	TIMES A , 1.20
+	TIMES B , 1.50
+ELSEIF PALAM:4 < PALAMLV:2
+	TIMES A , 0.70
+	TIMES B , 1.20
+ELSEIF PALAM:4 < PALAMLV:3
+	TIMES A , 0.40
+ELSEIF PALAM:4 < PALAMLV:4
+	TIMES A , 0.10
+ELSEIF PALAM:4 >= PALAMLV:4
+	TIMES A , 0.10
+ENDIF
+SOURCE:7 += A
+SOURCE:18 += B
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;自慰実行時は经验＋１
+IF SELECTCOM == 11
+	EXP:0 += 2
+	PRINTL Ｖ经验＋２
+ELSE
+	EXP:0 += 1
+	PRINTL Ｖ经验＋１
+ENDIF
+
+;触手经验加算
+SIF TEQUIP:25 == 1
+	觸手 += 1
+
+
+RETURN 1
+

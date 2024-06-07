@@ -1,0 +1,1228 @@
+﻿;=============================================================================
+;「へたくしょん」v1.00　「erahetaA」用汎用関数ファイル
+;無断再配布ＯＫですが、erahetaA以外での使い道は皆無かと思われます（特に诞生日サーチ機能）
+;=============================================================================
+;eraQueenでは现在GET_EATPUREだけを使っている
+;--------------------------------------------------
+;このファイルの中に入っている機能一覧
+
+;erahetaAの仕様に関する関数群
+;COMF999						駆け落ちイベント用「调教を強制終了させる」機能
+;								駆け落ちイベントに限らず開幕で调教を強制終了させたい場合も利用可能
+;								使用変数 … TFLAG:400 ～ 401
+
+;MASTERBIRTHDAY					「主人の诞生日をサーチする」機能
+;								使用変数 … B:1
+
+;COMPARE_BSIZE					「胸のサイズを比較する」機能
+;								使用変数 … A、A:1、A:2、B、B:1、B:2
+
+;COMPARE_CSIZE					「下のサイズを比較する」機能
+;								使用変数 … A、A:1、A:2、B、B:1、B:2
+
+;面識機能に関する関数群
+;SAVE_MEMBER					「ここ一週間以内の调教对象と助手を記録する」機能
+;								使用変数 … PREVCOM:801 ～ 828
+
+;SAVE_MEMBER					「ここ一週間以内の调教对象と助手を記録する」機能
+;								使用変数 … PREVCOM:801 ～ 830
+
+;SAVE_ACQUAINTANCE_DAILY_LIFE
+;SAVE_ACQUAINTANCE_ASSI			「助手や日常パッチでの面識管理」機能
+;								使用変数 … CFLAG:799 ～ 1198
+
+;GET_MEMBER_TARGET				「ここ一週間以内の调教对象をサーチする」機能
+;								使用変数 … R、D:1、D:2
+
+;GET_MEMBER_ASSI				「ここ一週間以内の助手をサーチする」機能
+;								使用変数 … R、D:3、D:4
+
+;GET_LOSTPURE					「口上主の童贞、处女、後处女を奪った相手をサーチする」機能
+;								使用変数 … R、L
+
+;GET_EATPURE					「口上主が奪ってきた童贞、处女、後处女の人数をサーチする」機能
+;								使用変数 … R、E:1、E:2、E:3
+
+;勝手にウフフ機能に関する関数群
+;TARGETPLAY_NEXT				「调教对象から侍奉・逆调教指令を実行してくれる」機能
+;								使用変数 … NEXTCOM:0 ～ 7
+;--------------------------------------------------
+
+;=============================================================================
+;erahetaAの仕様に関する関数群
+;=============================================================================
+;-------------------------------------------------
+;駆け落ちイベント用「调教を強制終了させる」機能
+;NEXTCOM = 999でこの処理が呼び出せる
+;TFLAG:400 == 1してから呼び出せばキャラを消去出来る
+;TFLAG:400 == 0なら消去せず日付だけを送る
+;TFLAG:401にキャラ番号を入れることで駆け落ち相手の購入可能フラグもいじれます（要へたくしょん拡張）
+;999は调教结束なので、今後も使う事がないはず。という事で占有
+;-------------------------------------------------
+@COM999
+;消去される場合用の処理
+IF TFLAG:400 == 1
+	;奴隶が脱走して手元からいなくなる。
+	T = TARGET
+	A = ASSI
+	DELCHARA T
+	IF A != -1
+		IF A > T
+			ASSI = A-1
+		ELSE
+			ASSI = A
+		ENDIF
+	ENDIF
+	TARGET = -1
+	;北伊専用処理
+	;IF TFLAG:401 == 1
+	;	FLAG:1002 = 0
+	;南伊専用処理
+	;ELSEIF TFLAG:401 == 2
+	;	FLAG:1013 = 0
+	;	FLAG:1040 = 0
+	;X1にキャラ番号、Y1に駆け落ち相手のキャラ番号-1を入れることで駆け落ち相手が買えなくなる
+	;ELSEIF TFLAG:401 == X1
+	;	FLAG:10Y1 == 0
+	;ENDIF
+ENDIF
+;消去の有無にかかわらず行われる、调教を強制終了して日付を送る処理
+REPEAT CHARANUM
+	;气力の回復
+	BASE:COUNT:1 = MAXBASE:COUNT:1
+
+	;労役中のキャラは体力回復処理无
+	SIF CFLAG:COUNT:12 > 0
+		CONTINUE
+
+	;体力回復停止処理
+	IF CFLAG:COUNT:6 > 0
+		CFLAG:COUNT:6 -= 1
+		CONTINUE
+	ENDIF
+
+	;体力の回復（午後の调教後は夜の休みが入るので回復大きい）
+	IF TIME == 0
+		A = MAXBASE:COUNT:0 / 15
+	ELSE
+		A = MAXBASE:COUNT:0 / 5
+	ENDIF
+
+	;恢复快、恢复慢、蓬莱人
+	IF TALENT:COUNT:130
+		TIMES A , 1.50
+	ELSEIF TALENT:COUNT:131
+		TIMES A , 0.75
+	ELSEIF TALENT:COUNT:147
+		TIMES A , 1.80
+	ENDIF
+
+	;日光浴、月光浴、吸血鬼
+	IF TIME == 0
+		SIF TALENT:COUNT:133
+			A += 100
+	ELSE
+		SIF TALENT:COUNT:132
+			TIMES A , 1.50
+		SIF TALENT:COUNT:134
+			A += 100
+	ENDIF
+
+	;治疗
+	IF ASSI >= 0
+		SIF TALENT:ASSI:135
+		A += 150
+	ENDIF
+
+	;休憩フラグ（休憩フラグが経っている、もしくは调教对象でない）
+	IF FLAG:0 || TARGET != COUNT
+		A += 100
+		CFLAG:COUNT:10 -= 1
+	ENDIF
+
+	;ショップで休憩を選択時
+	IF FLAG:0 == 2
+		TIMES A , 2.00
+		CFLAG:COUNT:10 -= 1
+	ENDIF
+
+	BASE:COUNT:0 += A
+	SIF BASE:COUNT:0 > MAXBASE:COUNT:0
+		BASE:COUNT:0 = MAXBASE:COUNT:0
+
+	;ストレス値が0未満の場合は0にする
+	SIF CFLAG:COUNT:10 < 0
+		CFLAG:COUNT:10 = 0
+
+REND
+
+CALL EVENTCHECK_ABL
+FLAG:0 = 0
+
+;午後なら次の日、午前なら午後にする
+IF TIME == 1
+	FLAG:81 += 1
+	FLAG:82 += 1
+
+	;日付变更時のイベント呼び出し
+	;東方はコメントアウトします
+;	CALL EVENT_NEXTDAY_TOHO
+	CALL EVENT_NEXTDAY
+
+	DAY = DAY+1
+	PRINTW 一天结束了……
+	TIME = 0
+	;バッドエンドの判定
+	SIF DAY > 50 && FLAG:5 == 0
+		CALL BADENDING_1
+	SIF MONEY < 0 && FLAG:5 == 0
+		CALL BADENDING_2
+	;朝になった時のイベント呼び出し
+	CALL EVENT_NEWDAY
+	CALL EVENT_NEWDAY_SELF
+ELSE
+	TIME = 1
+ENDIF
+
+BEGIN SHOP
+
+
+;-------------------------------------------------
+;主人の诞生日サーチ機能
+;CALL MASTERBIRTHDAYでこの処理が呼び出せる
+;当日が诞生日であればB:1に1が、一週間以内に诞生日が来るならB:1に2が代入されて返ってくる
+;-------------------------------------------------
+@MASTERBIRTHDAY
+;入れ子を空にする
+B:1 = 0
+
+;伊兄弟
+IF NO:MASTER == 1 || NO:MASTER == 2 || NO:MASTER == 29 || NO:MASTER == 30 || NO:MASTER == 85 || NO:MASTER == 86
+	IF FLAG:80 == 3
+		IF FLAG:81 == 17
+			B:1 = 1
+		ELSEIF FLAG:81 >= 10 && FLAG:81 <= 16
+			B:1 = 2
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;胸のサイズを比較する機能
+;AとBに比較したい相手の登录番号を入れてCALL
+;B:1に大きかった方の登录番号、B:2にその差を返します。引き分けの時はB:1が-1になります
+;登录番号は@NOなりTARGETとASSIで判定するなりして使ってください
+;-------------------------------------------------
+@COMPARE_BSIZE
+A:1 = 0
+A:2 = 0
+B:1 = 0
+B:2 = 0
+IF TALENT:A:110
+	A:1 = 0
+ELSEIF TALENT:A:109
+	A:1 = 1
+ELSEIF TALENT:A:111
+	A:1 = 3
+ELSEIF TALENT:A:112
+	A:1 = 4
+ELSE
+	A:1 = 2
+ENDIF
+
+IF TALENT:B:110
+	A:2 = 0
+ELSEIF TALENT:B:109
+	A:2 = 1
+ELSEIF TALENT:B:111
+	A:2 = 3
+ELSEIF TALENT:B:112
+	A:2 = 4
+ELSE
+	A:2 = 2
+ENDIF
+
+IF A:1 > A:2
+	B:1 = A
+	B:2 = A:1
+	B:2 -= A:2
+ELSEIF A:1 < A:2
+	B:1 = B
+	B:2 = A:2
+	B:2 -= A:2
+ELSE
+	B:1 = -1
+	B:2 = 0
+ENDIF
+
+;-------------------------------------------------
+;下のサイズを比較する機能
+;AとBに比較したい相手の登录番号を入れてCALL
+;B:1に大きかった方の登录番号、B:2にその差を返します。引き分けの時はB:1が-1になります
+;登录番号は@NOなりTARGETとASSIで判定するなりして使ってください
+;-------------------------------------------------
+@COMPARE_CSIZE
+A:1 = 0
+A:2 = 0
+B:1 = 0
+B:2 = 0
+IF TALENT:A:114
+	A:1 = 0
+ELSEIF TALENT:A:115
+	A:1 = 1
+ELSEIF TALENT:A:116
+	A:1 = 3
+ELSEIF TALENT:A:117
+	A:1 = 4
+ELSE
+	A:1 = 2
+ENDIF
+
+IF TALENT:B:114
+	A:2 = 0
+ELSEIF TALENT:B:115
+	A:2 = 1
+ELSEIF TALENT:B:116
+	A:2 = 3
+ELSEIF TALENT:B:117
+	A:2 = 4
+ELSE
+	A:2 = 2
+ENDIF
+
+IF A:1 > A:2
+	B:1 = A
+	B:2 = A:1
+	B:2 -= A:2
+ELSEIF A:1 < A:2
+	B:1 = B
+	B:2 = A:2
+	B:2 -= A:1
+ELSE
+	B:1 = -1
+	B:2 = 0
+ENDIF
+
+;=============================================================================
+;面識機能に関する関数群
+;=============================================================================
+;-------------------------------------------------
+;記録機能用の@EVENT関数
+;-------------------------------------------------
+@EVENTEND
+	CALL SAVE_ACQUAINTANCE_ASSI
+	PREVCOM:829 = NO:TARGET
+	IF ASSI > 0
+		PREVCOM:830 = NO:ASSI
+	ELSE
+		PREVCOM:830 = -1
+	ENDIF
+@EVENTTURNEND
+	CALL SAVE_MEMBER
+
+;-------------------------------------------------
+;ここ一週間の助手と调教对象を記録する機能
+;PREVCOM:800以降を盛大に使用します
+;801 ～ 814 = ここ一週間の奴隶のキャラ番号
+;815 ～ 828 = ここ一週間の助手
+;829 保存用
+;830 保存用
+;-------------------------------------------------
+@SAVE_MEMBER
+;奴隶のキャラ番号を登录
+I = 814
+REPEAT 14
+	IF I != 801
+		PREVCOM:I = PREVCOM:(I-1)
+	ELSE
+		IF TARGET > 0
+			IF PREVCOM:829 == NO:TARGET
+				PREVCOM:801 = NO:TARGET
+			ELSE
+				PREVCOM:801 = -1
+			ENDIF
+		ELSE
+			PREVCOM:801 = -1
+		ENDIF
+	ENDIF
+	I -= 1
+REND
+;助手のキャラ番号を登录
+I = 828
+REPEAT 14
+	IF I != 815
+		PREVCOM:I = PREVCOM:(I-1)
+	ELSE
+		IF ASSI > 0
+			IF PREVCOM:830 == NO:ASSI
+				PREVCOM:815 = NO:ASSI
+			ELSE
+				PREVCOM:815 = -1
+			ENDIF
+		ELSE
+			PREVCOM:815 = -1
+		ENDIF
+	ENDIF
+	I -= 1
+REND
+PREVCOM:829 = -1
+PREVCOM:830 = -1
+
+;-------------------------------------------------
+;日常での面識を更新する機能
+;へたくしょん導入で勝手に保存されるようになります
+;更新には口上側の制御が必要なので注意
+;-------------------------------------------------
+@SAVE_ACQUAINTANCE_DAILY_LIFE
+;Bが登場しない場合は無視
+IF B > 0 && B < CHARANUM
+	G = (799 + NO:A)
+	H = (799 + NO:B)
+	CFLAG:A:H |= 1
+	CFLAG:B:G |= 1
+	;Cが居るならCの分も判定
+	IF C > 0 && C < CHARANUM && C != B
+		I = (799 + NO:C)
+		CFLAG:A:I |= 1
+		CFLAG:B:I |= 1
+		CFLAG:C:G |= 1
+		CFLAG:C:H |= 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;助手调教での面識を更新する機能
+;へたくしょん導入で勝手に保存されるようになります
+;これも更新には口上側の制御が必要なので注意
+;-------------------------------------------------
+@SAVE_ACQUAINTANCE_ASSI
+;ASSIがいない場合は無視
+IF ASSI > 0
+	G = (799 + NO:ASSI)
+	H = (799 + NO:TARGET)
+	CFLAG:ASSI:H |= 2
+	CFLAG:TARGET:G |= 2
+	IF ASSIPLAY
+		CFLAG:ASSI:H |= 8
+		CFLAG:TARGET:G |= 4
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;ここ一週間の调教对象をサーチする機能
+;Rに调教对象のキャラ番号を入れてCALL
+;D:1に调教对象と会った日を返す。D:2に実際に会ったのが何回前かを返す
+;-------------------------------------------------
+@GET_MEMBER_TARGET
+;调教对象サーチ
+I = 814
+D:1 = -1
+D:2 = -1
+REPEAT 14
+	SIF PREVCOM:I == R
+		D:1 = (I - 800)
+	I -= 1
+REND
+IF D:1 >= 0
+	D:2 = D:1
+	;割って余りが出ない時は、就这样÷2で日付が出る
+	IF (D:1 % 2) == 0
+		D:1 /= 2
+	;割って余りが出る時は、今が昼か夜かで結果が変わる
+	ELSE
+		;昼なら前日なので、1を足す
+		IF TIME == 0
+			D:1 += 1
+		;夜ならその日のうちに会ってるので1を引く
+		ELSE
+			D:1 -= 1
+		ENDIF
+		D:1 /= 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;ここ一週間の助手をサーチする機能
+;Rに助手のキャラ番号を入れてCALL
+;D:3に助手と会った日を、D:4に実際に会ったのが何回前か返す
+;当日の助手？ 助手口上で判定すればいいと思うよ！
+;-------------------------------------------------
+@GET_MEMBER_ASSI
+;助手サーチ
+I = 828
+D:3 = -1
+D:4 = -1
+REPEAT 14
+	SIF PREVCOM:I == R
+		D:3 = (I - 814)
+	I -= 1
+REND
+IF D:3 >= 0
+	D:4 = D:3
+	;割って余りが出ない時は、就这样÷2で日付が出る
+	IF (D:3 % 2) == 0
+		D:3 /= 2
+	;割って余りが出る時は、今が昼か夜かで結果が変わる
+	ELSE
+		;昼なら前日なので、1を足す
+		IF TIME == 0
+			D:3 += 1
+		;夜ならその日のうちに会ってるので1を引く
+		ELSE
+			D:3 -= 1
+		ENDIF
+		D:3 /= 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;口上主の童贞、处女、後处女を奪った相手をサーチする機能
+;Rに童贞なら1、处女なら4、後处女なら16を入れてCALL
+;存在すればLに奪った相手のキャラ番号が格納されます。
+;-------------------------------------------------
+@GET_LOSTPURE
+R *= 32
+L = -1
+REPEAT CHARANUM
+	G = (799 + NO:COUNT)
+	SIF (CFLAG:G & R)
+		L = NO:COUNT
+REND
+;SIF L > -1
+;	CALL LOSTNAME
+	
+;-------------------------------------------------
+;Tが今までに奪ってきた童贞、处女、後处女の人数をサーチする機能
+;E:1に童贞 16、E:2に处女　32、E:3　64に後处女を奪ってきた人数を格納します
+;eraQueen0.32以降使用　E:2はどうも处女を奪った人数ではないので未使用
+;-------------------------------------------------
+@GET_EATPURE
+E:1 = 0
+E:2 = 0
+E:3 = 0
+REPEAT CHARANUM
+	G = (799 + NO:COUNT)
+	SIF (CFLAG:T:G & 16)
+		E:1 += 1
+	SIF (CFLAG:T:G & 32)
+		E:2 += 1
+	SIF (CFLAG:T:G & 64)
+		E:3 += 1
+REND
+
+;=============================================================================
+;勝手にウフフ機能に関する関数群
+;=============================================================================
+;-------------------------------------------------
+;调教对象が勝手に次の指令を選ぶ機能
+;実行したいところでCALL TARGETPLAY_NEXT
+;什么也不做、悠闲度过、身体接触あたりで呼び出すといいんじゃないかと
+;「调教对象からフラグ」としてNEXTCOM:5が1になるので、口上はそれで分岐させられます
+;-------------------------------------------------
+@TARGETPLAY_NEXT
+
+A = 0
+B = 0
+;まずだいたいの方向性を決める
+;痛骂と足交侍奉は方向性に差異があるので逆调教系と一緒に先に処理
+IF PREVCOM == 28 || PREVCOM == 85 || (PREVCOM >= 200 && PREVCOM < 220)
+	B += 20
+;前の指令が爱抚・侍奉・身体接触系であれば侍奉系に偏る
+ELSEIF (PREVCOM >=0 && PREVCOM < 30) || (PREVCOM >= 80 && PREVCOM < 100)
+	A += 20
+;それ以外ならどっこいどっこい
+ENDIF
+
+;ABL:受虐属性による影響
+A += ABL:9 * 5
+
+;ABL:调教者の嗜虐属性による影響
+A += ABL:PLAYER:10 * 5
+
+;ABL:嗜虐属性による影響
+B += ABL:10 * 5
+
+;ABL:调教者の受虐属性による影響
+B += ABL:PLAYER:9 * 5
+
+;恋慕と相亲相爱は侍奉側に偏りやすい
+SIF TALENT:3 || TALENT:6
+	A += 50
+
+;服从と隶属はほぼ侍奉側に行く
+SIF TALENT:5 || TALENT:8
+	A += 200
+
+;結構な随机要素が入る
+A += RAND:25
+B += RAND:25
+
+
+;胆怯　侍奉側に片寄りやすい
+IF TALENT:10
+	TIMES A , 1.20
+	TIMES B , 0.80
+ENDIF
+
+;反抗　逆调教側に片寄りやすい
+IF TALENT:11
+	TIMES A , 0.80
+	TIMES B , 1.20
+ENDIF
+
+;直率　どちらの影響も強くなる
+IF TALENT:13
+	TIMES A , 1.20
+	TIMES B , 1.20
+ENDIF
+
+;老实　侍奉側に片寄りやすい
+IF TALENT:14
+	TIMES A , 1.20
+	TIMES B , 0.60
+ENDIF
+
+;高傲　逆调教側に片寄りやすい
+IF TALENT:15
+	TIMES A , 0.70
+	TIMES B , 1.30
+ENDIF
+
+;自大　逆调教側に片寄りやすい
+IF TALENT:16
+	TIMES A , 0.90
+	TIMES B , 1.30
+ENDIF
+
+;自卑　侍奉側に片寄りやすい
+IF TALENT:17
+	TIMES A , 1.30
+	TIMES B , 0.70
+ENDIF
+
+;自制力　侍奉側に片寄りやすい
+IF TALENT:20
+	TIMES A , 1.20
+	TIMES B , 0.80
+ENDIF
+
+;无动于衷　どちらの影響も弱くなる
+IF TALENT:21
+	TIMES A , 0.80
+	TIMES B , 0.80
+ENDIF
+
+;缺乏感情　どちらの影響も弱くなる
+IF TALENT:22
+	TIMES A , 0.80
+	TIMES B , 0.80
+ENDIF
+
+;性好奇　逆调教側に片寄りやすい
+IF TALENT:23
+	TIMES A , 0.70
+	TIMES B , 1.20
+ENDIF
+
+;性保守　侍奉側に片寄りやすい
+IF TALENT:24
+	TIMES A , 1.30
+	TIMES B , 0.70
+ENDIF
+
+;喜欢引人注目　逆调教側に非常に片寄りやすい
+IF TALENT:28
+	TIMES A , 0.60
+	TIMES B , 1.40
+ENDIF
+
+;害羞　侍奉側に片寄りやすい
+IF TALENT:35
+	TIMES A , 1.20
+	TIMES B , 0.80
+ENDIF
+
+;施虐狂　逆调教側に非常に片寄りやすい
+IF TALENT:83
+	TIMES A , 0.50
+	TIMES B , 2.00
+ENDIF
+
+;受虐狂　侍奉側に非常に片寄りやすい
+IF TALENT:84
+	TIMES A , 2.00
+	TIMES B , 0.50
+ENDIF
+
+;小恶魔　逆调教側に片寄りやすい
+IF TALENT:87
+	TIMES A , 0.80
+	TIMES B , 1.20
+ENDIF
+
+;妖狐　逆调教側に片寄りやすい
+IF TALENT:91
+	TIMES A , 0.80
+	TIMES B , 1.20
+ENDIF
+
+;魅力　どちらの影響も強くなる
+IF TALENT:92
+	TIMES A , 1.10
+	TIMES B , 1.10
+ENDIF
+
+;魅惑　どちらの影響も強くなる
+IF TALENT:93
+	TIMES A , 1.10
+	TIMES B , 1.10
+ENDIF
+
+;谜之魅力　どちらの影響も強くなる
+IF TALENT:94
+	TIMES A , 1.20
+	TIMES B , 1.20
+ENDIF
+
+;鼓舞　特に侍奉側に片寄りやすい
+IF TALENT:136
+	TIMES A , 1.50
+	TIMES B , 0.80
+ENDIF
+
+;ここから调教者の素質
+;施虐狂受虐狂以外はほぼ侍奉側に偏りやすくなる
+;施虐狂
+IF TALENT:PLAYER:83
+	TIMES A , 1.50
+	TIMES B , 0.80
+ENDIF
+
+;受虐狂
+IF TALENT:PLAYER:84
+	TIMES A , 0.80
+	TIMES B , 1.50
+ENDIF
+
+;小恶魔
+IF TALENT:PLAYER:87
+	TIMES A , 1.20
+ENDIF
+
+;妖狐
+IF TALENT:PLAYER:91
+	TIMES A , 1.20
+ENDIF
+
+;魅力
+IF TALENT:PLAYER:92
+	TIMES A , 1.10
+ENDIF
+
+;魅惑
+IF TALENT:PLAYER:93
+	TIMES A , 1.10
+ENDIF
+
+;谜之魅力
+IF TALENT:PLAYER:94
+	TIMES A , 1.20
+	TIMES B , 1.10
+ENDIF
+
+;鼓舞
+IF TALENT:PLAYER:136
+	TIMES A , 1.20
+	TIMES B , 0.90
+ENDIF
+
+
+;Aが高いなら侍奉系の処理
+IF A >= B
+	;前の指令が身体接触なら接吻かまったりしたがる
+	IF PREVCOM == 24
+		IF RAND:3 == 0
+			NEXTCOM:1 = 20
+		ELSEIF RAND:2 == 0
+			NEXTCOM:1 = 25
+		ELSE
+			CALL NEXT_COM_ORDER_H
+		ENDIF
+	;まったりしてたら接吻か身体接触したがる
+	ELSEIF PREVCOM == 25
+		IF RAND:3 == 0
+			NEXTCOM:1 = 20
+		ELSEIF RAND:2 == 0
+			NEXTCOM:1 = 24
+		ELSE
+			CALL NEXT_COM_ORDER_H
+		ENDIF
+	;それ以外なら適当
+	ELSE
+		CALL NEXT_COM_ORDER_H
+	ENDIF
+;そうでないなら逆调教処理
+ELSE
+	CALL NEXT_COM_ORDER_G
+ENDIF
+
+;侍奉指令に絞りたい時はこっち
+@TARGETPLAY_NEXT_H
+A = 1
+B = 0
+;前の指令が身体接触なら接吻かまったりしたがる
+IF PREVCOM == 24
+	IF RAND:3 == 0
+		NEXTCOM:1 = 20
+	ELSEIF RAND:2 == 0
+		NEXTCOM:1 = 25
+	ELSE
+		CALL NEXT_COM_ORDER_H
+	ENDIF
+;まったりしてたら接吻か身体接触したがる
+ELSEIF PREVCOM == 25
+	IF RAND:3 == 0
+		NEXTCOM:1 = 20
+	ELSEIF RAND:2 == 0
+		NEXTCOM:1 = 24
+	ELSE
+		CALL NEXT_COM_ORDER_H
+	ENDIF
+;それ以外なら適当
+ELSE
+	CALL NEXT_COM_ORDER_H
+ENDIF
+
+
+;逆调教指令に絞りたい時はこっち
+@TARGETPLAY_NEXT_G
+A = 0
+B = 1
+CALL NEXT_COM_ORDER_G
+
+
+
+
+;----------------------------------------------------------------
+;次回指令強制決定関数関係
+;----------------------------------------------------------------
+@NEXT_COM_ORDER_H
+NEXTCOM:6 = 1
+;侍奉系指令を随机で選択
+;縦乳交は巨乳か爆乳のときのみ
+IF RAND:10 == 0 && (TALENT:112 || TALENT:111)
+	NEXTCOM:1 = 87
+;乳夹口交は男と绝壁不可
+ELSEIF RAND:9 == 0 && TALENT:140 == 0 && TALENT:110 == 0
+	NEXTCOM:1 = 88
+;乳交もまた然り
+ELSEIF RAND:8 == 0 && TALENT:140 == 0 && TALENT:110 == 0
+	NEXTCOM:1 = 82
+;足交は施虐狂无の時のみ（施虐狂いと踏むから）
+ELSEIF RAND:6 == 0 && TALENT:83 == 0
+	NEXTCOM:1 = 85
+;悠闲度过は恋慕か相亲相爱の時のみ
+ELSEIF RAND:5 == 0 && (TALENT:3 || TALENT:6)
+	NEXTCOM:1 = 25
+;身体接触は恋慕か相亲相爱の時のみ
+ELSEIF RAND:4 == 0 && (TALENT:3 || TALENT:6)
+	NEXTCOM:1 = 24
+;接吻
+ELSEIF RAND:3 == 0
+	NEXTCOM:1 = 20
+;手交命令
+ELSEIF RAND:2 == 0
+	NEXTCOM:1 = 80
+;口交命令
+ELSE
+	NEXTCOM:1 = 81
+ENDIF
+
+@NEXT_COM_ORDER_G
+NEXTCOM:6 = 1
+;逆调教系指令を随机で選択
+;足交は施虐狂いの時のみ
+IF RAND:7 == 0 && TALENT:83
+	NEXTCOM:1 = 85
+;鞭子打ちは嗜虐属性3以上で鞭子持ってるときのみ
+ELSEIF RAND:6 == 0 && (ITEM:13 || NOITEM) && ABL:10 >= 3
+	NEXTCOM:1 = 208
+;舔阴は女の子のみ
+ELSEIF RAND:5 == 0 && TALENT:140 == 0 && TALENT:139 == 0
+	NEXTCOM:1 = 1
+;口交はフタか男の子のみ
+ELSEIF RAND:5 == 0 && (TALENT:140 || TALENT:139)
+	NEXTCOM:1 = 2
+;使之爱抚
+ELSEIF RAND:4 == 0
+	NEXTCOM:1 = 202
+;痛骂
+ELSEIF RAND:3 == 0
+	NEXTCOM:1 = 203
+;使之打屁股
+ELSEIF RAND:2 == 0
+	NEXTCOM:1 = 207
+;舔足
+ELSE
+	NEXTCOM:1 = 210
+ENDIF
+
+@NEXT_COM_ABLE
+;基本的にはCOMABLEと同じ
+;NEXTCOM:7 が10になったら無限ループ入ったと判定して残念ながら什么也不做に移动
+IF NEXTCOM:7 == 10
+	NEXTCOM:1 = 21
+	RETURN 1
+;舔阴実行判定
+ELSEIF NEXTCOM:1 == 1
+	;下身内衣をつけている、布偶装を着ている、もしく水手裙以外の下身外衣を履いているとダメ
+	SIF TEQUIP:2 || TEQUIP:4 > 1 || TEQUIP:6 == 7
+		RETURN 0
+	;触手调教中はダメ
+	SIF TEQUIP:25
+		RETURN 0
+	;阴蒂爱抚命令・手指插入命令・插入命令中は駄目
+	SIF TEQUIP:49 || TEQUIP:45 || TEQUIP:47
+		RETURN 0
+	RETURN 1
+;口交実行判定
+ELSEIF NEXTCOM:1 == 2
+	;下身内衣をつけている、布偶装を着ている、もしく水手裙以外の下身外衣を履いているとダメ
+	SIF TEQUIP:2 || TEQUIP:4 > 1 || TEQUIP:6 == 7
+		RETURN 0
+	;飞机杯使用中はダメ
+	SIF TEQUIP:12
+		RETURN 0
+	;导尿管使用中はダメ
+	SIF TEQUIP:38
+		RETURN 0
+	;バルーン导尿管使用中はダメ
+	SIF TEQUIP:39
+		RETURN 0
+	;触手调教中はダメ
+	SIF TEQUIP:25
+		RETURN 0
+	;阴茎爱抚命令中は駄目
+	SIF TEQUIP:49
+		RETURN 0
+	RETURN 1
+;接吻実行判定
+ELSEIF NEXTCOM:1 == 20
+	;口が汚れているとダメ（调教者が脏污无视か愛液、母乳のよごれならＯＫ）
+	SIF STAIN:0 >= 2 && (STAIN:0 != 16 && STAIN:0 != 17) && TALENT:PLAYER:64 == 0
+		RETURN 0
+	;口塞球使用中は不可
+	SIF TEQUIP:20
+		RETURN 0
+	;触手调教中はダメ
+	SIF TEQUIP:25
+		RETURN 0
+	RETURN 1
+;身体接触
+ELSEIF NEXTCOM:1 == 24
+	;奴隶が恋慕か相亲相爱で主人でないとダメ
+	SIF (TALENT:3 == 0 && TALENT:6 == 0) || PLAYER != MASTER
+		RETURN 0
+	;助手に命令していると駄目
+	SIF (TEQUIP:44 || TEQUIP:45 || TEQUIP:46 || TEQUIP:47 || TEQUIP:48 || TEQUIP:49)
+		RETURN 0
+	RETURN 1
+;悠闲度过
+ELSEIF NEXTCOM:1 == 25
+	;奴隶が恋慕か相亲相爱で主人でないとダメ
+	SIF (TALENT:3 == 0 && TALENT:6 == 0) || PLAYER != MASTER
+		RETURN 0
+	;助手に命令していると駄目
+	SIF (TEQUIP:44 || TEQUIP:45 || TEQUIP:46 || TEQUIP:47 || TEQUIP:48 || TEQUIP:49)
+		RETURN 0
+	RETURN 1
+;手交命令実行判定
+ELSEIF NEXTCOM:1 == 80
+	;调教者が男性か半人半妖か扶她じゃないとダメ
+	SIF TALENT:PLAYER:137 == 0 && TALENT:PLAYER:139 == 0 && TALENT:PLAYER:140 == 0
+		RETURN 0
+	;绳子使用中は不可
+	SIF TEQUIP:19
+		RETURN 0
+	;触手调教中はダメ
+	SIF TEQUIP:25
+		RETURN 0
+	RETURN 1
+;口交命令実行判定
+ELSEIF NEXTCOM:1 == 81
+	;调教者が男性か半人半妖か扶她じゃないとダメ
+	SIF TALENT:PLAYER:137 == 0 && TALENT:PLAYER:139 == 0 && TALENT:PLAYER:140 == 0
+		RETURN 0
+	;口塞球使用中は不可
+	SIF TEQUIP:20
+		RETURN 0
+	;绳子使用中は不可
+	SIF TEQUIP:19
+		RETURN 0
+	;触手调教中はダメ
+	SIF TEQUIP:25
+		RETURN 0
+	RETURN 1
+
+;乳交実行判定
+ELSEIF NEXTCOM:1 == 82
+	;[爆乳]なら技巧LV1以上、[巨乳]でなければ技巧3以上、[贫乳]だと技巧4以上必要
+	SIF (TALENT:112 == 1 && ABL:2 == 1) || (TALENT:112 == 0 && TALENT:111 == 1 && ABL:2 < 2) || (TALENT:112 == 0 && TALENT:111 == 0 && ABL:2 < 3) || (TALENT:109 && ABL:2 < 4)
+		RETURN 0
+	;调教者が男性か半人半妖か扶她じゃないとダメ
+	SIF TALENT:PLAYER:137 == 0 && TALENT:PLAYER:139 == 0 && TALENT:PLAYER:140 == 0
+		RETURN 0
+	;绳子使用中は不可
+	SIF TEQUIP:19
+		RETURN 0
+	;上身内衣をつけているとダメ
+	SIF TEQUIP:3
+		RETURN 0
+	;触手调教中はダメ
+	SIF TEQUIP:25
+		RETURN 0
+	RETURN 1
+
+;足交実行判定
+ELSEIF NEXTCOM:1 == 85
+	;调教者が男性か半人半妖か扶她じゃないとダメ
+	SIF TALENT:PLAYER:137 == 0 && TALENT:PLAYER:139 == 0 && TALENT:PLAYER:140 == 0
+		RETURN 0
+	;绳子使用中は不可
+	SIF TEQUIP:19
+		RETURN 0
+	;靴を履いているとき、调教者が受虐狂あるいは调教对象が施虐狂じゃないとダメ
+	SIF TEQUIP:9 && (TALENT:PLAYER:84 == 0 && TALENT:83 == 0)
+		RETURN 0
+	;浴室PLAY中は塑料地垫が無いとダメ
+	IF TEQUIP:31
+		SIF ITEM:20 == 0 && NOITEM == 0
+			RETURN 0
+	ENDIF
+	;触手调教中はダメ
+	SIF TEQUIP:25
+		RETURN 0
+	RETURN 1
+;縦乳交
+ELSEIF NEXTCOM:1 == 87
+	;技巧4以上必要
+	SIF ABL:2 <= 3
+		RETURN 0
+	;调教者が男性か半人半妖か扶她じゃないとダメ
+	SIF TALENT:PLAYER:137 == 0 && TALENT:PLAYER:139 == 0 && TALENT:PLAYER:140 == 0
+		RETURN 0
+	;上身内衣をつけているとダメ
+	SIF TEQUIP:3
+		RETURN 0
+	;绳子使用中は不可
+	SIF TEQUIP:19
+		RETURN 0
+	;触手调教中はダメ
+	SIF TEQUIP:25
+		RETURN 0
+	RETURN 1
+;乳夹口交
+ELSEIF NEXTCOM:1 == 88
+	;[爆乳]なら技巧LV2以上、[巨乳]でなければ技巧4以上、[贫乳]だと技巧5必要
+	SIF (TALENT:112 == 1 && ABL:2 <= 2) || (TALENT:112 == 0 && TALENT:111 == 1 && ABL:2 <= 3) || (TALENT:112 == 0 && TALENT:111 == 0 && ABL:2 <= 4) || (TALENT:109 && ABL:2 == 5)
+		RETURN 0
+	;调教者が男性か半人半妖か扶她じゃないとダメ
+	SIF TALENT:PLAYER:137 == 0 && TALENT:PLAYER:139 == 0 && TALENT:PLAYER:140 == 0
+		RETURN 0
+	;上身内衣をつけているとダメ
+	SIF TEQUIP:3
+		RETURN 0
+	;绳子使用中は不可
+	SIF TEQUIP:19
+		RETURN 0
+	;触手调教中はダメ
+	SIF TEQUIP:25
+		RETURN 0
+	RETURN 1
+;胸を揉ませる実行判定
+ELSEIF NEXTCOM:1 == 201
+	;绳子で縛っていると駄目
+	SIF TEQUIP:19
+		RETURN 0
+	;触手使用中はだめ
+	SIF TEQUIP:25
+		RETURN 0
+	RETURN 1
+;使之爱抚実行判定
+ELSEIF NEXTCOM:1 == 202
+	;绳子で縛っていると駄目
+	SIF TEQUIP:19
+		RETURN 0
+	;触手使用中はだめ
+	SIF TEQUIP:25
+		RETURN 0
+	RETURN 1
+;痛骂実行判定
+ELSEIF NEXTCOM:1 == 203
+	;口塞球使用中はだめ
+	SIF TEQUIP:20
+		RETURN 0
+	;眼罩使用中はだめ
+	SIF TEQUIP:18
+		RETURN 0
+	;触手口辱中はだめ
+	SIF TEQUIP:36
+		RETURN 0
+	RETURN 1
+;使之打屁股実行判定
+ELSEIF NEXTCOM:1 == 207
+	;顺从3未満のASSIの場合はだめ（受虐狂ならＯＫ）
+	IF ASSIPLAY
+		SIF ABL:ASSI:0 < 3 && TALENT:ASSI:84 == 0
+			RETURN 0
+	ENDIF
+	;眼罩使用中はだめ
+	SIF TEQUIP:18
+		RETURN 0
+	;绳子使用中はだめ
+	SIF TEQUIP:19
+		RETURN 0
+	;触手调教中はダメ
+	SIF TEQUIP:25
+		RETURN 0
+	RETURN 1
+;鞭子打たせる実行判定
+ELSEIF NEXTCOM:1 == 208
+	;顺从4未満のASSIの場合はだめ（受虐狂ならＯＫ）
+	IF ASSIPLAY
+		SIF ABL:ASSI:0 < 4 && TALENT:ASSI:84 == 0
+			RETURN 0
+	ENDIF
+	;眼罩使用中はだめ
+	SIF TEQUIP:18
+		RETURN 0
+	;绳子使用中はだめ
+	SIF TEQUIP:19
+		RETURN 0
+	;顺从が4以上ないとダメ
+	SIF ABL:0 < 4
+		RETURN 0
+	;触手调教中はダメ
+	SIF TEQUIP:25
+		RETURN 0
+	RETURN 1
+;舔足実行判定
+ELSEIF NEXTCOM:1 == 210
+	;靴を履いているとき、调教者が受虐狂あるいは调教对象が施虐狂じゃないとダメ
+	SIF TEQUIP:9 && (TALENT:PLAYER:84 == 0 && TALENT:83 == 0)
+		RETURN 0
+	;浴室PLAY中は塑料地垫が無いとダメ
+	IF TEQUIP:31
+		SIF ITEM:20 == 0 && NOITEM == 0
+			RETURN 0
+	ENDIF
+	;触手使用中はだめ
+	SIF TEQUIP:25
+		RETURN 0
+	RETURN 1
+ENDIF
+
+;----------------------------------------------------------------
+;NEXTCOMのバグ防止用
+;----------------------------------------------------------------
+;@EVENTCOM
+;消去待ちの場合は消去
+IF NEXTCOM:6 < 0
+	NEXTCOM = -1
+	NEXTCOM:1 = 0
+	NEXTCOM:5 = 0
+	NEXTCOM:6 = 0
+;実行待ちの場合はまず実行判定
+ELSEIF NEXTCOM:6 > 0
+	CALL NEXT_COM_ABLE
+	;RETURN 1で帰って来たら進行
+	;NEXTCOM:6を消去待ちに更新
+	IF RESULT == 1
+		NEXTCOM = NEXTCOM:1
+		NEXTCOM:6 = -1
+		NEXTCOM:5 = 1
+	;RETURN 0で帰って来たら、NEXTCOM:1を破壊してもっかい次の指令を取得
+	ELSE
+		NEXTCOM:1 = -1
+		NEXTCOM:7 += 1
+		;Aが高いなら侍奉系の処理
+		IF A >= B
+			;前の指令が身体接触なら接吻かまったりしたがる
+			IF PREVCOM == 24
+				IF RAND:3 == 0
+					NEXTCOM:1 = 20
+				ELSEIF RAND:2 == 0
+					NEXTCOM:1 = 25
+				ELSE
+					CALL NEXT_COM_ORDER_H
+				ENDIF
+			;まったりしてたら接吻か身体接触したがる
+			ELSEIF PREVCOM == 25
+				IF RAND:3 == 0
+					NEXTCOM:1 = 20
+				ELSEIF RAND:2 == 0
+					NEXTCOM:1 = 24
+				ELSE
+					CALL NEXT_COM_ORDER_H
+				ENDIF
+			;それ以外なら適当
+			ELSE
+				CALL NEXT_COM_ORDER_H
+			ENDIF
+		;そうでないなら逆调教処理
+		ELSE
+			CALL NEXT_COM_ORDER_G
+		ENDIF
+	ENDIF
+ENDIF
+
+;@EVENTCOMEND
+;消去待ちの場合は消去
+IF NEXTCOM:6 < 0
+	NEXTCOM = -1
+	NEXTCOM:1 = 0
+	NEXTCOM:5 = 0
+	NEXTCOM:6 = 0
+;実行待ちの場合はまず実行判定
+ELSEIF NEXTCOM:6 > 0
+	CALL NEXT_COM_ABLE
+	;RETURN 1で帰って来たら進行
+	;NEXTCOM:6を消去待ちに更新
+	IF RESULT == 1
+		NEXTCOM = NEXTCOM:1
+		NEXTCOM:6 = -1
+		NEXTCOM:5 = 1
+	;RETURN 0で帰って来たら、NEXTCOM:1を破壊してもっかい次の指令を取得
+	ELSE
+		NEXTCOM:1 = -1
+		NEXTCOM:7 += 1
+		;Aが高いなら侍奉系の処理
+		IF A >= B
+			;前の指令が身体接触なら接吻かまったりしたがる
+			IF PREVCOM == 24
+				IF RAND:3 == 0
+					NEXTCOM:1 = 20
+				ELSEIF RAND:2 == 0
+					NEXTCOM:1 = 25
+				ELSE
+					CALL NEXT_COM_ORDER_H
+				ENDIF
+			;まったりしてたら接吻か身体接触したがる
+			ELSEIF PREVCOM == 25
+				IF RAND:3 == 0
+					NEXTCOM:1 = 20
+				ELSEIF RAND:2 == 0
+					NEXTCOM:1 = 24
+				ELSE
+					CALL NEXT_COM_ORDER_H
+				ENDIF
+			;それ以外なら適当
+			ELSE
+				CALL NEXT_COM_ORDER_H
+			ENDIF
+		;そうでないなら逆调教処理
+		ELSE
+			CALL NEXT_COM_ORDER_G
+		ENDIF
+	ENDIF
+ENDIF

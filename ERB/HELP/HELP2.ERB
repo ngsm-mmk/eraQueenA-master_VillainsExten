@@ -1,0 +1,877 @@
+﻿;--------------------------------------------------------------------------------------------
+;このファイル内ではアイテム・ネタばれＱ＆Ａ・
+;ゲームモード・エンディング条件・拡張機能の記述があります。
+;--------------------------------------------------------------------------------------------
+;=============================================================================
+;用語辞典――アイテム
+;=============================================================================
+;--------------------------------------------------
+;アイテム解説メインページ
+;--------------------------------------------------
+@DICTIONARY_ITEM_MAIN
+P = 0
+$PRINT_LIST
+DRAWLINE
+PRINTFORML 「道具」相关的大体说明。
+PRINTFORML 请选择想要了解的道具。 ＜page.{P+1}/5＞
+DRAWLINE
+;各ページを表示
+FOR LOCAL:1, 0, 20
+	LOCAL = LOCAL:1 + P*20
+	Q:LOCAL = 0
+	STRLENS ITEMNAME:LOCAL
+	IF RESULT > 0
+		PRINTFORML [{LOCAL, 2}] %ITEMNAME:LOCAL%
+		Q:LOCAL = 1
+	ENDIF
+NEXT
+DRAWLINE
+PRINTFORMLC \@(P <= 0) ? %" " * 16% # [1001]上一页\@
+PRINTLC [1000]返回
+PRINTFORMLC \@(P >= 4) ? %" " * 16% # [1009]下一页\@
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 1000
+	RETURN 0
+ELSEIF RESULT == 1001 && P > 0
+	P -= 1
+	GOTO PRINT_LIST
+ELSEIF RESULT == 1009 && P < 5
+	P += 1
+	GOTO PRINT_LIST
+ELSE
+	SIF Q:RESULT == 0
+		GOTO INPUT_LOOP
+	PRINTFORML 【%ITEMNAME:RESULT%】
+	TRYCALLFORM DICTIONARY_ITEM_{RESULT}
+	GOTO PRINT_LIST
+ENDIF
+
+;--------------------------------------------------
+;アイテム解説
+;--------------------------------------------------
+;跳蛋
+@DICTIONARY_ITEM_0
+PRINTL 依靠震动给予性器刺激的道具。
+PRINTW 关联关联指令：跳蛋、乳头跳蛋
+
+;电动按摩棒
+@DICTIONARY_ITEM_1
+PRINTL 在性能方面做了改良的电动性玩具。能够给予比跳蛋更强烈的刺激。
+PRINTW 关联指令：电动按摩棒
+
+;阴蒂夹
+@DICTIONARY_ITEM_2
+PRINTL 可以稳稳地夹在阴蒂上。Ｃ系装着器具。
+PRINTL 男性无法使用。
+PRINTW 关联指令：阴蒂夹
+
+;飞机杯
+@DICTIONARY_ITEM_3
+PRINTL 套在阴茎上给予刺激的道具。Ｃ系装着器具。
+PRINTL 没有阴茎无法使用。
+PRINTW 关联指令：飞机杯
+
+;自慰棒
+@DICTIONARY_ITEM_4
+PRINTL 能插入阴道动来动去的电动自慰棒。Ｖ系装着器具。
+PRINTL 没有阴道无法使用。
+PRINTW 关联指令：自慰棒
+
+;肛塞
+@DICTIONARY_ITEM_5
+PRINTL 能插入肛门动来动去的电动肛塞，相当于Ｖ系的自慰棒。Ａ系装着器具。
+PRINTW 关联指令：肛塞
+
+;后庭拉珠
+@DICTIONARY_ITEM_6
+PRINTL 一串美丽的玉制珠子，塞入肛门后一颗一颗拉出来以给予刺激。
+PRINTW Ａ系装着器具。关联指令：后庭拉珠
+
+;打气筒
+@DICTIONARY_ITEM_7
+PRINTL 向肛门内输送空气的泵和塞子装置。
+PRINTW 关联指令：空气灌肠
+
+;扩张气球
+@DICTIONARY_ITEM_8
+PRINTL 将气球放入肛门然后向内打气以让穴内气球膨胀起来的装置。
+PRINTL 不是一次性的。
+PRINTW 关联指令：扩张气球
+
+;灌肠器＋塞头
+@DICTIONARY_ITEM_9
+PRINTL 一组灌肠用的套装。不是一次性的。
+PRINTW 关联指令：灌肠器＋塞头
+
+;乳头夹
+@DICTIONARY_ITEM_10
+PRINTL 能稳稳地夹在乳头上给予刺激。Ｂ系装着器具。
+PRINTW 关联指令：乳头夹
+
+;挤奶器
+@DICTIONARY_ITEM_11
+PRINTL 装在乳房上就可以榨乳。Ｂ系装着器具。
+PRINTW 关联指令：挤奶器
+
+;捆绑式假阴茎
+@DICTIONARY_ITEM_12
+PRINTL 用以给没有阴茎的人大振雄风的道具。
+PRINTL 装备上这个就可以插入他人，能解锁相关调教指令。
+PRINTW 不过并不能射精，限制也很多。
+
+;鞭子
+@DICTIONARY_ITEM_13
+PRINTL 当然是用来啪啪打人的东西。
+PRINTW 关联指令：鞭子
+
+;针
+@DICTIONARY_ITEM_14
+PRINTL 尖端很细，闪着寒芒的针，光看就让人害怕。
+PRINTW 关联指令：针
+
+;眼罩
+@DICTIONARY_ITEM_15
+PRINTL 用以遮住奴隶的双眼。紧缚系装着器具。
+PRINTW 关联指令：眼罩
+
+;绳子
+@DICTIONARY_ITEM_16
+PRINTL 捆绑用的绳子。紧缚系装着器具。
+PRINTW 关联指令：绳子
+
+;口塞球
+@DICTIONARY_ITEM_17
+PRINTL 口枷。不会阻碍呼吸。紧缚系装着器具。
+PRINTW 关联指令：口塞球
+
+;摄像机
+@DICTIONARY_ITEM_18
+PRINTL 摄像机。使用时必须有录像带。
+PRINTW 关联指令：视频拍摄
+
+;照相机
+@DICTIONARY_ITEM_19
+PRINTL 照相机。或许并不是数码相机？
+PRINTL 使用时必须有胶卷。
+PRINTW 关联指令：写真摄影
+
+;塑料地垫
+@DICTIONARY_ITEM_20
+PRINTL 铺在浴室里的防湿垫子。不是一次性的。
+PRINTW 购入后可以在浴室做爱。
+
+;大镜子
+@DICTIONARY_ITEM_21
+PRINTL 超大的全身镜。场景移动式器具。
+PRINTW 关联指令：羞耻PLAY、淫乱牡丹
+
+;项圈
+@DICTIONARY_ITEM_22
+PRINTL 项圈和引绳的组合。场景移动式器具。
+PRINTW 关联指令：野外PLAY
+
+;围裙
+@DICTIONARY_ITEM_23
+PRINTL 普通的围裙。衣服系装着器具。
+PRINTL 关联指令：新妻PLAY
+PRINTW 不需要特地去着衣设定里穿脱。
+
+;电极接头
+@DICTIONARY_ITEM_24
+PRINTL 可固定和插入的电极跟电源组合。
+PRINTW 关联指令：肛门电极、乳房电极
+
+;触手役使术
+@DICTIONARY_ITEM_25
+PRINTL 召来触手的指令。当然，通常情况是买不到的。
+PRINTW 关联指令：触手系相关指令
+
+;蝴蝶结
+@DICTIONARY_ITEM_26
+PRINTL 用蝴蝶结紧紧绑住阴茎根部抑制射精。
+PRINTL Ｃ系装着器具。没有阴茎无法使用。
+PRINTW 关联指令：禁止射精
+
+;导尿管
+@DICTIONARY_ITEM_27
+PRINTL 能插入尿道的中空导管。Ｃ系装着器具。
+PRINTL 不要和采尿器混淆。
+PRINTW 关联指令：导尿管
+
+;進化の秘宝
+@DICTIONARY_ITEM_28
+PRINTL 某位绅士为了做出更高水平的触手调教游戏而准备的必要工具。
+PRINTL 和某著名RPG的第4部并没有关系……大概。
+PRINTW 通常情况是买不到的。关联指令：触手系相关指令
+
+;笼子
+@DICTIONARY_ITEM_29
+PRINTL 关有用以兽奸的大型野兽的笼子。
+PRINTW 关联指令：兽奸
+
+;贞操带
+@DICTIONARY_ITEM_30
+PRINTL 可以锁起来的内衣。
+PRINTW 穿戴的期间奴隶无法性交也无法自慰。
+
+;猫耳
+@DICTIONARY_ITEM_31
+PRINTL 猫咪的耳朵。超可爱。
+PRINTW 另外，口上也许也会发生变化……
+
+;狗耳
+@DICTIONARY_ITEM_32
+PRINTL 小狗的耳朵。超可爱。
+PRINTW 另外，口上也许也会发生变化……
+
+;兔耳
+@DICTIONARY_ITEM_33
+PRINTL 兔子的耳朵。超可爱。
+PRINTW 另外，口上也许也会发生变化……
+
+;三角巾
+@DICTIONARY_ITEM_34
+PRINTL 用以包在头上的三角巾。
+PRINTW 做家务的时候戴上就会有干劲。
+
+;耳机
+@DICTIONARY_ITEM_35
+PRINTL 带有麦克风的耳机。
+PRINTW 练习歌唱的时候戴上就会有干劲。
+
+;婚礼套装
+@DICTIONARY_ITEM_36
+PRINTL 纯白的婚纱礼服。
+PRINTW 新妻PLAY的时候穿上会更有氛围。
+
+
+	;40～59番	複数購入できる道具
+;润滑乳液
+@DICTIONARY_ITEM_40
+PRINTL 涂在身上滑溜溜的。一次性道具。
+PRINTL 关联指令：润滑乳液
+PRINTW 没有有害成分，不论什么种族都可以使用。
+
+;媚薬
+@DICTIONARY_ITEM_41
+PRINTL 让人性奋起来的粉色的药剂。一次性道具。
+PRINTW 关联指令：媚药
+
+;利尿剂
+@DICTIONARY_ITEM_42
+PRINTL 催生尿意的药剂。一次性道具。
+PRINTW 关联指令：利尿剂
+
+;录像带
+@DICTIONARY_ITEM_43
+PRINTL 使用摄像机时所必备的道具。消耗品。
+PRINTW 没有摄像机时无法使用。
+
+;胶卷
+@DICTIONARY_ITEM_44
+PRINTL 使用照相机时所必备的道具。消耗品。
+PRINTW 没有照相机时无法使用。
+
+;避孕套
+@DICTIONARY_ITEM_45
+PRINTL 套在阴茎上装盛精液的橡胶套。一次性道具。
+PRINTW 同时也是装着器具。关联指令：避孕套
+
+;低温蜡烛
+@DICTIONARY_ITEM_46
+PRINTL ＳＭ相关道具，能滴下低温的蜡油。一次性道具。
+PRINTW 关联指令：蜡烛
+
+;强精神药
+@DICTIONARY_ITEM_47
+PRINTL 抑制绝顶的药剂。一次性道具。
+PRINTL 一旦失效，之前积攒的快感会一口气全部喷薄而出。
+PRINTW 关联指令：强精神药
+
+;丝袜
+@DICTIONARY_ITEM_50
+PRINTL 薄而长的袜子。
+PRINTW 着衣设定指令中穿戴，可带来情趣。
+
+;网袜
+@DICTIONARY_ITEM_51
+PRINTL 满是洞洞的色情的袜子。
+PRINTW 着衣设定指令中穿戴，可带来情趣。
+
+
+;【脏污无视】
+@DICTIONARY_ITEM_60
+PRINTL 获得[脏污无视]的素质。
+PRINTW 爱液和精液等污物沾在身上也完全不介意。
+
+;【调和知识】
+@DICTIONARY_ITEM_61
+PRINTL 获得[调和知识]的素质。一开始无法购买。
+PRINTW 获得后可购买使用特殊的药品。
+
+;【禁断的知识】
+@DICTIONARY_ITEM_62
+PRINTL 获得[禁断的知识]的素质。一开始无法购买。
+PRINTW 获得后可购买使用特殊的物品。
+
+;【观察眼】
+@DICTIONARY_ITEM_63
+PRINTL 获得[观察眼]的素质。一开始无法购买。
+PRINTW 能看到平时看不到的压力值、依赖度等数值。
+
+
+;河童の妙薬
+@DICTIONARY_ITEM_70
+PRINTL 用以回复体力。通常情况是买不到的。
+PRINTW 持有[药物抗性]素质的情况下效用不明显。
+
+;药的材料(双)
+@DICTIONARY_ITEM_71
+PRINTW 把男性变成双性，或是把女人变成扶她。通常情况是买不到的。
+
+;药的材料(消)
+@DICTIONARY_ITEM_72
+PRINTW 消去双性或扶她素质。通常情况是买不到的。
+
+;青いキャンディ
+@DICTIONARY_ITEM_73
+PRINTW 让身体成长的糖果。获得[母乳体质]素质。通常情况是买不到的。
+
+;赤いキャンディ
+@DICTIONARY_ITEM_74
+PRINTW 让身体复原的糖果。使处女膜再生。通常情况是买不到的。
+
+;丰胸剂
+@DICTIONARY_ITEM_75
+PRINTW 把胸变大一点的药剂。爆乳使用不可。通常情况是买不到的。
+
+;缩胸剂,
+@DICTIONARY_ITEM_76
+PRINTW 把胸缩小一点的药剂。绝壁使用不可。通常情况是买不到的。
+
+;抑プロラクチン薬
+@DICTIONARY_ITEM_77
+PRINTW 抑制乳汁分泌的药剂。通常情况是买不到的。
+
+;漏尿治愈
+@DICTIONARY_ITEM_78
+PRINTW 治愈漏尿癖。通常情况是买不到的。
+
+;黄色いキャンディ
+@DICTIONARY_ITEM_79
+PRINTL 怀孕中强行产卵，失去怀孕状态。
+PRINTW 高风险道具。通常情况是买不到的。
+
+;性转换の药
+@DICTIONARY_ITEM_80
+PRINTW 将对象变性的药剂。通常情况是买不到的。
+
+;天使の奇迹
+@DICTIONARY_ITEM_81
+PRINTW 把体型变小一点的药剂。小人体型使用不可。通常情况是买不到的。
+
+;恶魔の祝福
+@DICTIONARY_ITEM_82
+PRINTW 把体型变大一点的药剂。高大体系使用不可。通常情况是买不到的。
+
+;受
+@DICTIONARY_ITEM_83
+PRINTL 赋予「受」的素质。
+PRINTW 插入系指令・事件过滤。
+
+;攻
+@DICTIONARY_ITEM_84
+PRINTL 赋予「攻」的素质。
+PRINTW 被插入系指令・事件过滤。
+
+;记忆消除药
+@DICTIONARY_ITEM_90
+PRINTL 处女、扶她、母乳体质、经验、感覚の変化を残した状態で、
+PRINTW 残りのパラメータを全部初期化。通常情况是买不到的。
+
+;排卵诱发剂
+@DICTIONARY_ITEM_91
+PRINTL 诱发排卵的药剂。一次性道具。
+PRINTW 可增加怀孕的概率。
+
+;高性能避妊具
+@DICTIONARY_ITEM_92
+PRINTL 阻碍怀孕的避孕道具。一次性道具。
+PRINTW 在子宫里生成结界，只阻挡受精，不会影响快感的高性能道具，有效期只有一天。
+
+;隆根剂
+@DICTIONARY_ITEM_93
+PRINTW 把阴茎变大一点的药剂。尺寸傲人使用不可。通常情况是买不到的。
+
+;缩根剂
+@DICTIONARY_ITEM_94
+PRINTW 把体型变小一点的药剂。孩童尺寸使用不可。通常情况是买不到的。
+
+;倒带の药
+@DICTIONARY_ITEM_95
+PRINTL 記憶は就这样、身体だけを调教前に戻す薬。
+PRINTL 陷落素質、変化した素質、刻印、フラグなどを残した状態で、
+PRINTW 残りのパラメータを全部初期化。通常情况是买不到的。
+
+;精神修复药
+@DICTIONARY_ITEM_96
+PRINTW 消除[疯癫]状态。通常情况是买不到的。
+
+;约会券
+@DICTIONARY_ITEM_97
+PRINTL 消耗约会券可以送两名奴隶去指定地点约会，从而增长相性度。
+PRINTL 大概是很适合腐女玩家的道具。
+PRINTW 基本来说只能在剧情任务中获得。
+;=============================================================================
+;ネタばれＱ＆Ａ
+;=============================================================================
+;系统関係のネタばれを入れる
+;とりあえず作成といった程度。具体的に何を載せるかは未定
+@DICTIONARY_NETABARE_QA
+;現在のページを示す
+P = 0
+;最大ページ数を示す
+LOCAL = 1
+;LOCAL = 8
+$NETABARE_QA_HELP
+DRAWLINE
+PRINTL 以下是和系统相关的Ｑ＆Ａ。
+PRINTFORML 请选择想要了解的条目。 ＜page.{P+1}/{LOCAL+1}＞
+PRINTL ※任何项目都包括了会影响游戏乐趣的剧透，请慎重查阅。
+PRINTL 　（随版本更新有可能会增添项目）
+DRAWLINE
+IF P == 0
+	PRINTL  [0] Ｑ.可拍卖条件
+	PRINTL  [1] Ｑ.可担任助手的条件
+	PRINTL  [2] Ｑ.淫乱系(部位开发系系)素质的取得条件
+	PRINTL  [3] Ｑ.特殊性癖素质的取得条件
+	PRINTL  [4] Ｑ.[谜之魅力]取得条件
+	PRINTL  [5] Ｑ.[手指灵巧]取得条件
+	PRINTL  [6] Ｑ.[绝伦]取得条件
+;	PRINTL  [7] Ｑ.特別な礼物出現条件
+	PRINTL  [8] Ｑ.[禁断的知识]取得条件
+ 	PRINTL  [9] Ｑ.召唤非人之物的条件
+;ELSEIF P == 1
+;	PRINTL [10] Ｑ.（未定義）
+;	PRINTL [11] Ｑ.（未定義）
+;	PRINTL [12] Ｑ.（未定義）
+;	PRINTL [13] Ｑ.（未定義）
+;	PRINTL [14] Ｑ.（未定義）
+;	PRINTL [15] Ｑ.（未定義）
+;	PRINTL [16] Ｑ.（未定義）
+;	PRINTL [17] Ｑ.（未定義）
+;	PRINTL [18] Ｑ.（未定義）
+;	PRINTL [19] Ｑ.(未定義)
+ENDIF
+;PRINTL  [#] Ｑ.
+DRAWLINE
+PRINTFORMLC \@(P <= 0) ? %" " * 18% # [1001]上一页 \@
+PRINTLC [1000]返回
+PRINTFORMLC \@(P >= LOCAL) ? %" " * 18% # [1009]下一页 \@
+$INPUT_LOOP
+INPUT
+IF RESULT == 1000
+	RETURN 0
+ELSEIF RESULT == 1001 && P > 0
+	P -= 1
+	GOTO NETABARE_QA_HELP
+ELSEIF RESULT == 1009 && P < LOCAL
+	P += 1
+	GOTO NETABARE_QA_HELP
+ELSEIF RESULT >= 0 && RESULT <= (LOCAL+1) * 10
+	TRYCALLFORM DICTIONARY_NETABARE_Q{RESULT}
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+GOTO NETABARE_QA_HELP
+
+;拍卖可能な条件
+@DICTIONARY_NETABARE_Q0
+PRINTL 【可拍卖条件】
+PRINTL 
+PRINTL 前提条件是顺从和欲望合计6以上。
+PRINTL Ｃ感觉、Ｖ感觉、Ａ感觉、Ｂ感觉中任意一个达到Lv3以上。
+PRINTL ※具有[反抗]或[刚强]素质的奴隶需要达到顺从Lv4以上。
+PRINTL   具有[性压抑]，[抵抗]或[自制力]的奴隶需要达到欲望Lv4以上。
+PRINTL 
+PRINTL 符合以上条件的前提下满足以下任意一个条件即可拍卖。
+PRINTL 1：技巧Lv3以上
+PRINTL 2：侍奉精神Lv3以上
+PRINTL 3：受虐属性Lv3以上
+PRINTL 4：Ｃ感觉、Ｖ感觉、Ａ感觉、Ｂ感觉合计8以上
+PRINTL 5：顺从和欲望任意一个达到Lv5
+PRINTW 
+
+;助手可能な条件
+@DICTIONARY_NETABARE_Q1
+PRINTL 【可担任助手的条件】
+PRINTL 在符合可拍卖条件的基础下满足以下1～2中的任何一个条件即可获得。
+PRINTL 调教时助手可以代替主人进行调教。
+PRINTL ※不满足担任助手的条件，就无法对奴隶下达陷落素质专用的劳役指令。
+PRINTL 1：顺从・欲望・技巧・Ｃ感觉・同性倾向合计15以上
+PRINTW 2：顺从Lv5、欲望Lv4以上
+
+;淫乱系(部位開発系)素質取得条件
+@DICTIONARY_NETABARE_Q2
+PRINTL 【淫乱系(部位开发系系)素质的取得条件】
+PRINTL [性爱狂]：性成瘾４以上、性交经验２００以上、绝顶经验１５０以上
+PRINTL [自慰狂]：Ｃ感觉４以上、调教自慰经验１００以上、绝顶经验１５０以上
+PRINTL [淫壶]：Ｖ感觉４以上、Ｖ经验２００以上、绝顶经验１５０以上
+PRINTL [尻穴狂]：Ａ感觉４以上、Ａ经验３００以上、绝顶经验１５０以上
+PRINTL [淫乳]：Ｂ感觉４以上、喷乳经验１００以上、绝顶经验１５０以上
+PRINTL 
+PRINTW 这些素质无法重复取得。
+
+;特殊性癖素質取得条件
+@DICTIONARY_NETABARE_Q3
+PRINTL 【特殊性癖素质的取得条件】
+PRINTL [施虐狂]
+PRINTL 奴隶的场合：嗜虐属性Lv４以上、嗜虐快乐经验300以上、技巧Lv４以上
+PRINTL 主人或助手的場合：嗜虐属性Lv４以上、嗜虐快乐经验300以上
+PRINTL [受虐狂]
+PRINTL 受虐属性Lv４以上、痛苦快乐经验300以上
+PRINTL 
+PRINTW 这些素质无法重复取得。
+
+
+;[谜之魅力]取得条件
+@DICTIONARY_NETABARE_Q4
+PRINTL 【[谜之魅力]取得条件】
+PRINTL 这个素质只有主人取得后才有实际作用。
+PRINTL 恋慕系或服从系陷落的奴隶累计5人以上，调教结束后主人自动获得。
+PRINTW 请注意淫乱系陷落的奴隶不算在内。
+
+;[手指灵巧]取得条件
+@DICTIONARY_NETABARE_Q5
+PRINTL 【[手指灵巧]取得条件】
+PRINTL 这个素质只有主人取得后才有实际作用。
+PRINTL 着衣PLAY扩展开启的情况下技巧5以上、各素质陷落奴隶1人以上
+PRINTW 达成以上条件的前提，调教结束后主人自动获得。
+
+;[绝伦]取得条件
+@DICTIONARY_NETABARE_Q6
+PRINTL 【[绝伦]取得条件】
+PRINTL 这个素质只有主人取得后才有实际作用。
+PRINTW 射精经验200以上，调教结束后主人自动获得。
+
+;特別な礼物出現条件
+@DICTIONARY_NETABARE_Q7
+PRINTL 【特別な礼物出現条件】
+PRINTL [23]礼物指令では、一定の条件下で特別な礼物を渡す事が出来ます。
+PRINTL 口上によってはこの指令で到達できるエンディングが用意されていることもあります。
+PRINTL 
+PRINTL 1：恋慕系陷落者が全体を通して1人しかいない(淫乱、服从は何人いても可能)
+PRINTL 2：调教对象者が[相亲相爱]状態
+PRINTL 
+PRINTW この両方を満たすと、礼物メニューに[特別な礼物]が追加されます。
+
+;禁断的知识取得条件
+@DICTIONARY_NETABARE_Q8
+PRINTL 【[禁断的知识]取得条件】
+PRINTL 这个素质只有主人取得后才有实际作用。
+PRINTL 取得方法有四种。
+PRINTL 1：定制一名拥有[禁断的知识]的奴隶，让其陷落後成为助手，之后便可到商店购买。
+PRINTL 2：三种素质陷落奴隶各一人且调教经验2000以上时，通过结局後，继续游戏会自动获得。
+PRINTL 3：通关结局后开启新周目，可用积分点兑换。
+PRINTW 4：通关？？？结局后可获得。
+
+;开启人外召唤的条件
+@DICTIONARY_NETABARE_Q9
+PRINTL 【召唤非人之物的条件】
+PRINTL 非人之物，也即人外。
+PRINTL 种类繁多，外形奇异，拥有人类无法拥有的素质。
+PRINTL 并非是作为奴隶，而是被召唤出来和主人签订契约的存在。
+PRINTL 一旦踏入这个领域，就离所谓的日常越来越远。
+PRINTW 需要取得[禁断的知识]，且奴隶中有友人君。
+
+;
+@DICTIONARY_NETABARE_Q10
+PRINTL 【未定義領域】
+PRINTL 
+PRINTW 
+
+
+;
+@DICTIONARY_NETABARE_QXX
+PRINTL 【未定義領域】
+PRINTL 
+PRINTW 
+
+;=============================================================================
+;用語辞典――ゲームモード
+;=============================================================================
+;--------------------------------------------------
+;ゲームモード解説メインページ
+;--------------------------------------------------
+@DICTIONARY_GAMEMODE_MAIN
+$PRINT_LIST
+DRAWLINE
+PRINTFORML 沿袭自erahetaA的游戏模式说明。
+PRINTFORML 要变换游戏模式只能重新开始游戏。
+DRAWLINE
+PRINTL [ 0] START模式
+PRINTL [ 2] EXTRA模式
+DRAWLINE
+PRINTLC [1000]返回
+$INPUT_LOOP
+INPUT
+IF RESULT == 1000
+	RETURN 0
+ELSEIF RESULT < 0 || RESULT > 8
+	GOTO INPUT_LOOP
+ENDIF
+Q = RESULT
+TRYCALLFORM DICTIONARY_GAMEMODE_{Q}
+GOTO PRINT_LIST
+
+;--------------------------------------------------
+;ゲームモード解説
+;--------------------------------------------------
+;startモード
+@DICTIONARY_GAMEMODE_0
+PRINTL “STAR模式”
+PRINTL 最基本的游戏模式。
+PRINTL 主人需要在期限内达成赚够50万金的目标而努力。
+PRINTW 另外，在期限内达成目标后一样可以继续游戏，不用担心。
+
+;EXTRAモード
+@DICTIONARY_GAMEMODE_2
+PRINTL “EXTRA模式”
+PRINTL 无期限的游戏模式。
+PRINTL 是另一个主力模式，也存在只有这个模式才有的特殊要素。
+PRINTL （汉化者：但目前还没发现特殊要素在哪里，因此还是推荐以START模式开始游戏）
+PRINTW 另外，这个模式没有剧情，也不会有结局。
+
+;=============================================================================
+;用語辞典――エンディング条件
+;=============================================================================
+;--------------------------------------------------
+;エンディング条件解説メインページ
+;--------------------------------------------------
+@DICTIONARY_ENDING_MAIN
+P = 0
+$PRINT_LIST
+DRAWLINE
+PRINTFORML 除纳金所致的普通结局以外的结局。
+PRINTFORML 不过除了BAD END外，不管哪个结局之后都可以继续游戏就是了。
+PRINTFORML 请选择想要了解的结局。
+; ＜page.{P+1}/2＞
+DRAWLINE
+IF P == 0
+	PRINTL [ 1] 通常结局
+	PRINTL [ 2] 恋慕单人结局
+	PRINTL [ 3] 淫乱单人结局
+	PRINTL [ 4] 服从单人结局
+	PRINTL [ 5] 后宫结局
+	PRINTL [ 0] ？？？结局
+	PRINTL [51] 国王的厨房结局
+	PRINTL [52] 名制片人结局
+ENDIF
+DRAWLINE
+;PRINTFORMLC \@(P <= 0) ? %" " * 18% # [1001]上一页\@
+PRINTLC [1000]返回
+;PRINTFORMLC \@(P >= 1) ? %" " * 18% # [1009]下一页\@
+$INPUT_LOOP
+INPUT
+IF RESULT == 1000
+	RETURN 0
+ELSEIF RESULT == 1001 && P > 0
+	P -= 1
+	GOTO PRINT_LIST
+ELSEIF RESULT == 1009 && P < 1
+	P += 1
+	GOTO PRINT_LIST
+ELSEIF RESULT < 0 || RESULT > 68
+	GOTO INPUT_LOOP
+ENDIF
+Q = RESULT
+TRYCALLFORM DICTIONARY_ENDING_{Q}
+GOTO PRINT_LIST
+
+;--------------------------------------------------
+;エンディング解説
+;--------------------------------------------------
+;ノーマルエンド
+@DICTIONARY_ENDING_1
+PRINTL 〔通常结局〕
+PRINTL 就算选了这个也不一定是普通玩家…没、没什么。
+PRINTL （通常结局条件）
+PRINTW ・期限内上缴约定的50万金。
+
+
+@DICTIONARY_ENDING_2
+PRINTL （恋慕单人结局条件）
+PRINTL ・期限内持有约定的50万金。
+PRINTL ・恋慕陷落的奴隶有且仅有1人。
+PRINTW 　那个奴隶就在身边，且处于相亲相爱状态。
+
+@DICTIONARY_ENDING_3
+PRINTL （淫乱单人结局条件）
+PRINTL ・期限内持有约定的50万金。
+PRINTL ・淫乱陷落的奴隶有且仅有1人。
+PRINTW 　那个奴隶就在身边，且处于娼妇/娼夫状态。
+
+@DICTIONARY_ENDING_4
+PRINTL （服从单人结局条件）
+PRINTL ・期限内持有约定的50万金。
+PRINTL ・服从陷落的奴隶有且仅有1人。
+PRINTW 　那个奴隶就在身边，且处于隶属状态。
+
+;ハーレムエンド
+@DICTIONARY_ENDING_5
+PRINTL 〔后宫结局〕
+PRINTL 未满足特定条件下的后宫结局。
+PRINTL （后宫结局条件）
+PRINTL ・期限内持有约定的50万金。
+PRINTW ・陷落人数3人以上，有一位已陷落奴隶在身边。
+
+;？？？エンド
+@DICTIONARY_ENDING_0
+PRINTL 〔？？？结局〕
+PRINTL eraQueenA+的特有结局，目前已被汉化者修改。
+PRINTL 作为真结局而存在，困难度高到令人发指。
+PRINTL 想知道世界的真相的话，就试着挑战一次吧。
+PRINTL 通关这个结局会解锁新的要素，还能获得丰厚的奖励。
+PRINTL （？？？结局条件）
+PRINTL ・期限内持有约定的50万金。
+PRINTL ・相亲相爱、娼夫、隶属状态的奴隶各有1人以上。
+PRINTW ・陷落人数5人以上。
+
+;みんなのおにいさまエンド
+@DICTIONARY_ENDING_41
+PRINTL 〔みんなのおにいさまエンド〕
+PRINTL 妹と弟を集めるだけ集めたハーレムエンド。リヒテンとナターリアは必須。
+PRINTL 上位陷落者にまではこだわらないので、最愛の妹(弟)を徹底的に可愛がろう。
+PRINTL ちなみにベルギーは現在条件メンバーに含まれていない。
+PRINTL （みんなのおにいさまエンド条件）
+PRINTL ・期日までに既定の金額を所持していること。
+PRINTL ・リヒテンシュタイン、ナターリアが陷落済みであること。
+PRINTL ・フェリシアーノ、ルートヴィヒ、菊、アルフレッド、マシュー、ピーター、勇洙、
+PRINTL 　アイスランド、各ちび及びにょたりあから3人以上が陷落済みであること
+PRINTW ・以上20人の中から誰かが上位陷落であること。
+
+;みんなのおとうとエンド
+@DICTIONARY_ENDING_42
+PRINTL 〔みんなのおとうとエンド〕
+PRINTL お兄様とお姐さまから徹底的に可愛がられるエンディング。バッシュとライナは必須。
+PRINTL 最大の問題は必須条件にもなっているバッシュの陷落である。
+PRINTL そうでなくても妹、弟よりクセの強い連中ばっかりなので心してかかること。
+PRINTL ちなみにフランシスやオランダは現在条件メンバーに含まれていない。
+PRINTL （みんなのおとうとエンド条件）
+PRINTL ・期日までに既定の金額を所持していること。
+PRINTL ・バッシュ、ウクライナが陷落済みであること。
+PRINTL ・ロヴィーノ、ギル皮带、アーサー、イヴァン、耀、ノルウェー、デンマーク、
+PRINTL 　各にょたりあから3人以上が陷落済みであること（ちび不可）。
+PRINTW ・以上12人の中から誰かが上位陷落であること。
+
+;妖稚園エンド
+@DICTIONARY_ENDING_43
+PRINTL 〔妖稚園エンド〕
+PRINTL 親分垂涎、ちびたち特盛りのハーレムエンド。ちびたりあ、しんせいローマは必須。
+PRINTL 全員高額な上に小人ばっかりなので主人に[禁断的知识]は必須であろう。
+PRINTL （妖稚園エンド条件）
+PRINTL ・期日までに既定の金額を所持していること。
+PRINTL ・ちびたりあ、しんせいローマが陷落済みであること。
+PRINTL ・ちびろまーの、ちびぎる、ちび菊、ちびりす、ちびいうﾞぁん、ちびあるふれっど、
+PRINTL 　ちびましゅー、ちびろーでりひ、ちびえりざ、ちびばっしゅ、ちび勇洙、
+PRINTL 　ちびへらくれすから3人以上が陷落済みであること。
+PRINTW ・以上14人の中から誰かが上位陷落であること。
+
+;女王の厨房エンド
+@DICTIONARY_ENDING_51
+PRINTL 〔国王的厨房结局〕
+PRINTL 通过集结料理技能优异的厨师们所达成的结局。
+PRINTL 虽然是调教师，最后却转行经营起餐厅…什么的。
+PRINTL （国王的厨房结局条件）
+PRINTL ・期限内持有约定的50万金。
+PRINTW ・奴隶3人以上，且全部是料理技能Lv5以上的恋慕系陷落。
+
+
+;名制片人エンド
+@DICTIONARY_ENDING_52
+PRINTL 〔名制片人结局〕
+PRINTL 通过集结歌唱技能优秀的偶像们所达成的后宫结局。
+PRINTL 虽然是调教师，最后却转行搞起了偶像…什么的。
+PRINTL 取决于50天内能积累到多少歌唱经验。
+PRINTL （名制片人结局条件）
+PRINTL ・期限内持有约定的50万金。
+PRINTW ・奴隶3人以上，且全员歌唱技能Lv5以上。
+
+
+;大娼館エンド
+@DICTIONARY_ENDING_53
+PRINTL 〔大娼館エンド〕
+PRINTL 全員淫乱ルートで到達出来るハーレムエンド。
+PRINTL 奴隶全員が淫乱ルートでなくて是けないので、奴隶が多ければ多いほど达成は困難。
+PRINTL それ以外の変な条件はないので、少数精鋭で攻て行こう。
+PRINTL （大娼館エンド条件）
+PRINTL ・期日までに既定の金額を所持していること。
+PRINTL ・奴隶が5人以上おり、その全員が淫乱ルートであること。
+PRINTW ・誰か1人が上位陷落であること。
+
+;名调教师エンド
+@DICTIONARY_ENDING_54
+PRINTL 〔名调教师エンド〕
+PRINTL era的には一番正しい姿な気もするハーレムエンド。
+PRINTL 受虐狂は服从陷落を目指していれば嫌でも取得できるはず。
+PRINTL キャラ制限もないので、簡単なキャラを集めて挑戦してみよう。
+PRINTL 一応主人の技巧5も条件の一つなので、助手に頼り過ぎるのも考えもの。
+PRINTL また、默认で「施虐狂」を持っているルートヴィヒは
+PRINTL 絶对に条件メンバーに加える事が出来ない。
+PRINTL （名调教师エンド条件）
+PRINTL ・期日までに既定の金額を所持していること。
+PRINTL ・主人の技巧がLv5以上であること。
+PRINTL ・奴隶が5人以上おり、その全員が服从ルートでかつ[受虐狂]であること。
+PRINTW ・誰か1人が上位陷落であること。
+
+;女王様の狗エンド
+@DICTIONARY_ENDING_55
+PRINTL 〔女王様の狗エンド〕
+PRINTL 気が付いたら周りが施虐狂まみれだった、そんなエンディングである。
+PRINTL キャラ制限こそないものの困难度は極めて高い。助手调教は最大限に活用しよう。
+PRINTL （女王様の狗エンド条件）
+PRINTL ・期日までに既定の金額を所持していること。
+PRINTL ・奴隶が5人以上おり、その全員が[施虐狂]で技巧Lv5以上で助手可能であること。
+PRINTW ・誰か1人が上位陷落であること。
+
+
+;=============================================================================
+;拡張機能説明
+;=============================================================================
+;--------------------------------------------------
+;拡張機能解説メインページ
+;--------------------------------------------------
+@DICTIONARY_EXPANSION
+DRAWLINE
+PRINTFORML [OPTION] → [扩展设定] 下各扩展功能的大体说明。
+PRINTFORML 默认是全部关闭的。
+$PRINT_LIST
+DRAWLINE
+PRINTL [ 1] 称号功能
+PRINTL [ 2] 着衣PLAY扩展
+PRINTL 
+PRINTL [100]返回
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 100
+	RETURN 0
+ELSE
+	TRYCALLFORM DICTIONARY_EXPANSION_{RESULT}
+	GOTO PRINT_LIST
+ENDIF
+
+@DICTIONARY_EXPANSION_1
+PRINTL 〔称号功能〕
+PRINTL 　在游玩过程中会逐渐获得各式称号的功能。
+PRINTL 　目前在eraQueenA中能得到的称号还很有限。
+PRINTW 　欢迎加笔・修正
+
+@DICTIONARY_EXPANSION_2
+PRINTL 〔着衣PLAY扩展〕
+PRINTL 　随着经验增多，主人可以获得【手指灵巧】机能。
+PRINTW 　【手指灵巧】：爱抚・性交系的部分指令可以穿着衣服进行
+
+

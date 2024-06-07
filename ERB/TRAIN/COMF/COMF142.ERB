@@ -1,0 +1,108 @@
+﻿;-------------------------------------------------
+;肛门拳交
+;系指令、レベル
+;-------------------------------------------------
+@COM142
+PRINTL 肛门拳交
+STR:0 = 肛门拳交
+
+
+;丝袜びりびりフラグ
+IF TEQUIP:1 == 5 || TEQUIP:1 == 6
+	TFLAG:55 = 1
+ENDIF
+
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 300
+LOSEBASE:1 += 150
+
+SOURCE:2 = 200
+SOURCE:7 = 1500
+SOURCE:13 = 100
+SOURCE:14 = 1200
+SOURCE:17 = 1200
+SOURCE:18 = 1200
+
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;フィストなどのAへの大きな痛苦は先に処理しておく
+;EXP:Ａ经验をみる
+IF EXP:1 < EXPLV:1
+	TIMES SOURCE:7 , 3.00
+	TIMES SOURCE:18 , 4.00
+ELSEIF EXP:1 < EXPLV:2
+	TIMES SOURCE:7 , 2.50
+	TIMES SOURCE:18 , 3.50
+ELSEIF EXP:1 < EXPLV:3
+	TIMES SOURCE:7 , 2.40
+	TIMES SOURCE:18 , 3.00
+ELSEIF EXP:1 < EXPLV:4
+	TIMES SOURCE:7 , 2.00
+	TIMES SOURCE:18 , 2.50
+ELSEIF EXP:1 < EXPLV:5
+	TIMES SOURCE:7 , 1.80
+	TIMES SOURCE:18 , 2.00
+ELSEIF EXP:1 >= EXPLV:5
+	TIMES SOURCE:7 , 1.60
+	TIMES SOURCE:18 , 1.50
+ENDIF
+
+;PALAM:润滑をみる
+IF PALAM:4 < PALAMLV:1
+	TIMES SOURCE:7 , 3.00
+	TIMES SOURCE:18 , 2.00
+ELSEIF PALAM:4 < PALAMLV:2
+	TIMES SOURCE:7 , 2.50
+	TIMES SOURCE:18 , 1.50
+ELSEIF PALAM:4 < PALAMLV:3
+	TIMES SOURCE:7 , 2.00
+	TIMES SOURCE:18 , 1.20
+ELSEIF PALAM:4 < PALAMLV:4
+	TIMES SOURCE:7 , 1.50
+ELSEIF PALAM:4 >= PALAMLV:4
+	TIMES SOURCE:7 , 1.00
+ENDIF
+
+;调教者が小人体型
+SIF TALENT:PLAYER:142
+	TIMES SOURCE:7 , 0.80
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;Ａ经验
+EXP:1 += 25
+PRINTL Ａ经验＋２５
+
+;Ａ扩张经验
+IF EXP:52 == 0 && EXP:53 == 0 
+	EXP:50 += 1
+	PRINTL 异常经验＋１
+ENDIF
+
+EXP:53 += 5
+PRINTL Ａ扩张经验＋5
+
+;蔷薇经验とか加算
+CALL COM_EXP(1)
+
+
+;依赖度ベクトル
+TFLAG:33 = 5
+
+;依赖度補正値(服从で1、隶属で2）
+IF TALENT:5 && ASSIPLAY == 0
+	TFLAG:30 += 1
+ELSEIF TALENT:8 && ASSIPLAY == 0
+	TFLAG:30 += 2
+ENDIF
+
+
+RETURN 1
+

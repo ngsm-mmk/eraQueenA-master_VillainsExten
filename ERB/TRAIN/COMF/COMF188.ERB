@@ -1,0 +1,170 @@
+﻿;-------------------------------------------------
+;淋浴
+;特殊指令
+;-------------------------------------------------
+@COM188
+PRINTL 淋浴
+STR:0 = 淋浴
+
+
+;お湯加減
+SIF TEQUIP:32 == 0
+	CALL YUKAGEN
+
+
+;依赖度ベクトル
+TFLAG:33 = 0
+
+
+CALL KOJO_MESSAGE_COM
+
+;着脱の処理
+IF TEQUIP:32 == 1
+	TEQUIP:32 = 0
+ELSE
+	TEQUIP:32 = 1
+
+ENDIF
+
+RETURN 1
+
+
+;-------------------------------------------------
+;装着継続の処理
+;-------------------------------------------------
+@EQUIP_COM188
+;淋浴使用中
+
+PRINTL ＜淋浴使用中＞
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 0
+LOSEBASE:1 += 10
+
+;湯加減をみる
+IF TFLAG:18 == 1
+	LOSEBASE:0 += 5
+	LOSEBASE:1 += 10
+	;SOURSE:7 += 200
+ELSEIF TFLAG:18 == 2
+	LOSEBASE:0 += 5
+	LOSEBASE:1 += 10
+	;SOURSE:7 += 100
+ENDIF
+
+IF TALENT:水生
+    SOURCE:12 += 200
+ELSEIF TALENT:植物 || TALENT:史莱姆
+    SOURCE:12 += 150
+ELSEIF !TALENT:潜游
+    SOURCE:12 += 80
+ELSE
+    SOURCE:12 += 100
+ENDIF
+
+SOURCE:16 += 100
+SOURCE:18 += 50
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;吸血鬼（流水の中では動けないため、いろいろ追加）
+IF TALENT:132
+	SOURCE:8 += 200
+	SOURCE:14 += 200
+	SOURCE:15 += 500
+	SOURCE:17 += 500
+	SOURCE:18 += 500
+ENDIF
+
+;兽耳の場合（まぁ基本洗われるのは嫌と解釈）
+IF TALENT:143
+	SOURCE:8 += 100
+	SOURCE:14 += 100
+	SOURCE:17 += 500
+	SOURCE:18 += 500
+ENDIF
+
+;冰凉水温
+IF TFLAG:18 == 1
+    ;恒温体质怕冷
+    IF TALENT:226
+        SOURCE:16 += 100
+        SOURCE:18 += 100
+    ENDIF
+;温热水温
+ELSEIF TFLAG:18 == 2
+    ;变温体质喜欢温暖
+    IF TALENT:227
+        SOURCE:12 += 80
+    ENDIF
+ENDIF
+
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;淋浴で汚れは常に重置
+;ただし着衣は水分でびしゃびしゃに
+STAIN:0 = 0
+STAIN:1 = 0
+STAIN:2 = 2
+STAIN:3 = 1
+STAIN:4 = 8
+STAIN:5 = 0
+STAIN:6 = 0
+STAIN:7 = 0
+SIF TEQUIP:0
+	STAIN:8 = 256
+SIF TEQUIP:1
+	STAIN:9 = 256
+SIF TEQUIP:2
+	STAIN:10 = 256
+SIF TEQUIP:3
+	STAIN:11 = 256
+SIF TEQUIP:4
+	STAIN:12 = 256
+SIF TEQUIP:5
+	STAIN:13 = 256
+SIF TEQUIP:6
+	STAIN:14 = 256
+SIF TEQUIP:7
+	STAIN:15 = 256
+SIF TEQUIP:8
+	STAIN:16 = 256
+SIF TEQUIP:9
+	STAIN:17 = 256
+
+;润滑を1000減らす
+IF PALAM:4 > 1000
+	PALAM:4 -= 1000
+ELSE
+	PALAM:4 = 0
+ENDIF
+
+RETURN 1
+
+;-------------------------------------------------
+;お湯加減
+;-------------------------------------------------
+@YUKAGEN
+
+PRINTL 水温要如何调整？
+PRINTL [0] - 普通
+PRINTL [1] - 冰凉
+PRINTL [2] - 温热
+
+$INPUT_LOOP
+INPUT
+
+IF RESULT == 0
+	TFLAG:18 = 0
+ELSEIF RESULT == 1
+	TFLAG:18 = 1
+ELSEIF RESULT == 2
+	TFLAG:18 = 2
+ELSE
+	GOTO INPUT_LOOP
+ENDIF

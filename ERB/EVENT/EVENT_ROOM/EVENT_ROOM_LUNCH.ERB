@@ -1,0 +1,458 @@
+﻿@ROOM_LUNCH_EAT(ARG)
+#DIMS 餐点
+;弁当を作らせて売る、もしくは自己食べるオプション。
+;定食屋台より儲けは少なめ。イチャイチャ二人でご飯食べさせたい人向け
+;もしくは毒を盛られてみたい人向け
+
+;-------------------------------------------------
+;K = 料理の種類
+;L = 料理の値段の補正を決定
+;M = 料理の値段
+;N = 料理の値段の基礎
+;O = 学习之珠増加量
+;P = 固有料理の種類、乱数処理用
+;-------------------------------------------------
+
+A = 0
+B = ARG
+K = RAND:16
+L = 0
+M = 0
+N = 0
+
+
+;奴隶の料理技能と家务经验のレベルによって、料理の内容と値段の基礎値が上昇
+;ABL:技巧をみる
+IF ABL:B:2 == 0
+	L = 10
+ELSEIF ABL:B:2 == 1
+	L = 15
+ELSEIF ABL:B:2 == 2
+	L = 20
+ELSEIF ABL:B:2 == 3
+	L = 30
+ELSEIF ABL:B:2 == 4
+	L = 40
+ELSE
+	L = 50
+ENDIF
+
+;ABL:料理技能をみる
+IF ABL:B:12 == 0
+	TIMES L , 1.00
+ELSEIF ABL:B:12 == 1
+	TIMES L , 1.10
+ELSEIF ABL:B:12 == 2
+	TIMES L , 1.30
+ELSEIF ABL:B:12 == 3
+	TIMES L , 1.50
+ELSEIF ABL:B:12 == 4
+	TIMES L , 1.90
+ELSE
+	TIMES L , 2.40
+ENDIF
+
+;EXP:調理经验をみる
+IF EXP:B:61 < EXPLV:1
+	TIMES L , 0.80
+ELSEIF EXP:B:61 < EXPLV:2
+	TIMES L , 1.00
+ELSEIF EXP:B:61 < EXPLV:3
+	TIMES L , 1.20
+ELSEIF EXP:B:61 < EXPLV:4
+	TIMES L , 1.40
+ELSEIF EXP:B:61 < EXPLV:5
+	TIMES L , 1.70
+ELSE
+	TIMES L , 2.00
+ENDIF
+
+;自我奉献
+SIF TALENT:B:63
+	TIMES L , 1.20
+
+;恋慕
+SIF TALENT:B:3
+	TIMES L , 2.00
+
+;相亲相爱
+SIF TALENT:B:6
+	TIMES L , 3.00
+
+
+;K = 料理の種類
+IF K == 0 && ABL:B:12 >= 3
+	;キャラ固有料理
+	N = 500
+ELSEIF K == 1 || K == 15
+	;肉野菜煮物
+	N = 120
+ELSEIF K == 2 || K == 14
+	;名物定食
+	N = 250
+ELSEIF K == 3 || K == 13
+	;点心
+	N = 190
+ELSEIF K == 4 || K == 12
+	;パン
+	N = 150
+ELSEIF K == 5 || K == 11
+	;サラダ
+	N = 90
+ELSEIF K == 6 || K == 10
+	;お弁当
+	N = 200
+ELSE
+	;スープ
+	N = 120
+ENDIF
+
+
+SIF TALENT:B:擅长料理
+	TIMES N , 1.50
+SIF TALENT:B:不擅料理
+	TIMES N , 0.75
+
+
+PRINTL 
+;常识改变
+SIF CFLAG:B:7022
+PRINTFORML 赤身裸体仅穿一条雪白围裙的%CALLNAME:B%，在厨房忙碌着
+PRINTFORMW %CALLNAME:B%制作了料理
+PRINTL 
+
+
+IF (TALENT:B:3 || TALENT:B:6)
+	PRINTL   「♪～」
+	PRINTL  「♪♪～」
+	PRINTL 「♪～♪～」
+	PRINTL      !
+ELSE
+	PRINTL      ･
+	PRINTL      ･
+	PRINTL      ･
+	PRINTL      !
+ENDIF
+PRINTW 
+PRINTFORM %CALLNAME:B%把
+SIF TALENT:B:6
+	PRINTFORM 倾注了满满爱情的
+IF ITEM:41 > 0 && (TALENT:B:4 || TALENT:B:7) && RAND:4 == 0
+	ITEM:41 -= 1
+	TFLAG:14 = 1
+	PRINT 飘散着香味的
+ENDIF
+IF ABL:B:12 >= 5 && RAND:5 > 0
+	CALL LUNCH_NAME
+ELSEIF K == 1 || K == 15
+	餐点 = 炖菜
+ELSEIF K == 2 || K == 14
+	餐点 = 奶油焗饭
+ELSEIF K == 3 || K == 13
+	餐点 = 白酱义大利面
+ELSEIF K == 4 || K == 12
+	餐点 = 面包
+ELSEIF K == 5 || K == 11
+	餐点 = 沙拉
+ELSEIF K == 6 || K == 10
+	餐点 = 便当
+ELSE
+	餐点 = 农汤
+ENDIF
+PRINTFORM %餐点%
+PRINTW 端了上来。
+PRINTL      ･
+PRINTL      ･
+PRINTL      ･
+PRINTW 
+;常识改变
+IF CFLAG:B:7024
+	PRINTFORML %CALLNAME:B%在品嚐自己做的%餐点%味道时，里面的酱汁让他联想到%PLAYER_NAME()%的味道……
+	IF !KANRAKU(B)
+		PRINTFORMW 一边皱着眉头一边露出一言难尽的表情，一言不发地进食着……
+	ELSE
+		PRINTFORMW 脸上不由得露出了可疑的晕红，像是要好好品嚐那样慢慢地进食着……
+	ENDIF
+	JUEL:B:6 += 50
+	PRINTFORMW %PALAMNAME:6%之珠＋50
+ENDIF
+IF (TALENT:B:3 == 0 || TALENT:B:6 == 0) && (MARK:B:3 >= 2 || ABL:B:0 < 5)
+	K = 1
+	;口上はEVENT_Mで管理した方がよさそうな気がしたので
+	TFLAG:13 = 26
+    CALL KOJO_MESSAGE_EVENT2
+
+	PRINTL      ･
+	PRINTL      ･
+	PRINTL      ･
+	BASE:B:0 += L * 6
+	JUEL:B:5 += L * 3
+	PRINTFORML %CALLNAME:B%的体力回复了。
+	PRINTFORMW %PALAMNAME:5%之珠＋{L*3}
+ELSE
+    K = 2
+    TFLAG:13 = 26
+    CALL KOJO_MESSAGE_EVENT2
+
+    PRINTL      ･
+    PRINTL      ･
+    PRINTL      ･
+    BASE:B:0 += L * 5
+    JUEL:B:5 += L * 2
+    PRINTFORML %CALLNAME:B%的体力回复了。
+    PRINTFORMW %PALAMNAME:5%之珠＋{L*2}
+ENDIF
+
+;体力が上限を超えたら最大値に
+SIF BASE:B:0 > MAXBASE:B:0
+	BASE:B:0 = MAXBASE:B:0
+
+P = ABL:B:12
+JUEL:B:7 += L*(P+1)
+PRINTFORML %PALAMNAME:7%之珠＋{L*(P+1)}
+O = ABL:B:12 + (1 + RAND:5)
+PRINTFORML %EXPNAME:61% ＋{O}
+EXP:B:61 += O
+;相亲相爱、相爱持ちかつ食後のイベント発生確定時は爱情经验が入る
+;また、食後のイベントで推到ことを選ぶと侍奉快乐经验が入るようになる
+IF TFLAG:14 == 1 && (TALENT:B:3 || TALENT:B:6)
+	PRINTFORML %EXPNAME:23% ＋2
+	EXP:B:23 += 2
+	TFLAG:14 = 2
+;服从持ちのときは食後のイベントで推到ことを選ぶと侍奉快乐经验が入るようになる
+ELSEIF TFLAG:14 == 1 && (TALENT:B:5 || TALENT:B:8)
+	TFLAG:14 = 2
+ENDIF
+WAIT
+
+;食後の運動イベント
+IF (TFLAG:14 >= 1 && TFLAG:14 <= 2) && ABL:B:1 > 0
+	CALL LUNCH_EXERCISE
+ELSE
+	TFLAG:14 = 0
+ENDIF
+CALL ROOM_TIME
+
+
+@LUNCH_SELF_ROOM(ARG)
+#DIMS 餐点
+;主人が自己弁当を作って売るオプション。
+;-------------------------------------------------
+;K = 料理の種類
+;L = 料理の値段の補正を決定
+;M = 料理の値段
+;N = 料理の値段の基礎
+;O = 学习之珠増加量
+;P = 乱数処理用
+;-------------------------------------------------
+
+K = RAND:16
+L = 0
+M = 0
+N = 0
+O = 0
+P = 0
+
+
+;ABL:技巧をみる
+IF ABL:MASTER:2 == 0
+	L = 10
+ELSEIF ABL:MASTER:2 == 1
+	L = 15
+ELSEIF ABL:MASTER:2 == 2
+	L = 20
+ELSEIF ABL:MASTER:2 == 3
+	L = 30
+ELSEIF ABL:MASTER:2 == 4
+	L = 40
+ELSE
+	L = 50
+ENDIF
+
+;ABL:料理技能をみる
+IF ABL:MASTER:12 == 0
+	TIMES L , 1.00
+ELSEIF ABL:MASTER:12 == 1
+	TIMES L , 1.10
+ELSEIF ABL:MASTER:12 == 2
+	TIMES L , 1.30
+ELSEIF ABL:MASTER:12 == 3
+	TIMES L , 1.50
+ELSEIF ABL:MASTER:12 == 4
+	TIMES L , 1.90
+ELSE
+	TIMES L , 2.40
+ENDIF
+
+;EXP:調理经验をみる
+IF EXP:MASTER:12 < EXPLV:1
+	TIMES L , 0.80
+ELSEIF EXP:MASTER:12 < EXPLV:2
+	TIMES L , 1.00
+ELSEIF EXP:MASTER:12 < EXPLV:3
+	TIMES L , 1.20
+ELSEIF EXP:MASTER:12 < EXPLV:4
+	TIMES L , 1.40
+ELSEIF EXP:MASTER:12 < EXPLV:5
+	TIMES L , 1.70
+ELSE
+	TIMES L , 2.00
+ENDIF
+
+;自我奉献
+SIF TALENT:MASTER:63
+	TIMES L , 1.20
+
+;K = 料理の種類
+IF K == 0 && ABL:MASTER:12 >= 3
+	;得意料理
+	N = 500
+ELSEIF K == 1 || K == 15
+	;肉野菜煮物
+	N = 120
+ELSEIF K == 2 || K == 14
+	;名物定食
+	N = 250
+ELSEIF K == 3 || K == 13
+	;点心
+	N = 190
+ELSEIF K == 4 || K == 12
+	;パン
+	N = 150
+ELSEIF K == 5 || K == 11
+	;サラダ
+	N = 90
+ELSEIF K == 6 || K == 10
+	;お弁当
+	N = 200
+ELSE
+	;スープ
+	N = 120
+ENDIF
+
+
+;擅长料理
+SIF TALENT:MASTER:擅长料理
+	TIMES N , 1.25
+;味音痴、不器用、適当
+SIF TALENT:MASTER:不擅料理
+	TIMES N , 0.75
+
+PRINTL 
+PRINTFORMW %PLAYER_NAME()%亲自下厨制作了料理
+PRINTL 
+PRINTL      ･
+PRINTL      ･
+PRINTL      ･
+PRINTL      !
+PRINTW 
+IF K == 0 && ABL:MASTER:12 >= 3
+	餐点 = 奶油蒜香煎扇贝肉
+ELSEIF K == 1 || K == 15
+	餐点 = 炖菜
+ELSEIF K == 2 || K == 14
+	餐点 = 奶油焗饭
+ELSEIF K == 3 || K == 13
+	餐点 = 白酱义大利面
+ELSEIF K == 4 || K == 12
+	餐点 = 面包
+ELSEIF K == 5 || K == 11
+	餐点 = 沙拉
+ELSEIF K == 6 || K == 10
+	餐点 = 便当
+ELSE
+	餐点 = 农汤
+ENDIF
+PRINTFORM %餐点%
+PRINTFORMW 被端上了餐桌。
+PRINTL      ･
+PRINTL      ･
+PRINTL      ･
+PRINTL
+K = 3
+B = ARG
+;常识改变
+IF CFLAG:B:7024
+	PRINTFORML %CALLNAME:B%在品嚐%PLAYER_NAME()%做的%餐点%时，里面的酱汁让他联想到%PLAYER_NAME()%的味道……
+	IF !KANRAKU(B)
+		PRINTFORMW 一边皱着眉头一边露出一言难尽的表情，一言不发地进食着……
+	ELSE
+		PRINTFORMW 脸上不由得露出了可疑的晕红，像是要好好品嚐那样慢慢地进食着……
+	ENDIF
+	JUEL:B:6 += 50
+	PRINTFORMW %PALAMNAME:6%之珠＋50
+ELSE
+	;イベント口上呼び出し
+	TFLAG:13 = 26
+	PRINTFORML 决定和%CALLNAME:B%一起用餐。
+	PRINTL      ･
+	PRINTL      ･
+	PRINTW      ･
+	PRINT 今天的料理
+	IF ABL:MASTER:12 >= 5 && (TALENT:TARGET:3 || TALENT:TARGET:6)
+		PRINTL 是得意的作品。
+		PRINTFORML %CALLNAME:B%把端上来的菜全部一扫而空。
+		PRINTFORML 大概是太好吃了吧，吃完后%CALLNAME:B%有些害羞滴请求再来一碗
+		SIF RAND:4 == 0
+			TFLAG:14 = 1
+	ELSEIF ABL:MASTER:12 >= 5
+		PRINTL 连自己都觉得是做的好的佳作。
+		PRINTFORML 乍一抬起头，发现%CALLNAME:B%面前的盘子已经空了。
+		PRINTFORMW 看起来像是很中意的样子，%CALLNAME:B%露出满足的笑容…
+	ELSEIF ABL:MASTER:12 >= 3
+		PRINTL 感觉还不错。
+		PRINTFORMW 进餐期间，%CALLNAME:B%的嘴角一直上扬着。
+	ELSEIF ABL:MASTER:12 < 1 && MARK:B:3 > 0
+		PRINTFORML 很遗憾的并不合%CALLNAME:B%的口味。
+		PRINTFORMW %PLAYER_NAME()%将%CALLNAME:B%剩下的料理吃掉了。
+	ELSE
+		PRINTL 乏善可陈。
+		PRINTFORMW %PLAYER_NAME()%和%CALLNAME:B%把料理平分了。
+	ENDIF
+ENDIF
+PRINTL      ･
+PRINTL      ･
+PRINTL      ･
+BASE:B:0 += L * 5
+;体力が上限を超えたら最大値に
+SIF BASE:B:0 > MAXBASE:B:0
+    BASE:B:0 = MAXBASE:B:0
+JUEL:B:5 += L * 4
+PRINTFORML %CALLNAME:B%的体力回复了。
+PRINTFORMW %PALAMNAME:5%之珠＋{L*4}
+O = ABL:MASTER:12 + (1 + RAND:5)
+PRINTFORML %EXPNAME:61%＋{O}
+EXP:MASTER:61 += O
+
+IF ABL:MASTER:12 == 4 && EXP:MASTER:61 >= 1000
+	M = 1
+ELSEIF ABL:MASTER:12 == 3 && EXP:MASTER:61 >= 400
+	M = 1
+ELSEIF ABL:MASTER:12 == 2 && EXP:MASTER:61 >= 100
+	M = 1
+ELSEIF ABL:MASTER:12 == 1 && EXP:MASTER:61 >= 20
+	M = 1
+ELSEIF ABL:MASTER:12 == 0 && EXP:MASTER:61 >= 5
+	M = 1
+ENDIF
+IF M == 1
+	ABL:MASTER:12 += 1
+	PRINTFORMW %CALLNAME:MASTER%的%ABLNAME:12%的等级升到了{ABL:MASTER:12}。
+ENDIF
+
+;食後の運動イベント
+IF TFLAG:14 == 1 && ABL:B:1 > 0
+	CALL LUNCH_EXERCISE
+ELSE
+	TFLAG:14 = 0
+ENDIF
+
+CALL ROOM_TIME
+
+
+@KOJO_MESSAGE_EVENT2
+IF FLAG:7 <= 0
+    SIF FLAG:6 > 0
+        CALL EVENT_MESSAGE
+    RETURN 0
+ENDIF

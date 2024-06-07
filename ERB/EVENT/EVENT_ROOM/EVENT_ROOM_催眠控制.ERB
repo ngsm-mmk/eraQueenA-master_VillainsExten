@@ -1,0 +1,650 @@
+﻿@房间催眠控制(ARG)
+#DIM 催眠成功率
+催眠成功率 = 0
+IF NO:ARG == 200
+	PRINTFORMW %PLAYER_NAME()%%催眠暗示%之後，引起了%CALLNAME:ARG%的注意……
+	PRINTFORMW 「……」
+	PRINTFORMW 两人一言不语地互相凝望了一会儿之後……
+	PRINTFORMW 「嗯？虽然这样也是种情趣，但是…比起被催眠，我似乎更擅长催眠人呢……」
+	PRINTFORMW %CALLNAME:ARG%扬起了眉毛，露出了意味深長的笑容
+	PRINTFORMW 唔…被看穿了吗？%PLAYER_NAME()%遗憾地抓抓头发……
+	催眠返回 = 1
+	JUMP CHARA_ROOM(ARG)
+ENDIF	
+IF !CFLAG:ARG:7000
+	PRINTFORMW %PLAYER_NAME()%%催眠暗示%之後，引起了%CALLNAME:ARG%的注意……
+	;催眠成功率判定
+	;困难度计算
+	催眠成功率 = 催眠技术 * 30
+		;困难度計算
+		LOCAL = DEFFICULTY(ARG)
+		IF LOCAL > 400
+			催眠成功率 += 10
+		ELSEIF LOCAL > 100
+			催眠成功率 -= 20
+		ELSEIF LOCAL > -200
+			催眠成功率 -= 40
+		ELSEIF LOCAL > -400
+			催眠成功率 -= 70
+		ELSEIF LOCAL > -800
+			催眠成功率 -= 100
+		ELSEIF LOCAL > -2000
+			催眠成功率 -= 150
+		ELSEIF LOCAL > -3000
+			催眠成功率 -= 200
+		ELSE
+			催眠成功率 -= 3000
+		ENDIF		
+	IF CFLAG:ARG:2 < 0
+		催眠成功率 += -1 * (CFLAG:ARG:2/100)
+	ELSEIF CFLAG:ARG:2 == 0
+		催眠成功率 += 0
+	ELSE
+		催眠成功率 += (CFLAG:ARG:2/100)
+	ENDIF
+	SIF 催眠成功率 > 100
+		催眠成功率 = 100
+	SIF 催眠成功率 < 0
+		催眠成功率 = 0
+	PRINTFORMW %CALLNAME:ARG%的催眠难度为%CSTR:ARG:10%，加上依赖度的计算之後…
+	PRINTFORMW ……………
+	PRINTFORMW ………
+	PRINTFORMW …
+	PRINTFORMW 目前催眠的成功率为{催眠成功率}％
+	IF 催眠成功率 == 0
+		PRINTFORMW 唉…看来没有催眠%CALLNAME:ARG%的可能啊！
+		催眠返回 = 1
+		JUMP CHARA_ROOM(ARG)
+	ENDIF
+	PRINTFORML 要实行催眠吗？（本日催眠的还有机会：{每日催眠可实行次数}次）
+	PRINTBUTTON "[ 实行 ]", 01
+	PRINTBUTTON "  [ 放弃 ]", 02
+	INPUT
+	IF RESULT == 1
+		IF 每日催眠可实行次数 >= 1
+			;催眠成功
+			IF 催眠成功率 >= RAND:100
+				PRINTFORMW 『催眠』成功了！
+				CFLAG:ARG:7000 = 催眠技术
+				每日催眠可实行次数 -= 1
+				CALL 催眠点数计算(ARG)
+				PRINTFORMW %PLAYER_NAME()%的催眠点数增加了{G:66}！
+				CALL 催眠指令(ARG)
+			;催眠失败
+			ELSE
+				PRINTFORM 神情有点恍惚的%CALLNAME:ARG%
+				PRINTDATAL
+					DATAFORM  甩了甩脑袋，恢复了意识…… 
+					DATAFORM  眨了眨眼睛之後，又恢复了意识…… 
+					DATAFORM  才刚把头低下，又马上抬起头来恢复了意识…… 
+					DATAFORM  不知为何打了个喷嚏，然後恢复了意识…… 
+					DATAFORM  皱了皱眉头之後，拍了自己的脑袋一下，恢复了意识…… 
+				ENDDATA
+				PRINTFORMW
+				G:66 = 0
+				G:66 = (RAND:80 + 20)
+				催眠EXP += G:66
+				PRINTFORMW 『催眠』失败了！
+				PRINTFORMW %PLAYER_NAME()%的催眠点数增加了{G:66}！
+				PRINTFORMW 对%CALLNAME:ARG%的精神造成了负担，压力增加了10！
+				CFLAG:ARG:10 += 10
+				每日催眠可实行次数 -= 1
+				催眠返回 = 1
+				JUMP CHARA_ROOM(ARG)
+			ENDIF
+		ELSE
+			PRINTFORMW 可以催眠的次数已经用尽，看来只能等明天再来催眠了…… 
+			催眠返回 = 1
+			JUMP CHARA_ROOM(ARG)
+		ENDIF
+	ELSEIF RESULT == 2
+			催眠返回 = 1
+			JUMP CHARA_ROOM(ARG)
+	ENDIF
+ELSE
+	CALL 催眠指令(ARG)
+ENDIF
+@催眠指令(ARG)
+CLEARLINE LINECOUNT
+	PRINTFORML 神情恍惚的%CALLNAME:ARG%一动也不动，似乎在等待%PLAYER_NAME()%下达命令…… 
+	PRINTFORML 那么，该做些什么好呢？（主人持有的催眠点数：{催眠EXP}  房间剩余行动数：{5-CFLAG:ARG:2415}）
+	PRINTFORML
+ALIGNMENT CENTER
+	PRINTFORML ――――――――――――  态度改变的指令  ――――――――――――
+	PRINTFORML （态度改变须耗费催眠点数50，被催眠者会增加20压力）
+	PRINTL
+IF !TALENT:ARG:相亲相爱 && 催眠EXP >= 50 && CFLAG:ARG:2415 < 5
+	PRINTBUTTON "[ 主人是生命中不可或缺的人（添加上级陷落素质：相亲相爱）]", 01
+ELSE
+	IF TALENT:ARG:相亲相爱
+	SETCOLOR  0xB088FF
+	ELSE
+	SETCOLOR 0x969696
+	ENDIF
+	PRINTBUTTON "[ 主人是生命中最重要的人（添加上级陷落素质：相亲相爱）]", 919
+	RESETCOLOR
+ENDIF
+	PRINTL
+IF !TALENT:ARG:娼妇 && 催眠EXP >= 50 && CFLAG:ARG:2415 < 5
+	PRINTBUTTON "[ 自己是不知廉耻淫乱的娼妓（添加上级陷落素质：娼妇） ]", 02
+ELSE
+	IF TALENT:ARG:娼妇
+	SETCOLOR  0xB088FF
+	ELSE
+	SETCOLOR 0x969696
+	ENDIF
+	PRINTBUTTON "[ 自己是不知廉耻淫乱的娼妓（添加上级陷落素质：娼妇） ]", 919
+	RESETCOLOR
+ENDIF
+	PRINTL
+IF !TALENT:ARG:隶属 && 催眠EXP >= 50 && CFLAG:ARG:2415 < 5
+	PRINTBUTTON "[ 主人命令必定是至高的圭臬（添加上级陷落素质：隶属） ]", 03
+ELSE
+	IF TALENT:ARG:隶属
+	SETCOLOR  0xB088FF
+	ELSE
+	SETCOLOR 0x969696
+	ENDIF
+	PRINTBUTTON "[ 主人命令必定是至高的圭臬（添加上级陷落素质：隶属） ]", 919
+	RESETCOLOR
+ENDIF
+	PRINTL
+	PRINTL
+PRINTFORML ――――――――――――  催眠调教的指令  ――――――――――――
+PRINTFORML （若没有任何陷落属性则会耗费催眠点数5，被催眠者体力过低无法实行）
+PRINTL
+IF 催眠EXP < 5 || BASE:ARG:0 < 100 || CFLAG:ARG:2415 >= 5
+	SETCOLOR 0x969696
+	PRINTBUTTON "[ 泡茶 ]", 919
+	PRINTBUTTON "[ 拥抱 ]", 919
+	PRINTBUTTON "[ 按摩 ]", 919
+	PRINTBUTTON "[ 跳艳舞 ]", 919
+	RESETCOLOR
+ELSE
+	PRINTBUTTON "[ 泡茶 ]", 11
+	PRINTBUTTON "[ 拥抱 ]", 12
+	PRINTBUTTON "[ 按摩 ]", 13
+	PRINTBUTTON "[ 跳艳舞 ]", 14
+ENDIF
+	PRINTL
+	PRINTL
+PRINTFORML ――――――――――――  常识改变的指令  ――――――――――――
+PRINTFORML （改变常识须耗费催眠点数20，被催眠者会增加5压力）
+PRINTL
+IF CFLAG:ARG:7021
+	SETCOLOR 0xB088FF
+	PRINTBUTTON "[ 常识已改变：在房间里必须要全裸 ]", 919
+	RESETCOLOR
+ELSEIF  催眠EXP < 20 || CFLAG:ARG:2415 >= 5
+	SETCOLOR 0x969696
+	PRINTBUTTON "[ 如果在自己的房间里就该理所当然地全裸 ]", 919
+	RESETCOLOR
+ELSE
+	PRINTBUTTON "[ 如果在自己的房间里就该理所当然地全裸 ]", 21
+ENDIF
+PRINTL
+IF CFLAG:ARG:7022
+	SETCOLOR 0xB088FF
+	PRINTBUTTON "[ 常识已改变：赤身裸体穿围裙烹饪 ]", 919
+	RESETCOLOR
+ELSEIF 催眠EXP < 20 || CFLAG:ARG:2415 >= 5
+	SETCOLOR 0x969696
+	PRINTBUTTON "[ 如在厨房裸体穿着围裙烹饪才能更凉快一点 ]", 919
+	RESETCOLOR
+ELSE
+	PRINTBUTTON "[ 在厨房裸体穿着围裙烹饪才能更凉快一点 ]", 22
+ENDIF
+PRINTL
+IF CFLAG:ARG:7023
+	SETCOLOR 0xB088FF
+	PRINTBUTTON "[ 常识已改变：四肢着地叼鞋给主人 ]", 919
+	RESETCOLOR
+ELSEIF 催眠EXP < 20 || CFLAG:ARG:2415 >= 5
+	SETCOLOR 0x969696
+	PRINTBUTTON "[ 當主人進門時要跪著叼著室內鞋給主人穿 ]", 919
+	RESETCOLOR
+ELSE
+	PRINTBUTTON "[ 當主人進門時要跪著叼著室內鞋給主人穿 ]", 23
+ENDIF
+PRINTL
+IF CFLAG:ARG:7024
+	SETCOLOR 0xB088FF
+	PRINTBUTTON "[ 常识已改变：饮食联想到主人体液 ]", 919
+	RESETCOLOR
+ELSEIF 催眠EXP < 20 || CFLAG:ARG:2415 >= 5
+	SETCOLOR 0x969696
+	PRINTBUTTON "[ 吃透明或白色的液体要联想到主人的体液 ]", 919
+	RESETCOLOR
+ELSE
+	PRINTBUTTON "[ 吃透明或白色的液体要联想到主人的体液 ]", 24
+ENDIF
+PRINTL
+IF CFLAG:ARG:7025
+	SETCOLOR 0xB088FF
+	PRINTBUTTON "[ 常识已改变：展示柜专门摆内衣裤 ]", 919
+	RESETCOLOR
+ELSEIF 催眠EXP < 20 || CFLAG:ARG:2415 >= 5
+	SETCOLOR 0x969696
+	PRINTBUTTON "[ 展示架上就要摆放自己最中意喜欢的内衣 ]", 919
+	RESETCOLOR
+ELSE
+	PRINTBUTTON "[ 展示架上就要摆放自己最中意喜欢的内衣 ]", 25
+ENDIF
+PRINTL
+PRINTL
+PRINTFORML ――――――――――――   精神安抚催眠   ――――――――――――
+PRINTFORML （精神安抚须耗费催眠点数200，被催眠者会减轻50压力）
+PRINTL
+IF 催眠EXP >= 200 && CFLAG:ARG:2415 < 5
+	PRINTBUTTON "[  房间里很安全很轻松，在这里什么也不需要担心 ]", 30
+ELSE
+	SETCOLOR 0x969696
+	PRINTBUTTON "[  房间里很安全很轻松，在这里什么也不需要担心 ]", 919
+	RESETCOLOR
+ENDIF
+PRINTL
+PRINTL
+PRINTFORML ――――――――――――   结束本次催眠   ――――――――――――
+PRINTBUTTON "[  结束催眠 ]", 99
+PRINTL
+PRINTL
+ALIGNMENT LEFT
+INPUT
+IF RESULT > 0
+	SELECTCASE RESULT
+	CASE 1
+		IF !(TALENT:ARG:3 || TALENT:ARG:4 || TALENT:ARG:5 || TALENT:ARG:6 || TALENT:ARG:7 || TALENT:ARG:8)
+			CFLAG:ARG:7001 = 1
+		ELSEIF TALENT:ARG:3
+			TALENT:ARG:3 = 0
+			CFLAG:ARG:7001 = 11
+		ELSEIF TALENT:ARG:4
+			TALENT:ARG:4 = 0
+			CFLAG:ARG:7001 = 21
+		ELSEIF TALENT:ARG:5
+			TALENT:ARG:5 = 0
+			CFLAG:ARG:7001 = 31
+		ELSEIF TALENT:ARG:7
+			TALENT:ARG:7 = 0
+			CFLAG:ARG:7001 = 51
+		ELSEIF TALENT:ARG:8
+			TALENT:ARG:8 = 0
+			CFLAG:ARG:7001 = 61
+		ENDIF
+		TALENT:ARG:相亲相爱 = 1
+		催眠EXP -= 50
+		CFLAG:ARG:10 += 20
+		PRINTFORMW %PLAYER_NAME()%集中精神对%CALLNAME:ARG%施加暗示……
+		PRINTFORMW ……………
+		PRINTFORMW ………
+		PRINTFORMW …
+		PRINTFORMW 催眠点数减少50！%CALLNAME:ARG%的压力增加了20！
+		PRINTFORMW %CALLNAME:ARG%似乎把%PLAYER_NAME()%当成了生命中最重要的人
+		PRINTFORMW ★%NAME:ARG%被催眠为【相亲相爱】了
+		CFLAG:ARG:2415 += 1
+	CASE 2
+		IF !(TALENT:ARG:3 || TALENT:ARG:4 || TALENT:ARG:5 || TALENT:ARG:6 || TALENT:ARG:7 || TALENT:ARG:8)
+			CFLAG:ARG:7001 = 2
+		ELSEIF TALENT:ARG:3
+			TALENT:ARG:3 = 0
+			CFLAG:ARG:7001 = 12
+		ELSEIF TALENT:ARG:4
+			TALENT:ARG:4 = 0
+			CFLAG:ARG:7001 = 22
+		ELSEIF TALENT:ARG:5
+			TALENT:ARG:5 = 0
+			CFLAG:ARG:7001 = 32
+		ELSEIF TALENT:ARG:6
+			TALENT:ARG:6 = 0
+			CFLAG:ARG:7001 = 42
+		ELSEIF TALENT:ARG:8
+			TALENT:ARG:8 = 0
+			CFLAG:ARG:7001 = 62
+		ENDIF
+		TALENT:ARG:娼妇 = 1
+		催眠EXP -= 50
+		CFLAG:ARG:10 += 20
+		PRINTFORMW %PLAYER_NAME()%集中精神对%CALLNAME:ARG%施加暗示……
+		PRINTFORMW ……………
+		PRINTFORMW ………
+		PRINTFORMW …
+		PRINTFORMW 催眠点数减少50！%CALLNAME:ARG%的压力增加了20！
+		PRINTFORMW %CALLNAME:ARG%似乎想从%PLAYER_NAME()%身上获得性慾的满足
+			IF MALE(ARG)
+				PRINTFORMW ★%NAME:ARG%被催眠为【娼夫】了
+			ELSE
+				PRINTFORMW ★%NAME:ARG%被催眠为【娼妇】了
+			ENDIF
+		CFLAG:ARG:2415 += 1
+	CASE 3
+		IF !(TALENT:ARG:3 || TALENT:ARG:4 || TALENT:ARG:5 || TALENT:ARG:6 || TALENT:ARG:7 || TALENT:ARG:8)
+			CFLAG:ARG:7001 = 3
+		ELSEIF TALENT:ARG:3
+			TALENT:ARG:3 = 0
+			CFLAG:ARG:7001 = 13
+		ELSEIF TALENT:ARG:4
+			TALENT:ARG:4 = 0
+			CFLAG:ARG:7001 = 23
+		ELSEIF TALENT:ARG:5
+			TALENT:ARG:5 = 0
+			CFLAG:ARG:7001 = 33
+		ELSEIF TALENT:ARG:6
+			TALENT:ARG:6 = 0
+			CFLAG:ARG:7001 = 43
+		ELSEIF TALENT:ARG:7
+			TALENT:ARG:7 = 0
+			CFLAG:ARG:7001 = 53
+		ENDIF
+		TALENT:ARG:隶属 = 1
+		催眠EXP -= 50
+		CFLAG:ARG:10 += 20
+		PRINTFORMW %PLAYER_NAME()%集中精神对%CALLNAME:ARG%施加暗示……
+		PRINTFORMW ……………
+		PRINTFORMW ………
+		PRINTFORMW …
+		PRINTFORMW 催眠点数减少50！%CALLNAME:ARG%的压力增加了20！
+		PRINTFORMW %CALLNAME:ARG%似乎身心都想臣服於%PLAYER_NAME()%的脚下
+		PRINTFORMW ★%NAME:ARG%被催眠为【隶属】了
+		CFLAG:ARG:2415 += 1
+	CASE 11
+            PRINTFORMW %PLAYER_NAME()%让%CALLNAME:ARG%去泡茶过来……
+			;常识改变
+			SIF CFLAG:ARG:7021
+			PRINTFORM 一丝不挂的
+            PRINTFORM %CALLNAME:ARG%顺从地泡完茶之後，
+			IF CFLAG:2407 == 0
+				PRINTFORMW 窘迫地发现房间没有可以坐的地方，只好请%PLAYER_NAME()%坐在%床舖(ARG)%上
+				PRINTFORMW 两人悠闲地品茶聊天了……
+			ELSEIF !RAND:3
+				PRINTFORMW	%PLAYER_NAME()%突然坏心眼地伸出脚，绊了%CALLNAME:ARG%一下
+				IF TALENT:ARG:318
+					PRINTFORMW %CALLNAME:ARG%灵活地接着差点打翻的茶水，对%PLAYER_NAME()%摇了摇头
+					PRINTFORMW 两人悠闲地品茶聊天了……	
+				ELSE
+					PRINTFORMW %CALLNAME:ARG%将茶水打翻倒到了%PLAYER_NAME()%的腿上
+					IF !RAND:2
+						PRINTFORMW 被烫到的%PLAYER_NAME()%跳了起来，而後%CALLNAME:ARG%满心歉疚地不停地道歉着……
+					ELSE
+						PRINTFORMW 温度适中的茶水打湿了%PLAYER_NAME()%的裤子，而後%CALLNAME:ARG%殷勤地帮忙擦试着……
+					ENDIF
+				ENDIF
+			ELSE
+				PRINTFORMW 请%PLAYER_NAME()%一同坐在%沙发(ARG)%上
+				PRINTFORMW 两人悠闲地品茶聊天了……	
+			ENDIF          
+		SIF !KANRAKU(ARG)
+			催眠EXP -= 5
+			BASE:ARG:0 -= 20
+			BASE:ARG:1 -= 10
+            JUEL:ARG:5 += 100
+		SIF !KANRAKU(ARG)
+			PRINTFORML 由於%CALLNAME:ARG%没有陷落属性，所以催眠点数减少了5
+            PRINTFORML 体力-20  气力- 10 
+            PRINTFORMW %PALAMNAME:5%之珠＋100
+		CFLAG:ARG:2415 += 1
+	CASE 12
+				;常识改变
+			SIF CFLAG:ARG:7021
+			PRINTFORM 一丝不挂的
+			PRINTFORMW %CALLNAME:ARG%依照着指令，张开双臂环抱着%PLAYER_NAME()%
+		IF KANRAKU(ARG)
+			PRINTFORMW 在充满%PLAYER_NAME()%味道的拥抱之中，让%CALLNAME:ARG%舒服愉悦地眯起了眼睛……
+		ELSE
+			PRINTFORMW 顺从地将头倚靠在%PLAYER_NAME()%的肩上……
+		ENDIF
+		IF !KANRAKU(ARG)
+			催眠EXP -= 5
+			PRINTFORML 由於%CALLNAME:ARG%没有陷落属性，所以催眠点数减少了5
+		ELSEIF TALENT:ARG:3 || TALENT:ARG:6
+		    PRINTL 爱情经验＋1
+            EXP:ARG:23 += 1
+		ENDIF
+			BASE:ARG:0 -= 10
+			BASE:ARG:1 -= 10
+            JUEL:ARG:5 += 80
+			JUEL:ARG:6 += 20
+            PRINTFORML  体力-10  气力- 10
+            PRINTFORML  %PALAMNAME:5%之珠＋80
+            PRINTFORMW %PALAMNAME:6%之珠＋20
+		CFLAG:ARG:2415 += 1
+	CASE 13
+				;常识改变
+			SIF CFLAG:ARG:7021
+			PRINTFORM 一丝不挂的
+			IF CFLAG:2407 == 0
+				PRINTFORMW 窘迫地发现房间没有可以坐的地方，只好请%PLAYER_NAME()%坐在%床舖(ARG)%上
+			ELSE
+				PRINTFORMW 请%PLAYER_NAME()%一同坐在%沙发(ARG)%上
+			ENDIF
+			PRINTFORMW 将手搭在%PLAYER_NAME()%的肩上开始揉捏……
+		IF !KANRAKU(ARG)
+			催眠EXP -= 5
+			PRINTFORML 由於%CALLNAME:ARG%没有陷落属性，所以催眠点数减少了5
+		ELSEIF TALENT:ARG:3 || TALENT:ARG:6
+		    PRINTL 爱情经验＋1
+            EXP:ARG:23 += 1
+		ENDIF
+			BASE:ARG:0 -= 20
+			BASE:ARG:1 -= 10
+            JUEL:ARG:5 += 100
+            PRINTFORML 体力-20  气力- 10
+            PRINTFORMW %PALAMNAME:5%之珠＋100
+		CFLAG:ARG:2415 += 1
+	CASE 14
+			;常识改变
+			SIF CFLAG:ARG:7021
+			PRINTFORM 一丝不挂的
+		IF CSTR:ARG:11 == "舞蹈"
+			PRINTFORMW %CALLNAME:ARG%将手搭在%PLAYER_NAME()%的肩上，一手暧昧地抚摸着自己的胸部
+			IF TALENT:ARG:4 || TALENT:ARG:7
+				PRINTFORM 带着挑逗的神情
+			ELSE
+				PRINTFORM 带着迷离的眼神
+			ENDIF
+			PRINTFORMW ，脚步轻盈地绕着%PLAYER_NAME()%跳起艳舞来……
+		ELSE
+			IF TALENT:ARG:害羞 || TALENT:ARG:性保守 
+				PRINTFORMW %CALLNAME:ARG%手足无措地看着%PLAYER_NAME()%，然後像是很为难情地摆动了起来
+				PRINTFORMW 不敢直视%PLAYER_NAME()%的目光，满脸通红地跳起了艳舞……
+			ELSEIF TALENT:ARG:乐观 || TALENT:ARG:喜欢引人注目  || TALENT:ARG:直率 
+				PRINTFORMW %CALLNAME:ARG%露出无奈的表情摆摆手，尽自己所能地摆动了起来
+				PRINTFORMW 一幅把%PLAYER_NAME()%当成没救的老色狼那样，一边叹气一边跳起了艳舞……
+			ELSEIF TALENT:ARG:老实 || TALENT:ARG:胆怯
+				PRINTFORMW %CALLNAME:ARG%困惑地歪着头，好像在回想艳舞该怎么跳的样子
+				PRINTFORMW %PLAYER_NAME()%看着他踏着生涩的舞步，与其说是艳舞，倒不如说是体操吧？
+			ELSEIF TALENT:ARG:无动于衷 || TALENT:ARG:缺乏感情
+				PRINTFORMW 听见这个命令的%CALLNAME:ARG%面无表情地摆动了起来
+				PRINTFORMW 但是艳舞的话，没有丰富的表情很难"艳"的起来啊
+				PRINTFORMW %PLAYER_NAME()%看着他的舞步心中不禁这样想着
+			ELSEIF TALENT:ARG:高傲 || TALENT:ARG:自大 || TALENT:ARG:傲娇
+				PRINTFORMW 听见这个命令的%CALLNAME:ARG%皱着眉头露出了嫌弃的表情
+				PRINTFORMW 然後勉为其难的摆动起身体，跳着别扭的舞步……
+			ELSE
+				PRINTFORMW %CALLNAME:ARG%像是拿%PLAYER_NAME()%没办法似地叹了口气
+				PRINTFORMW 在%PLAYER_NAME()%的注视下，摆动起身体跳着生涩的舞步……
+			ENDIF
+		ENDIF
+		IF !KANRAKU(ARG)
+			催眠EXP -= 5
+			PRINTFORML 由於%CALLNAME:ARG%没有陷落属性，所以催眠点数减少了5
+		ENDIF
+			BASE:ARG:0 -= 50
+			BASE:ARG:1 -= 50
+            PRINTFORML 体力-50  气力- 50
+			IF CSTR:ARG:11 == "舞蹈"
+			     JUEL:ARG:8 += 50
+				PRINTFORML %PALAMNAME:8%之珠＋50
+			ELSE
+			     JUEL:ARG:8 += 10
+				PRINTFORML %PALAMNAME:8%之珠＋10
+			ENDIF
+            JUEL:ARG:6 += 20
+            JUEL:ARG:7 += 30
+            JUEL:ARG:9 += 30
+            PRINTFORML %PALAMNAME:6%之珠＋20
+            PRINTFORML %PALAMNAME:7%之珠＋30
+            PRINTFORMW %PALAMNAME:9%之珠＋30
+		CFLAG:ARG:2415 += 1
+	CASE 21
+		PRINTFORMW %CALLNAME:ARG%神情恍惚地接受了%PLAYER_NAME()%灌输过来的常识…… 
+		PRINTFORMW %CALLNAME:ARG%现在认为在自己的房间里面，全裸是一件理所当然的事情…… 
+		PRINTFORMW 催眠点数减少10！%CALLNAME:ARG%的压力增加了5！
+		CFLAG:ARG:7021 = 1
+		CFLAG:ARG:10 += 5
+		催眠EXP -= 10
+		CFLAG:ARG:2415 += 1
+	CASE 22
+		PRINTFORMW %CALLNAME:ARG%神情恍惚地接受了%PLAYER_NAME()%灌输过来的常识…… 
+		PRINTFORMW %CALLNAME:ARG%现在认为全裸穿着围裙烹饪是一件理所当然的事情了…… 
+		PRINTFORMW 催眠点数减少10！%CALLNAME:ARG%的压力增加了5！
+		CFLAG:ARG:7022 = 1
+		CFLAG:ARG:10 += 5
+		催眠EXP -= 10
+		CFLAG:ARG:2415 += 1
+	CASE 23
+		PRINTFORMW %CALLNAME:ARG%神情恍惚地接受了%PLAYER_NAME()%灌输过来的常识…… 
+		PRINTFORMW %CALLNAME:ARG%觉得四肢着地跪着叼鞋子招待主人，是一件理所当然的事情了…… 
+		PRINTFORMW 催眠点数减少10！%CALLNAME:ARG%的压力增加了5！
+		CFLAG:ARG:7023 = 1
+		CFLAG:ARG:10 += 5
+		催眠EXP -= 10
+		CFLAG:ARG:2415 += 1
+	CASE 24
+		PRINTFORMW %CALLNAME:ARG%神情恍惚地接受了%PLAYER_NAME()%灌输过来的常识…… 
+		PRINTFORMW %CALLNAME:ARG%似乎只要喝到黏稠透明或白色的液体，都会不由自主联想到%PLAYER_NAME()%体液的味道……
+		PRINTFORMW 催眠点数减少10！%CALLNAME:ARG%的压力增加了5！
+		CFLAG:ARG:7024 = 1
+		CFLAG:ARG:10 += 5
+		催眠EXP -= 10
+		CFLAG:ARG:2415 += 1
+	CASE 25
+		PRINTFORMW %CALLNAME:ARG%神情恍惚地接受了%PLAYER_NAME()%灌输过来的常识…… 
+		PRINTFORMW %CALLNAME:ARG%觉得展示柜的用处，就是拿来置放展示自己心爱的内衣……
+		PRINTFORMW 催眠点数减少10！%CALLNAME:ARG%的压力增加了5！
+		CFLAG:ARG:7025 = 1
+		CFLAG:ARG:10 += 5
+		催眠EXP -= 10
+		CFLAG:ARG:2415 += 1
+	CASE 30
+		PRINTFORMW %PLAYER_NAME()%用輕緩安撫的語氣向%CALLNAME:ARG%催眠…… 
+		PRINTFORMW %CALLNAME:ARG%放鬆地露出了柔和的表情，覺得似乎躺在雲端班輕飄飄的……
+		PRINTFORMW 催眠点数减少200！%CALLNAME:ARG%的壓力減少了50！
+		CFLAG:ARG:10 -= 50
+		SIF CFLAG:ARG:10 < 0
+		CFLAG:ARG:10 = 0
+		催眠EXP -= 200
+		CFLAG:ARG:2415 += 1
+	CASE 99
+		催眠返回 = 1
+		JUMP CHARA_ROOM(ARG)
+	ENDSELECT
+	RESTART	
+ENDIF
+
+@催眠点数计算(ARG)
+	G:66 = 0
+		;困难度計算
+;		LOCAL = DEFFICULTY(ARG)
+;		IF LOCAL > 400
+;			G:66  += (100 + RAND:40)
+;		ELSEIF LOCAL > 100
+;			G:66  += (160 + RAND:80)
+;		ELSEIF LOCAL > -200
+;			G:66  += (230 + RAND:120)
+;		ELSEIF LOCAL > -400
+;			G:66  += (380 + RAND:150)
+;		ELSEIF LOCAL > -800
+;			G:66  += (680 + RAND:180)
+;		ELSEIF LOCAL > -2000
+;			G:66  += (1280 + RAND:210)
+;		ELSEIF LOCAL > -3000
+;			G:66  += (2580 + RAND:240)
+;		ENDIF	
+IF CSTR:ARG:10 == "G"
+	G:66  += (100 + RAND:40)
+ELSEIF CSTR:ARG:10 == "F"
+	G:66  += (160 + RAND:80)
+ELSEIF CSTR:ARG:10 == "E"
+	G:66  += (230 + RAND:120)
+ELSEIF CSTR:ARG:10 == "D"
+	G:66  += (380 + RAND:150)
+ELSEIF CSTR:ARG:10 == "C"
+	G:66  += (680 + RAND:180)
+ELSEIF CSTR:ARG:10 == "B"
+	G:66  += (1280 + RAND:210)
+ELSEIF CSTR:ARG:10 == "A"
+	G:66  += (2580 + RAND:240)
+ELSE
+	LOCAL = DEFFICULTY(ARG)
+	IF LOCAL > 400
+		LOCAL = 400
+	ELSEIF LOCAL < -3000
+		LOCAL = 2000	
+	ENDIF	
+	G:66  += (500 + RAND:40) - LOCAL
+ENDIF
+	催眠EXP += G:66
+@催眠解除(ARG)
+IF CFLAG:ARG:7001 == 1
+	TALENT:ARG:相亲相爱 = 0
+ELSEIF CFLAG:ARG:7001 == 2
+	TALENT:ARG:娼妇 = 0
+ELSEIF CFLAG:ARG:7001 == 3
+	TALENT:ARG:隶属 = 0
+ELSEIF CFLAG:ARG:7001 == 11
+	TALENT:ARG:相亲相爱 = 0
+	TALENT:ARG:3 = 1
+ELSEIF CFLAG:ARG:7001 == 12
+	TALENT:ARG:娼妇 = 0
+	TALENT:ARG:3 = 1
+ELSEIF CFLAG:ARG:7001 == 13
+	TALENT:ARG:隶属 = 0
+	TALENT:ARG:3 = 1
+ELSEIF CFLAG:ARG:7001 == 21
+	TALENT:ARG:相亲相爱 = 0
+	TALENT:ARG:4 = 1
+ELSEIF CFLAG:ARG:7001 == 22
+	TALENT:ARG:娼妇 = 0
+	TALENT:ARG:4 = 1
+ELSEIF CFLAG:ARG:7001 == 23
+	TALENT:ARG:隶属 = 0
+	TALENT:ARG:4 = 1
+ELSEIF CFLAG:ARG:7001 == 31
+	TALENT:ARG:相亲相爱 = 0
+	TALENT:ARG:5 = 1
+ELSEIF CFLAG:ARG:7001 == 32
+	TALENT:ARG:娼妇 = 0
+	TALENT:ARG:5 = 1
+ELSEIF CFLAG:ARG:7001 == 33
+	TALENT:ARG:隶属 = 0
+	TALENT:ARG:5 = 1
+ELSEIF CFLAG:ARG:7001 == 42
+	TALENT:ARG:娼妇 = 0
+	TALENT:ARG:6 = 1
+ELSEIF CFLAG:ARG:7001 == 43
+	TALENT:ARG:隶属 = 0
+	TALENT:ARG:6 = 1
+ELSEIF CFLAG:ARG:7001 == 51
+	TALENT:ARG:相亲相爱 = 0
+	TALENT:ARG:7 = 1
+ELSEIF CFLAG:ARG:7001 == 53
+	TALENT:ARG:隶属 = 0
+	TALENT:ARG:7 = 1
+ELSEIF CFLAG:ARG:7001 == 61
+	TALENT:ARG:相亲相爱 = 0
+	TALENT:ARG:8 = 1
+ELSEIF CFLAG:ARG:7001 == 62
+	TALENT:ARG:娼妇 = 0
+	TALENT:ARG:8 = 1
+ENDIF
+SIF CFLAG:ARG:7021
+	CFLAG:ARG:7021 = 0
+SIF CFLAG:ARG:7022
+	CFLAG:ARG:7022 = 0
+SIF CFLAG:ARG:7023
+	CFLAG:ARG:7023 = 0
+SIF CFLAG:ARG:7024
+	CFLAG:ARG:7024 = 0
+SIF CFLAG:ARG:7025
+	CFLAG:ARG:7025 = 0
+

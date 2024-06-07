@@ -1,0 +1,883 @@
+﻿;调教对象選択(eratohoR+ 1.31)
+@CHANGE_TARGET
+R = 1
+CALL LIST_CHARA
+
+@SELECT_ASSI
+CALL KAIGYO
+DRAWLINE
+PRINT 现在
+IF ASSI >= 0
+	PRINTFORML 的助手是%NAME:ASSI%
+ELSE
+	PRINTFORML 没有助手
+ENDIF
+PRINTL 让谁成为助手？(☆为现任助手)
+DRAWLINE
+IF MASTER < 10
+	PRINTFORM   [ {MASTER}
+ELSE
+	PRINTFORM   [{MASTER}
+ENDIF
+PRINTL ] 无助手
+REPEAT CHARANUM
+	TFLAG:COUNT = 0
+	;0（主人公）とASSI以外は排除
+	SIF COUNT == MASTER
+		CONTINUE
+	SIF CFLAG:COUNT:1 < 2
+		CONTINUE
+	SIF CFLAG:COUNT:12 > 0
+		CONTINUE
+	;育て中の子供除外
+	SIF CFLAG:COUNT:119
+		CONTINUE
+	;育児部屋に移动しているキャラは除外
+	C = COUNT
+	CALL CHECK_CHILD_CARE
+	SIF RESULT == 1
+		CONTINUE
+	IF COUNT == ASSI
+		PRINT ☆
+	ELSE
+		PRINT 　
+	ENDIF
+	IF COUNT<10
+		PRINTFORM [ {COUNT}]
+	ELSE
+		PRINTFORM [{COUNT}]
+	ENDIF
+;	CALL ARRANGE_CHARANAME
+	PRINTFORM  %NAME:COUNT,20,LEFT%　
+	IF COUNT == ASSI
+		PRINT 　　　　 
+	ELSEIF ISASSI:COUNT == 1
+		PRINT [原助手] 
+	ELSE
+		PRINT [无经验] 
+	ENDIF
+	PRINTFORM %ABLNAME:2%Lv{ABL:COUNT:2} 
+	IF MALE(COUNT)
+		PRINTFORM %ABLNAME:20%Lv{ABL:COUNT:20} %ABLNAME:21%Lv{ABL:COUNT:21} 
+	ELSE
+		PRINTFORM %ABLNAME:11%Lv{ABL:COUNT:11} %ABLNAME:17%Lv{ABL:COUNT:17} 
+	ENDIF
+	SIF TALENT:COUNT:81
+		PRINT 男女通吃
+	PRINTFORML 
+REND
+;LOG
+IF DAY > 4 && TFLAG:167
+	PRINTL -------调教日志-------
+	REPEAT 12
+		SIF COUNT == 0
+			PRINT 1回前：
+		SIF COUNT == 1
+			PRINT 2回前：
+		SIF COUNT == 2
+			PRINT 3回前：
+		SIF COUNT == 3
+			PRINT 4回以前：
+		IF PREVCOM:(COUNT+801) > 0 && NO2(PREVCOM:(COUNT+801)) == -1
+			PRINTFORM 已拍卖
+		ELSEIF PREVCOM:(COUNT+801) > 0
+			PRINTFORM %CALLNAME:(NO2(PREVCOM:(COUNT+801)))%
+		ENDIF
+		SIF PREVCOM:(COUNT+801) <= 0
+			PRINT 无
+		IF PREVCOM:(COUNT+815) > 0 && NO2(PREVCOM:(COUNT+815)) == -1
+			PRINTFORM (助手:已拍卖)
+		ELSEIF PREVCOM:(COUNT+815) > 0
+			PRINTFORM (助手:%CALLNAME:(NO2(PREVCOM:(COUNT+815)))%)
+		ENDIF
+		SIF COUNT != 11 && COUNT != 0 && COUNT != 1 && COUNT != 2
+			PRINT 、
+		SIF COUNT ==0 ||  COUNT == 1 || COUNT == 2 || COUNT == 11
+			PRINTL
+	REND
+ENDIF
+DRAWLINE
+IF DAY > 4 && TFLAG:167
+	PRINTL  [150] - 关闭调教日志
+ELSEIF DAY > 4
+	PRINTL  [150] - 开启调教日志
+ENDIF
+PRINTFORML  [100] - 返回
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 100
+	RETURN 0
+ELSEIF RESULT == 150 && DAY > 4
+	CLEARLINE 1
+	IF TFLAG:167
+		TFLAG:167 = 0
+	ELSE
+		TFLAG:167 = 1
+	ENDIF
+	RESTART
+ELSEIF RESULT == MASTER
+	ASSI = -1
+	RETURN 0
+ELSEIF RESULT < 0 || RESULT >= CHARANUM
+	GOTO INPUT_LOOP
+ELSEIF CFLAG:RESULT:12 > 0
+	GOTO INPUT_LOOP
+ELSEIF CFLAG:RESULT:1 < 2
+	GOTO INPUT_LOOP
+ELSE
+	C = RESULT
+	CALL CHECK_CHILD_CARE
+	SIF RESULT == 1
+		GOTO INPUT_LOOP
+ENDIF
+
+ASSI = C
+CALL ASSI_CHANGE
+ISASSI:ASSI = 1
+SIF ASSI == TARGET
+	TARGET = -1
+
+;状态表示
+@SHOW_CHARADATA
+R = 0
+CALL LIST_CHARA
+
+;大人数对応キャラ購入処理
+;代わりに購入金額の设定＆処理が煩雑になる諸刃の剣、素人にはオススメ出来ない
+;ついでに過去の保存データとの互換性もなくなりますし、見栄えも悪い
+;あとフラグ1000番台を使うので注意
+;(TFLAG:0～100は调教関係ない上、调教開始時に重置されるので無問題）
+
+;变更点
+;購入したキャラが直接加入するように、購入処理のあたりを变更
+;キャラの購入未既判定をITEMで行うように
+;キャラ選択処理を吸收
+
+@CHARA_BUY
+TFLAG:100 = 0
+TFLAG:101 = 0
+TFLAG:102 = 0
+
+;--------------------------------------------------
+;奴隶調達 番号1～100是自定义奴隶 201～300是自定义人外 301～400是子代
+;101～199是人类番号
+;417～1000是人外番号
+;FLAG:8  自定义奴隶番号管理
+;FLAG:29 自定义人外番号管理
+;FLAG:1504 一次性事件开关（1为？？？君商店开场白）
+;--------------------------------------------------
+X = 0
+Y = 0
+;没有？？？君的话就不可以开启人外召唤
+REPEAT CHARANUM
+    IF NO:COUNT == 200
+        Y++
+        X = COUNT
+    ENDIF
+REND
+
+$INPUT_LOOP_SARAI
+CALL KAIGYO
+DRAWLINE
+PRINTL 请选择奴隶采购的方式
+DRAWLINE
+PRINTL [150] - 托人猎捕男奴($1500～2500)
+PRINTL [151] - 从奴隶市场购买
+SIF Y > 0 && TALENT:MASTER:禁断的知识
+    PRINTL [152] - 召唤非人之物
+DRAWLINE
+PRINTL [155] - 返回
+INPUT
+IF RESULT == 150
+	IF CHARANUM == 101
+		PRINTL 宅邸里最多容纳100名奴隶。已经满员了
+		PRINTW 无法再增加人口
+		GOTO INPUT_LOOP_SARAI
+	ENDIF
+	IF MONEY < 2500
+		PRINTW 余额不足
+		GOTO INPUT_LOOP_SARAI
+	ELSEIF FLAG:8 == 100
+		PRINTL 绑架行为被发现的危险显著上升
+		PRINTW 不能再绑架了
+		GOTO INPUT_LOOP_SARAI
+	ELSE
+	    CALL KAIGYO
+	    DRAWLINE
+	    PRINTL 请选择奴隶采购的方式
+	    DRAWLINE
+		PRINTL [0] - 指定目标（自行定制）
+		PRINTL [1] - 随机猎捕
+		DRAWLINE
+		PRINTL [2] - 返回
+		INPUT
+		IF RESULT == 0
+			CALL SLAVE_CUSTOM
+		ELSEIF RESULT == 1
+			CALL SLAVE_RANDOM
+		ENDIF		
+		RETURN 0
+	ENDIF
+ELSEIF RESULT == 151	
+	IF CHARANUM == 101
+		PRINTL 宅邸里最多容纳100名奴隶。已经满员了
+		PRINTW 无法再增加人口
+		GOTO INPUT_LOOP_SARAI
+	ENDIF
+ELSEIF RESULT == 152 && Y > 0
+    IF CHARANUM == 101
+        PRINTL 宅邸里最多容纳100名住户。已经满员了
+        PRINTW 无法再增加户口
+        GOTO INPUT_LOOP_SARAI
+    ENDIF    
+    CALL KAIGYO
+    $INPUT_SUMMON1
+    IF FLAG:1504 == 0
+        PRINTFORMW 不知为何，本该在房间里待着的%CALLNAME:X%出现在%PLAYER_NAME()%面前
+        PRINTW 「呵呵，已经重获神力的您现在可以自由召唤人以外的存在了」
+        PRINTFORMW 「在%CSTR:X:0%的协助下，不论什么类型何种等级的非人之物都可供您差遣」
+        DRAWLINE
+        PRINTFORML %CALLNAME:X%：
+        PRINTL 「那么，请决定召唤的方式吧…」
+        DRAWLINE
+        FLAG:1504 = 1
+    ELSE
+        DRAWLINE
+        PRINTFORML %CALLNAME:X%：
+        PRINTFORML 「尊敬的%CSTR:X:3%，请决定召唤的方式」
+        DRAWLINE
+    ENDIF
+    PRINTL [0] - 定向召唤($75000～125000)
+    PRINTL [1] - 随机召唤($75000～125000)
+    PRINTL [2] - 激活契约书
+    DRAWLINE
+    PRINTL [3] - 返回
+    $INPUT_SUMMON2
+    INPUT
+    IF RESULT == 0
+        IF MONEY < 75000
+            PRINTL 余额不足
+            GOTO INPUT_SUMMON1
+        ELSEIF FLAG:29 == 300
+            PRINTL 召唤的次数太多，导致异界能量动荡
+            PRINTL 今后恐怕都无法召唤非人之物了
+            GOTO INPUT_SUMMON1
+        ENDIF
+        CALL NINGAI_CUSTOM
+        RETURN 0
+    ELSEIF RESULT == 1
+        IF MONEY < 75000
+            PRINTL 余额不足
+            GOTO INPUT_SUMMON1
+        ELSEIF FLAG:29 == 300
+            PRINTL 召唤的次数太多，导致异界能量动荡
+            PRINTL 今后恐怕都无法召唤非人之物了
+            GOTO INPUT_SUMMON1
+        ENDIF
+        CALL NINGAI_RANDOM
+        RETURN 0
+    ELSEIF RESULT == 2
+        CALL NINGAI_SHOP
+        RETURN 0
+    ELSEIF RESULT == 3
+        GOTO INPUT_LOOP_SARAI
+    ELSE
+        GOTO INPUT_SUMMON2
+    ENDIF
+ELSEIF RESULT == 155
+	RETURN 0
+ELSE
+	GOTO INPUT_LOOP_SARAI
+ENDIF
+LOADGLOBAL
+;--------------------------------------------------
+;以下から通常の购买奴隶、何人かデフォのキャラも设定しておく
+;--------------------------------------------------
+REPEAT 200	
+	TFLAG:COUNT = ITEMSALES:COUNT
+	ITEMSALES:COUNT = 0
+REND
+
+CALL CHARA_LIST
+
+ITEMSALES:0 = 0
+
+CALL CHARA_BUY_SHOW
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 1
+	IF TFLAG:100 > 0
+		TFLAG:100 -= 1
+		CALL CHARA_LIST
+	ENDIF
+	;バグ对策。キャラ上限を超えるとITEMSALES:0が登录されるので
+	ITEMSALES:0 = 0
+
+	CALL CHARA_BUY_SHOW
+	GOTO INPUT_LOOP
+ELSEIF RESULT == 9
+	;最大ページ数と比較、ページ数変動の際は
+	IF TFLAG:100 < TFLAG:102
+		TFLAG:100 += 1
+		CALL CHARA_LIST
+	ENDIF
+	;バグ对策。キャラ上限を超えるとITEMSALES:0が登录されるので
+	ITEMSALES:0 = 0
+
+	CALL CHARA_BUY_SHOW
+	GOTO INPUT_LOOP
+;不买了なら返回
+ELSEIF RESULT == 0
+	IF MASTER == -1
+		MASTER = 0
+		CALL ANATA_SET
+	ENDIF
+	CALL CHARA_BUY_AFTER
+	RETURN 0
+;[RESULT > 100+**]の**はREPEAT数と同じくキャラ数以上の適当な数値
+ELSEIF RESULT < 200 || RESULT > 300
+	GOTO INPUT_LOOP
+ENDIF
+
+;C = キャラナンバー
+B = RESULT
+D = RESULT + 1000 - 100
+C = RESULT + 1 - 100
+;購入済みor購入不可＝フラグ値が0なら再输入
+SIF FLAG:D == 0 || ITEMSALES:RESULT == 0
+	GOTO INPUT_LOOP
+;キャラ解説を入れる
+FLAG:9 = C
+CALL CHARA_MANUAL
+
+;不是を選ぶと再输入
+IF FLAG:9 == 0
+	CALL CHARA_BUY_SHOW
+	GOTO INPUT_LOOP
+ELSE
+	FLAG:9 = 0
+ENDIF
+;フラグ値＝売値が所持金より多いなら再输入
+IF MONEY < FLAG:D
+	PRINTL 余额不足
+	
+	CALL CHARA_BUY_SHOW
+	GOTO INPUT_LOOP
+ENDIF
+;上記処理を抜けてきた＝購入可能で所持金が売値以上
+MONEY -= FLAG:D
+FLAG:D = 0
+ITEM:B = 1
+ADDCHARA C
+TARGET = CHARANUM-1
+
+;奴隶市場の七人の性格タイプと口調を设定。
+SELECTCASE NO:TARGET
+	CASE 101
+		CFLAG:600 = 8
+		CFLAG:601 = 1
+		CFLAG:611 = 1
+		MASTERNAME = %CALLNAME:MASTER%
+	CASE 102
+		CFLAG:600 = 12
+		CFLAG:601 = 1
+		CFLAG:607 = 1
+		CFLAG:608 = 1
+		MASTERNAME = %CALLNAME:MASTER%君
+	CASE 103
+		CFLAG:600 = 6
+		CFLAG:601 = 0
+		CFLAG:602 = 1
+		CFLAG:603 = 1
+		CFLAG:612 = 1
+		CFLAG:615 = 1
+		MASTERNAME = %CALLNAME:MASTER%
+	CASE 104
+		CFLAG:600 = 1
+		CFLAG:601 = 0
+		CFLAG:602 = 1
+		CFLAG:603 = 1
+		CSTR:11 = 排球
+		MASTERNAME = %CALLNAME:MASTER%
+	CASE 105
+		CFLAG:600 = 3
+		CFLAG:601 = 0
+		CFLAG:604 = 1
+		CFLAG:609 = 1
+		MASTERNAME = %CALLNAME:MASTER%君
+	CASE 106
+		CFLAG:600 = 2
+		CFLAG:601 = 2
+		MASTERNAME = %CALLNAME:MASTER%
+	CASE 107
+		CFLAG:600 = 11
+		CFLAG:601 = 1
+		CFLAG:606 = 1
+		MASTERNAME = %CALLNAME:MASTER%大人
+	CASE 108
+		CFLAG:600 = 4
+		CFLAG:601 = 3
+		IF MALE(MASTER)
+		    CSTR:3 = 国王陛下
+        ELSE
+		    CSTR:3 = 女王陛下
+        ENDIF
+		MASTERNAME = %CALLNAME:MASTER%酱
+	CASE 109
+		CFLAG:600 = 5
+		CFLAG:601 = 2
+		MASTERNAME = %CALLNAME:MASTER%
+	CASE 110
+		CFLAG:600 = 7
+		CFLAG:601 = 2
+		CFLAG:611 = 1
+		MASTERNAME = %CALLNAME:MASTER%君
+	CASE 111
+		CFLAG:600 = 9
+		CFLAG:601 = 0
+		MASTERNAME = %CALLNAME:MASTER%亲
+	CASE 112
+		CFLAG:600 = 10
+		CFLAG:601 = 4
+		MASTERNAME = %CALLNAME:MASTER%君
+	CASE 113
+		CFLAG:600 = 13
+		CFLAG:601 = 1
+		CFLAG:606 = 1
+		CFLAG:611 = 1
+		MASTERNAME = 小%CALLNAME:MASTER%
+	CASE 161 TO 170
+		MASTERNAME = %CALLNAME:MASTER%
+		PRINTW 请问他的性格是？
+		PRINTFORM [ 1]%"开朗元气型",18,LEFT%
+		PRINTFORM [ 2]%"稳重温柔型",18,LEFT%
+		PRINTFORML [ 3]%"认真固执型",18,LEFT%
+		PRINTFORM [ 4]%"花花公子型",18,LEFT%
+		PRINTFORM [ 5]%"别扭傲娇型",18,LEFT%
+		PRINTFORML [ 6]%"目中无人高傲型",18,LEFT%
+		PRINTFORM [ 7]%"举止温和腹黑型",18,LEFT%
+		PRINTFORM [ 8]%"阴暗无口冷漠型",18,LEFT%
+		PRINTFORML [ 9]%"蛮不讲理精英型",18,LEFT%
+		PRINTFORM [10]%"任性爱撒娇型",18,LEFT%
+		PRINTFORM [11]%"直率纯真型",18,LEFT%
+		PRINTFORML [12]%"无常识自恋型",18,LEFT%
+		PRINTFORM [13]%"天然电波型",18,LEFT%
+		PRINTFORM [66]%"痞气油嘴滑舌型",18,LEFT%
+		PRINTFORML [67]%"心机白莲花型",18,LEFT%
+		IF !FLAG:1505 
+		PRINTFORM [94]%"自订性格94",18,LEFT%
+		PRINTFORM [95]%"自订性格95",18,LEFT%
+		PRINTFORML [96]%"自订性格96",18,LEFT%
+		PRINTFORM [97]%"自订性格97",18,LEFT%
+		PRINTFORM [98]%"自订性格98",18,LEFT%
+		PRINTFORML [99]%"自订性格99",18,LEFT%
+		ENDIF
+		INPUT
+		SIF RESULT <= 99 && RESULT >= 1
+		CFLAG:600 = RESULT
+        FLAG:(NO:TARGET + 100) = 1
+		FLAG:(CFLAG:600 + 100) = 1
+		
+	CASE 200
+		CFLAG:600 = 7
+		CFLAG:601 = 1
+		CFLAG:607 = 1
+		CFLAG:608 = 1
+		MASTERNAME = %CALLNAME:MASTER%
+		PRINTW 说起来，他叫什么来着…
+		$INPUTS_LOOP_KARE
+		PRINTL ★★请输入「他」的名字★★
+		INPUTS
+		SIF RESULTS == ""
+			GOTO INPUTS_LOOP_KARE
+		PRINTFORML 他的名字是「%RESULTS%」可以吗？
+		PRINTL
+		PRINTL 　[0] 是
+		PRINTL 　[1] 否
+		PRINTL
+		$INPUT_LOOP_KARE2
+		INPUT
+		SIF RESULT != 0 && RESULT != 1
+			GOTO INPUT_LOOP_KARE2
+		SIF RESULT == 1
+			GOTO INPUTS_LOOP_KARE
+		CSTR:5 = %RESULTS%
+		CALLNAME = %RESULTS%
+		NAME = %RESULTS%
+ENDSELECT
+CFLAG:111 = -1
+CFLAG:1000 = -1
+CFLAG:1001 = -1
+;相性の初期値
+REPEAT CHARANUM
+	RELATION:(NO:COUNT) = 100
+	RELATION:COUNT:(NO:TARGET) = 100
+REND
+;隠しキャラは最初から主人に気がある
+SIF NO:TARGET == 200
+	RELATION:(NO:MASTER) = 150
+
+CALL CHARA_BUY_AFTER
+RETURN 0
+
+@CHARA_BUY_SHOW
+CALL KAIGYO
+DRAWLINE
+IF MASTER == -1
+	DRAWLINE
+	PRINTL 　☆可将调教者变更为登场角色☆
+	PRINTL 　☆选择「不变更」的话，调教者是你（主角）☆
+	PRINTL
+	PRINT 　★★请选择角色★★
+;２人目の共犯者選択用に条件式を変えました：2011/06/05
+;ELSEIF FLAG:40
+ELSEIF FLAG:40 == 0 && k > 0
+	DRAWLINE
+	PRINTL 　★★可变更共犯者★★
+	PRINT 　★★请选择角色★★
+ELSE
+	IF TIME == 0
+		PRINTFORML 第{DAY}日 昼
+	ELSE
+		PRINTFORML 第{DAY}日 夜
+	ENDIF
+	SIF TARGET >= 0
+		PRINTFORM %NAME:TARGET%调教中
+	SIF ASSI >= 0
+		PRINTFORM （助手：%NAME:ASSI%）
+
+	PRINTFORM (剩余${MONEY})
+ENDIF
+PRINTFORML 　page{TFLAG:100 + 1}/{TFLAG:102 + 1}
+IF FLAG:1506
+DRAWLINE
+PRINTL
+PRINTL 自定角色文件位址:CSV\Chara\自订角色161~170
+SETCOLOR 0xece352
+PRINTL 请先开启文件编写好自订角色的内容，否则角色的属性皆为空白
+RESETCOLOR
+PRINTL 
+PRINTFORML 已开启自订角色功能，可以购买编写好的161～170号奴隶
+ENDIF
+DRAWLINE
+IF FLAG:1506 == 0
+	REPEAT 10
+	ITEMSALES:(260+COUNT) = 0
+	REND
+ENDIF
+PRINT_SHOPITEM
+
+DRAWLINE
+IF TFLAG:100 > 0
+	PRINTC [1]上一页
+ELSE
+	PRINTC 　
+ENDIF
+IF MASTER == -1
+	PRINTC [0]不变更
+ELSE
+	PRINTC [0]不买了
+ENDIF
+SIF TFLAG:100 < TFLAG:102
+	PRINTC [9]下一页
+PRINTL 
+
+@CHARA_BUY_AFTER
+REPEAT 200
+	A = COUNT + 100
+	ITEMSALES:A = 0
+	ITEMSALES:COUNT = TFLAG:COUNT
+	TFLAG:COUNT = 0
+REND
+;ゲームクリア後の购买奴隶ループを修正……というか、コメントアウトしたらループから抜けました：2011/06/05
+;CHARA_BUY関数中の共犯者選択の条件变更による影響だと思います。検証はしてありますが、他がバグったらコメントアウトの解除を試してください。
+;SIF FLAG:40 > 0
+;	CALL CHARA_BUY
+
+@CHARA_LIST
+REPEAT 200
+	A = COUNT + 100
+	ITEMSALES:A = 0
+REND
+
+CALL CHARA_BUY_PRICE
+
+F = 0
+TFLAG:101 = 0
+REPEAT 200
+	E = COUNT + 1000
+	I = COUNT + 100
+	IF FLAG:E > 0
+		TFLAG:101 += 1
+		SIF (TFLAG:101 <= TFLAG:100 * 30) || F >= 30
+			CONTINUE
+		;隠しキャラはフラグ経ってないと売り出されない
+		SIF I == 299 && !GLOBAL:0
+			CONTINUE
+		ITEMSALES:I = 1
+		F += 1
+	ENDIF
+REND
+
+TFLAG:102 = TFLAG:101 / 30
+
+@CHARA_BUY_PRICE
+;購入条件などがある場合もここで処理する
+CALL CHARA_PRICE
+
+REPEAT 200
+	I = COUNT + 100
+	D = COUNT + 1000
+	SIF ITEM:I != 0
+		FLAG:D = 0
+REND
+
+
+;-------------------------------------------------
+;PCを選択式にしてみる
+;-------------------------------------------------
+@START_CHARA_SELECT
+K = 0
+;PRINTFORML ★★请选择玩家/主角★★
+;PRINTL [0] 使用原创主角游玩
+;PRINTL [1] 从固有角色里选取
+;$INPUT_LOOP_PCSELECT
+;INPUT
+;IF RESULT == 0
+	CALL ANATA_SET
+;ELSEIF RESULT == 1
+;	MASTER = -1
+;	CALL CHARA_BUY
+;ELSE
+;	GOTO INPUT_LOOP_PCSELECT
+;ENDIF
+;SIF FLAG:5 == 9
+;	CALL KYOHAN_CHARA_SELECT
+
+;-------------------------------------------------
+;共犯者を追加できるようにしてみる
+;-------------------------------------------------
+@KYOHAN_CHARA_SELECT
+
+PRINTFORML 要调配共犯者吗？（不可调教助手）
+PRINTFORML 
+PRINTL [0] 调配２人
+PRINTL [1] 调配１人
+PRINTL [2] 不了
+$INPUT_LOOP
+INPUT
+IF RESULT == 0
+	PRINTFORML ―共犯者追加―
+	K = 2
+	CALL CHARA_BUY
+;以下３行を加えてとりあえず２人目の共犯者選択に進ませます：2011/06/05
+	PRINTFORML ―共犯者追加　２人―
+	K = 1
+	CALL CHARA_BUY
+ELSEIF RESULT == 1
+	PRINTFORML ―共犯者追加―
+	K = 1
+	CALL CHARA_BUY
+ELSEIF RESULT == 2
+	PRINTFORML 不调配共犯者
+ELSE 
+	GOTO INPUT_LOOP
+ENDIF
+
+;-------------------------------------------------
+;強くてニューゲームしてみる
+;-------------------------------------------------
+;強くてニューゲームの処理はここで実行
+;ボーナスポイントで色々購入する
+@TSUYOKUTE_GAME
+PRINTFORML 已获得积分点，开始新游戏。可以吗？
+PRINTL [0] 是
+PRINTL [1] 否
+
+$INPUT_LOOP_TSUYOKUTE
+INPUT
+IF RESULT == 0
+	FLAG:5 = 0
+	FLAG:40 = 0
+	
+	;日付、时间、資金、调教对象や助手の重置
+	DAY = 1
+	TIME = 0
+	MONEY = 3000
+	TARGET = -1
+	ASSI = -1
+	;奴隶消去処理
+	REPEAT CHARANUM
+		DELCHARA 0
+	REND
+	;フラグ重置
+
+	REPEAT 999
+		TFLAG:COUNT = 0
+	REND
+	FLAG:23 = 0
+	FLAG:30 = 0
+	FLAG:31 = 0
+	FLAG:32 = 0
+	CALL CHARA_PRICE
+	FLAG:1500 = 0
+	
+	;新主人の選択
+	ADDCHARA 0
+	MASTER = 0
+	K = 0
+	FLAG:96 = 0
+	CALL ANATA_SET
+	
+	;ボー茄子取得
+	B = FLAG:41
+	CALL TSUYOKUTE_BONUS
+    LOADGLOBAL
+    IF !GLOBAL:0
+        CSTR:MASTER:91 =
+        CSTR:MASTER:92 = 主人公。
+        CSTR:MASTER:93 =
+        CSTR:MASTER:94 = 看起来很平凡，但拥有远比常人要高的欲望。
+        CSTR:MASTER:95 = 迫于生计成为了调教师。
+        CSTR:MASTER:96 =
+    ELSEIF GLOBAL:0 == 1
+        CSTR:MASTER:91 =
+        CSTR:MASTER:92 = 神（大概）。
+        CSTR:MASTER:93 =
+        CSTR:MASTER:94 = 曾为了救在意的人类无数次重置世界耗尽神力。
+        CSTR:MASTER:95 = 至于神的真实目的…目前尚无人知。
+        CSTR:MASTER:96 =
+    ENDIF
+
+	;道具清零
+	REPEAT 300
+		ITEM:COUNT = 0
+	REND
+	REPEAT 300
+		NOITEM:COUNT = 0
+	REND
+
+    ;剧情任务flag清零
+    X = 0
+    REPEAT 499
+        X = COUNT + 501
+        FLAG:X = 0
+	REND
+
+	;困难度選択
+	PRINTL ★★请选择游戏困难程度★★
+	PRINTL [0]EASY
+	PRINTL [1]NORMAL
+	PRINTL [2]HARD
+	$INPUT_LOOP_2
+	INPUT
+	IF RESULT >= 0 && RESULT <= 2
+		FLAG:4 = RESULT+1
+	ELSE
+		GOTO INPUT_LOOP_2
+	ENDIF
+	
+ELSEIF RESULT == 1
+	RETURN 1
+ELSE
+	GOTO INPUT_LOOP_TSUYOKUTE
+ENDIF
+
+;-------------------------------------------------
+;強くてニューゲームのボー茄子取得
+;-------------------------------------------------
+@TSUYOKUTE_BONUS
+IF B
+	PRINTFORML 剩余积分点 {B}
+	PRINTL 
+	SIF ABL:MASTER:2 < 10
+		PRINTL [0]   - 技巧Lv＋3
+	PRINTL [1]   - 资金＋30000
+	;PRINTL [2]   - 叫来共犯者
+	SIF TALENT:MASTER:144 == 0
+		PRINTL [3]   - 获得【禁断的知识】
+	SIF TALENT:MASTER:55 == 0
+		PRINTL [4]   - 获得【调和知识】
+	SIF TALENT:MASTER:83 == 0
+		PRINTL [5]   - 获得【施虐狂】
+	SIF TALENT:MASTER:84 == 0
+		PRINTL [6]   - 获得【受虐狂】
+	SIF TALENT:MASTER:93 == 0 && B > 1
+		PRINTL [7]   - 获得【魅惑】（ＢＰ２）
+	SIF TALENT:MASTER:94 == 0 && B > 1
+		PRINTL [8]   - 获得【谜之魅力】（ＢＰ２）
+	PRINTL [100] - 放弃获取积分点
+	
+	$INPUT_LOOP
+	INPUT
+	IF RESULT == 0 && ABL:MASTER:2 < 10
+		IF ABL:MASTER:2 > 7
+			ABL:MASTER:2 = 10
+		ELSE
+			ABL:MASTER:2 += 3
+		ENDIF
+		PRINTFORML %CALLNAME:MASTER%的技巧升到了{ABL:MASTER:2}:LV
+		B -= 1
+	ELSEIF RESULT == 1
+		MONEY += 30000
+		PRINTFORML 所持金钱为${MONEY}
+		B -= 1
+	;ELSEIF RESULT == 2
+	;	PRINTL ―共犯者追加―
+	;	K = 1
+	;	CALL CHARA_BUY
+	;	B -= 1
+	ELSEIF RESULT == 3 && TALENT:MASTER:144 == 0
+		PRINTFORML %CALLNAME:MASTER%获得了【禁断的知识】
+		TALENT:MASTER:144 = 1
+		B -= 1
+	ELSEIF RESULT == 4 && TALENT:MASTER:55 == 0
+		PRINTFORML %CALLNAME:MASTER%获得了【调和知识】
+		TALENT:MASTER:55 = 1
+		B -= 1
+	ELSEIF RESULT == 5 && TALENT:MASTER:83 == 0
+		PRINTFORM %CALLNAME:MASTER%
+		IF TALENT:MASTER:84
+			TALENT:MASTER:84 = 0
+			PRINT 失去了【受虐狂】
+		ENDIF
+		PRINTL 获得了【施虐狂】
+		TALENT:MASTER:83 = 1
+		B -= 1
+	ELSEIF RESULT == 6 && TALENT:MASTER:84 == 0
+		PRINTFORM %CALLNAME:MASTER%
+		IF TALENT:MASTER:83
+			TALENT:MASTER:83 = 0
+			PRINT 失去了【施虐狂】
+		ENDIF
+		PRINTL 获得了【受虐狂】
+		TALENT:MASTER:84 = 1
+		B -= 1
+	ELSEIF RESULT == 7 && TALENT:MASTER:93 == 0 && B > 1
+		PRINTFORML %CALLNAME:MASTER%获得了【魅惑】
+		TALENT:MASTER:93 = 1
+		B -= 2
+	ELSEIF RESULT == 8 && TALENT:MASTER:94 == 0 && B > 1
+		PRINTFORML %CALLNAME:MASTER%获得了【谜之魅力】
+		TALENT:MASTER:94 = 1
+		B -= 2
+	ELSEIF RESULT == 100
+		PRINTL 放弃剩余的积分点，直接开始新游戏。可以吗？
+		PRINTL [1] 是
+		PRINTL [2] 否
+		$INPUT_LOOP_2
+		INPUT
+		IF RESULT == 1
+			B = 0
+		ELSEIF RESULT == 2
+		ELSE
+			GOTO INPUT_LOOP_2
+		ENDIF
+	ELSE
+		GOTO INPUT_LOOP
+	ENDIF
+	
+	CALL TSUYOKUTE_BONUS
+ENDIF

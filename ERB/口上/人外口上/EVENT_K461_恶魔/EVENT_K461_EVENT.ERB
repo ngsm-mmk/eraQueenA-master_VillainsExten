@@ -1,0 +1,339 @@
+﻿;-------------------------------------------------
+;イベント口上集 CFLAG 261～299を使用
+;-------------------------------------------------
+@KOJO_MESSAGE_EVENT_K461
+;書きかえたい場所の「（基本の地の文を显示）」を消して変えてもいいです
+;表示される基本の地の文はEVENT_M_EVENT.ERB、を参照して下さい
+;TFLAG:13に入ってる数字イコール@EVENT_MESSAGE_XXのXXです。
+;まだテンプレが無いイベントの口上を書く場合は最初に　IF TFLAG:13 == XX　というように書いてください
+
+;-------------------------------------------------
+;调教後百合プ雷
+;-------------------------------------------------
+IF TFLAG:13 == 4
+
+	;贞操对和服腰带あり
+	IF TEQUIP:2 == 5
+		;PRINTFORML 
+	ELSE
+		;初めて
+		IF CFLAG:264 == 0
+			;PRINTFORMW 
+			;CFLAG:264 = 1
+		;それ以外
+		ELSEIF CFLAG:264 < 1 || FLAG:7 == 2
+			;PRINTFORMW 
+			;CFLAG:264 = 1
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;强精神药の反動
+;-------------------------------------------------
+IF TFLAG:13 == 6
+
+	IF CFLAG:266 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:266 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;调教後搾乳
+;-------------------------------------------------
+IF TFLAG:13 == 7
+
+	IF CFLAG:267 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:267 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;调教後自慰
+;-------------------------------------------------
+IF TFLAG:13 == 8
+
+	;贞操对和服腰带あり
+	IF TEQUIP:2 == 5
+		;PRINTFORML 
+	ELSE
+		IF CFLAG:268 < 1 || FLAG:7 == 2
+			;PRINTFORMW 
+			;CFLAG:268 = 1
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;黄色のキャンディ使用時
+;-------------------------------------------------
+IF TFLAG:13 == 10
+
+	IF CFLAG:270 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:270 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;怀孕発覚時
+;-------------------------------------------------
+IF TFLAG:13 == 11
+	SIF CFLAG:271 >= 1 && FLAG:7 != 2
+		RETURN 0
+
+	;PRINTFORMW 
+	;CFLAG:271 = 1
+ENDIF
+
+;-------------------------------------------------
+;分娩時
+;-------------------------------------------------
+IF TFLAG:13 == 12
+
+	IF CFLAG:272 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:272 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;育児室
+;-------------------------------------------------
+IF TFLAG:13 == 13
+
+	;分娩前
+	IF TALENT:153
+		IF CFLAG:273 < 1 || FLAG:7 == 2
+			;PRINTFORMW 
+			;CFLAG:273 = 1
+		ENDIF
+	;分娩後
+	ELSE
+		IF CFLAG:273 < 3 || FLAG:7 == 2
+			;PRINTFORMW 
+			;CFLAG:273 = 3
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;親離れ時
+;-------------------------------------------------
+IF TFLAG:13 == 14
+
+	IF CFLAG:274 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:274 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;拍卖時
+;-------------------------------------------------
+IF TFLAG:13 == 18
+    PRINTL
+    PRINTL
+    PRINTL
+	;反抗刻印Lv3
+	IF MARK:3 == 3
+		PRINTFORMW
+	;それ以外
+	ELSE
+		IF TALENT:病娇
+		    PRINTFORMW
+        ELSEIF TALENT:幼稚
+            IF TALENT:恋慕 || TALENT:相亲相爱
+                PRINTFORMW
+            ELSEIF TALENT:淫乱 || TALENT:娼妇
+                PRINTFORMW
+            ELSEIF TALENT:服从 || TALENT:隶属
+                PRINTFORMW
+            ELSE
+                PRINTFORMW
+            ENDIF
+        ELSEIF TALENT:崩溃 || TALENT:疯癫
+        	PRINTFORMW
+        ELSEIF TALENT:恋慕 || TALENT:相亲相爱
+            PRINTFORMW
+        ELSEIF TALENT:服从 || TALENT:隶属
+            PRINTFORMW
+        ELSEIF TALENT:淫乱 || TALENT:娼妇
+            PRINTFORMW
+        ELSE
+            PRINTFORMW
+        ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;ビデオ拍卖時
+;-------------------------------------------------
+IF TFLAG:13 == 19
+
+	IF CFLAG:278 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:278 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;衣服变更時 CFLAG:283（を適当に適用） 
+;T:A = Y　　　　着脱する衣服を限定する時
+;A = X　　　　　着脱部位全体を示す時
+;TEQUIP:A = Y　 今何を着ているか（着てない場合は0）
+;を組み合わせます。分かりにくくてスマン。
+;-------------------------------------------------
+IF TFLAG:13 == 25
+
+	;脱がしたときの口上
+	IF  Y == 0 && CFLAG:283 == 0 || FLAG:7 == 2
+		;贞操带取下
+		IF A == 2 && T:2 == 5
+			;PRINTFORMW 
+		;贞操带以外の下着取下
+		ELSEIF A == 2
+			;PRINTFORMW 
+		ENDIF
+		;CFLAG:283 = 1
+	;着せた時の口上
+	ELSEIF CFLAG:283 < 2 || FLAG:7 == 2
+		;女装：男性キャラ
+		IF (TALENT:137 || TALENT:140) && (T:1 == 4 || T:1 == 6 || T:2 == 1 || T:2 == 4 || T:2 == 6 || T:3 == 1 || T:3 == 2 || T:4 == 1 || T:4 == 6 || T:6 == 2 || T:6 == 3 || T:6 == 4 || T:6 == 6 || T:6 == 9 || T:6 == 10 || T:9 == 9)
+			;PRINTFORML 
+		ENDIF
+		;贞操带施錠
+		IF T:2 == 5
+			;PRINTFORML 
+		ENDIF
+		;CFLAG:283 = 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;朝料理イベント時 CFLAG:284 を、使用できるように確保してみる
+;書きかえたい場所の「」を消してごっそり変えてもいいかも
+;表示される基本の地の文はEVENT_M.ERBを参照にして下さい
+;-------------------------------------------------
+IF TFLAG:13 == 26
+	;最初から弁当を食べる時
+	IF K == 1
+
+		PRINTFORM 
+	;売るのをやめて食べる時
+	ELSEIF K == 2
+
+		PRINTFORM 
+	;主人が弁当を作るとき
+	ELSEIF K == 3
+
+		PRINTFORM 
+	;食後の運動(性的な意味で)直前
+	ELSEIF K == 4
+
+		PRINTFORM 
+	;毒を盛られた
+	ELSEIF K == 5
+
+		PRINTFORM 
+	;毒を見抜いたので弱みを握るイベント（相性のいい子に食べさせるver）
+	ELSEIF K == 6
+
+		PRINTFORM 
+	;毒を見抜いたので弱みを握るイベント（問い詰めるver）
+	ELSEIF K == 7
+
+		PRINTFORM 
+	;毒殺された
+	ELSEIF K == 8
+
+		PRINTFORM 
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_ENDING関係
+;-------------------------------------------------
+;-------------------------------------------------
+;条件设定
+;-------------------------------------------------
+@EVENTTURNEND
+#LATER
+SIF TARGET < 0
+	RETURN 0
+SIF NO:TARGET != 461
+	RETURN 0
+;特殊ハーレムエンド用条件判定構文
+;XX内に条件とするキャラの性格タイプ番号を入れてXXXにキャラ数を入れると、好きな組み合わせのハーレムエンドを设定できる
+;ハーレムエンドの条件を満たしたとき、ここの特殊ハーレムエンドの条件も満たしている場合、ハーレムエンドから派生する
+;A = 0
+;B = 0
+;REPEAT CHARANUM
+;	IF NO:COUNT == XX || NO:COUNT == XX || NO:COUNT == XX || NO:COUNT == XX || NO:COUNT == XX
+;		SIF TALENT:COUNT:6 || TALENT:COUNT:7 || TALENT:COUNT:8
+;			A += 1
+;		SIF TALENT:COUNT:3 || TALENT:COUNT:4 || TALENT:COUNT:5 || TALENT:COUNT:6 || TALENT:COUNT:7 || TALENT:COUNT:8
+;			B += 1
+;	ENDIF
+;REND
+;SIF A && A+B >= XXX
+;	CFLAG:21 = 2
+;単体エンド用分岐フラグ、単体エンドのある进阶素质のみコメントアウトを解除する
+;SIF TALENT:相亲相爱
+;	CFLAG:21 = 1
+;SIF TALENT:娼妇
+;	CFLAG:21 = 1
+;SIF TALENT:隶属
+;	CFLAG:21 = 1
+;-------------------------------------------------
+;エンド本文
+;-------------------------------------------------
+@KOJO_MESSAGE_ENDING_K461
+;恋慕単体エンド
+;IF TALENT:相亲相爱 && CFLAG:21 == 1
+	;DRAWLINE
+	;PRINTFORMW …………
+	;PRINTFORMW ………
+	;PRINTFORMW ……
+	;PRINTFORMW 
+
+	;PRINTFORMW 
+	;PRINTFORMW 　　　　　　　　―― Ending No.111A (○○エンド)
+;淫乱単体エンド
+;ELSEIF TALENT:娼妇 && CFLAG:21 == 1
+	;DRAWLINE
+	;PRINTFORMW …………
+	;PRINTFORMW ………
+	;PRINTFORMW ……
+	;PRINTFORMW 
+
+	;PRINTFORMW 
+	;PRINTFORMW 　　　　　　　　―― Ending No.111B (○○エンド)
+;服从単体エンド
+;ELSEIF TALENT:隶属 && CFLAG:21 == 1
+	;DRAWLINE
+	;PRINTFORMW …………
+	;PRINTFORMW ………
+	;PRINTFORMW ……
+	;PRINTFORMW 
+
+	;PRINTFORMW 
+	;PRINTFORMW 　　　　　　　　―― Ending No.111C (○○エンド)
+;ENDIF
+
+;特殊ハーレムエンド
+;IF CFLAG:21 == 2
+	;DRAWLINE
+	;PRINTFORMW …………
+	;PRINTFORMW ………
+	;PRINTFORMW ……
+	;PRINTFORMW 
+
+	;PRINTFORMW 
+	;PRINTFORMW 　　　　　　　　―― Ending No.2X2 (○○エンド)
+;ENDIF
+
+;CALL GAME_CONTINUE
+;RETURN 0

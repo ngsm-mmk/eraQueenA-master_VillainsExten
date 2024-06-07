@@ -1,0 +1,1339 @@
+﻿;======================================================
+;CLOTHESが膨張してるので分離させてみる
+;T:Xは後の処理でTEQUIP:Xに放り込んでいるものです
+;Cにはターゲットのキャラ番号が代入されています
+;Sは表示揃えのための空白の数です（半角で数えてます）
+;
+;１．新キャラなどに衣服を设定する場合に加筆する場所
+;	@CLOTHES_SET
+;	@ACCESSORY_SET
+;
+;２．キャラ固有の特殊衣服を设定する場合に加筆する場所
+;	@CLOTHES_SET2
+;	※別途OPTION.ERBの@CLOTHES_SETTING等も加筆する必要があります
+;
+;３．全角色共通の特殊衣服を设定する場合に加筆する場所
+;	@CLOTHES_SET3
+;	※別途OPTION.ERBの@CLOTHES_SETTINGも加筆する必要があります
+;
+;４．衣服の種類を増やした場合に加筆する場所
+;	@CLOTHES_LIST（※「REPEAT X」部分も忘れずに足しておく）
+;	@CLOTHES_NAME
+;
+;５．Cosplayセットを作った場合に加筆する場所
+;	@COS_SET（※「REPEAT X」部分も忘れずに足しておく。必要な衣服はZ:Xで判断）
+;	@COS_SET_NAME
+;
+;６．装饰品を増やした場合に加筆する場所
+;	@PRINT_ACCESSORY（※「REPEAT X」部分）
+;	@ACCESSORY（※「REPEAT X」部分と装饰品着用条件）
+;	@ACCESSORY_NAME
+;
+;※資料の「衣服一覧【ネタバレ】.txt」を参考にしてください
+;======================================================
+@CLOTHES_SET
+;袜子
+T:1 = 1
+
+;女には内裤、男には下着をつける
+IF TALENT:137 || TALENT:140
+	T:2 = 2
+ELSE
+	T:2 = 1
+ENDIF
+
+;裹胸布が無く、【贫乳】か【绝壁】を持っている場合は运动型胸罩をつける
+SIF T:3 == 0 && (TALENT:TARGET:109 || TALENT:TARGET:110)
+	T:3 = 2
+;裹胸布、运动型胸罩が無い場合は胸罩をつける
+SIF T:3 == 0
+	T:3 = 1
+;男はブラをしない
+SIF TALENT:137 || TALENT:140
+	T:3 = 0
+
+;全身外衣をつけていない場合は上衣をつける
+	;上身外衣枠
+	;上身外衣无の場合、ただの上衣を
+	SIF T:5 == 0
+		T:5 = 1
+;----------------------------------------------------
+	;下身外衣枠
+	;女には水手裙をつける。
+	IF TALENT:137 || TALENT:140
+	ELSE
+		T:4 = 1
+	ENDIF
+	;下身外衣をつけてなければ裤子をつける
+	SIF T:4 == 0
+		T:4 = 2
+;上衣が「上衣」「西装」「学生服」かつブラ＆裹胸布无の場合は衬衫をつける
+SIF (T:5 == 1 || T:5 == 7 || T:5 == 8) && T:3 == 0
+	T:3 = 4
+
+
+;靴なかったら皮鞋(ﾊﾟﾝﾌﾟｽ)
+SIF T:9 == 0
+	T:9 = 1
+
+;メガネ
+SIF TALENT:眼镜
+	T:8 = 1
+
+CALL ACCESSORY_SET
+
+;特殊衣服のときの関数
+@CLOTHES_SET2
+
+;着衣设定が軍装の関数
+@CLOTHES_SET3
+;着衣设定が軍装時。胸罩は基本的に考慮しないことにした。
+IF FLAG:1 == 10
+	REPEAT 11
+		T:COUNT = 0
+	REND
+	CALL ACCESSORY_SET
+	;手套着用
+	T:0 = 1
+	;袜子着用
+	T:1 = 1
+	;ちび菊、うつけは兜裆布
+	IF C == 33 || C == 71
+		T:2 = 3
+	;男は下着
+	ELSEIF TALENT:双性 || TALENT:男性
+		T:2 = 2
+	;他は内裤
+	ELSE
+		T:2 = 1
+	ENDIF
+	;衬衫
+	T:3 = 4
+	;领结つけてたら取下
+	SIF T:10 & 16
+		T:10 -= 16
+	;领带
+	T:10 |= 8
+	;裤子
+	T:4 = 2
+	;军装
+	T:5 = 7
+	;帽子
+	T:10 |= 2
+	;軍靴
+	T:9 = 4
+	;メガネ
+	SIF TALENT:眼镜
+		T:8 = 1
+ENDIF
+@CLOTHES_LIST
+;主人、助手、调教对象の施虐狂・受虐狂を数えてみる
+G = TALENT:MASTER:83 + TALENT:MASTER:84 + TALENT:83 + TALENT:84
+SIF ASSI > -1
+	G += TALENT:ASSI:83 + TALENT:ASSI:84
+;主人、助手、调教对象の调和知识+药物抗性を数えてみる
+H = TALENT:MASTER:55 + TALENT:MASTER:56 + TALENT:55 + TALENT:56
+SIF ASSI > -1
+	H += TALENT:ASSI:55 + TALENT:ASSI:56
+;主人、助手、调教对象の禁断的知识を数えてみる
+I = TALENT:MASTER:144 + TALENT:144
+SIF ASSI > -1
+	I += TALENT:ASSI:144
+;陷落キャラ数を数えてみる
+J = FLAG:30 + FLAG:31 + FLAG:32
+;陷落キャラ数のうち女の子の人数を数えてみる
+K = 0
+REPEAT CHARANUM
+	SIF CFLAG:COUNT:41 && TALENT:COUNT:137 == 0 && TALENT:COUNT:140 == 0
+		K += 1
+REND
+;助手の番号を記録　今は使われていない
+C:1 = -1
+SIF ASSI > 0
+	C:1 = NO:ASSI
+
+;全身外衣
+E = 0
+A = 6
+REPEAT 12
+	B = COUNT + 1
+	F = COUNT
+	;天使服:着れない
+	SIF B == 5
+		CONTINUE
+	;护士服:着れない
+	SIF B == 6
+		CONTINUE
+	;布偶装:着れない
+	SIF B == 7
+		CONTINUE
+	;贯头衣:着れない
+	SIF B == 8
+		CONTINUE
+	;束缚服:调教者または助手または调教对象が受虐狂or施虐狂、主人、助手、调教对象のいずれかが禁断的知识持ち
+	SIF B == 9 && ( (G == 0 && I == 0) || TEQUIP:3 != 0 || (TEQUIP:2 != 0 && TEQUIP:2 != 5))
+		CONTINUE
+	;ウエディング礼服:ウェディングセット未購入、またはターゲットが相亲相爱、または助手调教だとダメ
+	SIF B == 10 && (ITEM:36 == 0 || TALENT:TARGET:6 == 0 || ASSIPLAY)
+		CONTINUE
+	;学校泳装：プ雷日数200日以上で下着を付けていないこと
+	SIF B == 11 && DAY < 200 || (TEQUIP:2 != 0 && TEQUIP:3 != 0)
+		CONTINUE
+	;外套:着れない
+	SIF B == 12
+		CONTINUE
+	;↓以下は共通の制限
+	CALL CLOTHES_LIST2
+	;既にその衣服を着てる時はダメ
+	SIF TEQUIP:A == B || CFLAG:121 & 1
+		CONTINUE
+	;围裙つけてるとダメ
+	SIF TEQUIP:0 == 2
+		CONTINUE
+	;上身内衣で制限
+	SIF TEQUIP:3 == 5 || (B != 1 && B != 7 && B != 10 && TEQUIP:3 > 3)
+		CONTINUE
+	CALL CLOTHES_LIST3
+REND
+;最後に改行されてなければ、ここで改行
+SIF E % 4 != 0
+	PRINTL 
+
+M = -1
+REPEAT CHARANUM
+	SIF NO:COUNT == R
+		M = COUNT
+REND
+O = M
+P = M
+Q = M
+N = M
+;上身外衣
+E = 0
+A = 5
+R = 6
+R = 14
+R = 41
+R = 5
+R = 33
+REPEAT 17
+	B = COUNT + 1
+	F = COUNT
+	;サンタ服:着れない
+	SIF B == 3
+		CONTINUE
+	;丘尼卡:着れない
+	SIF B == 5
+		CONTINUE
+	;チョゴリ:着れない
+	SIF B == 6
+		CONTINUE
+	;警官服:着れない
+	SIF B == 9
+		CONTINUE
+	;胴衣:着れない
+	SIF B == 10
+		CONTINUE
+	;白衣:主人、助手、调教对象のいずれかが调和知识持ち
+	SIF B == 11 && H == 0
+		CONTINUE
+	;运动服（上）:着れない
+	SIF B == 12
+		CONTINUE
+	;体操服:陷落キャラ10人以下だとダメ
+	SIF B == 13 && J < 10
+		CONTINUE
+	;毛衣:プ雷日数が100日以上かつ10月から4月の間でないとダメ
+	SIF B == 14 && ((FLAG:80 < 10 && FLAG:80 > 4) || DAY >= 100)
+		CONTINUE
+	;アオザイ:着れない
+	SIF B == 16
+		CONTINUE
+	;海賊服:着れない
+	SIF B == 17
+		CONTINUE
+	;既にその衣服を着てる時はダメ
+	SIF TEQUIP:A == B || CFLAG:121 & 2
+		CONTINUE
+
+	;↓以下は共通の制限
+	CALL CLOTHES_LIST2
+	;围裙つけてるとダメ
+	SIF TEQUIP:0 == 2
+		CONTINUE
+	;上身内衣で制限
+	SIF TEQUIP:3 == 5 || (B != 10 && TEQUIP:3 == 8)
+		CONTINUE
+	;下身外衣で制限
+	SIF (B != 10 && TEQUIP:4 == 3) || (B == 10 && (TEQUIP:4 != 3 || TEQUIP:4 != 0))
+		CONTINUE
+	CALL CLOTHES_LIST3
+REND
+
+;最後に改行されてなければ、ここで改行
+SIF E % 4 != 0
+	PRINTL 
+
+;下身外衣
+E = 0
+A = 4
+REPEAT 6
+	B = COUNT + 1
+	F = COUNT
+
+	;袴:着れない
+	SIF B == 3
+		CONTINUE
+	;运动服（下）:着れない
+	SIF B == 4
+		CONTINUE
+	;既にその衣服を着てる時はダメ
+	SIF TEQUIP:A == B || CFLAG:121 & 4
+		CONTINUE
+
+	CALL CLOTHES_LIST2
+	;和服シリーズ制限
+	SIF B != 3 && (TEQUIP:3 == 8 || TEQUIP:5 == 10)
+		CONTINUE
+	;下身内衣で制限
+	SIF (B != 1 && TEQUIP:2 == 6) || TEQUIP:2 == 4
+		CONTINUE
+	CALL CLOTHES_LIST3
+REND
+;最後に改行されてなければ、ここで改行
+SIF E % 4 != 0
+	PRINTL 
+
+;上身内衣
+E = 0
+A = 3
+REPEAT 9
+	B = COUNT + 1
+	F = COUNT
+	;胸罩:绝壁or贫乳だとダメ
+	SIF B == 1 && (TALENT:TARGET:109 || TALENT:TARGET:110)
+		CONTINUE
+	;运动型胸罩:绝壁or贫乳でないとダメ
+	SIF B == 2 && (TALENT:TARGET:109 == 0 && TALENT:TARGET:110 == 0)
+		CONTINUE
+	;裹胸布:男は着れない
+	SIF TALENT:137 || TALENT:140
+		CONTINUE
+	;大き目の衬衫:体格差がないとダメ
+	IF B == 5
+		S = BUILD2(PLAYER, TARGET)
+		SIF S <= 0
+			CONTINUE
+	ENDIF
+	;无袖短背心:着れない
+	SIF B == 6
+		CONTINUE
+	;T恤衫
+	;襦袢:着れない
+	SIF B == 8
+		CONTINUE
+	;蕾丝睡衣：女の子三人以上陷落
+	SIF B == 8 && K < 3
+		CONTINUE
+	;既にその衣服を着てる時はダメ
+	SIF TEQUIP:A == B || CFLAG:121 & 8
+		CONTINUE
+
+	CALL CLOTHES_LIST2
+	;围裙をつけてる、上身外衣or全身外衣を着ているとダメ
+	SIF TEQUIP:0 == 2 || TEQUIP:5 || TEQUIP:6
+		CONTINUE
+	CALL CLOTHES_LIST3
+REND
+;最後に改行されてなければ、ここで改行
+SIF E % 4 != 0
+	PRINTL 
+
+;下身内衣
+E = 0
+A = 2
+REPEAT 6
+	B = COUNT + 1
+	F = COUNT
+	;兜裆布:着用不可
+	SIF B == 3
+		CONTINUE
+	;薔薇:着用不可
+	SIF B == 4
+		CONTINUE
+	;贞操带
+	SIF B == 5 && ITEM:30 == 0
+		CONTINUE
+	;灯笼裤:着用不可
+	SIF B == 6
+		CONTINUE
+	;既にその衣服を着てる時はダメ
+	SIF TEQUIP:A == B || CFLAG:121 & 16
+		CONTINUE
+
+	CALL CLOTHES_LIST2
+	;水手裙以外の下身外衣、布偶装を着ているとダメ
+	SIF TEQUIP:4 > 1 || TEQUIP:6 == 7
+		CONTINUE
+	CALL CLOTHES_LIST3
+REND
+;最後に改行されてなければ、ここで改行
+SIF E % 4 != 0
+	PRINTL 
+
+;袜子
+E = 0
+A = 1
+REPEAT 6
+	B = COUNT + 1
+	F = COUNT
+	;日式短布袜:着用不可
+	SIF B == 2
+		CONTINUE
+	;丝袜
+	SIF B == 5 && ITEM:50 == 0
+		CONTINUE
+	;网袜
+	SIF B == 6 && ITEM:51 == 0
+		CONTINUE
+	;既にその衣服を着てる時はダメ
+	SIF TEQUIP:A == B || CFLAG:121 & 32
+		CONTINUE
+
+	CALL CLOTHES_LIST2
+	;布偶装を着ているとダメ
+	SIF TEQUIP:6 == 7
+		CONTINUE
+	CALL CLOTHES_LIST3
+REND
+;最後に改行されてなければ、ここで改行
+SIF E % 4 != 0
+	PRINTL 
+;特殊
+E = 0
+A = 0
+REPEAT 7
+	B = COUNT + 1
+	F = COUNT
+	;手套:着用不可
+	SIF B == 1
+		CONTINUE
+	;围裙:新妻PLAY制限、体力550以上、新妻PLAY可能時
+	SIF B == 2 && (ITEM:23 == 0 || BASE:0 < 550 || ASSIPLAY || (TALENT:3 == 0 && TALENT:6 == 0) || ABL:0 < 3 || TEQUIP:29 || TEQUIP:30 || TEQUIP:31 || TEQUIP:25)
+		CONTINUE
+	;ウェイター围裙:着用不可
+	SIF B == 4
+		CONTINUE
+	;一応欠番
+	SIF B == 3 || B == 5 || B == 6
+		CONTINUE
+	;披风:着用不可
+	SIF B == 7
+		CONTINUE
+	;既にその衣服を着てる時はダメ
+	SIF TEQUIP:A == B || CFLAG:121 & 64
+		CONTINUE
+
+	CALL CLOTHES_LIST2
+	;布偶装を着ているとダメ
+	SIF TEQUIP:6 == 7
+		CONTINUE
+	CALL CLOTHES_LIST3
+REND
+;頭部装飾
+A = 7
+REPEAT 6
+	B = COUNT + 1
+	F = COUNT
+	X = 30 + B
+	;耳アイテムはデフォ兽耳だとダメ
+	SIF B < 4 && (((TALENT:143 && TEQUIP:7 > 3) || (TALENT:143 && TEQUIP:7 == 0)) || ITEM:X == 0)
+		CONTINUE
+	;三角巾
+	SIF B == 4 && ITEM:34 == 0
+		CONTINUE
+	;耳机
+	SIF B == 5 && ITEM:35 == 0
+		CONTINUE
+	;面纱
+	SIF B == 6 && (ITEM:36 == 0 || TEQUIP:6 != 10)
+		CONTINUE
+	;既にその衣服を着てる時はダメ
+	SIF TEQUIP:A == B || CFLAG:121 & 128
+		CONTINUE
+
+	CALL CLOTHES_LIST2
+	CALL CLOTHES_LIST3
+REND
+
+;顔装飾
+A = 8
+REPEAT 3
+	B = COUNT + 1
+	F = COUNT
+	;眼罩
+	SIF B == 2 && (ITEM:15 == 0 || BASE:0 < 650)
+		CONTINUE
+	;仮面:選択不可
+	SIF B == 3
+		CONTINUE
+
+	;既にその衣服を着てる時はダメ
+	SIF TEQUIP:A == B || CFLAG:121 & 256
+		CONTINUE
+	CALL CLOTHES_LIST2
+	CALL CLOTHES_LIST3
+REND
+;最後に改行されてなければ、ここで改行
+SIF E % 4 != 0
+	PRINTL 
+
+;靴
+E = 0
+A = 9
+REPEAT 9
+	B = COUNT + 1
+	F = COUNT
+	;既にその衣服を着てる時はダメ
+	SIF TEQUIP:A == B || CFLAG:121 & 512
+		CONTINUE
+	;ブーツ:選択不可
+	SIF B == 4
+		CONTINUE
+	;木屐:選択不可
+	SIF B == 5
+		CONTINUE
+	;凉鞋:オサム未購入は選択不可FLAG:1062
+	SIF B == 6 && FLAG:1062
+		CONTINUE
+	;上履き:選択不可
+	SIF B == 7
+		CONTINUE
+	;スリッパ:選択不可
+	SIF B == 8
+		CONTINUE
+
+	CALL CLOTHES_LIST2
+	CALL CLOTHES_LIST3
+REND
+;最後に改行されてなければ、ここで改行
+SIF E % 4 != 0
+	PRINTL 
+
+@COS_SET
+E = 0
+REPEAT 11
+	Z = COUNT + 1
+	Y:Z = 0
+	;水手服セット
+	SIF Z == 1 && Z:12 == 0
+		CONTINUE
+	;学生服セット（西装上衣）
+	SIF Z == 2 && (Z:18 == 0 || Z:34 == 0)
+		CONTINUE
+	;学生服セット（校服）
+	SIF Z == 3 && (Z:18 == 0 || Z:37 == 0)
+		CONTINUE
+	;女仆装セット
+	SIF Z == 4 && (Z:4 == 0 || Z:155 == 0)
+		CONTINUE
+	;フレンチ女仆セット
+	SIF Z == 5 && (Z:4 == 0 || Z:66 == 0 || Z:54 == 0)
+		CONTINUE
+	;旗袍セット
+	SIF Z == 6 && (Z:2 == 0 || Z:54 == 0)
+		CONTINUE
+	;和装セット
+	SIF Z == 7 && Z:1 == 0
+		CONTINUE
+	;軍装セット
+	SIF Z == 8 && Z:17 == 0
+		CONTINUE
+	;警官セット
+	SIF Z == 9 && Z:19 == 0
+		CONTINUE
+	;ミニスカポリスセット
+	SIF Z == 10 && (Z:19 == 0 || Z:54 == 0)
+		CONTINUE
+	;海賊セット
+	SIF Z == 11 && Z:117 == 0
+		CONTINUE
+	IF Z < 10
+		PRINTFORM [ {Z}] 
+	ELSE
+		PRINTFORM [{Z}] 
+	ENDIF
+	CALL COS_SET_NAME
+	PRINTL 
+	Y:Z = 1
+	E += 1
+REND
+IF E == 0
+	PRINTW ＜没有可以穿的套装＞
+	RETURN
+ENDIF
+PRINTL [100]返回
+$INPUT_LOOP_2
+INPUT
+Z = RESULT
+IF Y:Z == 1
+	;王道水手服
+	IF Z == 1
+		T:0 = 0
+		T:1 = 1
+		T:2 = 1
+		SIF TALENT:137 || TALENT:140
+			T:2 = 2
+		T:3 = 0
+		SIF TALENT:140 == 0 && TALENT:137 == 0
+			T:3 = 1
+		SIF TALENT:TARGET:109 || TALENT:TARGET:110
+			T:3 = 2
+		T:4 = 1
+		T:5 = 2
+		T:6 = 0
+		T:7 = 0
+		IF TEQUIP:8 == 1
+			T:8 = 1
+		ELSE
+			T:8 = 0
+		ENDIF
+		T:9 = 2
+		T:10 = 0
+		CALL ACCESSORY_SET
+		T:10 |= 16
+		;领带と帽子取下
+		T:10 -= T:10 & 8
+		T:10 -= T:10 & 2
+	;学ヘタ西装上衣
+	ELSEIF Z == 2
+		T:0 = 0
+		T:1 = 1
+		T:2 = 1
+		SIF TALENT:137 || TALENT:140
+			T:2 = 2
+		T:3 = 4
+		T:4 = 2
+		T:5 = 8
+		T:6 = 0
+		T:7 = 0
+		IF TEQUIP:8 == 1
+			T:8 = 1
+		ELSE
+			T:8 = 0
+		ENDIF
+		SIF TALENT:137 || TALENT:140
+			T:9 = 1
+		SIF TALENT:137 == 0 && TALENT:140 == 0
+			T:9 = 3
+		T:10 = 0
+		CALL ACCESSORY_SET
+		T:10 |= 8
+		;领结と帽子取下
+		T:10 -= T:10 & 16
+		T:10 -= T:10 & 2
+	;亜細亜学园？　学生服、を西装上衣と校服で思いこみ着まわし。インナーがT恤衫なら校服みたいな
+	ELSEIF Z == 3
+		T:0 = 0
+		T:1 = 1
+		T:2 = 1
+		SIF TALENT:137 || TALENT:140
+			T:2 = 2
+		T:3 = 7
+		T:4 = 2
+		T:5 = 8
+		T:6 = 0
+		T:7 = 0
+		IF TEQUIP:8 == 1
+			T:8 = 1
+		ELSE
+			T:8 = 0
+		ENDIF
+		T:9 = 3
+		T:10 = 0
+		CALL ACCESSORY_SET
+		T:10 |= 8
+		;领结と帽子取下
+		T:10 -= T:10 & 16
+		T:10 -= T:10 & 2
+	;ちびたりあタイプの清楚な女仆装
+	ELSEIF Z == 4
+		T:0 = 0
+		T:1 = 1
+		T:2 = 6
+		T:3 = 0
+		SIF TALENT:137 == 0 && TALENT:140 == 0
+			T:3 = 1
+		SIF TALENT:TARGET:109 || TALENT:TARGET:110
+			T:3 = 2
+		T:4 = 0
+		T:5 = 0
+		T:6 = 4
+		T:7 = 0
+		IF TEQUIP:8 == 1
+			T:8 = 1
+		ELSE
+			T:8 = 0
+		ENDIF
+		T:9 = 2
+		T:10 = 0
+		CALL ACCESSORY_SET
+		;领结と领带と帽子取下
+		T:10 -= T:10 & 16
+		T:10 -= T:10 & 8
+		T:10 -= T:10 & 2
+	;なんだかいやらしい感じの女仆さん
+	ELSEIF Z == 5
+		T:0 = 0
+		T:1 = 4
+		T:2 = 1
+		SIF TALENT:137 || TALENT:140
+			T:2 = 2
+		T:3 = 0
+		SIF TALENT:137 == 0 && TALENT:140 == 0
+			T:3 = 1
+		SIF TALENT:TARGET:109 || TALENT:TARGET:110
+			T:3 = 2
+		T:4 = 0
+		T:5 = 0
+		T:6 = 4
+		T:7 = 0
+		T:9 = 2
+		IF TEQUIP:8 == 1
+			T:8 = 1
+		ELSE
+			T:8 = 0
+		ENDIF
+		T:10 = 0
+		CALL ACCESSORY_SET
+		;领结と领带と帽子取下
+		T:10 -= T:10 & 16
+		T:10 -= T:10 & 8
+		T:10 -= T:10 & 2
+	;セクシー系チャイナ
+	ELSEIF Z == 6
+		T:0 = 0
+		T:1 = 4
+		T:2 = 1
+		SIF TALENT:137 || TALENT:140
+			T:2 = 2
+		T:3 = 0
+		SIF TALENT:137 == 0 && TALENT:140 == 0
+			T:3 = 1
+		SIF TALENT:TARGET:109 || TALENT:TARGET:110
+			T:3 = 2
+		T:4 = 0
+		T:5 = 0
+		T:6 = 2
+		T:7 = 0
+		T:9 = 9
+		IF TEQUIP:8 == 1
+			T:8 = 1
+		ELSE
+			T:8 = 0
+		ENDIF
+		T:10 = 0
+		CALL ACCESSORY_SET
+		;领结と领带と帽子取下
+		T:10 -= T:10 & 16
+		T:10 -= T:10 & 8
+		T:10 -= T:10 & 2
+	;きっちり和装
+	ELSEIF Z == 7
+		T:0 = 0
+		T:1 = 2
+		T:2 = 1
+		SIF TALENT:137 || TALENT:140
+			T:2 = 2
+		T:3 = 8
+		T:4 = 0
+		T:5 = 0
+		T:6 = 1
+		T:7 = 0
+		T:9 = 5
+		IF TEQUIP:8 == 1
+			T:8 = 1
+		ELSE
+			T:8 = 0
+		ENDIF
+		T:10 = 0
+		CALL ACCESSORY_SET
+		;领结と领带と帽子取下
+		T:10 -= T:10 & 16
+		T:10 -= T:10 & 8
+		T:10 -= T:10 & 2
+	;かっちり军装
+	ELSEIF Z == 8
+		C:2 = FLAG:1
+		FLAG:1 = 10
+		CALL CLOTHES_SET3
+		FLAG:1 = C:2
+	;連合ポリス系
+	ELSEIF Z == 9
+		T:0 = 0
+		T:1 = 1
+		T:2 = 1
+		SIF TALENT:137 || TALENT:140
+			T:2 = 2
+		T:3 = 4
+		T:4 = 2
+		T:5 = 9
+		T:6 = 0
+		T:7 = 0
+		T:9 = 1
+		IF TEQUIP:8 == 1
+			T:8 = 1
+		ELSE
+			T:8 = 0
+		ENDIF
+		T:10 = 0
+		CALL ACCESSORY_SET
+		;领结と帽子取下
+		T:10 |= 8
+		T:10 -= T:10 & 16
+		T:10 -= T:10 & 2
+	;ミニスカポリス
+	ELSEIF Z == 10
+		T:0 = 0
+		T:1 = 4
+		T:2 = 1
+		SIF TALENT:137 || TALENT:140
+			T:2 = 2
+		T:3 = 0
+		SIF TALENT:137 == 0 && TALENT:140 == 0
+			T:3 = 1
+		SIF TALENT:TARGET:109 || TALENT:TARGET:110
+			T:3 = 2
+		T:4 = 1
+		T:5 = 9
+		T:6 = 0
+		T:7 = 0
+		T:9 = 9
+		IF TEQUIP:8 == 1
+			T:8 = 1
+		ELSE
+			T:8 = 0
+		ENDIF
+		T:10 = 0
+		CALL ACCESSORY_SET
+		;领结と帽子取下
+		T:10 |= 8
+		T:10 -= T:10 & 16
+		T:10 -= T:10 & 2
+	;海賊服：女の子は男装で
+	ELSEIF Z == 11
+		T:0 = 0
+		T:1 = 1
+		T:2 = 2
+		T:3 = 4
+		T:4 = 2
+		T:5 = 17
+		T:6 = 0
+		T:7 = 0
+		T:9 = 4
+		T:10 = 0
+		CALL ACCESSORY_SET
+		;领带を外して领结と帽子を付ける
+		T:10 -= T:10 & 8
+		T:10 |= 2
+		T:10 |= 16
+	ENDIF
+	RETURN
+ELSEIF Z == 100
+	RETURN 1
+ELSE
+	GOTO INPUT_LOOP_2
+ENDIF
+
+
+
+
+;=========================================================
+;ここから装饰品処理
+;=========================================================
+@ACCESSORY_SET
+;身体穿环
+SIF TALENT:159 & 2
+	T:10  |= 128
+
+
+
+;TEQUIP:10[装饰品]
+;ビット演算で記録していますが、擬似的に10進数で増やしていけます
+@PRINT_ACCESSORY
+Z = 0
+REPEAT 7
+	A = COUNT + 1
+	CALL ACCESSORY_BIT
+	COUNT = A - 1
+	IF TEQUIP:10 & Z
+		PRINT [
+		CALL ACCESSORY_NAME
+		PRINT ]
+	ENDIF
+REND
+IF TEQUIP:10 & 8
+	;一応领带と领结が同時につかないようにする
+	TEQUIP:10 -= TEQUIP:10 & 16
+ENDIF
+IF TEQUIP:10 & 32
+	;一応玫瑰念珠と鉄十字が同時につかないようにする
+	TEQUIP:10 -= TEQUIP:10 & 64
+ENDIF
+
+;オフとオンを同じ処理でまわす
+@ACCESSORY
+A = 0
+F = 0
+X = 0
+REPEAT 7
+	A = COUNT + 1
+	X = 150 + A
+	CALL ACCESSORY_BIT
+	COUNT = A - 1
+	;解除リストのとき着用していない場合はスキップ
+	SIF B && (TEQUIP:10 & Z) == 0
+		CONTINUE
+
+	;↓ここから装饰品着用条件
+	IF B == 0
+		SIF TEQUIP:10 & Z
+			CONTINUE
+		;围巾X
+		SIF A == 1
+			CONTINUE
+		;领带
+		SIF A == 4 && (TEQUIP:3 != 4 && TEQUIP:3 != 0)
+			CONTINUE
+		;领结:服の種類で制限（長くなったので分けただけです）
+		SIF A == 5 && ((TEQUIP:3 != 4 && TEQUIP:3 != 0) || (TEQUIP:5 != 7 && TEQUIP:5 != 0) || (TEQUIP:6 != 3 && TEQUIP:6 != 4 && TEQUIP:6 != 0))
+			CONTINUE
+		;鉄十字:ダメ
+		SIF A == 6 
+			CONTINUE
+		;玫瑰念珠:ダメ
+		SIF A == 7 
+			CONTINUE
+	ENDIF
+	;↑ここまで
+
+	PRINTFORM [{X}]
+	CALL ACCESSORY_NAME
+	IF B == 0
+		CALL CLOTHES_SPACE
+		CALL LINE_FEED
+	ELSE
+		E += 1
+		IF A == 2
+			PRINTL →脱下
+		ELSEIF A == 4 || A == 5
+			PRINTL →解开
+		ELSE
+			PRINTL →取下
+		ENDIF
+	ENDIF
+	Z:X = 1
+	COUNT = A - 1
+REND
+
+;最後に改行されてなければ、ここで改行
+SIF E % 4 != 0 && B == 0
+	PRINTL 
+
+
+@ACCESSORY_NAME
+IF A == 1
+	PRINT 围巾
+	S = 6
+ELSEIF A == 2
+	PRINT 帽子
+	S = 10
+ELSEIF A == 3
+	PRINT 发饰
+	S = 8
+ELSEIF A == 4
+	PRINT 领带
+	S = 6
+ELSEIF A == 5
+	PRINT 领结
+	S = 4
+ELSEIF A == 6
+	PRINT 十字架
+	S = 8
+ELSEIF A == 7
+	PRINT 玫瑰念珠
+	S = 6
+ENDIF
+
+;-------------------------------------------------
+;服の名前を関数で呼び出せるようにする。Aの数値でTEQUIPの数値を分岐
+;-------------------------------------------------
+@CLOTHES_NAME
+IF A == 0
+	IF TEQUIP:A == 1 || T:A == 1
+		PRINT 手套
+		S = 10
+	ELSEIF TEQUIP:A == 2 || T:A == 2
+		;日式短布袜or和服着用時は名称が割烹着になる
+		IF TEQUIP:1 == 2 || TEQUIP:6 == 1
+			PRINT 烹饪服
+			S = 8
+		ELSE
+			PRINT 围裙
+			S = 6
+		ENDIF
+	;装饰品に移动させたものも、一応表示されるようにしたままにしておきます
+	ELSEIF TEQUIP:A == 3 || T:A == 3
+		PRINT 围巾
+		S = 6
+	ELSEIF TEQUIP:A == 4 || T:A == 4
+		PRINT 服务员围裙
+		E += 1
+		S = 15
+	ELSEIF TEQUIP:A == 5 || T:A == 5
+		PRINT 领带
+		S = 6
+	ELSEIF TEQUIP:A == 6 || T:A == 6
+		PRINT 领结
+		S = 4
+	ELSEIF TEQUIP:A == 7 || T:A == 7
+		PRINT 披风
+		S = 8
+	ENDIF
+ENDIF
+
+IF A == 1
+	IF TEQUIP:A == 1 || T:A == 1
+		PRINT 袜子
+		S = 10
+	ELSEIF TEQUIP:A == 2 || T:A == 2
+		IF TEQUIP:5 == 6
+			PRINT 足袋
+			S = 8
+		ELSE
+			PRINT 足袋
+			S = 10
+		ENDIF
+	ELSEIF TEQUIP:A == 3 || T:A == 3
+		PRINT 及膝袜
+		S = 2
+	ELSEIF TEQUIP:A == 4 || T:A == 4
+		PRINT 吊带袜
+		E += 1
+		S = 13
+	ELSEIF TEQUIP:A == 5 || T:A == 5
+		SIF TFLAG:55 > 0 && TEQUIP:A == 5
+			PRINT 破损的
+		PRINT 丝袜
+		S = 2
+	ELSEIF TEQUIP:A == 6 || T:A == 6
+		SIF TFLAG:55 > 0 && TEQUIP:A == 6
+			PRINT 破损的
+		PRINT 网袜
+		S = 6
+	ENDIF
+ENDIF
+
+
+IF A == 2
+	IF TEQUIP:A == 1 || T:A == 1
+		PRINT 三角裤
+		S = 6
+	ELSEIF TEQUIP:A == 2 || T:A == 2
+		PRINT 内衣
+		S = 10
+	ELSEIF TEQUIP:A == 3 || T:A == 3
+		PRINT 兜裆布
+		S = 12
+	ELSEIF TEQUIP:A == 4 || T:A == 4
+		PRINT 薔薇
+		S = 10
+	ELSEIF TEQUIP:A == 5 || T:A == 5
+		PRINT 贞操带
+		S = 8
+	ELSEIF TEQUIP:A == 6 || T:A == 6
+		PRINT 灯笼裤
+		S = 4
+	ENDIF
+ENDIF
+
+IF A == 3
+	IF TEQUIP:A == 1 || T:A == 1
+		PRINT 胸罩
+		S = 4
+	ELSEIF TEQUIP:A == 2 || T:A == 2
+		PRINT 运动型胸罩
+		S = 2
+	ELSEIF TEQUIP:A == 3 || T:A == 3
+		PRINT 裹胸布
+		S = 8
+	ELSEIF TEQUIP:A == 4 || T:A == 4
+		PRINT 衬衫
+		S = 8
+	ELSEIF TEQUIP:A == 5 || T:A == 5
+		PRINT 宽大的衬衫
+		S = 0
+	ELSEIF TEQUIP:A == 6 || T:A == 6
+		PRINT 无袖短背心
+		S = 2
+	ELSEIF TEQUIP:A == 7 || T:A == 7
+		PRINT T恤衫
+		S = 6
+	ELSEIF TEQUIP:A == 8 || T:A == 8
+		PRINT 襦袢
+		S = 10
+	ELSEIF TEQUIP:A == 9 || T:A == 9
+		PRINT 蕾丝睡衣
+		S = 8
+	ENDIF
+ENDIF
+
+IF A == 4
+	IF TEQUIP:A == 1 || T:A == 1
+		IF TEQUIP:5 == 6
+			PRINT 朝鲜长裙
+			S = 10
+		ELSE
+			PRINT 短裙
+			S = 6
+		ENDIF
+	ELSEIF TEQUIP:A == 2 || T:A == 2
+		IF TEQUIP:5 == 6
+			PRINT 西裤
+			S = 10
+		ELSEIF TEQUIP:5 == 16
+			PRINT 西裤
+			S = 8
+		ELSE
+			PRINT 西裤
+			S = 8
+		ENDIF
+	ELSEIF TEQUIP:A == 3 || T:A == 3
+		PRINT 袴
+		S = 12
+	ELSEIF TEQUIP:A == 4 || T:A == 4
+		PRINT 运动服(下)
+		S = 2
+	ELSEIF TEQUIP:A == 5 || T:A == 5
+		PRINT 童子军短裤
+		S = 2
+	ELSEIF TEQUIP:A == 6 || T:A == 6
+		PRINT 运动短裤
+		S = 6
+	ENDIF
+
+ENDIF
+
+IF A == 5
+	IF TEQUIP:A == 1 || T:A == 1
+		PRINT 上衣
+		S = 10
+	ELSEIF TEQUIP:A == 2 || T:A == 2
+		PRINT 水手服
+		S = 4
+	ELSEIF TEQUIP:A == 3 || T:A == 3
+		PRINT 圣诞服
+		S = 6
+	ELSEIF TEQUIP:A == 4 || T:A == 4
+		PRINT 旗袍
+		S = 4
+	ELSEIF TEQUIP:A == 5 || T:A == 5
+		PRINT 丘尼卡
+		S = 4
+	ELSEIF TEQUIP:A == 6 || T:A == 6
+		PRINT 朝鲜服短上衣
+		S = 6
+	ELSEIF TEQUIP:A == 7 || T:A == 7
+		PRINT 军装
+		S = 10
+	ELSEIF TEQUIP:A == 8 || T:A == 8
+		PRINT 学生服
+		S = 8
+	ELSEIF TEQUIP:A == 9 || T:A == 9
+		PRINT 警官服
+		S = 8
+	ELSEIF TEQUIP:A == 10 || T:A == 10
+		PRINT 紧身胸衣
+		S = 10
+	ELSEIF TEQUIP:A == 11 || T:A == 11
+		PRINT 白衣
+		S = 10
+	ELSEIF TEQUIP:A == 12 || T:A == 12
+		PRINT 运动服(上)
+		S = 2
+	ELSEIF TEQUIP:A == 13 || T:A == 13
+		PRINT 体操服
+		S = 8
+	ELSEIF TEQUIP:A == 14 || T:A == 14
+		PRINT 毛衣
+		S = 6
+	ELSEIF TEQUIP:A == 15 || T:A == 15
+		PRINT 网球服
+		S = 2
+	ELSEIF TEQUIP:A == 16 || T:A == 16
+		PRINT 越式旗袍
+		S = 6
+	ELSEIF TEQUIP:A == 17 || T:A == 17
+		PRINT 海贼装
+		S = 10
+	ENDIF
+ENDIF
+
+IF A == 6
+	IF TEQUIP:A == 1 || T:A == 1
+		PRINT 和服
+		S = 10
+	ELSEIF TEQUIP:A == 2 || T:A == 2
+		PRINT 旗袍
+		S = 0
+	ELSEIF TEQUIP:A == 3 || T:A == 3
+		PRINT 连衣裙
+		S = 4
+	ELSEIF TEQUIP:A == 4 || T:A == 4
+		PRINT 女仆装
+		S = 6
+	ELSEIF TEQUIP:A == 5 || T:A == 5
+		PRINT 天使服
+		S = 8
+	ELSEIF TEQUIP:A == 6 || T:A == 6
+		PRINT 护士服
+		S = 6
+	ELSEIF TEQUIP:A == 7 || T:A == 7
+		PRINT 布偶装
+		S = 6
+	ELSEIF TEQUIP:A == 8 || T:A == 8
+		PRINT 贯头衣
+		S = 8
+	ELSEIF TEQUIP:A == 9 || T:A == 9
+		PRINT 束缚服
+		E += 1
+		S = 17
+	ELSEIF TEQUIP:A == 10 || T:A == 10
+		PRINT 婚纱礼服
+		E += 1
+		S = 16
+	ELSEIF TEQUIP:A == 11 || T:A == 11
+		PRINT 学校泳装
+		S = 6
+	ELSEIF TEQUIP:A == 12 || T:A == 12
+		PRINT 外套
+		S = 8
+	ENDIF
+ENDIF
+
+;頭部装飾
+IF A == 7
+	IF TEQUIP:A == 1 || T:A == 1
+		PRINT 猫耳
+		S = 6
+	ELSEIF TEQUIP:A == 2 || T:A == 2
+		PRINT 犬耳
+		S = 6
+	ELSEIF TEQUIP:A == 3 || T:A == 3
+		PRINT 兔耳
+		S = 6
+	ELSEIF TEQUIP:A == 4 || T:A == 4
+		PRINT 三角巾
+		S = 8
+	ELSEIF TEQUIP:A == 5 || T:A == 5
+		PRINT 耳机
+		S = 2
+	ELSEIF TEQUIP:A == 6 || T:A == 6
+		PRINT 面纱
+		S = 6
+	ELSEIF TEQUIP:A == 7 || T:A == 7
+		PRINT 帽子
+		S = 10
+	ELSEIF TEQUIP:A == 8 || T:A == 8
+		PRINT 头饰
+		S = 8
+	ENDIF
+ENDIF
+;眼镜
+IF A == 8
+	IF TEQUIP:A == 1 || T:A == 1
+		PRINT 眼镜
+		S = 10
+	ELSEIF TEQUIP:A == 2 || T:A == 2
+		PRINT 眼罩
+		S = 4
+	ELSEIF TEQUIP:A == 3 || T:A == 3
+		PRINT 假面
+		S = 10
+	ENDIF
+ENDIF
+;靴
+IF A == 9
+	IF TEQUIP:A == 1 || T:A == 1
+		IF TALENT:137 || TALENT:140
+			PRINT 皮鞋
+			S = 10
+		ELSE
+			PRINT 便鞋
+			S = 6
+		ENDIF
+	ELSEIF TEQUIP:A == 2 || T:A == 2
+		PRINT 平底鞋
+		S = 4
+	ELSEIF TEQUIP:A == 3 || T:A == 3
+		PRINT 运动鞋
+		S = 4
+	ELSEIF TEQUIP:A == 4 || T:A == 4
+		IF TEQUIP:5 == 7
+			PRINT 军靴
+			S = 10
+		ELSEIF TEQUIP:5 == 3
+			PRINT 圣诞靴
+			S = 2
+		ELSE
+			PRINT 长筒靴
+			S = 8
+		ENDIF
+	ELSEIF TEQUIP:A == 5 || T:A == 5
+		IF TEQUIP:5 == 6
+			PRINT 木屐
+			S = 6
+		ELSE
+			PRINT 木屐
+			S = 10
+		ENDIF
+	ELSEIF TEQUIP:A == 6 || T:A == 6
+		PRINT 凉鞋
+		S = 6
+	ELSEIF TEQUIP:A == 7 || T:A == 7
+		PRINT 拖鞋
+		S = 8
+	ELSEIF TEQUIP:A == 8 || T:A == 8
+		PRINT 滑雪靴
+		S = 6
+	ELSEIF TEQUIP:A == 9 || T:A == 9
+		PRINT 细高跟
+		S = 4
+	ENDIF
+ENDIF
+
+@COS_SET_NAME
+IF Z == 1
+	PRINT 水手服套装
+ELSEIF Z == 2
+	PRINT 学生服套装（西装上衣）
+ELSEIF Z == 3
+	PRINT 学生服套装（校服）
+ELSEIF Z == 4
+	PRINT 女仆套装
+ELSEIF Z == 5
+	PRINT 法国女仆套装
+ELSEIF Z == 6
+	PRINT 旗袍套装
+ELSEIF Z == 7
+	PRINT 和服套装
+ELSEIF Z == 8
+	PRINT 军服套装
+ELSEIF Z == 9
+	PRINT 警服套装
+ELSEIF Z == 10
+	PRINT 迷你裙警服套装
+ELSEIF Z == 11
+	PRINT 海贼套装
+ENDIF
+

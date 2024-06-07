@@ -1,0 +1,410 @@
+﻿;-------------------------------------------------
+;饮尿
+;严厉な调教指令、レベル
+;-------------------------------------------------
+@COM157
+PRINTL 强制饮尿
+;-------------------------------------------------
+;実行判定処理
+;-------------------------------------------------
+A = 0
+S = 0
+
+;すべての命令に共通の要素を考慮
+;(顺从が高いと命令に従いやすいなど)
+CALL COM_ORDER
+
+;ABL:欲望
+IF ABL:1
+	SIF S
+		PRINT  + 
+	A += ABL:1 * 1
+	PRINTS ABLNAME:1
+	PRINTV 'LV,ABL:1,'(,ABL:1 * 1,')
+	S = 1
+ENDIF
+;ABL:侍奉精神
+IF ABL:7
+	SIF S
+		PRINT  + 
+	A += ABL:7 * 4
+	PRINTS ABLNAME:7
+	PRINTV 'LV,ABL:7,'(,ABL:7 * 4,')
+	S = 1
+ENDIF
+
+IF MARK:1
+	SIF S
+		PRINT  + 
+	A += MARK:1 * 1
+	PRINTS MARKNAME:1
+	PRINTV 'LV,MARK:1,'(,MARK:1 * 1,')
+	S = 1
+ENDIF
+
+
+;PALAM:情欲
+IF PALAM:6 < PALAMLV:1
+	L = 0
+ELSEIF PALAM:6 < PALAMLV:2
+	L = 1
+ELSEIF PALAM:6 < PALAMLV:3
+	L = 2
+ELSEIF PALAM:6 < PALAMLV:4
+	L = 3
+ELSEIF PALAM:6 < PALAMLV:5
+	L = 4
+ELSE
+	L = 5
+ENDIF
+IF L
+	SIF S
+		PRINT  + 
+	A += L * 1
+	PRINTS PALAMNAME:6
+	PRINTV 'LV,L,'(,L * 1,')
+	S = 1
+ENDIF
+;反抗（服从、隶属で无效）
+IF TALENT:11 && (TALENT:5 == 0 && TALENT:8 == 0)
+	PRINT  - 
+	A -= 5
+	PRINTS TALENTNAME:11
+	PRINTV '(,5,')
+	S = 1
+ENDIF
+;高傲
+IF TALENT:15
+	PRINT  - 
+	A -= 12
+	PRINTS TALENTNAME:15
+	PRINTV '(,12,')
+	S = 1
+ENDIF
+;自卑
+IF TALENT:17
+	PRINT  + 
+	A += 2
+	PRINTS TALENTNAME:17
+	PRINTV '(,2,')
+	S = 1
+ENDIF
+;抵抗
+IF TALENT:34
+	PRINT  - 
+	A -= 20
+	PRINTS TALENTNAME:34
+	PRINTV '(,20,')
+	S = 1
+ENDIF
+;害羞
+IF TALENT:35
+	PRINT  - 
+	A -= 1
+	PRINTS TALENTNAME:35
+	PRINTV '(,1,')
+	S = 1
+ENDIF
+;污臭钝感
+IF TALENT:61
+	SIF S
+		PRINT  + 
+	A += 5
+	PRINTS TALENTNAME:61
+	PRINTV '(,5,')
+	S = 1
+ENDIF
+;污臭敏感
+IF TALENT:62
+	PRINT  - 
+	A -= 8
+	PRINTS TALENTNAME:62
+	PRINTV '(,8,')
+	S = 1
+ENDIF
+;自我奉献
+IF TALENT:63
+	SIF S
+		PRINT  + 
+	A += 6
+	PRINTS TALENTNAME:63
+	PRINTV '(,6,')
+	S = 1
+ENDIF
+;否定快感（淫乱、娼妇で无效）
+IF TALENT:71 && (TALENT:4 == 0 && TALENT:7 == 0)
+	PRINT  - 
+	A -= 1
+	PRINTS TALENTNAME:71
+	PRINTV '(,1,')
+	S = 1
+ENDIF
+;性倒错
+IF TALENT:80
+	SIF S
+		PRINT  + 
+	A += 3
+	PRINTS TALENTNAME:80
+	PRINTV '(,3,')
+	S = 1
+ENDIF
+;施虐狂
+IF TALENT:PLAYER:83
+	SIF S
+		PRINT  + 
+	A += 3
+	PRINTS TALENTNAME:83
+	PRINTV '(,3,')
+	S = 1
+ENDIF
+;受虐狂
+IF TALENT:84
+	SIF S
+		PRINT  + 
+	A += 8
+	PRINTS TALENTNAME:84
+	PRINTV '(,8,')
+	S = 1
+ENDIF
+;恋慕
+IF TALENT:3 && ASSIPLAY == 0
+	SIF S
+		PRINT  + 
+	A += 5
+	PRINTS TALENTNAME:3
+	PRINTV '(,5,')
+	S = 5
+ENDIF
+;相亲相爱
+IF TALENT:6 && ASSIPLAY == 0
+	SIF S
+		PRINT  + 
+	A += 10
+	PRINTS TALENTNAME:6
+	PRINTV '(,10,')
+	S = 10
+ENDIF
+;両方男で、同性倾向0（恋慕、相亲相爱で无效）
+IF ABL:同性倾向 < 1 && TALENT:PLAYER:140 && ((TALENT:3 == 0 && TALENT:6 == 0) || PLAYER != MASTER)
+	PRINT  - 
+	A -= 6
+	PRINTFORM 无同性倾向
+	PRINTV '(,6,')
+	S = 1
+ENDIF
+;调教者が扶她
+;IF TALENT:PLAYER:139
+;	SIF S
+;		PRINT  + 
+;	A += 8
+;	PRINTS TALENTNAME:139
+;	PRINTV '(,8,')
+;	S = 1
+;ENDIF
+	
+;调教者が孩童尺寸
+IF TALENT:PLAYER:114
+	SIF S
+		PRINT  + 
+	A += 2
+	PRINTFORM %NAME:PLAYER%是孩童尺寸
+	PRINTV '(,2,')
+	S = 1
+ENDIF
+
+;调教者が短小
+IF TALENT:PLAYER:115
+	SIF S
+	PRINT  + 
+	A += 1
+	PRINTFORM %NAME:PLAYER%是短小
+	PRINTV '(,1,')
+	S = 1
+ENDIF
+
+;调教者が巨根
+IF TALENT:PLAYER:116
+	SIF S
+		PRINT  - 
+	A -= 2
+	PRINTFORM %NAME:PLAYER%是巨根
+	PRINTV '(,2,')
+	S = 1
+ENDIF
+
+Y = 0
+;愛液の汚れ
+SIF STAIN:PLAYER:2 & 1
+	Y += 1
+;精液の汚れ
+SIF STAIN:PLAYER:2 & 4
+	Y += 3
+;肛の汚れ
+SIF STAIN:PLAYER:2 & 8
+	Y += 7
+SIF STAIN:PLAYER:2 & 16
+	Y += 15
+
+SIF TALENT:61
+	Y /= 3
+SIF TALENT:62
+	Y *= 2
+
+
+
+;汚れあり
+IF Y
+	PRINT  - 
+	A -= Y
+	;污臭钝感
+	IF TALENT:61
+		PRINT 有污物、
+		PRINTS TALENTNAME:61
+	ELSEIF TALENT:62
+		PRINT 有污物、
+		PRINTS TALENTNAME:62
+	ELSE
+		PRINT 有污物
+	ENDIF
+	PRINTV '(,Y,')
+	S = 1
+ENDIF
+
+;合計を表示(40以上で実行)
+PRINT  = 
+PRINTV A
+
+V = 40
+SIF A < V
+	PRINT  < 
+SIF A == V
+	PRINT  = 
+SIF A > V
+	PRINT  > 
+PRINT 实行值
+PRINTV V
+;実行不可口上/実行判定操作
+IF A < V
+	CALL KOJO_DENIAL
+	WAIT
+	RETURN 0
+ELSE
+	PRINTL
+ENDIF
+
+;-------------------------------------------------
+;実行決定
+;-------------------------------------------------
+STR:0 = 强制饮尿
+
+
+;実行者が奴隶であるフラグ
+TFLAG:28 = 1
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 80
+LOSEBASE:1 += 50
+;性行动、露出、屈服、不洁、逸脱、反感
+SOURCE:5 = 300
+SOURCE:13 = 400
+SOURCE:14 = 2200
+SOURCE:15 = 1000
+SOURCE:17 = 1500
+SOURCE:18 = 1000
+
+;上のほうで計算した汚れデータ
+SOURCE:15 += Y*10 + 60
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 1000
+
+;受虐属性を見る
+IF ABL:9 == 0
+	TIMES SOURCE:14 , 0.80
+	SOURCE:9 += 0
+	SOURCE:11 += 0
+ELSEIF ABL:9 == 1
+	TIMES SOURCE:14 , 1.00
+	SOURCE:9 += 20
+	SOURCE:11 += 30
+ELSEIF ABL:9 == 2
+	TIMES SOURCE:14 , 1.20
+	SOURCE:9 += 40
+	SOURCE:11 += 70
+ELSEIF ABL:9 == 3
+	TIMES SOURCE:14 , 1.40
+	SOURCE:9 += 70
+	SOURCE:11 += 120
+ELSEIF ABL:9 == 4
+	TIMES SOURCE:14 , 1.50
+	SOURCE:9 += 110
+	SOURCE:11 += 180
+ELSEIF ABL:9 == 5
+	TIMES SOURCE:14 , 1.70
+	SOURCE:9 += 150
+	SOURCE:11 += 250
+ELSEIF ABL:9 == 6
+	TIMES SOURCE:14 , 1.90
+	SOURCE:9 += 200
+	SOURCE:11 += 300
+ELSEIF ABL:9 == 7
+	TIMES SOURCE:14 , 2.10
+	SOURCE:9 += 250
+	SOURCE:11 += 350
+ELSEIF ABL:9 == 8
+	TIMES SOURCE:14 , 2.30
+	SOURCE:9 += 300
+	SOURCE:11 += 400
+ELSEIF ABL:9 == 9
+	TIMES SOURCE:14 , 2.50
+	SOURCE:9 += 350
+	SOURCE:11 += 450
+ELSEIF ABL:9 >= 10
+	TIMES SOURCE:14 , 3.00
+	SOURCE:9 += 500
+	SOURCE:11 += 500
+ENDIF
+
+;受虐狂を見る
+IF TALENT:84 == 1
+	TIMES SOURCE:11 , 1.50
+	TIMES SOURCE:18 , 0.80
+ENDIF
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;调教者のＰに尿汚れ
+STAIN:PLAYER:2 |= 128
+;奴隶の口⇔调教者のＰの汚れが移动
+STAIN:0 |= STAIN:PLAYER:2
+STAIN:PLAYER:2 |= STAIN:0
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;スカ经验
+EXP:33 += 1
+PRINTL スカ经验＋１
+
+;蔷薇经验とか加算
+CALL COM_EXP(2)
+
+;依赖度ベクトル
+TFLAG:33 = 3
+
+;依赖度補正値(主人かつ恋慕、淫乱、服从で1。相亲相爱、娼妇、隶属で2）
+IF (TALENT:3 || TALENT:4 || TALENT:5) && ASSIPLAY == 0
+	TFLAG:30 += 1
+ELSEIF (TALENT:6 || TALENT:7 || TALENT:8) && ASSIPLAY == 0
+	TFLAG:30 += 2
+ENDIF
+
+
+RETURN 1

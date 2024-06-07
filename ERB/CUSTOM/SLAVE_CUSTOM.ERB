@@ -1,0 +1,1323 @@
+﻿;Ｒから移植
+;erahetaAver057tのあなたカスタムから移植
+@SLAVE_CUSTOM(ARG)
+
+FLAG:8 += 1
+ADDCHARA FLAG:8
+CALL KAIGYO
+;現在の调教对象を記録
+M = TARGET
+K = CHARANUM - 1
+TARGET = K
+PRINTL
+PRINTL
+PRINTL
+PRINTL 为了避免弄错您的调教对象，
+PRINTL 请告诉我有关他的详细数据。
+PRINTL 
+PRINTL 首先，调教对象的姓氏是……
+$INPUTS_LOOP_MYOJI
+PRINTL ★★请在这里输入调教对象的姓氏★★
+PRINTL ★★（没有姓氏的话空栏即可）★★
+INPUTS
+CSTR:4 = %RESULTS%
+PRINTL 
+IF CSTR:4 == ""
+	PRINTFORML 没有姓氏，这样可以吗？
+ELSE
+	PRINTFORML 是「%CSTR:4%」没错吧？
+ENDIF
+PRINTL [0] 是
+PRINT [1] 否　　　　　　　　　　
+PRINTL [3] --放弃奴隶采购--
+$INPUT_LOOP_NAME1
+INPUT
+SIF RESULT != 0 && RESULT != 1 && RESULT != 3
+	GOTO INPUT_LOOP_NAME1
+SIF RESULT == 1
+	GOTO INPUTS_LOOP_MYOJI
+IF RESULT == 3
+	TARGET = M
+	DELCHARA K
+	FLAG:8 -= 1
+	RETURN 0
+ENDIF
+
+PRINTL 
+PRINTL 接下来，调教对象的名字是……
+$INPUTS_LOOP_NAMAE
+PRINTL ★★请在这里输入调教对象的名字★★
+PRINTL ★★（回车键会自动带入随机名字）★★
+INPUTS
+CSTR:5 = %RESULTS%
+SIF CSTR:5 == ""
+	CALL SLAVE_NAME_RANDOM
+;GOTO INPUTS_LOOP_NAMAE
+CSTR:5 = %RESULTS%
+PRINTFORML 是「%CSTR:5%」没错吧？
+PRINTL [0] 是
+PRINT [1] 否　　　　　　　　　　
+PRINTL [3] --放弃奴隶采购--
+$INPUT_LOOP_NAME2
+INPUT
+SIF RESULT != 0 && RESULT != 1 && RESULT != 3
+	GOTO INPUT_LOOP_NAME2
+SIF RESULT == 1
+	GOTO INPUTS_LOOP_NAMAE
+IF RESULT == 3
+	TARGET = M
+	DELCHARA K
+	FLAG:8 -= 1
+	RETURN 0
+ENDIF
+
+IF CSTR:4 != ""
+	PRINTL 
+	PRINTL 调教对象姓名的表现方式是……
+	PRINTL 
+	PRINTFORML [0] %CSTR:4%%CSTR:5%（东洋系）
+	PRINTFORML [1] %CSTR:5%・%CSTR:4%（西洋系）
+	$INPUT_LOOP_HYOKI
+	INPUT
+	IF RESULT == 0
+		NAME = %CSTR:4%%CSTR:5%
+	ELSEIF RESULT == 1
+		NAME = %CSTR:5%・%CSTR:4%
+	ELSE
+		GOTO INPUT_LOOP_HYOKI
+	ENDIF
+	
+	PRINTL 
+	PRINTFORM 平时称呼%NAME%，
+	PRINTL 更多的是用姓氏还是名字呢？
+	PRINTL （描述时使用的名称设定）
+	PRINTL 
+	PRINTFORML [0] 更多使用「%CSTR:4%」来称呼
+	PRINTFORML [1] 更多使用「%CSTR:5%」来称呼
+	$INPUT_LOOP_YOBINA
+	INPUT
+	IF RESULT == 0
+		CALLNAME = %CSTR:4%
+	ELSEIF RESULT == 1
+		CALLNAME = %CSTR:5%
+	ELSE
+		GOTO INPUT_LOOP_YOBINA
+	ENDIF
+ELSE
+	NAME = %CSTR:5%
+	CALLNAME = %CSTR:5%
+ENDIF
+
+
+$INPUT_LOOP_NENREI
+PRINTL
+PRINTFORML %NAME%的年龄是多大？
+PRINTL 
+PRINTL [1] 幼嫩的稚童（正太）
+PRINTL [2] 十多岁的少年（未成年）
+PRINTL [3] 可以喝酒的年龄（青年）
+PRINTL [4] 更加沧桑的年纪（大叔）
+INPUT
+PRINTL 
+SELECTCASE RESULT
+	CASE 1
+		TALENT:幼稚 = 1
+		TALENT:大人 = 0
+		TALENT:大叔 = 0
+		PRINT 正太
+	CASE 2
+		TALENT:幼稚 = 0
+		TALENT:大人 = 0
+		TALENT:大叔 = 0
+		PRINT 少年
+	CASE 3
+		TALENT:幼稚 = 0
+		TALENT:大人 = 1
+		TALENT:大叔 = 0
+		PRINT 青年
+	CASE 4
+		TALENT:幼稚 = 0
+		TALENT:大人 = 1
+		TALENT:大叔 = 1
+		PRINT 大叔
+	CASEELSE
+		GOTO INPUT_LOOP_NENREI
+ENDSELECT
+PRINTL 这样可以吗？
+PRINTL 
+PRINTL [0] 是
+PRINT [1] 否　　　　　　　　　　
+PRINTL [3] --放弃奴隶采购--
+$INPUT_LOOP_NENREI2
+INPUT
+SIF RESULT != 0 && RESULT != 1 && RESULT != 3
+	GOTO INPUT_LOOP_NENREI2
+SIF RESULT == 1
+	GOTO INPUT_LOOP_NENREI
+IF RESULT == 3
+	TARGET = M
+	DELCHARA K
+	FLAG:8 -= 1
+	RETURN 0
+ENDIF
+
+
+$INPUT_LOOP_KIHON
+PRINTL
+PRINTFORML %NAME%平时生活在什么样的时代？
+PRINTL （角色的世界观设定）
+PRINTL 
+PRINTL [1] 西洋风（幻想风格）
+PRINTL [2] 中国风
+PRINTL [3] 和风
+PRINTL [4] 普通的现代风
+INPUT
+PRINTL 
+SELECTCASE RESULT
+	CASE 1
+		TALENT:西洋风 = 1
+		TALENT:中国风 = 0
+		TALENT:和风 = 0
+		PRINT 西洋风（幻想风格）
+	CASE 2
+		TALENT:西洋风 = 0
+		TALENT:中国风 = 1
+		TALENT:和风 = 0
+		PRINT 中国风
+	CASE 3
+		TALENT:西洋风 = 0
+		TALENT:中国风 = 0
+		TALENT:和风 = 1
+		PRINT 和风
+	CASE 4
+		TALENT:西洋风 = 0
+		TALENT:中国风 = 0
+		TALENT:和风 = 0
+		PRINT 普通的现代风
+	CASEELSE
+		GOTO INPUT_LOOP_KIHON
+ENDSELECT
+PRINTL 这样可以吗？
+PRINTL 
+PRINTL [0] 是
+PRINT [1] 否　　　　　　　　　　
+PRINTL [3] --放弃奴隶采购--
+$INPUT_LOOP_KIHON2
+INPUT
+SIF RESULT != 0 && RESULT != 1 && RESULT != 3
+	GOTO INPUT_LOOP_KIHON2
+SIF RESULT == 1
+	GOTO INPUT_LOOP_KIHON
+IF RESULT == 3
+	TARGET = M
+	DELCHARA K
+	FLAG:8 -= 1
+	RETURN 0
+ENDIF
+
+PRINTL 
+PRINTL
+PRINTFORML %NAME%和你有见过面吗？
+PRINTL （台词上会有细微差别。请按照喜好自由设定）
+PRINTL 
+PRINTL [0] 是
+PRINTL [1] 否
+$INPUT_LOOP_MENSIKI
+INPUT
+IF RESULT != 0 && RESULT != 1
+	GOTO INPUT_LOOP_MENSIKI
+ELSEIF RESULT == 0
+	CFLAG:700 = 1
+	$INPUT_LOOP_MENSIKI2
+	PRINTL 
+	PRINTL 
+	PRINTFORML %NAME%是你的……？
+	PRINTL 
+	PRINT [ 0] 仅只是认识的人  
+	PRINTL [ 1] 朋友
+	PRINT [ 2] 竹马            
+	PRINTL [ 3] 亲戚
+	PRINT [ 4] 兄长            
+	PRINTL [ 5] 弟弟
+	PRINT [ 6] 同学            
+	PRINTL [ 7] 同事
+	PRINT [ 8] 前辈            
+	PRINTL [ 9] 后辈
+	PRINT [10] 上司            
+	PRINTL [11] 部下
+	PRINT [12] 老师            
+	PRINTL [13] 学生
+	PRINT [14] 父亲            
+	PRINTL [15] 儿子
+	INPUT
+	IF RESULT >= 0 &&  RESULT <= 15
+		PRINTL 
+		PRINTFORML %NAME%是你的
+		IF RESULT == 0
+			CFLAG:MASTER:(NO:TARGET + 2000) = 20
+			CFLAG:TARGET:(NO:MASTER + 2000) = 20
+			PRINT 仅只是认识的人
+		ELSEIF RESULT == 1
+			CFLAG:MASTER:(NO:TARGET + 2000) = 19
+			CFLAG:TARGET:(NO:MASTER + 2000) = 19
+			PRINT 朋友
+		ELSEIF RESULT == 2
+			CFLAG:MASTER:(NO:TARGET + 2000) = 21
+			CFLAG:TARGET:(NO:MASTER + 2000) = 21
+			PRINT 竹马
+		ELSEIF RESULT == 3
+			CFLAG:MASTER:(NO:TARGET + 2000) = 9
+			CFLAG:TARGET:(NO:MASTER + 2000) = 9
+			PRINT 亲戚
+		ELSEIF RESULT == 4
+			CFLAG:MASTER:(NO:TARGET + 2000) = 1
+			IF MALE(MASTER)
+				CFLAG:TARGET:(NO:MASTER + 2000) = 2
+			ELSE
+				CFLAG:TARGET:(NO:MASTER + 2000) = 4
+			ENDIF
+			PRINT 兄长
+		ELSEIF RESULT == 5
+			CFLAG:MASTER:(NO:TARGET + 2000) = 2
+			IF MALE(MASTER)
+				CFLAG:TARGET:(NO:MASTER + 2000) = 1
+			ELSE
+				CFLAG:TARGET:(NO:MASTER + 2000) = 3
+			ENDIF
+			PRINT 弟弟
+		ELSEIF RESULT == 6
+			CFLAG:MASTER:(NO:TARGET + 2000) = 28
+			CFLAG:TARGET:(NO:MASTER + 2000) = 28
+			PRINT 同学
+		ELSEIF RESULT == 7
+			CFLAG:MASTER:(NO:TARGET + 2000) = 27
+			CFLAG:TARGET:(NO:MASTER + 2000) = 27
+			PRINT 同事
+		ELSEIF RESULT == 8
+			CFLAG:MASTER:(NO:TARGET + 2000) = 11
+			CFLAG:TARGET:(NO:MASTER + 2000) = 12
+			PRINT 前辈
+		ELSEIF RESULT == 9
+			CFLAG:MASTER:(NO:TARGET + 2000) = 12
+			CFLAG:TARGET:(NO:MASTER + 2000) = 11
+			PRINT 后辈
+		ELSEIF RESULT == 10
+			CFLAG:MASTER:(NO:TARGET + 2000) = 13
+			CFLAG:TARGET:(NO:MASTER + 2000) = 14
+			PRINT 上司
+		ELSEIF RESULT == 11
+			CFLAG:MASTER:(NO:TARGET + 2000) = 14
+			CFLAG:TARGET:(NO:MASTER + 2000) = 15
+			PRINT 部下
+		ELSEIF RESULT == 12
+			CFLAG:MASTER:(NO:TARGET + 2000) = 15
+			CFLAG:TARGET:(NO:MASTER + 2000) = 16
+			PRINT 老师
+		ELSEIF RESULT == 13
+			CFLAG:MASTER:(NO:TARGET + 2000) = 16
+			CFLAG:TARGET:(NO:MASTER + 2000) = 15
+			PRINT 学生
+		ELSEIF RESULT == 14
+			CFLAG:MASTER:(NO:TARGET + 2000) = 5
+			CFLAG:TARGET:(NO:MASTER + 2000) = 8
+			PRINT 父亲
+		ELSEIF RESULT == 15
+			CFLAG:MASTER:(NO:TARGET + 2000) = 7
+			CFLAG:TARGET:(NO:MASTER + 2000) = 6
+			PRINT 儿子
+		ENDIF
+		PRINTL 这样可以吗？
+		PRINTL 
+		PRINTL [0] 是
+		PRINTL [1] 否
+		$INPUT_LOOP_MENSIKI3
+		INPUT
+		SIF RESULT != 0 && RESULT != 1
+			GOTO INPUT_LOOP_MENSIKI3
+		SIF RESULT == 1
+			GOTO INPUT_LOOP_MENSIKI2
+		;家族関係は状态で表示されるため、ここで名前を記録
+		IF CFLAG:MASTER:(NO:TARGET + 2000) == 1
+			IF STRLENS(CSTR:MASTER:33)
+				CSTR:MASTER:33 = %CSTR:MASTER:33%、%NAME%
+			ELSE
+				CSTR:MASTER:33 = %NAME%
+			ENDIF
+			IF STRLENS(CSTR:36)
+				CSTR:36 = %CSTR:36%、%NAME:MASTER%
+			ELSE
+				CSTR:36 = %NAME:MASTER%
+			ENDIF
+			IF STRLENS(CSTR:34)
+				CSTR:34 = %CSTR:34%、%NAME:MASTER%
+			ELSE
+				CSTR:34 = %NAME:MASTER%
+			ENDIF
+		ELSEIF CFLAG:MASTER:(NO:TARGET + 2000) == 2
+			IF STRLENS(CSTR:MASTER:34)
+				CSTR:MASTER:34 = %CSTR:MASTER:34%、%NAME%
+			ELSE
+				CSTR:MASTER:34 = %NAME%
+			ENDIF
+			IF STRLENS(CSTR:35)
+				CSTR:35 = %CSTR:35%、%NAME:MASTER%
+			ELSE
+				CSTR:35 = %NAME:MASTER%
+			ENDIF
+			IF STRLENS(CSTR:33)
+				CSTR:33 = %CSTR:33%、%NAME:MASTER%
+			ELSE
+				CSTR:33 = %NAME:MASTER%
+			ENDIF
+		ELSEIF CFLAG:MASTER:(NO:TARGET + 2000) == 5
+			IF STRLENS(CSTR:MASTER:32)
+				CSTR:MASTER:32 = %CSTR:MASTER:32%、%NAME%
+			ELSE
+				CSTR:MASTER:32 = %NAME%
+			ENDIF
+			IF STRLENS(CSTR:30)
+				CSTR:30 = %CSTR:30%、%NAME:MASTER%
+			ELSE
+				CSTR:30 = %NAME:MASTER%
+			ENDIF
+		ELSEIF CFLAG:MASTER:(NO:TARGET + 2000) == 7
+			IF STRLENS(CSTR:MASTER:30)
+				CSTR:MASTER:30 = %CSTR:MASTER:30%、%NAME%
+			ELSE
+				CSTR:MASTER:30 = %NAME%
+			ENDIF
+			IF STRLENS(CSTR:31)
+				CSTR:31 = %CSTR:31%、%NAME:MASTER%
+			ELSE
+				CSTR:31 = %NAME:MASTER%
+			ENDIF
+		ENDIF
+	ELSE
+		GOTO INPUT_LOOP_MENSIKI2
+	ENDIF
+ELSEIF RESULT == 1
+	CFLAG:MASTER:(NO:(TARGET) + 2000) = 0
+	CFLAG:TARGET:(NO:(MASTER) + 2000) = 0
+	CFLAG:700 = 0
+ENDIF
+
+
+$INPUTS_LOOP_JISYO
+PRINTL 
+PRINTFORML %NAME%是怎样称呼自己的呢？
+PRINTL ★★请告诉我调教对象的自称★★
+PRINTL 
+PRINT [11] 我　　
+PRINTL [12] 爷
+PRINT [13] 吾　　
+PRINTL [14] 余
+PRINT [15] 孤　　
+PRINTL [16] 在下
+PRINTL [20] --输入其他自称--
+INPUT
+SELECTCASE RESULT
+	CASE 11
+		CSTR:0 = 我
+	CASE 12
+		CSTR:0 = 爷
+	CASE 13
+		CSTR:0 = 吾
+	CASE 14
+		CSTR:0 = 余
+	CASE 15
+		CSTR:0 = 孤
+	CASE 16
+		CSTR:0 = 在下
+	CASE 20
+		INPUTS
+		CSTR:0 = %RESULTS%
+	CASEELSE
+		GOTO INPUTS_LOOP_JISYO
+ENDSELECT
+PRINTFORML 「%CSTR:0%」这样可以吗？
+PRINTL
+PRINTL [0] 是
+PRINTL [1] 否
+$INPUT_LOOP_JISYO2
+INPUT
+SIF RESULT != 0 && RESULT != 1
+	GOTO INPUT_LOOP_JISYO2
+SIF RESULT == 1
+	GOTO INPUTS_LOOP_JISYO
+
+
+$INPUTS_LOOP_TAISYO
+PRINTL 
+PRINTFORML 刚见面还没有消除警戒心时，
+PRINTFORML %CALLNAME%是怎么称呼你的呢？
+PRINTL ★★请在这里决定调教对象的初期二人称★★
+PRINTL 
+PRINT [11] 你这混蛋　　　
+PRINTL [12] 你这家伙
+PRINT [13] 你这厮　　　　
+PRINTL [14] 你丫
+PRINT [15] 你　  　　　　
+PRINTL [16] 您　　
+PRINT [17] 前辈　 　   　
+PRINTL [18] 大姐姐
+PRINT [19] 大哥哥　　  　
+PRINTL [30] --输入其他二人称--
+INPUT
+SELECTCASE RESULT
+	CASE 11
+		CSTR:1 = 你这混蛋
+	CASE 12
+		CSTR:1 = 你这家伙
+	CASE 13
+		CSTR:1 = 你这厮　
+	CASE 14
+		CSTR:1 = 你丫
+	CASE 15
+		CSTR:1 = 你
+	CASE 16
+		CSTR:1 = 您
+	CASE 17
+		CSTR:1 = 前辈
+	CASE 18
+		CSTR:1 = 大姐姐
+	CASE 19
+		CSTR:1 = 大哥哥　
+	CASE 30
+		INPUTS
+		CSTR:1 = %RESULTS%
+	CASEELSE
+		GOTO INPUTS_LOOP_TAISYO
+ENDSELECT
+PRINTFORML 「%CSTR:1%」这样可以吗？
+PRINTL [0] 是
+PRINT [1] 否　　　　　　　　　　
+PRINTL [3] --放弃奴隶采购--
+$INPUT_LOOP_TAISYO2
+INPUT
+SIF RESULT != 0 && RESULT != 1 && RESULT != 3
+	GOTO INPUT_LOOP_TAISYO2
+SIF RESULT == 1
+	GOTO INPUTS_LOOP_TAISYO
+IF RESULT == 3
+	TARGET = M
+	DELCHARA K
+	FLAG:8 -= 1
+	RETURN 0
+ENDIF
+
+$INPUTS_LOOP_TAISYO_ATO
+PRINTL 
+PRINTFORML 态度软化后，%CALLNAME%是怎么称呼你的呢？
+PRINTL ★★请在这里决定调教对象态度软化后的二人称★★
+PRINTL 
+PRINTL [10] --和初期一样--
+PRINT [11] 你这家伙　　　
+PRINTL [12] 你这混蛋
+PRINT [13] 你这厮　　　　
+PRINTL [14] 你丫
+PRINT [15] 你　  　　　　
+PRINTL [16] 您　　
+PRINT [17] 前辈　 　   　
+PRINTL [18] 大姐姐
+PRINTL [19] 大哥哥
+PRINTL [20] --输入其他二人称--
+INPUT
+SELECTCASE RESULT
+	CASE 10
+		CSTR:2 = %CSTR:1%
+	CASE 11
+		CSTR:2 = 你这家伙
+	CASE 12
+		CSTR:2 = 你这混蛋
+	CASE 13
+		CSTR:2 = 你这厮
+	CASE 14
+		CSTR:2 = 你丫
+	CASE 15
+		CSTR:2 = 你
+	CASE 16
+		CSTR:2 = 您
+	CASE 17
+		CSTR:2 = 前辈
+	CASE 18
+		CSTR:2 = 大姐姐
+	CASE 19
+		CSTR:2 = 大哥哥
+	CASE 20
+		INPUTS
+		CSTR:2 = %RESULTS%
+	CASEELSE
+		GOTO INPUTS_LOOP_TAISYO_ATO
+ENDSELECT
+PRINTFORML 「%CSTR:2%」这样可以吗？
+PRINTL [0] 是
+PRINT [1] 否　　　　　　　　　　
+PRINTL [3] --放弃奴隶采购--
+$INPUT_LOOP_TAISYO_ATO2
+INPUT
+SIF RESULT != 0 && RESULT != 1 && RESULT != 3
+	GOTO INPUT_LOOP_TAISYO_ATO2
+SIF RESULT == 1
+	GOTO INPUTS_LOOP_TAISYO_ATO
+IF RESULT == 3
+	TARGET = M
+	DELCHARA K
+	FLAG:8 -= 1
+	RETURN 0
+ENDIF
+
+;登录角色の主人公に对する特殊の呼び方 デフォは「ご主人様」
+CSTR:3 = 主人
+
+$INPUTS_LOOP_NAMAEYOBI
+PRINTL
+PRINTFORML 如果亲近到用名字来称呼你的场合，%CALLNAME%会怎么称呼你呢？
+PRINTFORML （可能和初期设定一样用「%CALLNAME:MASTER%大人」这样的称呼方式）
+PRINTL ★★请在这里决定调教对象对你的亲近称呼方式★★
+PRINTL
+PRINTFORM [11] %CSTR:MASTER:4%　　    
+PRINTFORML [12] %CSTR:MASTER:5%
+PRINTFORM [13] %CSTR:MASTER:4%桑　　  
+PRINTFORML [14] %CSTR:MASTER:5%桑
+PRINTFORM [15] %CSTR:MASTER:4%君　　  
+PRINTFORML [16] %CSTR:MASTER:5%君
+PRINTFORM [17] %CSTR:MASTER:4%酱　　  
+PRINTFORML [18] %CSTR:MASTER:5%酱
+PRINTFORM [19] %CSTR:MASTER:4%前辈　　
+PRINTFORML [20] %CSTR:MASTER:5%前辈
+PRINTFORM [21] %CSTR:MASTER:4%姐姐　　
+PRINTFORML [22] %CSTR:MASTER:5%姐姐
+PRINTFORM [23] %CSTR:MASTER:4%哥哥　　
+PRINTFORML [24] %CSTR:MASTER:5%哥哥
+PRINTFORML [30] --输入其他称呼方式--
+INPUT
+SELECTCASE RESULT
+	CASE 11
+		MASTERNAME = %CSTR:MASTER:4%
+	CASE 12
+		MASTERNAME = %CSTR:MASTER:5%
+	CASE 13
+		MASTERNAME = %CSTR:MASTER:4%桑
+	CASE 14
+		MASTERNAME = %CSTR:MASTER:5%桑
+	CASE 15
+		MASTERNAME = %CSTR:MASTER:4%君
+	CASE 16
+		MASTERNAME = %CSTR:MASTER:5%君
+	CASE 17
+		MASTERNAME = %CSTR:MASTER:4%酱
+	CASE 18
+		MASTERNAME = %CSTR:MASTER:5%酱
+	CASE 19
+		MASTERNAME = %CSTR:MASTER:4%前辈
+	CASE 20
+		MASTERNAME = %CSTR:MASTER:5%前辈
+	CASE 21
+		MASTERNAME = %CSTR:MASTER:4%姐姐
+	CASE 22
+		MASTERNAME = %CSTR:MASTER:5%姐姐
+	CASE 23
+		MASTERNAME = %CSTR:MASTER:4%哥哥
+	CASE 24
+		MASTERNAME = %CSTR:MASTER:5%哥哥
+	CASE 30
+		INPUTS
+		MASTERNAME = %RESULTS%
+	CASEELSE
+		GOTO INPUTS_LOOP_NAMAEYOBI
+ENDSELECT
+PRINTFORML 「%MASTERNAME%」这样可以吗？
+PRINTL [0] 是
+PRINT [1] 否　　　　　　　　　　
+PRINTL [3] --放弃奴隶采购--
+$INPUT_LOOP_NAMAEYOBI2
+INPUT
+SIF RESULT != 0 && RESULT != 1 && RESULT != 3
+	GOTO INPUT_LOOP_NAMAEYOBI2
+SIF RESULT == 1
+	GOTO INPUTS_LOOP_NAMAEYOBI
+IF RESULT == 3
+	TARGET = M
+	DELCHARA K
+	FLAG:8 -= 1
+	RETURN 0
+ENDIF
+
+
+
+
+$INPUT_LOOP_SEIKAKU
+PRINTL
+PRINTFORML 一句话总结调教对象%NAME%是什么样的性格？
+PRINT [ 1] 开朗・元气型            
+PRINTL [ 2] 稳重・温柔型
+PRINT [ 3] 认真・固执型            
+PRINTL [ 4] 花花公子型
+PRINT [ 5] 别扭・傲娇型            
+PRINTL [ 6] 目中无人・高傲型
+PRINT [ 7] 举止温和・腹黑型        
+PRINTL [ 8] 阴暗・无口・冷漠型
+PRINT [ 9] 蛮不讲理・精英型        
+PRINTL [10] 任性爱撒娇型
+PRINT [11] 直率・纯真型            
+PRINTL [12] 无常识・自恋型
+PRINT [13] 天然・电波型            
+PRINTL [66] 痞气・油嘴滑舌型
+PRINT [67] 心机・白莲花型          
+PRINTL [68] 创伤・自暴自弃型         
+PRINTL
+IF !FLAG:1505
+PRINTL      ★★★口上扩展(文件位址:ERB\口上\人類口上)★★★
+PRINT [94] 自订性格94 : EVENT_K194 
+PRINTL [95] 自订性格95 : EVENT_K195
+PRINT [96] 自订性格96 : EVENT_K196 
+PRINTL [97] 自订性格97 : EVENT_K197
+PRINT [98] 自订性格98 : EVENT_K198 
+PRINTL [99] 自订性格99 : EVENT_K199
+PRINTL
+ENDIF
+
+INPUT
+IF RESULT > 99 || RESULT < 1
+	GOTO INPUT_LOOP_SEIKAKU
+ELSE
+	SELECTCASE RESULT
+		CASE 1
+			PRINT 开朗・元气型
+		CASE 2
+			PRINT 稳重・温柔型
+		CASE 3
+			PRINT 认真・固执型
+			TALENT:性保守 = 1
+		CASE 4
+			PRINT 花花公子型
+		CASE 5
+			PRINT 别扭傲娇型　
+			TALENT:傲娇 = 1
+		CASE 6
+			PRINT 目中无人・高傲型
+			TALENT:高傲 = 1
+		CASE 7
+			PRINT 举止温和・腹黑型
+		CASE 8
+			PRINT 阴暗・无口・冷漠型
+			TALENT:无动于衷 = 1
+			TALENT:缺乏感情 = 1
+		CASE 9
+			PRINT 蛮不讲理・精英型
+		CASE 10
+			PRINT 任性爱撒娇型
+		CASE 11
+			PRINT 直率纯真型
+			TALENT:直率 = 1
+		CASE 12
+			PRINT 无常识・自恋型
+			TALENT:喜欢引人注目 = 1
+		CASE 13
+			PRINT 天然・电波型
+		CASE 66
+			PRINT 痞气・油嘴滑舌型
+		CASE 67
+			PRINT 心机・白莲花型
+			TALENT:难以越过的底线 = 1
+			TALENT:魅惑 = 1
+			TALENT:美人 = 1
+		CASE 68
+			PRINT 创伤・自暴自弃型
+			TALENT:胆怯 = 1
+			TALENT:弱点 = 1
+			TALENT:烙印 = 1
+		CASE 94
+			PRINT 自订性格94
+		CASE 95
+			PRINT 自订性格95
+		CASE 96
+			PRINT 自订性格96
+		CASE 97
+			PRINT 自订性格97
+		CASE 98
+			PRINT 自订性格98
+		CASE 99
+			PRINT 自订性格99
+		CASEELSE
+			GOTO INPUT_LOOP_SEIKAKU
+	ENDSELECT
+	CFLAG:600 = RESULT
+	HTML_PRINT "<shape type='space' param='800'><img src='600_" + TOSTR(CFLAG:TARGET:600) + "' width='-870' height='870' ypos='-300'>"
+	PRINTL 这样可以吗？
+	PRINTL [100] 是
+	PRINTL [111] 否
+	$INPUT_LOOP_SEIKAKU2
+	INPUT
+	IF RESULT != 100 && RESULT != 111
+		GOTO INPUT_LOOP_SEIKAKU2
+	ELSEIF RESULT == 111
+		CFLAG:600 = 0
+		GOTO INPUT_LOOP_SEIKAKU
+	ENDIF
+ENDIF
+;-----------------------------------------------------------
+;表示部分
+;-----------------------------------------------------------
+CALL KAIGYO
+PRINTFORMW 　请告诉我有关%NAME%的详细情报。
+CALL KAIGYO
+PRINTFORML 　也就是说，你对%NAME%的了解多吗？
+PRINTL
+PRINTL 　　[0] 当然啦！
+PRINTL    　　※几乎所有素质都能自己设定
+PRINTL
+PRINTFORML 　　[1] %CSTR:MASTER:0%又不是超人。
+PRINTL    　　※对于调教对象的素质直到弄到手前都还不知道
+PRINTL
+$INPUT_LOOP_ESPER
+INPUT
+IF RESULT == 0
+	TFLAG:166 = 0
+ELSEIF RESULT == 1
+	TFLAG:166 = 1
+ELSE
+	GOTO INPUT_LOOP_ESPER
+ENDIF
+
+PRINTL 　那么，请点击想变更的项目。
+PRINTL 　选定的项目将变为绿色。
+PRINTL (注意，极端的设定可能会加大调教的难度)
+PRINTW
+PRINTL 　
+PRINTL 　
+
+WHILE 1
+	DRAWLINE
+	LOCAL:1 = 0
+	LOCAL:2 = GETCOLOR()
+	LOCAL:4 = GETSTYLE()
+	PRINTL 
+ARG = K
+	CALL KAIGYO
+	PRINTFORML □ %NAME%的素质设定 □
+	PRINTL 不太清楚素质的效果和影响时，请参考【素质解说】
+	PRINTL [996] - 【素质解说】
+	SETCOLOR TALENT:K:童贞 ? 0x00FF00 # 0xA0A0A0
+	PRINTFORM [160] %TALENTNAME:160,14,LEFT%　
+	FONTSTYLE LOCAL:4
+	SETCOLOR TALENT:K:后庭处子 ? 0x00FF00 # 0xA0A0A0
+	PRINTFORML [161] %TALENTNAME:161,14,LEFT%　
+	SETCOLOR LOCAL:2
+
+	LOCAL:3 = 4
+	FOR LOCAL, 10, 157
+		IF LOCAL:3 && LOCAL != 10
+			;空白
+			PRINT 　
+		ELSEIF LOCAL != 10
+			;改行
+			PRINTL 
+			LOCAL:3 = 4
+		ENDIF
+		LOCAL:3--
+		SETCOLOR TALENT:K:LOCAL ? 0x00FF00 # 0xA0A0A0
+;		PRINTFORM [{LOCAL:1++,2}] %GET_TALENTNAME(ARG, LOCAL),14,LEFT%
+		PRINTFORM [{LOCAL,3}] %GET_TALENTNAME(ARG, LOCAL),14,LEFT%
+		
+		;一部の素質を飛ばす
+		SELECTCASE LOCAL
+			;空欄
+			CASE 18, 28
+				LOCAL += 1
+			;抵抗
+			CASE 33
+				LOCAL += 1
+			;弱点、空欄
+			CASE 37
+				LOCAL += 2
+			;非エスパーモードで容易湿は自己设定できない
+			CASE 41
+				SIF TFLAG:166
+					LOCAL += 2
+			;空欄
+			CASE 44
+				LOCAL += 5
+			;猫舌（効果がイマイチなので）
+			CASE 53
+				LOCAL += 1
+			CASE 59 
+				;容易自慰
+				SIF TFLAG:166
+					LOCAL += 1
+			;空欄
+			CASE 66 
+				LOCAL += 3
+			;自慰狂､淫壶､尻穴狂､淫乳､性爱狂､空欄
+			CASE 73
+				LOCAL += 6
+			;嫉妒､盲信
+			CASE 84
+				LOCAL += 2
+			;空欄､狐狸､妖狐
+			CASE 88
+				LOCAL += 3
+			;空欄
+			CASE 94
+				LOCAL += 5
+			;非エスパーモードでABCの感度は自己设定できない
+			CASE 100
+				SIF TFLAG:166
+					LOCAL += 12
+			;Ｖ钝感､Ｖ敏感
+			CASE 102
+				LOCAL += 2
+			;贫乳､绝壁、巨乳、爆乳
+			CASE 108
+				LOCAL += 4
+			;孩童尺寸
+			CASE 113
+				;非エスパーモードでブツの大きさは自己设定できない
+				IF TFLAG:166 || TALENT:大人 || TALENT:大叔
+					LOCAL += 4
+				ELSE
+					LOCAL += 1
+				ENDIF
+			;非エスパーモード
+			CASE 118
+				SIF TFLAG:166
+					LOCAL += 11
+			;空欄
+			CASE 119
+				LOCAL += 10
+			;吸血鬼不可
+			CASE 131
+			    LOCAL += 1
+			;双性、不可思议的根、扶她、男性、疯癫、小人体型、兽耳
+			CASE 136
+				LOCAL += 7
+			;具现化、人外、疯癫の目、母乳体质、孩童尺寸
+			CASE 145
+			    ;幼稚的性格限制
+				IF CFLAG:600 != 1 && CFLAG:600 != 2 && CFLAG:600 != 5 && CFLAG:600 != 8 && CFLAG:600 != 10 && CFLAG:600 != 11 && CFLAG:600 != 13
+					LOCAL += 6
+				ELSE
+				    LOCAL += 5
+				ENDIF
+			;怀孕、育儿中、母性
+			CASE 152
+				LOCAL += 3
+		ENDSELECT
+	NEXT
+		PRINTL
+		SETCOLOR TALENT:K:孩童尺寸? 0x00FF00 # 0xA0A0A0
+		IF !(TFLAG:166 || TALENT:大人 || TALENT:大叔)
+			PRINTFORML [114] %GET_TALENTNAME(ARG, 114),12,LEFT%
+		ENDIF
+		SETCOLOR LOCAL:2
+	PRINTL 
+
+	DRAWLINE
+	ALIGNMENT RIGHT
+	PRINT [997] - 放弃奴隶采购　　
+	PRINT [998] - 重置　　
+	PRINTL  [999] - 设定完毕　
+	ALIGNMENT LEFT
+
+;-----------------------------------------------------------
+;输入処理部分
+;-----------------------------------------------------------
+	$INPUT_LOOP_SHORI
+	INPUT
+	;童贞→童贞を反転
+	IF RESULT == 160
+		TALENT:K:童贞 = !TALENT:K:童贞
+	;后庭处子→后庭处子を反転
+	ELSEIF RESULT == 161
+		TALENT:K:后庭处子 = !TALENT:K:后庭处子
+	ELSEIF (RESULT >= 74 && RESULT <= 78) || RESULT == 90 || RESULT == 91 || (RESULT >= 109 && RESULT <= 112) || RESULT == 132 || (RESULT >= 137 && RESULT <= 142) || RESULT == 143 || RESULT == 146 || (RESULT >= 147 && RESULT <= 150)
+		GOTO INPUT_LOOP_SHORI
+	ELSEIF TFLAG:166 && (RESULT == 42 || RESULT == 43 || RESULT == 60 || (RESULT >= 101 && RESULT <= 108) || (RESULT >= 114 && RESULT <= 117) || RESULT == 119)
+		GOTO INPUT_LOOP_SHORI
+	ELSEIF RESULT >= 10 && RESULT <= 156
+		;输入した素質を反転
+		TALENT:K:RESULT = !TALENT:K:RESULT
+		;反抗→直率をOFF
+		IF RESULT == 11
+			TALENT:K:13 = 0
+		;直率→反抗をOFF
+		ELSEIF RESULT == 13
+			TALENT:K:11 = 0
+		;自卑→高傲をOFF
+		ELSEIF RESULT == 17
+			TALENT:K:15 = 0
+		;高傲→自卑をOFF
+		ELSEIF RESULT == 15
+			TALENT:K:17 = 0
+		;无动于衷→性好奇をOFF
+		ELSEIF RESULT == 21
+			TALENT:K:23 = 0
+		;性好奇→无动于衷をOFF
+		ELSEIF RESULT == 23
+			TALENT:K:21 = 0
+		;乐观→悲观をOFF
+		ELSEIF RESULT == 25
+			TALENT:K:26 = 0
+		;悲观→乐观をOFF
+		ELSEIF RESULT == 26
+			TALENT:K:25 = 0
+		;贞操重视→贞操淡漠をOFF
+		ELSEIF RESULT == 30
+			TALENT:K:31 = 0
+		;贞操淡漠→贞操重视をOFF
+		ELSEIF RESULT == 31
+			TALENT:K:30 = 0
+		;性压抑→解放をOFF
+		ELSEIF RESULT == 33
+			TALENT:K:34 = 0
+		;性开放→性压抑をOFF
+		ELSEIF RESULT == 34
+			TALENT:K:33 = 0
+		;害羞→不知羞耻をOFF
+		ELSEIF RESULT == 35
+			TALENT:K:36 = 0
+		;不知羞耻→害羞をOFF
+		ELSEIF RESULT == 36
+			TALENT:K:35 = 0
+		;怕痛→耐痛をOFF
+		ELSEIF RESULT == 40
+			TALENT:K:41 = 0
+		;耐痛→怕痛をOFF
+		ELSEIF RESULT == 41
+			TALENT:K:40 = 0
+		;容易湿→不易湿をOFF
+		ELSEIF RESULT == 42
+			TALENT:K:43 = 0
+		;不易湿→容易湿をOFF
+		ELSEIF RESULT == 43
+			TALENT:K:42 = 0
+		;不擅料理→擅长料理をOFF
+		ELSEIF RESULT == 44
+			TALENT:K:59 = 0
+		;擅长料理→不擅料理をOFF
+		ELSEIF RESULT == 59
+			TALENT:K:44 = 0
+		;学得快→学得慢をOFF
+		ELSEIF RESULT == 50
+			TALENT:K:51 = 0
+		;学得慢→学得快をOFF
+		ELSEIF RESULT == 51
+			TALENT:K:50 = 0
+		;污臭钝感→污臭敏感をOFF
+		ELSEIF RESULT == 61
+			TALENT:K:62 = 0
+		;污臭敏感→污臭钝感、脏污无视をOFF
+		ELSEIF RESULT == 62
+			TALENT:K:61 = 0
+			TALENT:K:64 = 0
+		;脏污无视→污臭敏感をOFF
+		ELSEIF RESULT == 64
+			TALENT:K:62 = 0
+		;喜欢身体接触→厌恶身体接触をOFF
+		ELSEIF RESULT == 65
+			TALENT:K:66 = 0
+		;厌恶身体接触→喜欢身体接触をOFF
+		ELSEIF RESULT == 66
+			TALENT:K:65 = 0
+		;接受快感→否定快感をOFF
+		ELSEIF RESULT == 70
+			TALENT:K:71 = 0
+		;否定快感→接受快感をOFF
+		ELSEIF RESULT == 71
+			TALENT:K:70 = 0
+		;男女通吃→讨厌男人、讨厌女人をOFF
+		ELSEIF RESULT == 81
+			TALENT:K:82 = 0
+			TALENT:K:88 = 0
+		;讨厌男人→男女通吃をOFF
+		ELSEIF RESULT == 82
+			TALENT:K:81 = 0
+		;讨厌女人→男女通吃をOFF
+		ELSEIF RESULT == 88
+			TALENT:K:81 = 0
+		;施虐狂→受虐狂をOFF
+		ELSEIF RESULT == 83
+			TALENT:K:84 = 0
+		;受虐狂→施虐狂をOFF
+		ELSEIF RESULT == 84
+			TALENT:K:83 = 0
+		;Ｃ钝感→Ｃ敏感をOFF
+		ELSEIF RESULT == 101
+			TALENT:K:102 = 0
+		;Ｃ敏感→Ｃ钝感をOFF
+		ELSEIF RESULT == 102
+			TALENT:K:101 = 0
+		;Ａ钝感→Ａ敏感をOFF
+		ELSEIF RESULT == 105
+			TALENT:K:106 = 0
+		;Ａ敏感→Ａ钝感をOFF
+		ELSEIF RESULT == 106
+			TALENT:K:105 = 0
+		;Ｂ钝感→Ｂ敏感をOFF
+		ELSEIF RESULT == 107
+			TALENT:K:108 = 0
+		;Ｂ敏感→Ｂ钝感をOFF
+		ELSEIF RESULT == 108
+			TALENT:K:107 = 0
+		;矮小体型→高大体型をOFF
+		ELSEIF RESULT == 100
+			TALENT:K:113 = 0
+		;高大体型→矮小体型をOFF
+		ELSEIF RESULT == 113
+			TALENT:K:100 = 0
+		;孩童尺寸→短小/巨根/尺寸傲人をOFF
+		ELSEIF RESULT == 114
+			TALENT:K:短小 = 0
+			TALENT:K:巨根 = 0
+			TALENT:K:尺寸傲人 = 0
+		;短小→孩童尺寸/巨根/尺寸傲人をOFF
+		ELSEIF RESULT == 115
+			TALENT:K:孩童尺寸= 0
+			TALENT:K:巨根 = 0
+			TALENT:K:尺寸傲人 = 0
+		;巨根→孩童尺寸/短小/尺寸傲人をOFF
+		ELSEIF RESULT == 116
+			TALENT:K:孩童尺寸= 0
+			TALENT:K:短小 = 0
+			TALENT:K:尺寸傲人 = 0
+		;尺寸傲人→孩童尺寸/短小/巨根をOFF
+		ELSEIF RESULT == 117
+			TALENT:K:孩童尺寸= 0
+			TALENT:K:短小 = 0
+			TALENT:K:巨根 = 0
+		;恢复快→恢复慢をOFF
+		ELSEIF RESULT == 130
+			TALENT:K:131 = 0
+		;恢复慢→恢复快をOFF
+		ELSEIF RESULT == 131
+			TALENT:K:130 = 0
+		;日光浴→月光浴OFF
+		ELSEIF RESULT == 133
+			TALENT:K:134 = 0
+		;月光浴→日光浴をOFF
+		ELSEIF RESULT == 134
+			TALENT:K:133 = 0
+		ENDIF
+	ELSEIF RESULT == 996
+		CALL DICTIONARY_TALENT_MAIN
+	ELSEIF RESULT == 997
+		TARGET = M
+		DELCHARA K
+		FLAG:8 -= 1
+		RETURN 0
+	ELSEIF RESULT == 998
+		REPEAT 300
+			TALENT:K:COUNT = 0
+		REND
+		REPEAT 100
+			EXP:K:COUNT = 0
+		REND
+		TALENT:K:男性 = 1
+		TALENT:K:童贞 = 1
+		TALENT:K:后庭处子 = 1
+	;设定完了
+	ELSEIF RESULT == 999
+		BREAK
+	ELSE
+		CLEARLINE 1
+		GOTO INPUT_LOOP_SHORI
+	ENDIF
+WEND
+;-----------------------------------------------------------
+;最後に外見特徴や性格属性、ほかのキャラとの関係を设定
+CALL SLAVE_CUSTOM_GAIKEN_TOKUCHO
+;-----------------------------------------------------------
+;非エスパーモード用の素質決め
+SIF TFLAG:166
+	CALL SLAVE_CUSTOM_RANDOM_TALENT
+;-----------------------------------------------------------
+;後処理部分
+;-----------------------------------------------------------
+;堅物､腹黒､傲娇､高慢､反抗､刚强､高傲→[抵抗]が付く
+SIF CFLAG:600 == 3 || CFLAG:600 == 7 || CFLAG:600 == 5 || CFLAG:600 == 6 || CFLAG:600 == 67 || TALENT:11 || TALENT:12 || TALENT:15
+	TALENT:抵抗 = 1
+SIF TALENT:擅长料理
+	ABL:料理技能 = 2
+SIF TALENT:男女通吃 && ABL:同性倾向 == 0
+	ABL:同性倾向 = 1
+IF CFLAG:600 == 68
+	TALENT:胆怯 = 1
+	TALENT:刚强 = 0
+	TALENT:高傲 = 0
+	TALENT:自大 = 0
+	TALENT:傲娇 = 0
+	TALENT:弱点 = 1
+	TALENT:烙印 = 1
+		ABL:0 = 3
+		EXP:21 = RAND:10 + 5
+ENDIF
+
+;性に对する興味
+IF (TALENT:无动于衷 && TALENT:缺乏感情) || CFLAG:600 == 11 || TALENT:幼稚
+	ABL:欲望 = 0
+	ABL:Ｃ感觉= 0
+ELSE
+	EXP:射精经验 += 5
+	EXP:自慰经验 += 10
+	ABL:欲望 = 1
+	ABL:Ｃ感觉= 1
+ENDIF
+SIF TALENT:性好奇
+	EXP:自慰经验 += 2
+SIF TALENT:不知羞耻
+	EXP:自慰经验 += 2
+IF TALENT:容易自慰
+	EXP:射精经验 += 25
+	EXP:自慰经验 += 30
+ENDIF
+;童贞でない場合、性交经验+5、射精经验+5､自慰经验+5
+IF TALENT:童贞 == 0
+	EXP:性交经验 += 5
+	EXP:射精经验 += 5
+	EXP:自慰经验 += 5
+	ABL:欲望 = 1
+	ABL:技巧 = 1
+	ABL:Ｃ感觉= 1
+ENDIF
+IF TALENT:自制力 || TALENT:性保守 || TALENT:难以越过的底线 || TALENT:性压抑 || TALENT:否定快感
+	ABL:欲望 = 0
+ENDIF
+
+SIF TALENT:化学属性
+	TALENT:调和知识 = 1
+
+;初期体力最大値調整
+IF TALENT:耐痛
+	MAXBASE:0 += 100
+	BASE:0 += 100
+ENDIF
+IF TALENT:高大体型
+	MAXBASE:0 += 200
+	BASE:0 += 200
+ENDIF
+IF TALENT:日光浴
+	MAXBASE:0 += 100
+	BASE:0 += 100
+ENDIF
+IF TALENT:喜欢运动
+	MAXBASE:0 += 100
+	BASE:0 += 100
+ENDIF
+IF TALENT:吸血鬼
+	MAXBASE:0 -= 100
+	BASE:0 -= 100
+ENDIF
+IF TALENT:矮小体型
+	MAXBASE:0 -= 100
+	BASE:0 -= 100
+ENDIF
+IF TALENT:月光浴
+	MAXBASE:0 -= 100
+	BASE:0 -= 100
+ENDIF
+
+;初期气力最大値調整
+IF TALENT:胆怯
+	MAXBASE:1 -= 100
+	BASE:1 -= 100
+ENDIF
+IF TALENT:自卑
+	MAXBASE:1 -= 100
+	BASE:1 -= 100
+ENDIF
+IF TALENT:性压抑
+	MAXBASE:1 -= 100
+	BASE:1 -= 100
+ENDIF
+IF TALENT:怕痛
+	MAXBASE:1 -= 100
+	BASE:1 -= 100
+ENDIF
+IF TALENT:容易自慰
+	MAXBASE:1 -= 100
+	BASE:1 -= 100
+ENDIF
+IF TALENT:容易上瘾
+	MAXBASE:1 -= 100
+	BASE:1 -= 100
+ENDIF
+;-----------------------------------------------------------
+REPEAT 40
+	PRINTL
+REND
+PRINTFORMW 情报输入辛苦啦。
+PRINTL
+PRINTFORMW 委托费用估算中。
+PRINTL 　　　　　　・
+PRINTL 　　　　　　・
+PRINTW 　　　　　　・
+;拉致の困难度で金額が変わる
+Y = 2000
+;捕獲が難しくなる要素
+SIF TALENT:高大体型
+	Y += 100
+SIF TALENT:学得快
+	Y += 100
+SIF TALENT:耐痛
+	Y += 100
+SIF TALENT:抵抗
+	Y += 200
+SIF TALENT:大人
+	Y += 100
+SIF TALENT:喜欢运动
+	Y += 100
+;捕獲が易しくなる要素
+SIF TALENT:矮小体型
+	Y -= 100
+SIF TALENT:怕痛
+	Y -= 100
+SIF TALENT:性好奇
+	Y -= 100
+SIF TALENT:直率
+	Y -= 100
+SIF TALENT:老实
+	Y -= 100
+SIF TALENT:胆怯
+	Y -= 100
+;最高値と最低値の制限
+SIF Y > 2500
+	Y = 2500
+SIF Y < 1500
+	Y = 1500
+SIF TALENT:烙印
+	Y /= 2
+CSTR:93 = 暂无。
+PRINTFORMW 本次委托费用一共是${Y}。
+MONEY -= Y
+PRINTL 　　　　　　・
+PRINTL 　　　　　　・
+PRINTL 　　　　　　・
+PRINTL 非常感谢您的光顾。
+PRINTFORMW 我们立即将%NAME%抓来送往您的居所。
+PRINTL 　　　　　　・
+PRINTL 　　　　　　・
+PRINTW 　　　　　　・
+PRINTFORMW ―― %NAME%被绑架到房间里了 ――
+LOCAL = DEFFICULTY(TARGET)
+IF LOCAL > 400
+	CSTR:10 = G
+ELSEIF LOCAL > 100
+	CSTR:10 = F
+ELSEIF LOCAL > -200
+	CSTR:10 = E
+ELSEIF LOCAL > -400
+	CSTR:10 = D
+ELSEIF LOCAL > -800
+	CSTR:10 = C
+ELSEIF LOCAL > -2000
+	CSTR:10 = B
+ELSEIF LOCAL > -3000
+	CSTR:10 = A
+ELSE
+	CSTR:10 = S
+ENDIF
+
+CFLAG:111 = -1
+CFLAG:1000 = -1
+CFLAG:1001 = -1
+CFLAG:201 = 0

@@ -1,0 +1,570 @@
+﻿;ゲームクリアの设定金額がスタート時に提示される金額と異なるので变更しました。それに伴いクリア時に引かれる金額も变更しました。
+;1000000　→　500000　に一括置き換えしただけです。：2011/06/05
+
+;フリー使节終了判定
+@EVENTTURNEND
+#LATER
+SIF FLAG:5 == 8
+	CALL FREE_MISSION_CHECK
+RETURN
+
+;オープニング
+@OPENING
+DRAWLINE
+REPEAT 16
+	A = COUNT+500
+	PRINTFORMSW STR:A
+REND
+
+PRINTFORMSL STR:516
+PRINTFORMSL STR:517
+;PRINTFORMSW STR:518
+PRINTFORMSW STR:519
+PRINTFORMSL STR:520
+PRINTFORMSW STR:521
+PRINTFORMSW STR:522
+PRINTFORMSW STR:523
+PRINTFORMSL STR:524
+PRINTFORMSW STR:518
+PRINTFORMSL STR:525
+PRINTFORMSW STR:526
+PRINTFORMSW STR:527
+A = FLAG:4+527
+PRINTFORMS STR:A
+PRINTFORMSL STR:531
+
+REPEAT 19
+	A = COUNT+532
+	PRINTFORMSW STR:A
+REND
+
+
+
+RETURN 0
+
+
+;---------------------------------------------------,
+;チュートリアル,
+;---------------------------------------------------,
+@TUTORIAL
+PRINTFORMW 欢迎来到eraQueenA+
+PRINTFORMW 这里是本游戏的食用指南
+PRINTFORMW 以下是看不懂日文的汉化君瞎掰的攻略，要看哪个呢？
+PRINTL 
+$INPUT_LOOP
+PRINTFORML [0] 基本介绍
+PRINTFORML [1] 恋慕取得条件
+PRINTFORML [2] 淫乱取得条件
+PRINTFORML [3] 服从取得条件
+PRINTFORML [4] 进阶素质取得条件
+PRINTFORML [5] 新手策略提示
+PRINTFORML [9] 不看这个鬼教程
+INPUT
+IF RESULT == 9
+	PRINTL 
+	PRINTFORMW 那么，祝您游戏愉快
+	RETURN 0
+ELSEIF RESULT == 0
+	PRINTL 
+	PRINTFORMW eraQueenA是一款纯文字调教游戏
+	PRINTFORMW 初始设定是女攻，男受
+	PRINTFORMW 目前您手上的这款是魔改后的版本，也即eraQueenA+
+	PRINTFORMW 把调教完成的奴隶卖掉就可以赚钱了呢
+	IF FLAG:5 == 9
+		PRINTFORML 游戏共有EASY、NORMAL、HARD三种游戏难度
+		PRINTFORMW 调教开支、劳役收益、以及日常维护费用的增长周期是会随之变化的哦
+		PRINTFORML 具体为，EASY是21日、NORMAL是16日、HARD是11日
+		PRINTFORMW 何况还要支出一部分钱来养活你自己
+		PRINTFORML 未免沦落到穷困潦倒的境地
+		PRINTFORMW 最好从游戏开始的第一天就去买奴隶回来干正事，向着大富豪的目标进发吧！
+		PRINTFORML 为了让我们的奴隶更值钱
+		PRINTFORMW 建议达成【恋慕】、【淫乱】或【服从】的陷落素质
+		PRINTFORML 取得陷落素质的奴隶可以担任调教助手
+		PRINTFORMW 还可以替你干活（至于是什么活儿先保密）
+		PRINTFORMW 相比把调教完成的奴隶卖掉，留下来为你工作的挣钱效率更高哟
+		PRINTFORML 在EXTRA模式中，因为没有期限
+		PRINTFORMW 你可以爱咋咋地
+		PRINTFORML 但是，余额为0的你一样会Game Over
+	ELSE
+		PRINTFORML 用挣来的钱买奴隶和道具，就可以挣更多的钱！财源滚滚！
+		PRINTFORMW 目标是在50天内赚到$50,0000
+		PRINTFORML 游戏共有EASY、NORMAL、HARD三种游戏难度
+		PRINTFORMW 调教开支、劳役收益、以及日常维护费用的增长周期是会随之变化的哦
+		PRINTFORML 具体为，EASY是21日、NORMAL是16日、HARD是11日
+		PRINTFORMW 何况还要支出一部分钱来养活你自己
+		PRINTFORML 未免沦落到穷困潦倒的境地
+		PRINTFORMW 最好从游戏开始的第一天就去买奴隶回来干正事，向着大富豪的目标进发吧！
+		PRINTFORML 为了让我们的奴隶更值钱
+		PRINTFORMW 建议达成【恋慕】、【淫乱】或【服从】的陷落素质
+		PRINTFORML 取得陷落素质的奴隶可以担任调教助手
+		PRINTFORMW 还可以替你干活（至于是什么活儿先保密）
+		PRINTFORMW 相比把调教完成的奴隶卖掉，留下来为你工作的挣钱效率更高
+		PRINTFORML 因为期限是有限的50天
+		PRINTFORMW 一定要确保挣钱效率哟
+	ENDIF
+	PRINTL 
+ELSEIF RESULT == 1
+	PRINTL 
+	PRINTFORMW 如果想使奴隶陷落，最好选择从爱抚入手
+	PRINTFORMW 当奴隶变得顺从以后，再教会他如何侍奉
+	PRINTFORMW 但如果你非要采取严厉的调教方式或者助手调教
+	PRINTFORMW 那就自生自灭去吧嗯
+	PRINTL 
+ELSEIF RESULT == 2
+	PRINTL 
+	PRINTFORMW 如果想使奴隶淫乱，需要提高他的欲望和敏感程度
+	PRINTFORMW 例如用口交指令和胸爱抚指令，来提高C感觉和B感觉
+	PRINTFORMW 顺从程度提高以后，再着手开发后庭
+	PRINTFORML 如果令性经验缺乏的奴隶一下子接受太强烈的快感
+	PRINTFORMW 会因此产生反抗情绪，所以一定要循序渐进
+	PRINTFORML 总而言之，让他体会性爱的快感就对了
+	PRINTFORMW 除此之外，异常的性经验和蔷薇经验也是取得淫乱素质的条件哦
+	PRINTL 
+ELSEIF RESULT == 3
+	PRINTL 
+	PRINTFORML 如果想使奴隶服从，准备好鞭子、口塞球、眼罩吧
+	PRINTFORMW 一开始就使用SM系的指令
+	PRINTFORMW 最好把对主人的依赖度降低到负数
+	PRINTFORML 大量使用严厉的调教方式就对了
+	PRINTFORMW 建议入手一只顽强的奴隶哦，不然玩死了就不好了
+	PRINTFORMW 还有，为了使他完全服从，异常的性经验也是必要条件
+	PRINTL 
+ELSEIF RESULT == 4
+	PRINTL 
+	PRINTFORMW 取得初级素质之后，还可以进一步取得进阶素质
+	PRINTFORMW 【恋慕】进阶为【相亲相爱】、【淫乱】进阶为【娼夫】、【服从】进阶为【隶属】
+	PRINTFORMW 进阶素质比原本的素质取得要求更高一些
+	PRINTFORMW 所以想要取得进阶素质，还需要进一步爱的调教❤
+	PRINTL 
+ELSEIF RESULT == 5
+	PRINTL 
+	PRINTFORMW ★1 在调教过程中，请注意不要造成过度的反感和不适
+	PRINTFORMW ★2 可以穿戴多个道具造成多重高潮
+	PRINTFORMW ★3 有困难的话就去翼梦和eratoho吧搜索，毕竟「HELP」还没汉化
+	PRINTFORMW ★4 爱慕你的奴隶和有烙印的奴隶拍卖价格会降低
+	IF FLAG:5 == 9
+	PRINTFORML ★5 EXTRA模式下，获得3个以上奴隶时，维护价格会飞涨
+	PRINTFORMW 　　所以最好在一开始就调教出能够稳定挣钱的奴隶
+	ENDIF
+	PRINTL 
+ELSE
+	PRINTL 
+ENDIF
+GOTO INPUT_LOOP
+
+
+;エンディングチェック
+@ENDING_CHECK
+
+PRINTL 请选择上缴金钱的方式（结局内容会有所变化）
+PRINTL [0] - 直接上缴（通常结局)
+A = 0
+B = -1
+C = -1
+D = -1
+REPEAT CHARANUM
+	SIF TALENT:COUNT:3 || TALENT:COUNT:4 || TALENT:COUNT:5 || TALENT:COUNT:6 || TALENT:COUNT:7 || TALENT:COUNT:8
+		A += 1
+	SIF TALENT:COUNT:6
+		B = COUNT
+	SIF TALENT:COUNT:7
+		C = COUNT
+	SIF TALENT:COUNT:8
+		D = COUNT
+REND
+
+;恋慕エンド
+SIF B > 0 && FLAG:30 == 1
+	PRINTFORML [1] - 买戒指给%CALLNAME:B%（恋慕结局）
+;淫乱エンド
+SIF C > 0 && FLAG:31 == 1
+	PRINTFORML [2] - 买自慰棒给%CALLNAME:C%（淫乱结局）
+;服从エンド
+SIF D > 0 && FLAG:32 == 1
+	PRINTFORML [3] - 买项圈给%CALLNAME:D%（服从结局）
+;ハーレムエンド
+SIF (B > 0 || C > 0 || D > 0) && A >= 3
+	PRINTFORML [4] - 购买房屋的权利书（后宫结局）
+
+;特殊ハーレム判定
+CALL ENDING_JUDGE
+;女王の厨房エンド
+SIF I:500 & 2
+	PRINTL [51] - 买一套最新的厨具（国王的厨房结局）
+;名制片人エンド
+SIF I:500 & 4
+	PRINTL [52] - 建立偶像事务所（名制作人结局）
+;？？？
+SIF B > 0 && C > 0 && D > 0 && (FLAG:30+FLAG:31+FLAG:32) >= 5
+	PRINTL [98]- ？？？（？？？结局 - 魔改版）
+;？？？
+SIF B > 0 && C > 0 && D > 0 && (FLAG:30+FLAG:31+FLAG:32) >= 5
+	PRINTL [99]- ？？？（？？？结局 - 原版）
+PRINTL [100] 放弃
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 100
+	RETURN 0
+ELSEIF RESULT == 0
+	MONEY -= 500000
+	CALL ENDING_1
+ELSEIF RESULT == 1 && B >= 0 && FLAG:30 == 1
+	MONEY -= 500000
+	TARGET = B
+	SIF TARGET == ASSI
+		ASSI = -1
+	FLAG:41 += 1
+	CALL ENDING_2
+ELSEIF RESULT == 2 && C >= 0 && FLAG:31 == 1
+	MONEY -= 500000
+	TARGET = C
+	SIF TARGET == ASSI
+		ASSI = -1
+	FLAG:41 += 1
+	CALL ENDING_3
+ELSEIF RESULT == 3 && D >= 0 && FLAG:32 == 1
+	MONEY -= 500000
+	TARGET = D
+	SIF TARGET == ASSI
+		ASSI = -1
+	FLAG:41 += 1
+	CALL ENDING_4
+ELSEIF RESULT == 4 && (B >= 0 || C >= 0 || D >= 0) && A >= 3
+	MONEY -= 500000
+	FLAG:41 += 2
+	CALL ENDING_5
+;特殊ハーレム処理
+ELSEIF RESULT == 51 && (I:500 & 2)
+	MONEY -= 500000
+	FLAG:41 += 3
+	CALL ENDING_HAREM51
+	CALL GAME_CONTINUE
+ELSEIF RESULT == 52 && (I:500 & 4)
+	MONEY -= 500000
+	FLAG:41 += 3
+	CALL ENDING_HAREM52
+	CALL GAME_CONTINUE
+;？？？エンド（魔改版）
+ELSEIF RESULT == 98 && (B > 0 && C > 0 && D > 0 && (FLAG:30+FLAG:31+FLAG:32) >= 5)
+	MONEY -= 500000
+	FLAG:41 += 3
+	CALL ENDING_0
+	CALL GAME_CONTINUE
+;？？？エンド（原版）
+ELSEIF RESULT == 99 && (B > 0 && C > 0 && D > 0 && (FLAG:30+FLAG:31+FLAG:32) >= 5)
+	MONEY -= 500000
+	FLAG:41 += 3
+	CALL ENDING_0_1
+	CALL GAME_CONTINUE
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+
+;バッドエンド
+@BADENDING_1
+DRAWLINE
+REPEAT 14
+	A = COUNT+1000
+	PRINTFORMSW STR:A
+REND
+;拍卖した奴隶のエピソードを表示
+Y = -1
+;CALL SHOW_AFTERWARDS
+QUIT
+
+@BADENDING_2
+DRAWLINE
+A = 0
+REPEAT CHARANUM
+	SIF MARK:COUNT:反抗刻印 >= 3
+		A = COUNT
+REND
+IF A > 0 && FLAG:5 == 9 && (TALENT:A:疯癫 || TALENT:A:施虐狂) && !RAND:2
+	PRINTW ………………
+	PRINTW …………
+	PRINTW ……
+	PRINTFORMW ——等意识到的时候，%PLAYER_NAME()%正坐在椅子上，双手被绑住了
+	PRINTFORML 环视四周，发现那里有着手持红色蜡烛的%CALLNAME:A%
+	PRINTFORMW 看清那个森然的笑容与阴恻恻俯视着自己的目光后
+	PRINTFORML 终于开始感到恐惧的%PLAYER_NAME()%的脸不自然地扭曲了
+	PRINTFORMW %CALLNAME:A%眼中滚动着晦暗不明的情绪，将手伸向了%PLAYER_NAME()%穿着的衣服——
+	WAIT
+	PRINTW ………………
+	PRINTW …………
+	PRINTW ……
+	PRINTFORMW ★★★%NAME:MASTER%的身心都被调教了★★★
+	PRINTW 　
+	PRINTW 　　　　　　　　―― 逆调教结局
+ELSE
+	REPEAT 20
+		A = COUNT+1020
+		PRINTFORMSW STR:A
+	REND
+ENDIF
+;拍卖した奴隶のエピソードを表示
+Y = -2
+;CALL SHOW_AFTERWARDS
+QUIT
+
+;グッドエンド
+;ノーマルエンド
+@ENDING_1
+DRAWLINE
+REPEAT 14
+	A = COUNT+1100
+	PRINTFORMSW STR:A
+REND
+CALL GAME_CONTINUE
+
+;恋慕単体エンド
+@ENDING_2
+SIF CFLAG:21 == 1
+	CALL KOJO_MESSAGE_ENDING
+SIF FLAG:5 == 9
+	RETURN 0
+
+DRAWLINE
+REPEAT 13
+	A = COUNT+1120
+	PRINTFORMSW STR:A
+REND
+CALL GAME_CONTINUE
+
+;淫乱単体エンド
+@ENDING_3
+SIF CFLAG:21 == 1
+	CALL KOJO_MESSAGE_ENDING
+SIF FLAG:5 == 9
+	RETURN 0
+
+DRAWLINE
+REPEAT 12
+	A = COUNT+1140
+	PRINTFORMSW STR:A
+REND
+CALL GAME_CONTINUE
+
+;服从単体エンド
+@ENDING_4
+SIF CFLAG:21 == 1
+	CALL KOJO_MESSAGE_ENDING
+SIF FLAG:5 == 9
+	RETURN 0
+
+DRAWLINE
+REPEAT 12
+	A = COUNT+1160
+	PRINTFORMSW STR:A
+REND
+CALL GAME_CONTINUE
+
+;ハーレムエンド
+@ENDING_5
+REPEAT CHARANUM
+	IF CFLAG:COUNT:21 == 2
+		TARGET = COUNT
+		CALL KOJO_MESSAGE_ENDING
+	ENDIF
+	SIF FLAG:5 == 9
+		BREAK
+REND
+SIF FLAG:5 == 9
+	RETURN 0
+
+DRAWLINE
+REPEAT 8
+	A = COUNT+1200
+	PRINTFORMSW STR:A
+REND
+;怀孕奴隶
+IF ABL:4 >= 5
+	B = 1220
+;肛奴隶
+ELSEIF ABL:5 >= 5 && TALENT:140
+	B = 1230
+;それ以外
+ELSE
+	B = 1210
+ENDIF
+REPEAT 6
+	A = COUNT+B
+	PRINTFORMSW STR:A
+REND
+PRINTFORMSW STR:1207
+PRINTFORMSW STR:1208
+CALL GAME_CONTINUE
+
+;？？？エンド(魔改)
+@ENDING_0
+DRAWLINE
+REPEAT 75
+	A = COUNT+2000
+	PRINTFORMSW STR:A
+REND
+$INPUT_LOOP
+PRINTFORMSL STR:2075
+PRINTFORMSL STR:2076
+INPUT
+IF RESULT == 0
+	REPEAT 28
+		A = COUNT+2077
+		PRINTFORMSW STR:A
+	REND
+	GLOBAL:0 = 2
+	SAVEGLOBAL
+	QUIT
+ELSEIF RESULT == 1
+	REPEAT 10
+		A = COUNT+2105
+		PRINTFORMSW STR:A
+	REND
+	ABL:MASTER:2 = 10
+	ABL:MASTER:10 = 10
+	ABL:MASTER:13 = 10
+	FLAG:5 = 9
+	NOITEM = 1
+	MONEY += 10000000
+	TALENT:MASTER:52 = 1
+	TALENT:MASTER:53 = 1
+	TALENT:MASTER:55 = 1
+	TALENT:MASTER:64 = 1
+	TALENT:MASTER:83 = 1
+	TALENT:MASTER:87 = 1
+	TALENT:MASTER:94 = 1
+	TALENT:MASTER:144 = 1
+	TALENT:MASTER:145 = 1
+	TALENT:MASTER:147 = 1
+	TALENT:MASTER:156 = 1
+    CSTR:MASTER:91 =
+    CSTR:MASTER:92 = 神（大概）。
+    CSTR:MASTER:93 =
+    CSTR:MASTER:94 = 曾为了救在意的人类无数次重置世界耗尽神力。
+    CSTR:MASTER:95 = 至于神的真实目的…目前尚无人知。
+    CSTR:MASTER:96 =
+	GLOBAL:0 = 1
+	SAVEGLOBAL
+	RETURN 0
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+
+;？？？エンド(原版)
+@ENDING_0_1
+DRAWLINE
+REPEAT 75
+	A = COUNT+3000
+	PRINTFORMSW STR:A
+REND
+$INPUT_LOOP
+PRINTFORMSL STR:3075
+PRINTFORMSL STR:3076
+INPUT
+IF RESULT == 0
+	REPEAT 28
+		A = COUNT+3077
+		PRINTFORMSW STR:A
+	REND
+	GLOBAL:0 = 1
+	SAVEGLOBAL
+	QUIT
+ELSEIF RESULT == 1
+	REPEAT 10
+		A = COUNT+3105
+		PRINTFORMSW STR:A
+	REND
+	ABL:MASTER:2 = 10
+	ABL:MASTER:10 = 10
+	ABL:MASTER:13 = 10
+	FLAG:5 = 9
+	NOITEM = 1
+	MONEY += 10000000
+	TALENT:MASTER:52 = 1
+	TALENT:MASTER:53 = 1
+	TALENT:MASTER:55 = 1
+	TALENT:MASTER:64 = 1
+	TALENT:MASTER:83 = 1
+	TALENT:MASTER:87 = 1
+	TALENT:MASTER:94 = 1
+	TALENT:MASTER:141 = 1
+	TALENT:MASTER:144 = 1
+	TALENT:MASTER:145 = 1
+	GLOBAL:0 = 1
+	SAVEGLOBAL
+	RETURN 0
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+
+@GAME_CONTINUE
+;拍卖した奴隶のエピソードを表示
+;CALL SHOW_AFTERWARDS
+;クリアフラグを立てる
+FLAG:40 = 10
+FLAG:41 += 3
+PRINTL 要继续游戏吗？
+PRINTC [0]结束
+PRINTC [1]继续
+PRINTL  
+
+$INPUT_LOOP
+INPUT
+
+IF RESULT == 0
+	QUIT
+ELSEIF RESULT == 1
+	FLAG:5 = 9
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+RETURN 1
+
+
+
+
+;=============================================================================
+;エンディングチェック処理関連
+;長くなったのと今後の拡張性の問題で関数として独立宣言してみる
+;EXTRAや周回要素を前提とした大人数エンドはここでは処理しない
+;A～Dは通常エンド判定で使用するため使用不可
+;=============================================================================
+@ENDING_JUDGE
+
+;;I列 プ雷内容に即した特殊エンド
+;;エンド判定はI:500でビット演算
+;;仕様上I:501にCHARANUM-1の値も記録
+I:500 = 0
+I:501 = (CHARANUM - 1)
+;;影の支配者エンド
+;I:0 = 0
+;女王の厨房エンド
+I:10 = 0
+;名制片人エンド
+I:20 = 0
+
+REPEAT CHARANUM
+;	;女王の厨房エンド
+;	;ここは料理技能5恋慕系陷落の人数を見ている
+	SIF ABL:COUNT:12 >= 5 && KANRAKU(COUNT) == 1
+		I:10 += 1
+;	;名Ｐエンド
+;	;ここは歌唱技能5の人数を見ている
+	SIF ABL:COUNT:14 >= 5
+		I:20 += 1
+;	;名调教师エンド
+;	;受虐狂の人数
+;	SIF TALENT:COUNT:84
+;		I:30 += 1
+;	;女王様の奴隶
+;	;施虐狂でかつ技巧５、助手可能な人数
+;	SIF TALENT:COUNT:83 && ABL:2 >= 5 && CFLAG:COUNT:1 == 2
+;		I:40 += 1
+REND
+;;女王の厨房エンド
+SIF I:10 == I:501 && CHARANUM > 3
+	I:500 |= 2
+;;特殊ハーレムエンド判定
+;;名Ｐエンド
+SIF I:20 == I:501 && CHARANUM > 3
+	I:500 |= 4
+

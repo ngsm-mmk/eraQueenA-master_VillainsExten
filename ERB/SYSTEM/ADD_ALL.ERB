@@ -1,0 +1,70 @@
+﻿;　FLAG:2 = ●ビット演算で拡張機能全体に適用する（ことにしたらいじりやすいだろうか）
+;	　　|1 调教者变更機能拡張 |2 称号機能あり |4 称号機能オンorオフ |8 着衣プ雷拡張 |16 调教者变更機能を更に拡張
+;★调教者变更機能はeraQueenAでは使われてません
+;拡張機能のオン・オフをオプションで出来るようにしてみた
+@ADD_ON_SETTING
+PRINT [  1]　称号功能　　　　　　　
+IF FLAG:2 & 2
+	PRINTL ○
+ELSE
+	PRINTL ×
+ENDIF
+PRINT [  2]　着衣PLAY扩展　　　　
+IF FLAG:2 & 8
+	PRINTL ○
+ELSE
+	PRINTL ×
+ENDIF
+PRINTL [100] - 返回
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 100
+	RETURN 0
+ELSEIF RESULT == 1
+	IF FLAG:2 & 2
+		PRINTW 关闭称号功能
+		FLAG:2 -= 2
+	ELSE
+		PRINTW 开启称号功能
+		FLAG:2 |= 2
+	ENDIF
+ELSEIF RESULT == 2
+	IF FLAG:2 & 8
+		PRINTW 关闭着衣PLAY
+		FLAG:2 -= 8
+	ELSE
+		PRINTW 开启着衣PLAY
+		FLAG:2 |= 8
+	ENDIF
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+
+@ADD_ALL
+;機能のオンオフに関わらず、コメントアウトしないでください
+
+;================================================
+;1 调教者变更機能拡張
+;主人が「あなた」の時、強制的に寝かせる
+;SIF NO:MASTER == 0 && (FLAG:2 & 1)
+;	FLAG:2 -= 1
+;调教者变更がオフのとき強制的に寝かせる
+;SIF (FLAG:2 & 17) == 16
+;	FLAG:2 -= 16
+;================================================
+;2 称号機能
+;オフの時に表示のオンオフフラグを強制的に寝かせる
+SIF (FLAG:2 & 6) == 4
+	FLAG:2 -= 4
+;================================================
+;8 着衣プ雷拡張
+;オフの時に【素質：手指灵巧】を強制的に解除する
+IF (FLAG:2 & 8) == 0
+	REPEAT CHARANUM
+		A = COUNT
+		TALENT:A:58 = 0
+	REND
+ENDIF
+;================================================
+

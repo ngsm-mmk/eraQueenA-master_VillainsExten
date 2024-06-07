@@ -1,0 +1,875 @@
+﻿;=============================================================================
+;子供パッチの諸処理
+;erahetaAver061tから移植・改造、2012.5.7
+;=============================================================================
+;-------------------------------------------------
+;子供誕生判定処理
+;引数０は母親、引数１は父親、引数２は乳母
+;-------------------------------------------------
+@CHILD_CHECK(ARG:0, ARG:1, ARG:2)
+PRINTL 
+LOCAL = 0
+$SELECTER
+LOCAL:1 = 0
+SIF FLAG:27 == 31
+	FLAG:27 = 0
+;手元に番号被りの別の子供がいるかどうかチェック
+REPEAT CHARANUM
+	SIF NO:COUNT == FLAG:27 + 300
+		LOCAL:1 = 1
+REND
+IF LOCAL:1
+	FLAG:27 += 1
+	GOTO SELECTER
+ENDIF
+ADDCHARA (FLAG:27 + 300)
+FLAG:27 += 1
+
+LOCAL = CHARANUM-1
+CALL CHILD_PLUS(LOCAL, ARG:0, ARG:1, ARG:2)
+
+
+@CHILD_PLUS(ARG:0, ARG:1, ARG:2, ARG:3)
+#DIM 性格遗传
+;ARG:0：子供の登录番号
+;ARG:1：母親の登录番号
+;ARG:2：父親の登录番号
+;ARG:3：乳母の登录番号
+;父親と母親に子供の数＋
+CFLAG:(ARG:1):117 += 1
+SIF ARG:2 > -1
+	CFLAG:(ARG:2):118 += 1
+
+;子育て中の実子の固有番号:育児放棄の場合は乳母に入れる
+;乳母がいなかった場合
+SIF !ARG:3
+	CFLAG:(ARG:1):114 = NO:ARG
+;子供に、育ててもらう母or養母の固有番号を入れる
+CFLAG:ARG:115 = NO:(ARG:1)
+SIF ARG:3
+	CFLAG:ARG:115 = NO:(ARG:3)
+	
+;成长フラグを入れる
+CFLAG:ARG:116 = DAY
+
+
+;性別
+IF ARG:1 == MASTER || ARG:2 == MASTER
+	LOCALS:1 = 女儿
+ELSE
+	LOCALS:1 = 女孩子
+ENDIF
+IF !RAND:250
+	TALENT:(ARG):139 = 1
+	IF ARG:1 == MASTER || ARG:2 == MASTER
+		LOCALS:1 = 女儿
+	ELSE
+		LOCALS:1 = 女孩子
+	ENDIF
+ELSEIF !RAND:249
+	TALENT:(ARG):137 = 1
+	IF ARG:1 == MASTER || ARG:2 == MASTER
+		LOCALS:1 = 儿子
+	ELSE
+		LOCALS:1 = 男孩子
+	ENDIF
+ELSEIF !RAND:2
+	TALENT:(ARG):140 = 1
+	IF ARG:1 == MASTER || ARG:2 == MASTER
+		LOCALS:1 = 儿子
+	ELSE
+		LOCALS:1 = 男孩子
+	ENDIF
+ENDIF
+
+;气力体力の処理
+MAXBASE:(ARG):0 = MAXBASE:(ARG:1):0 / 120 * 100
+SIF MAXBASE:(ARG):0 < 1100
+	MAXBASE:(ARG):0 = 1000
+MAXBASE:(ARG):1 = MAXBASE:(ARG:1):1 / 60 * 50
+SIF MAXBASE:(ARG):1 < 550
+	MAXBASE:(ARG):1 = 500
+BASE:(ARG):0 = MAXBASE:(ARG):0
+BASE:(ARG):1 = MAXBASE:(ARG):1
+
+;顺从の処理、産みの親の反抗刻印が少ないほど最初から顺从
+ABL:(ARG):0 = 3 - MARK:(ARG:1):3
+SIF ABL:(ARG):0 < 0
+	ABL:(ARG):0 = 0
+
+;遺伝の処理
+REPEAT 180
+	SIF COUNT < 10 || (COUNT >= 74 && COUNT <= 78) || COUNT == 85 || COUNT == 137 || COUNT == 139 || COUNT == 140 || COUNT == 149 || (COUNT >= 153 && COUNT <= 155) || (COUNT >= 157 && COUNT <= 159) || COUNT == 160 || COUNT == 162
+		CONTINUE
+	IF ARG:2 > -1 && TALENT:(ARG:2):COUNT && RAND:5 > 1
+		TALENT:(ARG):COUNT = 1
+	ELSEIF ARG:2 > -1 && TALENT:(ARG:2):COUNT && TALENT:(ARG:1):COUNT
+		TALENT:(ARG):COUNT = 1
+	ELSEIF TALENT:(ARG:1):COUNT && RAND:5 > 1
+		TALENT:(ARG):COUNT = 1
+	ELSEIF !RAND:10 && (COUNT == 92 || COUNT == 93 || COUNT == 94 || (COUNT >= 101 && COUNT <= 108))
+		TALENT:ARG:COUNT = 1
+	ELSE
+		TALENT:ARG:COUNT = 0
+	ENDIF
+REND
+;天然じゃない兽耳は遺伝しない
+IF ARG:2 > -1
+	IF TALENT:(ARG:1):兽耳 == 1 || TALENT:(ARG:2):兽耳 == 1
+		TALENT:ARG:兽耳 = 1
+	ELSE
+		TALENT:ARG:兽耳 = 0
+	ENDIF
+ELSE
+	SIF TALENT:(ARG:1):兽耳 > 1
+		TALENT:ARG:兽耳 = 0
+ENDIF
+;ARG:1：母親の登录番号
+;ARG:2：父親の登录番号
+G = 0
+IF ARG:1 == 0 && ARG:2 > -1
+	G = ARG:2
+ELSE
+	G = ARG:1
+ENDIF
+性格遗传 = 0
+;性格タイプの遺伝
+SELECTCASE CFLAG:G:600
+	CASE 8, 9, 13, 67
+		;冷静、理屈、不思議子→冷静
+		性格遗传 = RAND:3
+		IF !性格遗传
+			CFLAG:ARG:600 = 67
+		ELSE
+			CFLAG:ARG:600 = 8
+		ENDIF
+	CASE 5, 6, 7, 10, 2
+		;屈折、俺様、腹黒、わがまま、ナルシー→わがまま
+		性格遗传 = RAND:4
+		IF !性格遗传
+			CFLAG:ARG:600 = 5
+		ELSEIF 性格遗传 == 2
+			CFLAG:ARG:600 = 2
+		ELSE
+			CFLAG:ARG:600 = 10
+		ENDIF
+	CASEELSE
+		性格遗传 = RAND:7
+		;ほか→元気
+		IF !性格遗传
+			CFLAG:ARG:600 = 12
+		ELSEIF 性格遗传 == 6
+			CFLAG:ARG:600 = 66
+		ELSEIF 性格遗传 == 4
+			CFLAG:ARG:600 = 4
+		ELSEIF 性格遗传 == 5
+			CFLAG:ARG:600 = 11
+		ELSE
+			CFLAG:ARG:600 = 1
+		ENDIF
+ENDSELECT
+;男の子の場合、ショタ子タイプになる確率がある
+;SIF MALE(ARG) && !RAND:3
+;	CFLAG:ARG:600 = 11
+;一人称など
+IF !RAND:2
+	CSTR:ARG:0 = 我
+ELSE
+	CSTR:ARG:0 = 人家
+ENDIF
+
+IF !ARG:1 || !ARG:2
+	IF MALE(MASTER)
+		CSTR:ARG:1 = 父亲
+		CSTR:ARG:2 = 父亲
+		MASTERNAME:ARG = 父亲
+	ELSE
+		CSTR:ARG:1 = 母亲
+		CSTR:ARG:2 = 母亲
+		MASTERNAME:ARG = 母亲
+	ENDIF
+ELSE
+	CSTR:ARG:1 = 你
+	CSTR:ARG:2 = 你
+	MASTERNAME:ARG = %CALLNAME:MASTER%大人
+ENDIF
+CSTR:ARG:3 = 主人
+
+CSTR:ARG:93 = 暂无。
+
+CALL CHILD_TALENT_SET(ARG)
+
+;相性決定
+REPEAT CHARANUM
+	RELATION:ARG:(NO:COUNT) = 100
+	RELATION:COUNT:(NO:ARG) = 100
+REND
+FOR LOCAL, 0, 320
+	IF RELATION:(ARG:1):LOCAL > 100 || (RELATION:(ARG:1):LOCAL < 100 && RELATION:(ARG:1):LOCAL != 0)
+		RELATION:ARG:LOCAL = (RELATION:(ARG:1):LOCAL) / 2 + 50
+		SIF RELATION:ARG:LOCAL > 200
+			RELATION:ARG:LOCAL = 200
+	ENDIF
+NEXT
+;親との相性良し
+RELATION:ARG:(NO:(ARG:1)) = 150
+RELATION:(ARG:1):(NO:ARG) = 150
+IF ARG:2 > -1
+	RELATION:ARG:(NO:(ARG:2)) = 150
+	RELATION:(ARG:2):(NO:ARG) = 120
+ENDIF
+IF ARG:3
+	RELATION:ARG:(NO:(ARG:3)) = 150
+	RELATION:(ARG:3):(NO:ARG) = 120
+ENDIF
+
+PRINT
+IF MALE(ARG)
+	PRINTW 生下来的是健康精神的＜男孩子＞
+ELSE
+	PRINTW 生下来的是健康精神的＜女孩子＞
+ENDIF
+;母親が主人で父親が居るか、乳母にまかされていない
+IF ARG:1 == MASTER
+	IF ARG:2 > -1
+		PRINTL 
+		PRINTFORML 要让%CALLNAME:(ARG:2)%给这个%LOCALS:1%取个名字吗？
+		PRINTL 
+		PRINTL [0] 姑且听听他的意见
+		PRINTL [1] 自己来取名
+		$INPUT_LOOP1
+		INPUT
+		IF RESULT == 0
+			CALL CHILD_NAME(ARG, ARG:2)
+			LOCAL = RESULT
+		ELSEIF RESULT == 1
+			LOCAL = 1
+		ELSE
+			GOTO INPUT_LOOP1
+		ENDIF
+	ELSE
+		LOCAL = 0
+	ENDIF
+;;乳母にまかされていない
+;ELSEIF !ARG:3
+;乳母に任されていても母親に付けさせる　同じ人确认
+ELSEIF CFLAG:ARG:1001 == NO:(ARG:1)
+	PRINTFORML 要让%CALLNAME:(ARG:1)%给这个%LOCALS:1%取个名字吗？
+	PRINTL 
+	IF MALE(ARG:1)
+		PRINTL [0] 姑且听听他的意见
+	ELSE
+		PRINTL [0] 姑且听听亲生父母的意见
+	ENDIF
+	IF ARG:2 == 0
+		PRINTL [1] 自己来取名
+	ELSE
+		PRINTL [1] 自己代为取名
+	ENDIF
+	$INPUT_LOOP2
+	INPUT
+	IF RESULT == 0
+		CALL CHILD_NAME(ARG, ARG:1)
+		LOCAL = RESULT
+	ELSEIF RESULT == 1
+		LOCAL = 1
+	ELSE
+		GOTO INPUT_LOOP2
+	ENDIF
+;ELSE
+;	LOCAL = 1
+ENDIF
+
+IF LOCAL
+	$CHILDNAME_INPUT1
+	PRINTFORML 请在下方输入这个%LOCALS:1%的名字
+	INPUTS
+	CSTR:ARG:5 = %RESULTS%
+	CALLNAME:ARG = %RESULTS%
+	SIF CSTR:ARG:5 == ""
+	CALL CHILD_NAME
+	CSTR:ARG:5 = %RESULTS%
+	CALLNAME:ARG = %RESULTS%
+	PRINTFORML 这个%LOCALS:1%的名字就决定是%CALLNAME:ARG%了
+	PRINTFORML 这样可以吗？
+	PRINTL 
+	PRINTFORML [0] 就决定是%CALLNAME:ARG%了
+	PRINTL [1] 再考虑考虑
+	$INPUT_LOOP3
+	INPUT
+	IF RESULT == 0
+	ELSEIF RESULT == 1
+		GOTO CHILDNAME_INPUT1
+	ELSE
+		GOTO INPUT_LOOP3
+	ENDIF
+	PRINTL 
+ENDIF
+;子供的苗字を決める
+;父も母も苗字无、もしくは母苗字无で父不明　→　苗字无でいい
+IF (CSTR:(ARG:1):4 == "" && ARG:2 > -1 && CSTR:(ARG:2):4 == "") || (CSTR:(ARG:1):4 == "" && ARG:2 <= -1)
+	NAME:ARG = %CALLNAME:ARG%
+;苗字有りの場合、
+ELSE
+	$CHILDNAME_INPUT2
+	IF CSTR:(ARG:1):4 == ""
+		;母苗字无　→　父的苗字を
+		CSTR:ARG:4 = %CSTR:(ARG:2):4%
+	ELSEIF ARG:2 <= -1 || CSTR:(ARG:2):4 == ""
+		;父苗字无か不明　→　母的苗字を
+		CSTR:ARG:4 = %CSTR:(ARG:1):4%
+	ELSE
+		$INPUT_LOOP4
+		PRINTFORML 要让%CALLNAME:ARG%冠上哪个姓氏？
+		PRINTL 
+		PRINTFORML [0] %CSTR:(ARG:1):4%
+		PRINTFORML [1] %CSTR:(ARG:2):4%
+		INPUT
+		IF RESULT == 0
+			CSTR:ARG:4 = %CSTR:(ARG:1):4%
+		ELSEIF RESULT == 1
+			CSTR:ARG:4 = %CSTR:(ARG:2):4%
+		ELSE
+			GOTO INPUT_LOOP4
+		ENDIF
+		PRINTFORML 姓氏是%CSTR:ARG:4%可以吗？
+		PRINTL 
+		PRINTL [0] 是
+		PRINTL [1] 否
+		INPUT
+		IF RESULT == 0
+		ELSE
+			GOTO INPUT_LOOP4
+		ENDIF
+	ENDIF
+	PRINTL 
+	PRINTFORML %CALLNAME:ARG%名字的表现方式是…
+	PRINTL 
+	PRINTFORML [0] %CSTR:ARG:4%%CSTR:ARG:5%（东洋系）
+	PRINTFORML [1] %CSTR:ARG:5%・%CSTR:ARG:4%（西洋系）
+	$INPUT_LOOP5
+	INPUT
+	IF RESULT == 0
+		NAME:ARG = %CSTR:ARG:4%%CSTR:ARG:5%
+	ELSEIF RESULT == 1
+		NAME:ARG = %CSTR:ARG:5%・%CSTR:ARG:4%
+	ELSE
+		GOTO INPUT_LOOP5
+	ENDIF
+	PRINTL 
+	PRINTFORML %CALLNAME:ARG%的全名就决定为%NAME:ARG%了
+	PRINTL 可以吗？
+	PRINTL 
+	PRINTFORML [0] 就决定是%NAME:ARG%了
+	PRINTL [1] 再考虑考虑
+	PRINTL [2] 从名字开始重新考虑
+	$INPUT_LOOP6
+	INPUT
+	IF RESULT == 0
+	ELSEIF RESULT == 1
+		GOTO CHILDNAME_INPUT2
+	ELSEIF RESULT == 2
+		GOTO CHILDNAME_INPUT1
+	ELSE
+		GOTO INPUT_LOOP6
+	ENDIF
+ENDIF
+
+;子供に父親と母親のキャラ番号/名前を入れる
+CFLAG:(ARG:0):1001 = NO:(ARG:1)
+CSTR:(ARG:0):31 = %NAME:(ARG:1)%
+CFLAG:(ARG:0):1000 = -1
+IF ARG:2 > -1
+	CFLAG:(ARG:0):1000 = NO:(ARG:2)
+	CSTR:(ARG:0):32 = %NAME:(ARG:2)%
+ENDIF
+
+;子供→親の関係设定
+CFLAG:ARG:(2000 + NO:(ARG:1)) = 6
+SIF ARG:2 > -1
+	CFLAG:ARG:(2000 + NO:(ARG:2)) = 5
+IF ARG:3 && ARG:3 != ARG:1 && ARG:3 != ARG:2
+	CFLAG:ARG:(2000 + NO:(ARG:3)) = 9
+	CFLAG:(ARG:3):(2000 + NO:ARG) = 9
+ENDIF
+;親→子供の関係设定
+IF MALE(ARG)
+	CFLAG:(ARG:1):(2000 + NO:ARG) = 7
+	SIF ARG:2 > -1
+		CFLAG:(ARG:2):(2000 + NO:ARG) =7
+ELSE
+	CFLAG:(ARG:1):(2000 + NO:ARG) = 8
+	SIF ARG:2 > -1
+		CFLAG:(ARG:2):(2000 + NO:ARG) =8
+ENDIF
+
+;父親と母親に子供の名前記録
+IF STRLENS(CSTR:(ARG:1):30)
+	CSTR:(ARG:1):30 = %CSTR:(ARG:1):30%、%NAME:ARG%
+ELSE
+	CSTR:(ARG:1):30 = %NAME:ARG%
+ENDIF
+IF ARG:2 > -1
+	IF STRLENS(CSTR:(ARG:2):30)
+		CSTR:(ARG:2):30 = %CSTR:(ARG:2):30%、%NAME:ARG%
+	ELSE
+		CSTR:(ARG:2):30 = %NAME:ARG%
+	ENDIF
+ENDIF
+;CFLAG:2000～2400 = ★キャラの関係设定用
+;兄弟の関係设定
+;同じ母親を持つキャラを探す
+REPEAT CHARANUM
+	IF ARG != COUNT && (CFLAG:COUNT:(2000 + NO:(ARG:1)) == 5 || CFLAG:COUNT:(2000 + NO:(ARG:1)) == 6) && CFLAG:ARG:(2000 + NO:COUNT) == 0
+		;そのキャラが見習いでなければ、この子供の兄　見習いなら姐
+		IF CFLAG:COUNT:1 != 3 && COUNT != 0
+			CFLAG:ARG:(2000 + NO:COUNT) = 1
+			IF STRLENS(CSTR:ARG:33)
+				CSTR:ARG:33 = %CSTR:ARG:33%、%NAME:COUNT%
+			ELSE
+				CSTR:ARG:33 = %NAME:COUNT%
+			ENDIF
+		ELSE
+			CFLAG:ARG:(2000 + NO:COUNT) = 3
+			IF STRLENS(CSTR:ARG:35)
+				CSTR:ARG:35 = %CSTR:ARG:35%、%NAME:COUNT%
+			ELSE
+				CSTR:ARG:35 = %NAME:COUNT%
+			ENDIF
+		ENDIF
+		;そのキャラにとって、この子供が弟か妹か
+		IF MALE(ARG)
+			CFLAG:COUNT:(2000 + NO:ARG) = 2
+			IF STRLENS(CSTR:COUNT:34)
+				CSTR:COUNT:34 = %CSTR:COUNT:34%、%NAME:ARG%
+			ELSE
+				CSTR:COUNT:34 = %NAME:ARG%
+			ENDIF
+		ELSE
+			CFLAG:COUNT:(2000 + NO:ARG) = 4
+			IF STRLENS(CSTR:COUNT:36)
+				CSTR:COUNT:36 = %CSTR:COUNT:36%、%NAME:ARG%
+			ELSE
+				CSTR:COUNT:36 = %NAME:ARG%
+			ENDIF
+		ENDIF
+	ENDIF
+REND
+;同じ父親を持つキャラを探す
+IF ARG:2 > -1
+	REPEAT CHARANUM
+		IF ARG != COUNT && (CFLAG:COUNT:(2000 + NO:(ARG:2)) == 5 || CFLAG:COUNT:(2000 + NO:(ARG:2)) == 6) && CFLAG:ARG:(2000 + NO:COUNT) == 0
+			;ver0.41のバグ解除用
+			SIF CSTR:COUNT:33 == NAME:COUNT
+				CSTR:COUNT:33 = 
+			SIF CSTR:COUNT:34 == NAME:COUNT
+				CSTR:COUNT:34 = 
+			SIF CSTR:COUNT:35 == NAME:COUNT
+				CSTR:COUNT:35 = 
+			SIF CSTR:COUNT:36 == NAME:COUNT
+				CSTR:COUNT:36 = 
+			;そのキャラが見習いでなければ、この子供の兄　見習いなら姐
+			IF CFLAG:COUNT:1 != 3 && COUNT != 0
+				CFLAG:ARG:(2000 + NO:COUNT) = 1
+				IF STRLENS(CSTR:ARG:33)
+					CSTR:ARG:33 = %CSTR:ARG:33%、%NAME:COUNT%
+				ELSE
+					CSTR:ARG:33 = %NAME:COUNT%
+				ENDIF
+			ELSE
+				CFLAG:ARG:(2000 + NO:COUNT) = 3
+				IF STRLENS(CSTR:ARG:35)
+					CSTR:ARG:35 = %CSTR:ARG:35%、%NAME:COUNT%
+				ELSE
+					CSTR:ARG:35 = %NAME:COUNT%
+				ENDIF
+			ENDIF
+			;そのキャラにとって、この子供が弟か妹か
+			IF MALE(ARG)
+				CFLAG:COUNT:(2000 + NO:ARG) = 2
+				IF STRLENS(CSTR:COUNT:34)
+					CSTR:COUNT:34 = %CSTR:COUNT:34%、%NAME:ARG%
+				ELSE
+					CSTR:COUNT:34 = %NAME:ARG%
+				ENDIF
+			ELSE
+				CFLAG:COUNT:(2000 + NO:ARG) = 4
+				IF STRLENS(CSTR:COUNT:36)
+					CSTR:COUNT:36 = %CSTR:COUNT:36%、%NAME:ARG%
+				ELSE
+					CSTR:COUNT:36 = %NAME:ARG%
+				ENDIF
+			ENDIF
+		ENDIF
+	REND
+ENDIF
+
+;子供の非表示フラグ
+CFLAG:ARG:119 = 1
+
+
+
+;-------------------------------------------------
+;子供の素質処理
+;-------------------------------------------------
+@CHILD_TALENT_SET(ARG)
+;处女系素質を付ける
+IF TALENT:ARG:男性
+	TALENT:ARG:童贞 = 1
+	TALENT:ARG:处女 = 0
+ELSEIF TALENT:ARG:双性 || TALENT:ARG:扶她
+	TALENT:ARG:处女 = 1
+	TALENT:ARG:童贞 = 1
+ELSE
+	TALENT:ARG:处女 = 1
+	TALENT:ARG:童贞 = 0
+ENDIF
+TALENT:ARG:后庭处子 = 1
+
+;幼稚
+TALENT:ARG:幼稚 = 1
+
+;知識が無いので消去
+;调和知识/禁断的知识
+TALENT:ARG:调和知识 = 0
+TALENT:ARG:禁断的知识 = 0
+
+;打ち消し合う
+;反抗⇔直率
+IF TALENT:ARG:反抗 && TALENT:ARG:直率
+	IF !RAND:2
+		TALENT:ARG:反抗 = 0
+	ELSE
+		TALENT:ARG:直率 = 0
+	ENDIF
+ENDIF
+
+;高傲⇔自卑
+IF TALENT:ARG:高傲 && TALENT:ARG:自卑
+	IF !RAND:2
+		TALENT:ARG:高傲 = 0
+	ELSE
+		TALENT:ARG:自卑 = 0
+	ENDIF
+ENDIF
+
+;无动于衷⇔性好奇
+IF TALENT:ARG:无动于衷 && TALENT:ARG:性好奇
+	IF !RAND:2
+		TALENT:ARG:无动于衷 = 0
+	ELSE
+		TALENT:ARG:性好奇 = 0
+	ENDIF
+ENDIF
+
+;乐观⇔悲观
+IF TALENT:ARG:乐观 && TALENT:ARG:悲观
+	IF !RAND:2
+		TALENT:ARG:乐观 = 0
+	ELSE
+		TALENT:ARG:悲观 = 0
+	ENDIF
+ENDIF
+
+;贞操重视⇔贞操淡漠
+IF TALENT:ARG:贞操重视 && TALENT:ARG:贞操淡漠
+	IF !RAND:2
+		TALENT:ARG:贞操重视 = 0
+	ELSE
+		TALENT:ARG:贞操淡漠 = 0
+	ENDIF
+ENDIF
+
+;性压抑⇔解放
+IF TALENT:ARG:性压抑 && TALENT:ARG:性开放
+	IF !RAND:2
+		TALENT:ARG:性压抑 = 0
+	ELSE
+		TALENT:ARG:性开放 = 0
+	ENDIF
+ENDIF
+
+;害羞⇔不知羞耻
+IF TALENT:ARG:害羞 && TALENT:ARG:不知羞耻
+	IF !RAND:2
+		TALENT:ARG:害羞 = 0
+	ELSE
+		TALENT:ARG:不知羞耻 = 0
+	ENDIF
+ENDIF
+
+;怕痛⇔耐痛
+IF TALENT:ARG:怕痛 && TALENT:ARG:耐痛
+	IF !RAND:2
+		TALENT:ARG:怕痛 = 0
+	ELSE
+		TALENT:ARG:耐痛 = 0
+	ENDIF
+ENDIF
+
+;容易湿⇔不易湿
+IF TALENT:ARG:容易湿 && TALENT:ARG:不易湿
+	IF !RAND:2
+		TALENT:ARG:容易湿 = 0
+	ELSE
+		TALENT:ARG:不易湿 = 0
+	ENDIF
+ENDIF
+
+;不擅料理⇔擅长料理
+IF TALENT:ARG:不擅料理 && TALENT:ARG:擅长料理
+	IF !RAND:2
+		TALENT:ARG:不擅料理 = 0
+	ELSE
+		TALENT:ARG:擅长料理 = 0
+	ENDIF
+ENDIF
+
+;学得快⇔学得慢
+IF TALENT:ARG:学得快 && TALENT:ARG:学得慢
+	IF !RAND:2
+		TALENT:ARG:学得快 = 0
+	ELSE
+		TALENT:ARG:学得慢 = 0
+	ENDIF
+ENDIF
+
+;污臭钝感⇔污臭敏感
+IF TALENT:ARG:污臭钝感 && TALENT:ARG:污臭敏感
+	IF !RAND:2
+		TALENT:ARG:污臭钝感 = 0
+	ELSE
+		TALENT:ARG:污臭敏感 = 0
+	ENDIF
+ENDIF
+
+;喜欢身体接触⇔厌恶身体接触
+IF TALENT:ARG:喜欢身体接触 && TALENT:ARG:厌恶身体接触
+	IF !RAND:2
+		TALENT:ARG:喜欢身体接触 = 0
+	ELSE
+		TALENT:ARG:厌恶身体接触 = 0
+	ENDIF
+ENDIF
+
+;接受快感⇔否定快感
+IF TALENT:ARG:接受快感 && TALENT:ARG:否定快感
+	IF !RAND:2
+		TALENT:ARG:接受快感 = 0
+	ELSE
+		TALENT:ARG:否定快感 = 0
+	ENDIF
+ENDIF
+
+;男女通吃⇔讨厌男人/讨厌女人
+IF TALENT:ARG:男女通吃 && (TALENT:ARG:讨厌男人 || TALENT:ARG:讨厌女人)
+	IF !RAND:2
+		TALENT:ARG:男女通吃 = 0
+	ELSE
+		TALENT:ARG:讨厌男人 = 0
+		TALENT:ARG:讨厌女人 = 0
+	ENDIF
+ENDIF
+
+;Ｃ钝感⇔Ｃ敏感
+IF TALENT:ARG:Ｃ钝感 && TALENT:ARG:Ｃ敏感
+	IF !RAND:2
+		TALENT:ARG:Ｃ钝感 = 0
+	ELSE
+		TALENT:ARG:Ｃ敏感 = 0
+	ENDIF
+ENDIF
+;Ｖ钝感⇔Ｖ敏感
+IF TALENT:ARG:Ｖ钝感 && TALENT:ARG:Ｖ敏感
+	IF !RAND:2
+		TALENT:ARG:Ｖ钝感 = 0
+	ELSE
+		TALENT:ARG:Ｖ敏感 = 0
+	ENDIF
+ENDIF
+IF TALENT:ARG:男性
+	TALENT:ARG:Ｖ钝感 = 0
+	TALENT:ARG:Ｖ敏感 = 0
+ENDIF
+;Ａ钝感⇔Ａ敏感
+IF TALENT:ARG:Ａ钝感 && TALENT:ARG:Ａ敏感
+	IF !RAND:2
+		TALENT:ARG:Ａ钝感 = 0
+	ELSE
+		TALENT:ARG:Ａ敏感 = 0
+	ENDIF
+ENDIF
+;Ｂ钝感⇔Ｂ敏感
+IF TALENT:ARG:Ｂ钝感 && TALENT:ARG:Ｂ敏感
+	IF !RAND:2
+		TALENT:ARG:Ｂ钝感 = 0
+	ELSE
+		TALENT:ARG:Ｂ敏感 = 0
+	ENDIF
+ENDIF
+
+
+TALENT:ARG:性开放 = 0
+
+IF MALE(ARG)
+	TALENT:ARG:贫乳 = 0
+	TALENT:ARG:绝壁 = 0
+	TALENT:ARG:巨乳 = 0
+	TALENT:ARG:爆乳 = 0
+ELSEIF !PENIS(ARG)
+	TALENT:ARG:孩童尺寸= 0
+	TALENT:ARG:短小 = 0
+	TALENT:ARG:巨根 = 0
+	TALENT:ARG:尺寸傲人 = 0
+ENDIF	
+;胸の大きさ系素質
+IF TALENT:ARG:贫乳 || TALENT:ARG:绝壁 || TALENT:ARG:巨乳 || TALENT:ARG:爆乳
+	IF !RAND:2
+		IF TALENT:ARG:绝壁
+			TALENT:ARG:贫乳 = 0
+			TALENT:ARG:巨乳 = 0
+			TALENT:ARG:爆乳 = 0
+		ENDIF
+		IF TALENT:ARG:贫乳
+			TALENT:ARG:绝壁 = 0
+			TALENT:ARG:巨乳 = 0
+			TALENT:ARG:爆乳 = 0
+		ENDIF
+		IF TALENT:ARG:巨乳
+			TALENT:ARG:绝壁 = 0
+			TALENT:ARG:贫乳 = 0
+			TALENT:ARG:爆乳 = 0
+		ENDIF
+	ELSE
+		IF TALENT:ARG:爆乳
+			TALENT:ARG:绝壁 = 0
+			TALENT:ARG:巨乳 = 0
+			TALENT:ARG:贫乳 = 0
+		ENDIF
+		IF TALENT:ARG:巨乳
+			TALENT:ARG:绝壁 = 0
+			TALENT:ARG:贫乳 = 0
+			TALENT:ARG:爆乳 = 0
+		ENDIF
+		IF TALENT:ARG:贫乳
+			TALENT:ARG:绝壁 = 0
+			TALENT:ARG:巨乳 = 0
+			TALENT:ARG:爆乳 = 0
+		ENDIF
+	ENDIF
+ENDIF
+IF !MALE(ARG) && !RAND:3
+	TALENT:ARG:贫乳 = 1
+	TALENT:ARG:绝壁 = 0
+	TALENT:ARG:巨乳 = 0
+	TALENT:ARG:爆乳 = 0
+ENDIF
+
+;ちんこの大きさ系素質
+IF TALENT:ARG:孩童尺寸|| TALENT:ARG:短小 || TALENT:ARG:巨根 || TALENT:ARG:尺寸傲人
+	IF !RAND:2
+		IF TALENT:ARG:孩童尺寸
+			TALENT:ARG:短小 = 0
+			TALENT:ARG:巨根 = 0
+			TALENT:ARG:尺寸傲人 = 0
+		ENDIF
+		IF TALENT:ARG:短小
+			TALENT:ARG:孩童尺寸= 0
+			TALENT:ARG:巨根 = 0
+			TALENT:ARG:尺寸傲人 = 0
+		ENDIF
+		IF TALENT:ARG:巨根
+			TALENT:ARG:短小 = 0
+			TALENT:ARG:孩童尺寸= 0
+			TALENT:ARG:尺寸傲人 = 0
+		ENDIF
+	ELSE
+		IF TALENT:ARG:尺寸傲人
+			TALENT:ARG:短小 = 0
+			TALENT:ARG:巨根 = 0
+			TALENT:ARG:孩童尺寸= 0
+		ENDIF
+		IF TALENT:ARG:巨根
+			TALENT:ARG:短小 = 0
+			TALENT:ARG:孩童尺寸= 0
+			TALENT:ARG:尺寸傲人 = 0
+		ENDIF
+		IF TALENT:ARG:短小
+			TALENT:ARG:孩童尺寸= 0
+			TALENT:ARG:巨根 = 0
+			TALENT:ARG:尺寸傲人 = 0
+		ENDIF
+	ENDIF
+ENDIF
+IF PENIS(ARG)
+	IF !RAND:3
+		TALENT:ARG:孩童尺寸= 1
+		TALENT:ARG:短小 = 0
+		TALENT:ARG:巨根 = 0
+		TALENT:ARG:尺寸傲人 = 0
+	ENDIF
+	SIF !RAND:2
+		TALENT:ARG:白虎 = 1
+	SIF !RAND:2
+		TALENT:ARG:包茎 = 1
+ENDIF
+
+;体型素質　まだ子供だから矮小の確率高し
+IF !TALENT:ARG:高大体型 && RAND:4 > 0
+	TALENT:ARG:矮小体型 = 1
+	TALENT:ARG:小人体型 = 0
+ELSEIF TALENT:ARG:高大体型 && !RAND:3
+	TALENT:ARG:矮小体型 = 0
+	TALENT:ARG:小人体型 = 0
+	TALENT:ARG:高大体型 = 0
+ELSE
+	IF TALENT:ARG:小人体型
+		TALENT:ARG:矮小体型 = 0
+		TALENT:ARG:高大体型 = 0
+	ELSE
+		TALENT:ARG:高大体型 = 0
+		TALENT:ARG:矮小体型 = 0
+		TALENT:ARG:小人体型 = 0
+	ENDIF
+ENDIF
+
+
+;恢复快⇔恢复慢
+IF TALENT:ARG:恢复快 && TALENT:ARG:恢复慢
+	IF !RAND:2
+		TALENT:ARG:恢复快 = 0
+	ELSE
+		TALENT:ARG:恢复慢 = 0
+	ENDIF
+ENDIF
+
+;性格タイプとの兼ね合い
+SELECTCASE CFLAG:ARG:600
+	CASE 8
+	;暗い・無口・冷静
+		TALENT:ARG:直率 = 0
+		TALENT:ARG:性好奇 = 0
+		TALENT:ARG:乐观 = 0
+		TALENT:ARG:喜欢引人注目 = 0
+	CASE 10
+	;我がまま甘えん坊
+		TALENT:ARG:缺乏感情 = 0
+		TALENT:ARG:无动于衷 = 0
+		TALENT:ARG:胆怯 = 0
+		TALENT:ARG:自制力 = 0
+		TALENT:ARG:性保守 = 0
+	CASE 11
+	;直率ピュアショタ
+		TALENT:ARG:无动于衷 = 0
+		TALENT:ARG:反抗 = 0
+		TALENT:ARG:高傲 = 0
+		TALENT:ARG:自大 = 0
+		TALENT:ARG:傲娇 = 0
+	CASEELSE
+	;大らか・元気
+		TALENT:ARG:缺乏感情 = 0
+		TALENT:ARG:无动于衷 = 0
+		TALENT:ARG:悲观 = 0
+		TALENT:ARG:胆怯 = 0
+		TALENT:ARG:傲娇 = 0
+ENDSELECT

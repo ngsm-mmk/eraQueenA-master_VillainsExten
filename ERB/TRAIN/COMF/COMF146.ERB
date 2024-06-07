@@ -1,0 +1,206 @@
+﻿;-------------------------------------------------
+;灌肠器＋塞头
+;严厉な调教指令、レベル4
+;-------------------------------------------------
+@COM146
+IF TEQUIP:25
+	PRINTL 触手灌肠
+	STR:0 = 触手灌肠
+	SELECTCOM = 167
+ELSE
+	PRINTL 灌肠
+	STR:0 = 灌肠
+ENDIF
+
+
+;丝袜びりびりフラグ
+IF TEQUIP:1 == 5 || TEQUIP:1 == 6
+	TFLAG:55 = 1
+ENDIF
+
+;后庭处子だった場合の喪失フラグ
+IF TALENT:161
+	TFLAG:161 = 1
+ENDIF
+
+
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 60
+LOSEBASE:1 += 150
+
+SOURCE:2 = 300
+SOURCE:7 = 500
+SOURCE:13 = 300
+SOURCE:14 = 200
+SOURCE:15 = 500
+SOURCE:17 = 500
+SOURCE:18 = 500
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 500
+
+;Aへの痛苦は先に処理しておく
+;EXP:Ａ经验をみる
+IF EXP:1 < EXPLV:1
+	TIMES SOURCE:7 , 3.00
+	TIMES SOURCE:18 , 3.00
+ELSEIF EXP:1 < EXPLV:2
+	TIMES SOURCE:7 , 1.20
+	TIMES SOURCE:18 , 2.00
+ELSEIF EXP:1 < EXPLV:3
+	TIMES SOURCE:7 , 0.80
+	TIMES SOURCE:18 , 1.50
+ELSEIF EXP:1 < EXPLV:4
+	TIMES SOURCE:7 , 0.60
+	TIMES SOURCE:18 , 1.20
+ELSEIF EXP:1 < EXPLV:5
+	TIMES SOURCE:7 , 0.40
+ELSEIF EXP:1 >= EXPLV:5
+	TIMES SOURCE:7 , 0.20
+ENDIF
+
+;PALAM:润滑をみる
+IF PALAM:4 < PALAMLV:1
+	TIMES SOURCE:7 , 1.20
+	TIMES SOURCE:18 , 2.00
+ELSEIF PALAM:4 < PALAMLV:2
+	TIMES SOURCE:7 , 1.00
+	TIMES SOURCE:18 , 1.50
+ELSEIF PALAM:4 < PALAMLV:3
+	TIMES SOURCE:7 , 0.60
+ELSEIF PALAM:4 < PALAMLV:4
+	TIMES SOURCE:7 , 0.30
+ELSEIF PALAM:4 >= PALAMLV:4
+	TIMES SOURCE:7 , 0.20
+ENDIF
+
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;Ａ经验
+EXP:1 += 5
+PRINTL Ａ经验＋5
+
+;取下ときスカ经验１
+IF TEQUIP:21 == 0
+	EXP:33 += 1
+	PRINTL 排便经验＋１
+ENDIF
+
+;蔷薇经验とか加算
+CALL COM_EXP(1)
+
+;依赖度ベクトル
+TFLAG:33 = 5
+
+;依赖度補正値(服从で1、隶属で2）
+IF TALENT:5 && ASSIPLAY == 0
+	TFLAG:30 += 1
+ELSEIF TALENT:8 && ASSIPLAY == 0
+	TFLAG:30 += 2
+ENDIF
+
+;着脱の処理
+IF TEQUIP:21 == 0
+	CALL KOJO_MESSAGE_COM
+	TEQUIP:21 = 1
+	;触手灌肠は触手の汚れを追加
+	IF TEQUIP:25
+		STAIN:4 |= 32
+	ENDIF
+ELSE
+	IF CFLAG:4 == 0
+		EXP:50 += 1
+		PRINTFORML %EXPNAME:50%+1
+		CFLAG:4 = 1
+	ENDIF
+	CALL KOJO_MESSAGE_COM
+	TEQUIP:21 = 0
+ENDIF
+
+
+RETURN 1
+
+
+;-------------------------------------------------
+;装着継続の処理
+;-------------------------------------------------
+@EQUIP_COM146
+;灌肠＋肛プラグ插入中
+IF TEQUIP:25
+	PRINTL ＜触手灌肠中＞
+ELSE
+	PRINTL ＜灌肠＋肛塞插入中＞
+ENDIF
+
+LOSEBASE:0 += 60
+LOSEBASE:1 += 150
+
+SOURCE:2 += 150
+SOURCE:14 += 100
+SOURCE:15 += 250
+SOURCE:17 += 250
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 250
+
+;Aへの痛苦は先に処理しておく
+;EXP:Ａ经验をみる
+A = 250
+B = 250
+IF EXP:1 < EXPLV:1
+	TIMES A , 3.00
+	TIMES B , 3.00
+ELSEIF EXP:1 < EXPLV:2
+	TIMES A , 1.20
+	TIMES B , 2.00
+ELSEIF EXP:1 < EXPLV:3
+	TIMES A , 0.80
+	TIMES B , 1.50
+ELSEIF EXP:1 < EXPLV:4
+	TIMES A , 0.60
+	TIMES B , 1.20
+ELSEIF EXP:1 < EXPLV:5
+	TIMES A , 0.40
+ELSEIF EXP:1 >= EXPLV:5
+	TIMES A , 0.20
+ENDIF
+
+;PALAM:润滑をみる
+IF PALAM:4 < PALAMLV:1
+	TIMES A , 1.20
+	TIMES B , 2.00
+ELSEIF PALAM:4 < PALAMLV:2
+	TIMES A , 1.00
+	TIMES B , 1.50
+ELSEIF PALAM:4 < PALAMLV:3
+	TIMES A , 0.60
+ELSEIF PALAM:4 < PALAMLV:4
+	TIMES A , 0.30
+ELSEIF PALAM:4 >= PALAMLV:4
+	TIMES A , 0.20
+ENDIF
+SOURCE:7 += A
+SOURCE:18 += B
+
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;Ａ经验
+EXP:1 += 3
+PRINTL Ａ经验＋3
+

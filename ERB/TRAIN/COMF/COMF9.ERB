@@ -1,0 +1,380 @@
+﻿;-------------------------------------------------
+;秘穴张开
+;爱抚系指令、レベル2
+;-------------------------------------------------
+@COM9
+;-------------------------------------------------
+;実行できるかの判定
+;-------------------------------------------------
+A = 0
+S = 0
+
+;すべての命令に共通の要素を考慮
+;(顺从が高いと命令に従いやすいなど)
+CALL COM_ORDER
+
+;ABL:欲望
+IF ABL:1
+	SIF S
+		PRINT  + 
+	A += ABL:1 * 3
+	PRINTS ABLNAME:1
+	PRINTV 'LV,ABL:1,'(,ABL:1 * 3,')
+	S = 1
+ENDIF
+
+;ABL:Ａ感觉
+IF TALENT:男性
+    IF ABL:5
+        SIF S
+            PRINT  +
+        A += ABL:5 * 2
+        PRINTS ABLNAME:5
+        PRINTV 'LV,ABL:5,'(,ABL:5 * 2,')
+        S = 1
+    ENDIF
+ELSEIF TALENT:双性 || TALENT:扶她
+    IF ABL:5
+        SIF S
+            PRINT  +
+        A += ABL:5 * 2
+        PRINTS ABLNAME:5
+        PRINTV 'LV,ABL:5,'(,ABL:5 * 2,')
+        S = 1
+    ENDIF
+    IF ABL:4
+    	SIF S
+    		PRINT  +
+    	A += ABL:4 * 2
+    	PRINTS ABLNAME:4
+    	PRINTV 'LV,ABL:4,'(,ABL:4 * 2,')
+    	S = 1
+    ENDIF
+ELSE
+    ;ABL:Ｖ感觉
+    IF ABL:4
+    	SIF S
+    		PRINT  +
+    	A += ABL:4 * 2
+    	PRINTS ABLNAME:4
+    	PRINTV 'LV,ABL:4,'(,ABL:4 * 2,')
+    	S = 1
+    ENDIF
+ENDIF
+;ABL:侍奉精神
+IF ABL:7
+	SIF S
+		PRINT  + 
+	A += ABL:7 * 4
+	PRINTS ABLNAME:7
+	PRINTV 'LV,ABL:7,'(,ABL:7 * 4,')
+	S = 1
+ENDIF
+;ABL:露出癖
+IF ABL:8
+	SIF S
+		PRINT  + 
+	A += ABL:7 * 3
+	PRINTS ABLNAME:7
+	PRINTV 'LV,ABL:7,'(,ABL:7 * 3,')
+	S = 1
+ENDIF
+;ABL:自慰成瘾
+IF ABL:15
+	SIF S
+		PRINT  + 
+	A += ABL:15 * 3
+	PRINTS ABLNAME:15
+	PRINTV 'LV,ABL:15,'(,ABL:15 * 3,')
+	S = 1
+ENDIF
+
+IF MARK:1
+	SIF S
+		PRINT  + 
+	A += MARK:1 * 3
+	PRINTS MARKNAME:1
+	PRINTV 'LV,MARK:1,'(,MARK:1 * 3,')
+	S = 1
+ENDIF
+
+;PALAM:润滑（の不足）
+IF PALAM:4 < PALAMLV:3
+	PRINT  - 
+	A -= 5
+	PRINT 润滑不足
+	PRINTV '(,5,')
+	S = 1
+ENDIF
+;PALAM:情欲
+IF PALAM:6 < PALAMLV:1
+	L = 0
+ELSEIF PALAM:6 < PALAMLV:2
+	L = 1
+ELSEIF PALAM:6 < PALAMLV:3
+	L = 2
+ELSEIF PALAM:6 < PALAMLV:4
+	L = 3
+ELSEIF PALAM:6 < PALAMLV:5
+	L = 4
+ELSE
+	L = 5
+ENDIF
+IF L
+	SIF S
+		PRINT  + 
+	A += L * 3
+	PRINTS PALAMNAME:5
+	PRINTV 'LV,L,'(,L * 3,')
+	S = 1
+ENDIF
+
+;害羞
+IF TALENT:35
+	PRINT  - 
+	A -= 2
+	PRINTS TALENTNAME:35
+	PRINTV '(,2,')
+	S = 1
+ENDIF
+;否定快感（淫乱、娼妇で无效）
+IF TALENT:71 && (TALENT:4 == 0 && TALENT:7 == 0)
+	PRINT  - 
+	A -= 5
+	PRINTS TALENTNAME:71
+	PRINTV '(,5,')
+	S = 1
+ENDIF
+;讨厌男人（恋慕、相亲相爱で无效）
+IF TALENT:82 && TALENT:PLAYER:140 && ((TALENT:3 == 0 && TALENT:6 == 0) || PLAYER != MASTER)
+	PRINT  - 
+	A -= 12
+	PRINTS TALENTNAME:82
+	PRINTV '(,12,')
+	S = 1
+ENDIF
+
+;后庭处子
+IF TALENT:男性
+    IF TALENT:161
+        PRINT  -
+        A -= 20
+        PRINTS TALENTNAME:161
+        PRINTV '(,20,')
+        S = 1
+    ELSEIF EXP:1 < EXPLV:2
+        PRINT  -
+        A -= 5
+        PRINTS EXPNAME:1
+        PRINT 不足
+        PRINTV '(,5,')
+        S = 1
+    ENDIF
+ELSEIF TALENT:双性 || TALENT:扶她
+    IF TALENT:161
+        PRINT  -
+        A -= 20
+        PRINTS TALENTNAME:161
+        PRINTV '(,20,')
+        S = 1
+    ELSEIF EXP:1 < EXPLV:2
+        PRINT  -
+        A -= 5
+        PRINTS EXPNAME:1
+        PRINT 不足
+        PRINTV '(,5,')
+        S = 1
+    ENDIF
+    ;处女
+    IF TALENT:0
+    	PRINT  -
+    	A -= 20
+    	PRINTS TALENTNAME:0
+    	PRINTV '(,20,')
+    	S = 1
+    ELSEIF EXP:0 < EXPLV:2
+    	PRINT  -
+    	A -= 5
+    	PRINTS EXPNAME:0
+    	PRINT 不足
+    	PRINTV '(,5,')
+    	S = 1
+    ENDIF
+ELSE
+    ;处女
+    IF TALENT:0
+    	PRINT  -
+    	A -= 20
+    	PRINTS TALENTNAME:0
+    	PRINTV '(,20,')
+    	S = 1
+    ELSEIF EXP:0 < EXPLV:2
+    	PRINT  -
+    	A -= 5
+    	PRINTS EXPNAME:0
+    	PRINT 不足
+    	PRINTV '(,5,')
+    	S = 1
+    ENDIF
+ENDIF
+
+;厌恶身体接触
+IF TALENT:66
+	PRINT  + 
+	A += 2
+	PRINTS TALENTNAME:66
+	PRINTV '(,2,')
+	S = 1
+ENDIF
+
+;调教者が扶她
+;IF TALENT:PLAYER:139
+;	PRINT  - 
+;	A -= 4
+;	PRINTS TALENTNAME:139
+;	PRINTV '(,4,')
+;	S = 1
+;ENDIF
+
+;媚薬
+IF TEQUIP:26
+	SIF S
+		PRINT  + 
+	A += 6
+	PRINTS ITEMNAME:41
+	PRINTV '(,6,')
+	S = 1
+ENDIF
+
+;'合計を表示(18以上で実行)
+PRINT  = 
+PRINTV A
+
+V = 18
+SIF A < V
+	PRINT  < 
+SIF A == V
+	PRINT  = 
+SIF A > V
+	PRINT  > 
+PRINT 实行值
+PRINTV V
+;実行不可口上/実行判定操作
+IF A < V
+	CALL KOJO_DENIAL
+	WAIT
+	RETURN 0
+ELSE
+	PRINTL
+ENDIF
+
+
+
+PRINTL 自己扒开
+STR:0 = 自己扒开
+
+
+;丝袜びりびりフラグ
+IF TEQUIP:1 == 5 || TEQUIP:1 == 6
+	TFLAG:55 = 1
+ENDIF
+
+
+;実行者が奴隶であるフラグ
+TFLAG:28 = 1
+
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 50
+LOSEBASE:1 += 90
+
+SOURCE:0 = 43
+SOURCE:6 = 20
+SOURCE:8 = 120
+SOURCE:10 = 10
+SOURCE:13 = 300
+SOURCE:14 = 450
+SOURCE:17 = 150
+SOURCE:18 = 150
+
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 150
+
+;处女、贞操重视
+IF TALENT:男性 || TALENT:双性
+    IF TALENT:161
+        TIMES SOURCE:8 , 1.20
+        TIMES SOURCE:14 , 1.20
+        TIMES SOURCE:18 , 1.20
+        SOURCE:13 += 300
+        IF TALENT:30
+            TIMES SOURCE:13 , 2.00
+            TIMES SOURCE:17 , 2.00
+        ENDIF
+    ENDIF
+ELSE
+    IF TALENT:0
+    	TIMES SOURCE:8 , 1.20
+    	TIMES SOURCE:14 , 1.20
+    	TIMES SOURCE:18 , 1.20
+    	SOURCE:13 += 300
+    	IF TALENT:30
+    		TIMES SOURCE:13 , 2.00
+    		TIMES SOURCE:17 , 2.00
+    	ENDIF
+    ENDIF
+ENDIF
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;奴隶のＶ⇔指の汚れが移动
+IF TALENT:男性
+    STAIN:4 |= STAIN:1
+    STAIN:1 |= STAIN:4
+ELSEIF TALENT:双性 || TALENT:扶她
+    IF !RAND:2
+        STAIN:3 |= STAIN:1
+        STAIN:1 |= STAIN:3
+    ELSE
+        STAIN:4 |= STAIN:1
+        STAIN:1 |= STAIN:4
+    ENDIF
+ELSE
+    STAIN:3 |= STAIN:1
+    STAIN:1 |= STAIN:3
+ENDIF
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;露出癖Lv3以上で自慰经验加算
+IF ABL:8 >= 3
+	EXP:10 += 1
+	PRINTL 自慰经验＋１
+ENDIF
+
+;蔷薇经验とか加算
+CALL COM_EXP(1)
+
+
+;依赖度ベクトル
+TFLAG:33 = 3
+
+;依赖度補正値(服从で1、隶属で2）
+IF TALENT:5 && ASSIPLAY == 0
+	TFLAG:30 += 1
+ELSEIF TALENT:8 && ASSIPLAY == 0
+	TFLAG:30 += 2
+ENDIF
+
+
+RETURN 1
+

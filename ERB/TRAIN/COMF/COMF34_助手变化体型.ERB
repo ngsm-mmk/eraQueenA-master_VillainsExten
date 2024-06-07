@@ -1,0 +1,32 @@
+﻿;-------------------------------------------------
+;助手变化体型
+;人外限定指令
+;-------------------------------------------------
+@COM34
+PRINTL 助手变化体型
+STR:0 = 助手变化体型
+
+;-------------------------------------------------
+;如意金箍棒自在随心变！！
+;-------------------------------------------------
+IF TALENT:ASSI:小人体型 && CFLAG:ASSI:631 == 0
+    CFLAG:ASSI:631 = 1
+    TALENT:ASSI:小人体型 = 0
+ELSEIF CFLAG:ASSI:631 == 1
+    TALENT:ASSI:小人体型 = 1
+    CFLAG:ASSI:631 = 0
+ENDIF
+IF TALENT:ASSI:巨大体型 && CFLAG:ASSI:632 == 0
+    CFLAG:ASSI:632 = 1
+    TALENT:ASSI:巨大体型 = 0
+ELSEIF CFLAG:ASSI:632 == 1
+    TALENT:ASSI:巨大体型 = 1
+    CFLAG:ASSI:632 = 0
+ENDIF
+
+
+
+;依赖度ベクトル
+TFLAG:33 = 0
+
+RETURN 1

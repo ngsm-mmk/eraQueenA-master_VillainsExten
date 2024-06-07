@@ -1,0 +1,382 @@
+﻿;-------------------------------------------------
+;関数名:DAILYLIFE_GETJUEL
+;概　要:随机で珠の取得をする関数
+;引　数:ARG:0…珠増加对象
+;　　　:ARG:1…珠の種類
+;      :ARG:2…増加基本値（ここから+-50%で増加）
+;戻り値:
+;備　考:日常イベントで使用
+;-------------------------------------------------
+@DAILYLIFE_GETJUEL(ARG, ARG:1, ARG:2)
+LOCAL = ARG:2 - (ARG:2 / 2) + RAND:(ARG:2)
+JUEL:ARG:(ARG:1) += LOCAL
+PRINTFORML %CALLNAME:ARG%的%PALAMNAME:(ARG:1)%＋{LOCAL}
+
+
+;-------------------------------------------------
+;関数名:DAILYLIFE_GETCHARA
+;概　要:日常イベントに登場できるキャラから随机に選択する関数
+;引　数:ARG…1にすると未陷落/失意を除く
+;戻り値:選択されたキャラのキャラ登录番号、存在しなければ-1を返す
+;備　考:文中関数
+;-------------------------------------------------
+@DAILYLIFE_GETCHARA(ARG)
+#FUNCTION
+VARSET LOCAL
+FOR LOCAL, 0, CHARANUM
+	;主人は除く
+	SIF LOCAL == MASTER
+		CONTINUE
+	;日常イベントに登場不可
+	SIF !DAILYLIFE_CHARA(LOCAL, ARG)
+		CONTINUE
+	;既に登場しているキャラと被っていたら不可
+	SIF LOCAL == A || LOCAL == B || LOCAL == C || (A > 0 && TALENT:LOCAL:嫉妒)
+		CONTINUE
+	;登場確率の操作
+	LOCAL:4 = 1
+	;反抗３
+	IF MARK:LOCAL:反抗刻印 >= 3
+	;共犯者
+	;ELSEIF CFLAG:LOCAL:1 == 3
+	;	IF !RAND:2
+	;		CONTINUE
+	;	ENDIF
+	;恋慕
+	ELSEIF TALENT:LOCAL:恋慕 || TALENT:LOCAL:相亲相爱
+		LOCAL:4 = 3
+	;淫乱、服从
+	ELSEIF TALENT:LOCAL:服从 || TALENT:LOCAL:隶属 || TALENT:LOCAL:淫乱 || TALENT:LOCAL:娼妇
+		LOCAL:4 = 2
+	ENDIF
+	FOR LOCAL:5, 0, LOCAL:4
+		LOCAL:(10 + LOCAL:1) = LOCAL
+		LOCAL:1++
+	NEXT
+NEXT
+LOCAL:3 = -1
+;条件に当てはまるキャラから随机で１人選択する
+IF LOCAL:1
+	LOCAL:2 = RAND:(LOCAL:1)
+	LOCAL:3 = LOCAL:(10 + LOCAL:2)
+ENDIF
+RETURNF LOCAL:3
+
+;-------------------------------------------------
+;関数名:DAILYLIFE_GETTALENT_1
+;概　要:キャラの中から特定の素質のいずれかを持ったキャラ１人をピックアップする関数　0番の素質は最初に置くように
+;引　数:素質番号(１０種類まで)
+;戻り値:ピックアップしたキャラの登录番号、不在であれば-1を返す
+;備　考:文中関数
+;-------------------------------------------------
+@DAILYLIFE_GETTALENT_1(ARG,ARG:1,ARG:2,ARG:3,ARG:4,ARG:5,ARG:6,ARG:7,ARG:8,ARG:9)
+#FUNCTION
+VARSET LOCAL
+FOR LOCAL, 0, CHARANUM
+	;主人は除く
+	SIF LOCAL == MASTER
+		CONTINUE
+	;日常イベントに登場不可
+	SIF !DAILYLIFE_CHARA(LOCAL)
+		CONTINUE
+	;既に登場しているキャラと被っていたら不可
+	SIF LOCAL == A || LOCAL == B || LOCAL == C || (A > 0 && TALENT:LOCAL:嫉妒)
+		CONTINUE
+	;該当素質のいずらかを持っているを持っていない
+	IF TALENT:LOCAL:ARG || (ARG:1 && TALENT:LOCAL:(ARG:1)) || (ARG:2 && TALENT:LOCAL:(ARG:2)) || (ARG:3 && TALENT:LOCAL:(ARG:3)) || (ARG:4 && TALENT:LOCAL:(ARG:4)) || (ARG:5 && !TALENT:LOCAL:(ARG:5)) || (ARG:6 && TALENT:LOCAL:(ARG:6)) || (ARG:7 && TALENT:LOCAL:(ARG:7)) || (ARG:8 && TALENT:LOCAL:(ARG:8)) || (ARG:9 && TALENT:LOCAL:(ARG:9))
+		LOCAL:(10 + LOCAL:1) = LOCAL
+		LOCAL:1++
+	ENDIF
+NEXT
+LOCAL:3 = -1
+;条件に当てはまるキャラから随机で１人選択する
+IF LOCAL:1
+	LOCAL:2 = RAND:(LOCAL:1)
+	LOCAL:3 = LOCAL:(10 + LOCAL:2)
+ENDIF
+RETURNF LOCAL:3
+
+
+;-------------------------------------------------
+;関数名:DAILYLIFE_GETTALENT_2
+;概　要:キャラの中から特定の素質を全部持ったキャラ１人をピックアップする関数
+;引　数:素質番号(１０種類まで)
+;戻り値:ピックアップしたキャラの登录番号、不在であれば-1を返す
+;備　考:文中関数
+;-------------------------------------------------
+@DAILYLIFE_GETTALENT_2(ARG,ARG:1,ARG:2,ARG:3,ARG:4,ARG:5,ARG:6,ARG:7,ARG:8,ARG:9)
+#FUNCTION
+VARSET LOCAL
+FOR LOCAL, 0, CHARANUM
+	;主人は除く
+	SIF LOCAL == MASTER
+		CONTINUE
+	;日常イベントに登場不可
+	SIF !DAILYLIFE_CHARA(LOCAL)
+		CONTINUE
+	;該当素質を持っていない
+	SIF !TALENT:LOCAL:ARG || (ARG:1 && !TALENT:LOCAL:(ARG:1)) || (ARG:2 && !TALENT:LOCAL:(ARG:2)) || (ARG:3 && !TALENT:LOCAL:(ARG:3)) || (ARG:4 && !TALENT:LOCAL:(ARG:4)) || (ARG:5 && !TALENT:LOCAL:(ARG:5)) || (ARG:6 && !TALENT:LOCAL:(ARG:6)) || (ARG:7 && !TALENT:LOCAL:(ARG:7)) || (ARG:8 && !TALENT:LOCAL:(ARG:8)) || (ARG:9 && !TALENT:LOCAL:(ARG:9))
+		CONTINUE
+	;既に登場しているキャラと被っていたら不可
+	SIF LOCAL == A || LOCAL == B || LOCAL == C || (A > 0 && TALENT:LOCAL:嫉妒)
+		CONTINUE
+	LOCAL:(10 + LOCAL:1) = LOCAL
+	LOCAL:1++
+NEXT
+LOCAL:3 = -1
+;条件に当てはまるキャラから随机で１人選択する
+IF LOCAL:1
+	LOCAL:2 = RAND:(LOCAL:1)
+	LOCAL:3 = LOCAL:(10 + LOCAL:2)
+ENDIF
+RETURNF LOCAL:3
+
+
+;-------------------------------------------------
+;関数名:NUMBER_OF_ABSENTEES
+;概　要:その場にいないキャラの数を数える関数
+;戻り値:その場に居ないキャラの数
+;備　考:
+;-------------------------------------------------
+@NUMBER_OF_ABSENTEES
+#FUNCTION
+VARSET LOCAL
+FOR LOCAL, 0, CHARANUM
+	SIF LOCAL == MASTER
+		CONTINUE
+	SIF DAILYLIFE_CHARA(LOCAL)
+		CONTINUE
+	LOCAL:1++
+NEXT
+RETURNF LOCAL:1
+
+;-------------------------------------------------
+;関数名:DAILYLIFE_CHARA
+;概　要:キャラが日常イベント出現できるか判定関数
+;引　数:ARG:0…キャラ登录番号
+;		ARG:1…1なら未陷落/失意状態で不可
+;戻り値:イベント出現できれば1、不可なら0
+;備　考:文中関数
+;-------------------------------------------------
+@DAILYLIFE_CHARA(ARG, ARG:1)
+#FUNCTION
+LOCAL = 1
+;主人は飛ばす
+SIF ARG == MASTER
+	LOCAL = 0
+;对象が労役中なら除外
+SIF CFLAG:ARG:12 > 0
+	LOCAL = 0
+;育児室に居るときは駄目
+SIF (TALENT:ARG:怀孕 && CFLAG:ARG:110 - 3 <= DAY) || TALENT:ARG:育儿中
+	LOCAL = 0
+;崩溃は駄目
+SIF TALENT:ARG:崩溃
+	LOCAL = 0
+;初调教口上が表示されていない＋依赖度が0（调教が行われていないことの代用）のキャラをチェック。でも共犯者ならOK
+SIF CFLAG:ARG:201 == 0 && CFLAG:ARG:2 == 0 && CFLAG:ARG:1 != 3
+	LOCAL = 0
+;ARG:1があるとき未陷落/失意状態ならダメ
+SIF ARG:1 && ((!KANRAKU(ARG) && CFLAG:ARG:1 != 3) || TALENT:ARG:失意)
+	LOCAL = 0
+RETURNF LOCAL
+
+;-------------------------------------------------
+;関数名:DAILYLIFE_NOCHARA
+;概　要:特定のキャラが日常イベント出現できるか判定関数
+;引　数:ARG:0…キャラ固有番号
+;		ARG:1…1なら未陷落/失意状態で不可
+;戻り値:イベント出現できればキャラ登录番号、不可なら-1
+;備　考:文中関数
+;-------------------------------------------------
+@DAILYLIFE_NOCHARA(ARG, ARG:1)
+#FUNCTION
+;そのキャラが存在するか
+GETCHARA ARG
+SIF RESULT == -1
+	RETURNF -1
+SIF ARG:1 && (!KANRAKU(RESULT) || TALENT:RESULT:失意)
+	RETURNF -1
+;すでに登場しているキャラと被っていたら不可
+SIF RESULT == A || RESULT == B || RESULT == C || (A > 0 && TALENT:RESULT:嫉妒)
+	RETURNF -1
+;日常イベント出場は可能か
+IF DAILYLIFE_CHARA(RESULT)
+	LOCAL = NO2(ARG)
+	RETURNF LOCAL
+ELSE
+	RETURNF -1
+ENDIF
+
+;-------------------------------------------------
+;関数名:BUILD2
+;概　要:体型判定関数、调教对象と调教者以外も判定できるようにしたもの
+;引　数:ARG:0…キャラ１の登录番号
+;		ARG:1…キャラ２の登录番号
+;戻り値:体型判定値
+;備　考:文中関数
+;男性　：高大＞普通＞　矮小　＞小人
+;それ以外：　　高大＞普通＞矮小＞小人
+;よって、キャラ２と比較してキャラ１が大きい＞同じくらい＞キャラ１が小さい 3 > 0 > -3
+;-------------------------------------------------
+@BUILD2(ARG, ARG:1)
+#FUNCTION
+;体型イメージ
+;男性　：高大＞普通＞　矮小　＞小人
+;それ以外：　　高大＞普通＞矮小＞小人
+;キャラ１　高大男
+IF TALENT:ARG:113 && (TALENT:ARG:140 || TALENT:ARG:137)
+	;キャラ２も高大男
+	IF TALENT:(ARG:1):113 && (TALENT:(ARG:1):140 || TALENT:(ARG:1):137)
+		LOCAL = 0
+	;キャラ２　高大女
+	ELSEIF TALENT:(ARG:1):113
+		LOCAL = 1
+	;キャラ２　矮小or小人
+	ELSEIF TALENT:(ARG:1):142 || TALENT:(ARG:1):100
+		LOCAL = 3
+	;キャラ２　普通
+	ELSE
+		LOCAL = 2
+	ENDIF
+;キャラ１　高大女
+ELSEIF TALENT:ARG:113
+	;キャラ２　高大男
+	IF TALENT:(ARG:1):113 && (TALENT:(ARG:1):140 || TALENT:(ARG:1):137)
+		LOCAL = -1
+	;キャラ２　高大女　or　普通男
+	ELSEIF TALENT:(ARG:1):113 || ((TALENT:(ARG:1):140 || TALENT:(ARG:1):137) && !TALENT:(ARG:1):142 && !TALENT:(ARG:1):100)
+		LOCAL = 0
+	;キャラ２　矮小女
+	ELSEIF (TALENT:(ARG:1):142 || TALENT:(ARG:1):100) && !TALENT:(ARG:1):140 && !TALENT:(ARG:1):137
+		LOCAL = 2
+	;キャラ２ 普通女、矮小男
+	ELSE
+		LOCAL = 1
+	ENDIF
+;キャラ１　矮小男
+ELSEIF TALENT:ARG:100 && (TALENT:ARG:140 || TALENT:ARG:137)
+	;キャラ２　高大男
+	IF TALENT:(ARG:1):113 && (TALENT:(ARG:1):140 || TALENT:(ARG:1):137)
+		LOCAL = -2
+	;キャラ２　小人体型
+	ELSEIF TALENT:(ARG:1):142
+		LOCAL = 1
+	;キャラ２　矮小男
+	ELSEIF TALENT:(ARG:1):100 && (TALENT:(ARG:1):140 || TALENT:(ARG:1):137)
+		LOCAL = 0
+	;キャラ２　矮小女
+	ELSEIF TALENT:(ARG:1):100
+		LOCAL = 1
+	ELSE
+		LOCAL = -1
+	ENDIF
+;キャラ１　矮小女
+ELSEIF TALENT:ARG:100
+	;キャラ２　高大男
+	IF TALENT:(ARG:1):113 && (TALENT:(ARG:1):140 || TALENT:(ARG:1):137)
+		LOCAL = -3
+	;キャラ２　小人体型
+	ELSEIF TALENT:(ARG:1):142
+		LOCAL = 1
+	;キャラ２　矮小男
+	ELSEIF TALENT:(ARG:1):100 && (TALENT:(ARG:1):140 || TALENT:(ARG:1):137)
+		LOCAL = -1
+	;キャラ２　矮小女
+	ELSEIF TALENT:(ARG:1):100
+		LOCAL = 0
+	ELSE
+		LOCAL = -2
+	ENDIF
+;キャラ１ 小人
+ELSEIF TALENT:ARG:142
+	IF TALENT:(ARG:1):113 && (TALENT:(ARG:1):140 || TALENT:(ARG:1):137)
+		LOCAL = -3
+	ELSEIF TALENT:(ARG:1):142
+		LOCAL = 0
+	ELSEIF TALENT:(ARG:1):100
+		LOCAL = -1
+	ELSE
+		LOCAL = -2
+	ENDIF
+;キャラ１　普通体型の男
+ELSEIF TALENT:ARG:140 || TALENT:ARG:137
+	;キャラ２　高大男
+	IF TALENT:(ARG:1):113 && (TALENT:(ARG:1):140 || TALENT:(ARG:1):137)
+		LOCAL = -1
+	;キャラ２　矮小or小人
+	ELSEIF TALENT:(ARG:1):142 || TALENT:(ARG:1):100
+		LOCAL = 2
+	;キャラ２　高大女
+	ELSEIF TALENT:(ARG:1):113 && !TALENT:(ARG:1):男性 && !TALENT:(ARG:1):双性
+		LOCAL = 0
+	;キャラ２　普通男
+	ELSEIF TALENT:(ARG:1):男性 || TALENT:(ARG:1):双性
+		LOCAL = 0
+	ELSE
+		LOCAL = 1
+	ENDIF
+;キャラ１　普通体型の女
+ELSE
+	;キャラ２　高大男
+	IF TALENT:(ARG:1):113 && (TALENT:(ARG:1):140 || TALENT:(ARG:1):137)
+		LOCAL = -2
+	;キャラ２　小人
+	ELSEIF TALENT:(ARG:1):142
+		LOCAL = 1
+	;キャラ２　矮小男
+	ELSEIF TALENT:(ARG:1):100 && (TALENT:(ARG:1):140 || TALENT:(ARG:1):137)
+		LOCAL = 0
+	;キャラ２　矮小女
+	ELSEIF TALENT:(ARG:1):100
+		LOCAL = 1
+	;キャラ２　高大女
+	ELSEIF TALENT:(ARG:1):113 && !TALENT:(ARG:1):男性 && !TALENT:(ARG:1):双性
+		LOCAL = -1
+	;キャラ２　普通男
+	ELSEIF TALENT:(ARG:1):男性 || TALENT:(ARG:1):双性
+		LOCAL = -1
+	;キャラ２　普通女
+	ELSE
+		LOCAL = 0
+	ENDIF
+ENDIF
+RETURNF LOCAL
+
+
+;-------------------------------------------------
+;関数名:DAILY_MENSIKI
+;概　要:面識セット関数
+;引　数:順番にMASTER,A,B,C
+;戻り値:
+;備　考:
+;-------------------------------------------------
+@DAILY_MENSIKI(ARG, ARG:1, ARG:2, ARG:3)
+SIF ARG:1 > -1
+	CFLAG:(ARG:1):(799 + NO:ARG) |= 1
+SIF ARG:2 > -1
+	CFLAG:(ARG:2):(799 + NO:ARG) |= 1
+SIF ARG:3 > -1
+	CFLAG:(ARG:3):(799 + NO:ARG) |= 1
+IF ARG:1 > -1
+	CFLAG:ARG:(799 + NO:(ARG:1)) |= 1
+	SIF ARG:2 > -1
+		CFLAG:(ARG:2):(799 + NO:(ARG:1)) |= 1
+	SIF ARG:3 > -1
+		CFLAG:(ARG:3):(799 + NO:(ARG:1)) |= 1
+ENDIF
+IF ARG:2 > -1
+	CFLAG:ARG:(799 + NO:(ARG:2)) |= 1
+	SIF ARG:1 > -1
+		CFLAG:(ARG:1):(799 + NO:(ARG:2)) |= 1
+	SIF ARG:3 > -1
+		CFLAG:(ARG:3):(799 + NO:(ARG:2)) |= 1
+ENDIF
+IF ARG:3 > -1
+	CFLAG:ARG:(799 + NO:(ARG:3)) |= 1
+	SIF ARG:1 > -1
+		CFLAG:(ARG:1):(799 + NO:(ARG:3)) |= 1
+	SIF ARG:2 > -1
+		CFLAG:(ARG:2):(799 + NO:(ARG:3)) |= 1
+ENDIF
+

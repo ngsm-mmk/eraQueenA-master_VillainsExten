@@ -1,0 +1,118 @@
+﻿;-------------------------------------------------
+;肉便器;やらないか
+;严厉な调教指令
+;-------------------------------------------------
+@COM154
+
+PRINTL 肉便器
+STR:0 = 肉便器
+
+
+;后庭处子だった場合の喪失フラグ
+IF TALENT:161
+	TFLAG:161 = 1
+ENDIF
+;调教者が童贞だった場合の喪失フラグ
+IF TALENT:PLAYER:160
+	TFLAG:160 = 2
+ENDIF
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 70
+LOSEBASE:1 += 170
+
+SOURCE:2 = 300
+SOURCE:4 = 50
+SOURCE:7 = 700
+SOURCE:13 = 200
+SOURCE:14 = 400
+SOURCE:15 = 700
+SOURCE:17 = 500
+SOURCE:18 = 500
+
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 500
+
+;Aへの痛苦は先に処理しておく
+;EXP:Ａ经验をみる
+IF EXP:1 < EXPLV:1
+	TIMES SOURCE:7 , 3.00
+	TIMES SOURCE:18 , 3.00
+ELSEIF EXP:1 < EXPLV:2
+	TIMES SOURCE:7 , 1.20
+	TIMES SOURCE:18 , 2.00
+ELSEIF EXP:1 < EXPLV:3
+	TIMES SOURCE:7 , 0.80
+	TIMES SOURCE:18 , 1.50
+ELSEIF EXP:1 < EXPLV:4
+	TIMES SOURCE:7 , 0.60
+	TIMES SOURCE:18 , 1.20
+ELSEIF EXP:1 < EXPLV:5
+	TIMES SOURCE:7 , 0.40
+ELSEIF EXP:1 >= EXPLV:5
+	TIMES SOURCE:7 , 0.20
+ENDIF
+
+;PALAM:润滑をみる
+IF PALAM:4 < PALAMLV:1
+	TIMES SOURCE:7 , 1.20
+	TIMES SOURCE:18 , 2.00
+ELSEIF PALAM:4 < PALAMLV:2
+	TIMES SOURCE:7 , 1.00
+	TIMES SOURCE:18 , 1.50
+ELSEIF PALAM:4 < PALAMLV:3
+	TIMES SOURCE:7 , 0.60
+ELSEIF PALAM:4 < PALAMLV:4
+	TIMES SOURCE:7 , 0.30
+ELSEIF PALAM:4 >= PALAMLV:4
+	TIMES SOURCE:7 , 0.20
+ENDIF
+
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;调教者のＰに尿汚れ
+STAIN:PLAYER:2 |= 128
+;奴隶のＡ⇔调教者のＰの汚れが移动
+STAIN:4 |= STAIN:PLAYER:2
+STAIN:PLAYER:2 |= STAIN:4
+;奴隶のＡと调教者のＰに汚れ追加
+STAIN:4 = 8
+STAIN:PLAYER:2 = 8
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;Ａ经验
+EXP:1 += 5
+PRINTL Ａ经验＋5
+
+;スカ经验
+EXP:33 += 1
+PRINTL 排便经验＋１
+
+;蔷薇经验とか加算
+CALL COM_EXP(1)
+
+
+
+;依赖度ベクトル
+TFLAG:33 = 5
+
+;依赖度補正値(服从で1、隶属で2）
+IF TALENT:5 && ASSIPLAY == 0
+	TFLAG:30 += 1
+ELSEIF TALENT:8 && ASSIPLAY == 0
+	TFLAG:30 += 2
+ENDIF
+
+
+RETURN 1
+

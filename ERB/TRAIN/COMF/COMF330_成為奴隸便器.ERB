@@ -1,0 +1,196 @@
+﻿@COM_ABLE330
+SIF COM_FILTER:330
+	RETURN 0
+;成为奴隶便器
+IF FLAG:1501 == 1
+    resetcolor
+ELSE
+    resetcolor
+    setcolor 252,147,090
+ENDIF
+;逆调教系指令表示制限状態だとダメ
+SIF FLAG:84 & 1024
+	RETURN 0
+;重口系指令表示制限状態だとダメ
+SIF FLAG:84 & 4096
+	RETURN 0
+SIF TALENT:人偶 || TALENT:机器人
+	RETURN 0
+;未使用利尿剂或非漏尿癖不可
+SIF !TEQUIP:27 && !TALENT:57
+	RETURN 0
+;主人非被虐狂不可
+SIF !ASSIPLAY && !TALENT:MASTER:84 
+	RETURN 0
+;助手play，助手若非被虐狂不可	
+SIF ASSIPLAY && !TALENT:ASSI:84
+	RETURN 0
+;下身内衣をつけている、布偶装を着ている、もしく水手裙以外の下身外衣を履いているとダメ
+SIF TEQUIP:2 || TEQUIP:4 > 1 || TEQUIP:6 == 7
+	RETURN 0
+;飞机杯使用中触手调教中导尿管射精止め中尿道氣球命令中はダメ
+SIF TEQUIP:12 || TEQUIP:25 || TEQUIP:37 || TEQUIP:38 || TEQUIP:39
+	RETURN 0
+RETURN 1
+;-------------------------------------------------
+;成为奴隶便器
+;-------------------------------------------------
+@COM330
+PRINTL 成为奴隶便器
+STR:0 = 成为奴隶便器
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 10
+LOSEBASE:1 += 200
+
+SOURCE:8 = 200
+SOURCE:13 = 800
+SOURCE:14 = 500
+SOURCE:17 = 700
+SOURCE:18 = 700
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 700
+
+;場所によって逸脱のソースが上下
+;野外
+IF TEQUIP:29
+	TIMES SOURCE:17 , 2.50
+;鏡の前（羞耻PLAY）
+ELSEIF TEQUIP:30
+	TIMES SOURCE:17 , 1.50
+;浴室場
+ELSEIF TEQUIP:31
+	TIMES SOURCE:17 , 0.50
+ENDIF
+
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;调教对象のＰに尿汚れ
+STAIN:2 |= 128
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;放尿经验
+PRINTFORML %EXPNAME:31%＋２
+EXP:31 += 2
+
+;野外放尿で异常经验
+IF TEQUIP:29 && CFLAG:5 == 0
+	PRINTFORML %EXPNAME:50%＋１
+	EXP:50 += 1
+	CFLAG:5 = 1
+ELSEIF TEQUIP:29
+	CFLAG:5 += 1
+ENDIF
+
+;利尿剂解除
+IF TEQUIP:27
+	TEQUIP:27 = 0
+ENDIF
+
+;嗜虐属性に応じて嗜虐快乐经验
+E = 1
+L = 0
+IF ABL:10 == 0
+	E += 0
+	L += 0
+ELSEIF ABL:10 == 1
+	E += 1
+	L += 1
+ELSEIF ABL:10 == 2
+	E += 3
+	L += 2
+ELSEIF ABL:10 == 3
+	E += 5
+	L += 3
+ELSEIF ABL:10 == 4
+	E += 7
+	L += 4
+ELSEIF ABL:10 >= 5
+	E += 9
+	L += 5
+ENDIF
+;调教者の受虐属性で嗜虐快乐经验
+IF ABL:PLAYER:9 == 0
+	E += 0
+	L += 0
+ELSEIF ABL:PLAYER:9 == 1
+	E += 1
+	L += 1
+ELSEIF ABL:PLAYER:9 == 2
+	E += 2
+	L += 3
+ELSEIF ABL:PLAYER:9 == 3
+	E += 3
+	L += 5
+ELSEIF ABL:PLAYER:9 == 4
+	E += 4
+	L += 7
+ELSEIF ABL:PLAYER:9 >= 5
+	E += 5
+	L += 9
+ENDIF
+PRINT 嗜虐快乐经验+
+PRINTVL E
+EXP:32 += E
+TFLAG:28 = E
+IF L > 0
+	PRINTFORM %CALLNAME:PLAYER%的
+	PRINT 痛苦快乐经验+
+	PRINTVL L
+	EXP:PLAYER:30 += L
+	TFLAG:27 = L
+ENDIF
+
+;依赖度ベクトル
+TFLAG:33 = 5
+
+;依赖度補正値(服从で1、隶属で2）
+IF TALENT:5 && ASSIPLAY == 0
+	TFLAG:30 += 1
+ELSEIF TALENT:8 && ASSIPLAY == 0
+	TFLAG:30 += 2
+ENDIF
+	PRINTFORML
+	PRINTFORML [100] 要求%CALLNAME%尿在身上
+	PRINTFORML
+	PRINTFORML [101] 要求%CALLNAME%尿在嘴里
+	PRINTFORML
+INPUT
+IF RESULT == 100
+	PRINTFORML %PLAYER_NAME()%要求%CALLNAME%尿在自己的身上
+	IF TALENT:83
+		PRINTFORM %CALLNAME%似乎兴奋到双眼放光，迫不及待地
+	ELSE
+		PRINTFORM 在
+		SIF TEQUIP:27
+		PRINTFORM 利尿剂与
+		PRINTFORM %PLAYER_NAME()%的催促之下，%CALLNAME%窘迫地
+	ENDIF
+		PRINTFORML 将金黄色的液体喷溅在%PLAYER_NAME()%的身上…
+ELSEIF RESULT == 101
+	PRINTFORML %PLAYER_NAME()%要求%CALLNAME%尿在自己的嘴巴里
+	IF TALENT:83
+		PRINTFORM %CALLNAME%似乎兴奋到双眼放光，迫不及待地
+	ELSE
+		PRINTFORM 在
+		SIF TEQUIP:27
+		PRINTFORM 利尿剂与
+		PRINTFORM %PLAYER_NAME()%的催促之下，%CALLNAME%窘迫地
+	ENDIF
+		PRINTFORML 将金黄色的液体排放在%PLAYER_NAME()%的嘴巴里面…
+ENDIF
+;取消連續指令懲罰
+SIF PREVCOM == 330
+PREVCOM = 999
+
+RETURN 1

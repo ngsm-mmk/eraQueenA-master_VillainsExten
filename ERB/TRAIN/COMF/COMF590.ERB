@@ -1,0 +1,122 @@
+﻿;Gスポ刺激の改変
+;以下一つのERBファイル「COMF590.ERB」にまとめる
+;-------------------------------------------------
+;前立腺刺激
+;爱抚系派生指令
+;-------------------------------------------------
+;--------------------------------------------
+;実行判定
+;-------------------------------------------
+@COM_ABLE590
+;前立腺刺激
+;男性でないとダメ
+SIF TALENT:140 == 0
+	RETURN 0
+;润滑不足で、顺从3以下のASSIの場合手指插入はできない（施虐狂ならＯＫ）
+IF PALAM:4 < PALAMLV:2 && ASSIPLAY
+	SIF ABL:ASSI:0 <= 3 && TALENT:ASSI:83 == 0
+		RETURN 0
+ENDIF
+;下身内衣をつけている、もしくは粗布劳动裤、裙裤を履いているとダメ
+SIF TEQUIP:2 || TEQUIP:4 == 2 || TEQUIP:4 == 3
+	RETURN 0
+;主人の技巧が3以下はだめ
+SIF ABL:PLAYER:2 < 3
+	RETURN 0
+;触手调教中はダメ
+SIF TEQUIP:25
+	RETURN 0
+RETURN 1
+
+
+;---------------------------------------
+;--------------------------------------------
+;メイン　口上就这样くみこむ
+;-------------------------------------------
+@COM590
+PRINTL 前列腺刺激
+STR:0 = 前列腺刺激
+SELECTCOM = 590
+
+
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 50
+LOSEBASE:1 += 100
+
+SOURCE:2 = 180
+SOURCE:7 = 20
+SOURCE:10 = 50
+SOURCE:13 = 80
+SOURCE:11 = 100
+SOURCE:18 = 100
+
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 100
+
+;Aへの痛苦は先に処理しておく
+;EXP:Ａ经验をみる（处女の反感は別途処理済みなので省略）
+IF EXP:1 < EXPLV:1
+	TIMES SOURCE:7 , 2.50
+ELSEIF EXP:1 < EXPLV:2
+	TIMES SOURCE:7 , 0.80
+	TIMES SOURCE:18 , 1.20
+ELSEIF EXP:1 < EXPLV:3
+	TIMES SOURCE:7 , 0.40
+ELSEIF EXP:1 < EXPLV:4
+	TIMES SOURCE:7 , 0.10
+ELSEIF EXP:1 < EXPLV:5
+	TIMES SOURCE:7 , 0.00
+ELSEIF EXP:1 >= EXPLV:5
+	TIMES SOURCE:7 , 0.00
+ENDIF
+
+;PALAM:润滑をみる
+IF PALAM:4 < PALAMLV:1
+	TIMES SOURCE:7 , 1.20
+	TIMES SOURCE:18 , 1.50
+ELSEIF PALAM:4 < PALAMLV:2
+	TIMES SOURCE:7 , 0.70
+	TIMES SOURCE:18 , 1.20
+ELSEIF PALAM:4 < PALAMLV:3
+	TIMES SOURCE:7 , 0.40
+ELSEIF PALAM:4 < PALAMLV:4
+	TIMES SOURCE:7 , 0.10
+ELSEIF PALAM:4 >= PALAMLV:4
+	TIMES SOURCE:7 , 0.10
+ENDIF
+
+
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+
+;奴隶の肛⇔调教者の指の汚れが移动
+	STAIN:4 |= STAIN:PLAYER:1
+	STAIN:PLAYER:1 |= STAIN:4
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;A经验
+EXP:1 += 1
+PRINTL Ａ经验＋１
+
+;蔷薇经验とか加算
+CALL COM_EXP(4)
+
+
+;依赖度ベクトル
+TFLAG:33 = 1
+
+
+RETURN 1
+

@@ -1,0 +1,1144 @@
+﻿;≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡
+;eraQueenA调教マニュアル（仮）
+;eraheta调教マニュアル（仮）の改変です
+;≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡
+;記述はeratohoまとめwiki、erahetawikiの物を一部参考・借用しています。
+;eratohoの東方调教典をいろいろ改造。元パッチ作者様には多大な感謝。
+;--------------------------------------------------
+;このファイル内ではメニュー処理と
+;能力・刻印・经验・珠についての記述があります。
+;--------------------------------------------------
+;=============================================================================
+;eraheta调教マニュアル（仮）メニュー
+;=============================================================================
+;--------------------------------------------------
+;eraheta调教マニュアル（仮）メニュー
+;--------------------------------------------------
+@DICTIONARY_MENU
+CALL KAIGYO
+DRAWLINE
+PRINTL 要查阅哪个项目？
+DRAWLINE
+PRINTL [ 1] 能力
+PRINTL [ 2] 刻印
+PRINTL [ 3] 素质
+PRINTL [ 4] 经验
+PRINTL [ 5] 珠子
+PRINTL [ 6] 其他数值
+PRINTL [ 7] 道具
+PRINTL [ 8] 调教指令说明
+PRINTL [ 9] 劳役指令说明
+PRINTL [10] 称号
+PRINTL [20] 游戏模式说明
+PRINTL [21] 结局达成条件
+PRINTL [30] 扩展功能说明
+PRINTL [98] 游戏相关Ｑ＆Ａ
+PRINTL [99] 调教手册（暂）
+DRAWLINE
+PRINTL [100]放弃
+$INPUT_LOOP
+INPUT
+IF RESULT == 100
+	RETURN 0
+ELSEIF RESULT == 1
+	;能力
+	CALL DICTIONARY_ABL_MAIN
+ELSEIF RESULT == 2
+	;刻印
+	CALL DICTIONARY_MARK_MAIN
+ELSEIF RESULT == 3
+	;素質
+	CALL DICTIONARY_TALENT_MAIN
+ELSEIF RESULT == 4
+	;经验
+	CALL DICTIONARY_EXP_MAIN
+ELSEIF RESULT == 5
+	;珠
+	CALL DICTIONARY_JUEL_MAIN
+ELSEIF RESULT == 6
+	;其他数値
+	CALL DICTIONARY_其他_MAIN
+ELSEIF RESULT == 7
+	;アイテム
+	CALL DICTIONARY_ITEM_MAIN
+ELSEIF RESULT == 8
+	;调教指令説明
+	CALL DICTIONARY_TRAIN_COMMAND
+ELSEIF RESULT == 9
+	;劳役指令説明
+	CALL DICTIONARY_其他_WORK
+ELSEIF RESULT == 10
+	;称号
+	CALL DICTIONARY_TITLE_MAIN
+ELSEIF RESULT == 20
+	;ゲームモード説明
+	CALL DICTIONARY_GAMEMODE_MAIN
+ELSEIF RESULT == 21
+	;エンディング条件
+	CALL DICTIONARY_ENDING_MAIN
+ELSEIF RESULT == 30
+	;拡張機能説明
+	CALL DICTIONARY_EXPANSION
+ELSEIF RESULT == 98
+	;ネタばれＱ＆Ａ
+	CALL DICTIONARY_NETABARE_QA
+ELSEIF RESULT == 99
+	;eraheta调教マニュアル（仮）とは
+	CALL DICTIONARY_ABOUT
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+RESTART
+
+;=============================================================================
+;用語辞典――eraheta调教マニュアル（仮）とは
+;=============================================================================
+;という名のデタラメ
+@DICTIONARY_ABOUT
+PRINTL 这个调教手册（暂）乃照搬「eraheta调教手册（暂）」。
+PRINTW 所含条目有参考・借用eratoho、erahetawiki等游戏，以及wiki上的内容。
+
+;=============================================================================
+;用語辞典――能力
+;=============================================================================
+;--------------------------------------------------
+;能力解説メインページ
+;--------------------------------------------------
+@DICTIONARY_ABL_MAIN
+P = 0
+$PRINT_LIST
+DRAWLINE
+PRINTFORML 「能力」相关的大体说明。
+PRINTFORML 请选择想要了解的能力。
+DRAWLINE
+PRINTFORML ＜page.{P+1}/2＞
+DRAWLINE
+
+;各ページを表示
+FOR LOCAL:1, 0, 15
+	LOCAL = LOCAL:1 + P*15
+	Q:LOCAL = 0
+	STRLENS ABLNAME:LOCAL
+	IF RESULT > 0
+		PRINTFORML [{LOCAL, 2}] %ABLNAME:LOCAL%
+		Q:LOCAL = 1
+	ENDIF
+NEXT
+DRAWLINE
+PRINTFORMLC \@(P <= 0) ? %" " * 16% # [1001]上一页\@
+PRINTLC [1000]返回
+PRINTFORMLC \@(P >= 1) ? %" " * 16% # [1009]下一页\@
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 1000
+	RETURN 0
+ELSEIF RESULT == 1001 && P >= 0
+	P -= 1
+	GOTO PRINT_LIST
+ELSEIF RESULT == 1009 && P <= 1
+	P += 1
+	GOTO PRINT_LIST
+ELSE
+	SIF Q:RESULT == 0
+		GOTO INPUT_LOOP
+	PRINTFORML 【%ABLNAME:RESULT%】
+	TRYCALLFORM DICTIONARY_ABL_{RESULT}
+	GOTO PRINT_LIST
+ENDIF
+
+;--------------------------------------------------
+;能力解説
+;--------------------------------------------------
+;顺从
+@DICTIONARY_ABL_0
+PRINTL 决定着奴隶对主人命令的依从程度。
+PRINTL 顺从太低的情况下，不论什么命令都会反抗。
+PRINTL 反过来够高的话，过大尺度的命令也会遵从。
+PRINTW 无论是留下来做助手，还是要调教为可以贩卖的性奴隶，这都是最基本的能力。
+
+;欲望
+@DICTIONARY_ABL_1
+PRINTL 代表着角色对于各式情事的沉溺程度。
+PRINTL 足够高的话，会对所有性相关的指令产生欲情。
+PRINTL 让对方感到更强的快感或是喂下媚药就会上升。
+PRINTW 对于性奴隶来说，这是必要的能力。
+
+;技巧
+@DICTIONARY_ABL_2
+PRINTL 代表着角色性技巧的熟稔度。
+PRINTL 同时也等同于手掌手指等的灵巧度。
+PRINTL 基本来说只要进行调教就会上升。
+PRINTW 要培养为助手的话，这是必要的能力。
+
+;Ｃ感觉
+@DICTIONARY_ABL_3
+PRINTL 阴茎(或者阴蒂)的敏感度。
+PRINTW 使用跳蛋或是舔阴(口交)等可以提高此能力。
+
+;Ｖ感觉
+@DICTIONARY_ABL_4
+PRINTL 阴道的敏感度。
+PRINTL 使用自慰棒或是性交系调教(比如正常位)等可以提高此能力。
+PRINTW 当然，持有[男性]素质的角色并不具备此能力。
+
+;Ａ感觉
+@DICTIONARY_ABL_5
+PRINTL 肛门的敏感度。
+PRINTL 和肛门相关的指令可以提高此能力。
+PRINTW 但是比起一般的性行为，肛交通常被认为是异常的性交方式。
+
+;Ｂ感觉
+@DICTIONARY_ABL_6
+PRINTL 胸部的敏感度。
+PRINTL 爱抚胸部或是乳交等和胸部相关的指令可以提高此能力。
+PRINTL 不过，胸部大小程度不同的话，指令产生的效果也会有相应差异。
+PRINTL 较小的胸部会更为敏感，但相应的某些指令也无法实施。
+PRINTW 丰满的胸部对于刺激不是很敏感，但可以实行更多的指令。
+
+;侍奉精神
+@DICTIONARY_ABL_7
+PRINTL 代表着服务他人时所感到的喜悦度。
+PRINTL 此项能力越高，调教时越容易学到各种各样的技巧。
+PRINTL 就算不下命令，也会自行开始侍奉。
+PRINTL 口交命令和乳交等侍奉系指令反复进行的可能性会上升。
+PRINTW 恋慕系陷落的必备能力。
+
+;露出癖
+@DICTIONARY_ABL_8
+PRINTL 代表着被人看到令人羞耻的姿态使所感到的兴奋度。
+PRINTL 此项能力越高，自慰或是调教后耻情上升时就会产生更多的情欲。
+PRINTL 相应的，如果羞耻感淡薄，被人看见羞耻姿态时恐怖等情感的提高会相当困难。
+PRINTW 野外PLAY或是自慰等指令可以提高此能力。
+
+;受虐属性
+@DICTIONARY_ABL_9
+PRINTL 代表着承受痛苦的时候产生的情欲度和兴奋度。
+PRINTL 此项能力越高，在感到痛苦时就会产生更多的情欲，且不太容易反感。
+PRINTL 体力和气力的消耗也会减少。
+PRINTW 同时此项能力若未达标准，将无法实行某些具有SM性质的指令。
+
+;嗜虐属性
+@DICTIONARY_ABL_10
+PRINTL 代表着对给予他人痛苦这件事上产生的情欲度和兴奋度。
+PRINTL 实施SM系的调教时，会倾向于让对方痛苦来满足自己。
+PRINTL 助手角色的此项能力如果未达标准，将无法实行某些具有SM性质的指令。
+PRINTW 担任助手的角色在给其他奴隶带来痛苦时可能会觉醒此项能力。
+
+;百合属性
+@DICTIONARY_ABL_11
+PRINTL 代表着对女同间性行为的接受程度。
+PRINTL 此项能力越高，在面对女同相关的调教时越少感到反感，快感也更容易上升。
+PRINTW 这是调教时出现百合行为的前提条件，同时也是取得百合成瘾的必要条件。
+
+;料理技能
+@DICTIONARY_ABL_12
+PRINTL 代表着料理水平的高低程度。
+PRINTL 此项能力越高，烹饪出来的菜肴越容易得到周围人的高度评价，外观和味道也会更好。
+PRINTL 是恋慕系劳役「经营售餐棚」的必要能力。
+PRINTW 角色可能自带的才艺技能之一。
+
+;摄影技能
+@DICTIONARY_ABL_13
+PRINTL 代表着拍摄水平的高低程度。
+PRINTL 此项能力越高，拍出的影片和相片越能卖出高价。
+PRINTL 除了影响录像和照片的价格外，还会影响淫乱系劳役「乱交LIVE」摄影的收益。
+PRINTL 如果要把这些作为主要收入来源，推荐尽早提升奴隶的此项能力。
+PRINTW 角色可能自带的才艺技能之一。
+
+;歌唱技能
+@DICTIONARY_ABL_14
+PRINTL 代表着歌唱水平的高低程度。
+PRINTL 此项能力越高，恋慕系劳役「演唱会」和淫乱系劳役「乱交LIVE」的收益就会越高。
+PRINTL 必须积累一定程度的经验(歌唱经验)才能提高此能力。
+PRINTW 角色可能自带的才艺技能之一。
+
+;自慰成瘾
+@DICTIONARY_ABL_15
+PRINTL 代表着对自慰行为的依赖度。
+PRINTL 此项能力越高，调教结束后进行自慰的可能性和频率越高。
+PRINTW 积累自慰经验或是调教自慰经验可提高此能力。
+
+;精液成瘾
+@DICTIONARY_ABL_16
+PRINTL 代表着对精液味道和气味的成瘾度。
+PRINTL 此项能力越高，在能接触到精液的调教或事件中所获得的欲情跟珠子就越多。
+PRINTL 但是，想进一步提升的话，需要非常多的「屈服之珠」。
+PRINTW 初精饮绝顶时直接上升到LV３。
+
+;百合成瘾
+@DICTIONARY_ABL_17
+PRINTL 代表着对女同间性行为的成瘾度。
+PRINTL 此项能力越高，被同性调教时越少感到反感，快感也更容易上升。
+PRINTW 调教者和被调教者必须都是♀才能取得。
+
+;性成瘾
+@DICTIONARY_ABL_18
+PRINTL 代表着对性交、肛交等性行为的成瘾度。
+PRINTL 此项能力越高，调教时的相关指令越容易实行，快感也更容易增加。
+PRINTW 此外，调教结束后发生求欢和夜袭的概率也会上升。
+
+;喷乳成瘾
+@DICTIONARY_ABL_19
+PRINTL 代表着胸部喷射出乳汁时的兴奋度。
+PRINTL 拥有此项能力的话，调教结束后会榨取自己的乳汁提供给主人。
+PRINTW 必须拥有[母乳体质]才能获得此能力，否则无法上升。
+
+;同性倾向
+@DICTIONARY_ABL_20
+PRINTL 代表着对男同间性行为的接受程度。
+PRINTL 此项能力越高，在面对男同相关的调教时越少感到反感，快感也更容易上升。
+PRINTW 这是调教时出现男同行为的前提条件，同时也是取得男同成瘾的必要条件。
+
+;男同成瘾
+@DICTIONARY_ABL_21
+PRINTL 代表着对男同间性行为的成瘾度。
+PRINTL 此项能力越高，被同性调教时越少感到反感，快感也更容易上升。
+PRINTW 调教者和被调教者必须都是♂才能取得。
+
+;Ｗ感觉
+@DICTIONARY_ABL_22
+PRINTL 翅膀的敏感度。人外专有能力。
+PRINTL 选择抚摸翅膀指令可以提高此能力。
+PRINTL 不同类型的翅膀敏感度也有所差异。
+PRINTW 敏感度高低分别是：羽翅＞蝠翼＞虫翼＞骨翅
+
+;Ｔ感觉
+@DICTIONARY_ABL_23
+PRINTL 尾巴的敏感度。人外专有能力。
+PRINTL 选择抚摸尾巴、尾交、尾巴插入等指令可以提高此能力。
+PRINTL 不同类型的尾巴敏感度也有所差异。
+PRINTW 敏感度高低分别是：蛇尾＞兽尾＞鱼尾
+
+;Ｅ感觉
+@DICTIONARY_ABL_24
+PRINTL 耳朵的敏感度。人外专有能力。
+PRINTL 选择抚摸兽耳、舔耳朵、耳交等指令可以提高此能力。
+PRINTL 不同类型的耳朵敏感度也有所差异。
+PRINTW 敏感度高低分别是：尖耳＞兽耳
+
+;=============================================================================
+;用語辞典――刻印
+;=============================================================================
+;--------------------------------------------------
+;刻印解説メインページ
+;--------------------------------------------------
+@DICTIONARY_MARK_MAIN
+DRAWLINE
+PRINTFORML 「刻印」相关的大体说明。
+PRINTFORML 请选择想要了解的刻印。
+DRAWLINE
+;各表示
+FOR LOCAL, 0, 11
+	STRLENS MARKNAME:LOCAL
+	SIF RESULT > 0
+		PRINTFORML [{LOCAL, 2}] %MARKNAME:LOCAL%
+NEXT
+DRAWLINE
+PRINTLC [100]返回
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 100
+	RETURN 0
+ELSEIF (RESULT >= 0 && RESULT <= 3) || (RESULT >= 8 && RESULT <= 10)
+	PRINTFORML 【%MARKNAME:RESULT%】
+	TRYCALLFORM DICTIONARY_MARK_{RESULT}
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+RESTART
+
+;--------------------------------------------------
+;刻印解説
+;--------------------------------------------------
+;痛苦刻印
+@DICTIONARY_MARK_0
+PRINTL 顾名思义，是在受到难以承受之痛楚时伴随痛苦记忆出现的刻印。
+PRINTL 刻印的等级每高一级，就代表突破了一层新的承受度。
+PRINTL 拥有痛苦刻印的奴隶们会变得更加听话，以求避免痛苦的折磨。
+PRINTW 也即是说，此刻印的等级越高，施行调教指令就变得越容易。
+
+;快乐刻印
+@DICTIONARY_MARK_1
+PRINTL 顾名思义，是在感到身心都无法忘怀的快感时出现的刻印。
+PRINTL 刻印的等级每高一级，就代表突破了一层新的快乐度。
+PRINTL 拥有快乐刻印的奴隶们会变得更加积极，以追求更多的快感。
+PRINTL 也即是说，此刻印的等级越高，施行调教指令就变得越容易。
+PRINTW 培养淫乱系陷落的奴隶需取得快乐刻印3。
+
+;屈服刻印
+@DICTIONARY_MARK_2
+PRINTL 顾名思义，是自尊心被粉碎后屈服于主人时出现的刻印。
+PRINTL 刻印的等级每高一级，就代表承受了更高一层的屈辱。
+PRINTL 拥有屈服刻印的奴隶们会变得更加乖顺，以免受到更多责罚。
+PRINTW 一般来说不会再违抗主人的命令。
+
+;反抗刻印
+@DICTIONARY_MARK_3
+PRINTL 代表着对主人的反感程度。
+PRINTL 刻印的等级每高一级，就代表反感度进一步加大。
+PRINTL 拥有反抗刻印的奴隶们会强烈抗拒主人的命令。
+PRINTW 留着这个刻印会让调教变得困难，建议趁早消掉。
+
+;=============================================================================
+;用語辞典――经验
+;=============================================================================
+;--------------------------------------------------
+;经验解説メインページ
+;--------------------------------------------------
+@DICTIONARY_EXP_MAIN
+P = 0
+$PRINT_LIST
+DRAWLINE
+PRINTFORML 「经验」相关的大体说明。
+PRINTFORML 请选择想要了解的经验。
+PRINTFORML ＜page.{P+1}/4＞
+DRAWLINE
+
+;各ページを表示
+FOR LOCAL:1, 0, 20
+	LOCAL = LOCAL:1 + P*20
+	Q:LOCAL = 0
+	STRLENS EXPNAME:LOCAL
+	IF RESULT > 0
+		PRINTFORML [{LOCAL, 2}] %EXPNAME:LOCAL%
+		Q:LOCAL = 1
+	ENDIF
+NEXT
+DRAWLINE
+PRINTFORMLC \@(P <= 0) ? %" " * 16% # [1001]上一页\@
+PRINTLC [1000]返回
+PRINTFORMLC \@(P >= 4) ? %" " * 16% # [1009]下一页\@
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 1000
+	RETURN 0
+ELSEIF RESULT == 1001 && P > 0
+	P -= 1
+	GOTO PRINT_LIST
+ELSEIF RESULT == 1009 && P < 4
+	P += 1
+	GOTO PRINT_LIST
+ELSE
+	SIF Q:RESULT == 0
+		GOTO INPUT_LOOP
+	PRINTFORML 【%EXPNAME:RESULT%】
+	TRYCALLFORM DICTIONARY_EXP_{RESULT}
+	GOTO PRINT_LIST
+ENDIF
+
+;--------------------------------------------------
+;经验解説
+;--------------------------------------------------
+;Ｖ经验
+@DICTIONARY_EXP_0
+PRINTL 代表着阴道被玩弄的次数。
+PRINTL 阴道被各种东西插入就能获得Ｖ经验。
+PRINTL 此经验数值越高进行Ｖ系调教时的消耗就越轻。
+PRINTL 同时也是能力「Ｖ感觉」上升的必要条件。
+PRINTW 当然，持有[男性]素质的角色通常是不会有此经验的。
+
+;Ａ经验
+@DICTIONARY_EXP_1
+PRINTL 代表着肛门被玩弄的次数。
+PRINTL 肛门被各种东西插入就能获得Ａ经验。
+PRINTL 此经验数值越高进行Ａ系调教时的消耗就越轻。
+PRINTW 同时也是能力「Ａ感觉」上升的必要条件。
+
+;绝顶经验
+@DICTIONARY_EXP_2
+PRINTL 代表着高潮绝顶的次数。
+PRINTL 对性器施与刺激，让其体验到性高潮时就会增加。
+PRINTW 全身高潮时的情况也会被计算在内。
+
+;射精经验
+@DICTIONARY_EXP_3
+PRINTL 代表着受到性刺激时射精的次数。
+PRINTL 此外，一次喷射出大量精液的情况会被计算作两次。
+PRINTW 两次以上的数值一样会被计算。
+
+;性交经验
+@DICTIONARY_EXP_4
+PRINTL 代表着性交的次数。
+PRINTW 是提升「性成瘾」能力的必要条件，同时也是取得部分素质的必要条件。
+
+;内射经验
+@DICTIONARY_EXP_5
+PRINTL 代表着调教时的膣内射精次数。
+PRINTW 现阶段对其他能力的提升没有影响。
+
+;Ｕ经验
+@DICTIONARY_EXP_6
+PRINTL Urethra＝尿道。代表着尿道被玩弄的次数。
+PRINTL 只有通过刺激尿道才会提升，所以因人而异，有可能是完全见不着的经验之一。
+PRINTW 此经验越高，开发尿道时越容易产生快感，消耗也会相应减少。
+
+;Ｍ经验
+@DICTIONARY_EXP_7
+PRINTL Mammary gland＝乳腺。代表着乳腺被玩弄的次数。
+PRINTL 因为只有用某个指令时才会上升，所以大概率根本就见不着这个经验。
+PRINTW 第一次上升时，毫无疑问会增加『异常经验』。
+
+;肛射经验
+@DICTIONARY_EXP_8
+PRINTL 代表着调教时的肛内射精次数。
+PRINTW 现阶段对其他能力的提升没有影响。
+
+;自慰经验
+@DICTIONARY_EXP_10
+PRINTL 代表着自慰的次数。
+PRINTL 可经由调教中的「自慰」相关指令，以及调教结束后的自慰事件来提升。
+PRINTW 是提升「自慰成瘾」能力的必要条件。
+
+;调教自慰经验
+@DICTIONARY_EXP_11
+PRINTL 代表着非本人自愿下的自慰次数。
+PRINTL 和自慰经验相似，但定义更狭窄。
+PRINTL 原则上是在调教中使用「自慰」相关指令才会提升。
+PRINTW 是提升「自慰成瘾」能力的必要条件。
+
+;精液经验
+@DICTIONARY_EXP_20
+PRINTL 代表着调教时接触到精液的次数。
+PRINTL 此外，一次接触到大量精液的情况会被计算作两次。
+PRINTL 一次性接触得太少，也会按照没接触过计算。
+PRINTW 是提升「精液成瘾」能力的必要条件。
+
+;侍奉快乐经验
+@DICTIONARY_EXP_21
+PRINTL 代表着在侍奉主人时产生快感的次数。
+PRINTL 只要在侍奉系指令中体验到快乐就会上升。
+PRINTL 是提升「侍奉精神」能力的必要条件，同时也是取得部分素质的必要条件。
+PRINTW 培养恋慕系陷落的奴隶最低需要200的侍奉快乐经验。
+
+;口交经验
+@DICTIONARY_EXP_22
+PRINTL 代表着用嘴进行「口交命令」的次数。
+PRINTL 顾名思义，使用「口交命令」等相关指令就能提升。
+PRINTW 在清晨的日常事件中也可能提升。
+
+;爱情经验
+@DICTIONARY_EXP_23
+PRINTL 被主人给予爱情，而自己也感受到爱情时才会增加的经验。
+PRINTL 不进入恋慕系路线的话基本不会上升。
+PRINTW 是取得「相亲相爱」素质的必要条件。
+
+;精饮绝顶经验
+@DICTIONARY_EXP_24
+PRINTL 代表着饮用精液后高潮的次数。
+PRINTL 也即喝下精液后就被刺激得高潮的经验。
+PRINTW 是提升「精液成瘾」能力的必要条件。
+
+;舔阴经验
+@DICTIONARY_EXP_25
+PRINTL 代表着进行「舔阴」行为的次数。
+PRINTL 顾名思义，使用「舔阴」等相关指令就能提升。
+PRINTW 清晨的日常事件中也有上升的可能。
+
+;痛苦快乐经验
+@DICTIONARY_EXP_30
+PRINTL 代表着身体受到痛苦时却感觉到快乐的次数。
+PRINTL 在痛苦系指令中给予快乐就比较容易提高。
+PRINTL 是提升「受虐属性」能力的必要条件，同时也是取得部分素质的必要条件。
+PRINTW 培养服从系陷落的奴隶需要具有一定数值的此项经验。
+
+;放尿经验
+@DICTIONARY_EXP_31
+PRINTL 代表着尿道等部位受到刺激后漏尿的次数。
+PRINTL 在产生尿意的情况下进行Ｃ系调教，再使用「放尿」指令就会上升。
+PRINTL 此外，一次喷射出大量尿液的情况会被计算作两次。
+PRINTL 两次以上的数值一样会被计算。
+PRINTW 通常来说，如果具有[漏尿癖]素质的话，即便不使用利尿剂也会有尿意。
+
+;嗜虐快乐经验
+@DICTIONARY_EXP_32
+PRINTL 代表着给予他人痛苦时却感到快乐的次数。
+PRINTL 实行逆调教系指令，或是在担任助手时实行SM指令的话就比较容易提高。
+PRINTW 是提升「嗜虐属性」能力的必要条件，同时也是取得部分素质的必要条件。
+
+;排便经验
+@DICTIONARY_EXP_33
+PRINTL 代表着灌肠等重口指令后排便的次数。
+PRINTW 此经验越高，越容易发生朝饮尿等事件。
+
+;百合经验
+@DICTIONARY_EXP_40
+PRINTL 代表着女同性恋之间的性行为次数。
+PRINTL 可经由同性角色的调教或是调教结束后的事件来提升。
+PRINTW 是提升「百合属性」和「百合成瘾」能力的必要条件。
+
+;蔷薇经验
+@DICTIONARY_EXP_41
+PRINTL 代表着男同性恋之间的性行为次数。
+PRINTL 可经由同性角色的调教或是调教结束后的事件来提升。
+PRINTW 是提升「同性倾向」和「男同成瘾」能力的必要条件。
+
+;Ｕ拡張经验
+@DICTIONARY_EXP_49
+PRINTL 代表着尿道被不可能塞进去的东西强行扩张的次数。
+PRINTL 想提升的话只限定于某些手段，而且比Ｖ扩张经验和Ａ扩张经验的限制更多。
+PRINTL 通常的调教中不太容易见到。
+PRINTL 和Ｖ扩张经验与Ａ扩张经验类似，会给身体造成极大的负担。
+PRINTL 第一次上升时，毫无疑问会增加『异常经验』。
+PRINTW 现阶段，对其他能力的提升没有影响。
+
+;异常经验
+@DICTIONARY_EXP_50
+PRINTL 代表着受到足以称之为心灵创伤的冲击的次数。
+PRINTL 原则上是必须使用非常严厉的调教或是进行非常识的行为才会提高。
+PRINTL 习惯严厉的调教后，奴隶的体力和气力会有相应增长。
+PRINTL 是进一步提高「顺从」和「欲望」等能力的破壁必要条件。
+PRINTL 要培养淫乱和服从系陷落的奴隶，就必须增加奴隶的异常经验。
+PRINTL 反之，恋慕系，尤其是相亲相爱系的奴隶应尽量回避这些场合。
+PRINTL 也有一部分只是口上出现异常经验的场合。
+PRINTW 具体是否增加数值，就要看系统提示了。
+PRINTL 
+PRINTL ◎可以获得异常经验的行为：
+PRINTL 逆强奸、逆肛门强奸指令下的童贞夺取（男奴隶限定）
+PRINTL 骑乘位/骑乘位肛交时失去处女/后庭处子（后庭处子的场合为男奴隶限定）
+PRINTL 奴隶夺走主人的处女
+PRINTL 奴隶夺走助手的处女或是男助手的后庭处子
+PRINTL 摄影中的自慰、野外PLAY时的放尿和轮奸
+PRINTL 异常经验稀少时的穴扩张等严厉调教
+PRINTW 导尿管、３Ｐ　　……等等。
+
+
+;紧缚经验
+@DICTIONARY_EXP_51
+PRINTL 顾名思义，代表着受到捆绑的次数。
+PRINTL 主要是依靠绳子、触手等指令来提升。
+PRINTL 培养服从系陷落的奴隶需要具有一定数值的此项经验。
+PRINTW 此项经验越高，在受到绑缚时的消耗就越低。
+
+;Ｖ扩张经验
+@DICTIONARY_EXP_52
+PRINTL 代表着阴道被不可能塞进去的东西强行扩张的次数。
+PRINTL 想提升的话只限定于某些手段，通常来说是不容易见到的。
+PRINTL 诸如拳交和产卵等指令，会给身体造成极大的负担。
+PRINTL 第一次上升时，毫无疑问会增加『异常经验』。
+PRINTL 对其他能力的提升没有影响。
+PRINTW 要实施更严厉的Ｖ系调教的话，需要有一定程度的习惯。
+
+;Ａ扩张经验
+@DICTIONARY_EXP_53
+PRINTL 代表着肛门被不可能塞进去的东西强行扩张的次数。
+PRINTL 想提升的话只限定于某些手段，通常来说是不容易见到的。
+PRINTL 诸如肛门拳交和肛产卵等指令，会给身体造成极大的负担。
+PRINTL 第一次上升时，毫无疑问会增加『异常经验』。
+PRINTL 对其他能力的提升没有影响。
+PRINTW 要实施更严厉的Ａ系调教的话，需要有一定程度的习惯。
+
+;喷乳经验
+@DICTIONARY_EXP_54
+PRINTL 代表着胸部受到刺激而喷射出乳汁的次数。
+PRINTL 必须拥有[母乳体质]才能增加。
+PRINTL 此外，一次喷射出大量乳汁的情况会被计算作两次。
+PRINTL 两次以上的数值一样会被计算。
+PRINTW 是提升「喷乳成瘾」能力的必要条件。
+
+;触手经验
+@DICTIONARY_EXP_55
+PRINTL 代表着被触手调教的次数。
+PRINTL 基本来说只有实行触手系的指令或事件才会增加。
+PRINTL 对触手苦手的角色随着此项经验的累积会逐渐减少消耗。
+PRINTL 目前，和触手相关的条目都对其他能力的提升没有太大的影响。
+PRINTW 因此只是针对于个人嗜好强烈的玩家存在，讨厌触手的玩家可以回避掉。
+
+;吸血经验
+@DICTIONARY_EXP_56
+PRINTL 顾名思义，代表着被吸血的次数。
+PRINTW 现阶段还没有提升此项经验的方法。因为吸血鬼相关设定只是个空架子。
+
+;产卵经验
+@DICTIONARY_EXP_59
+PRINTL 代表着产卵、或是子宫产卵和排卵的次数。
+PRINTW 此项经验越高就越是习惯产卵行为，产卵时的消耗也会相应减少。
+
+;生育经验
+@DICTIONARY_EXP_60
+PRINTL 代表着生育子女的次数。
+PRINTL 原则上没有开启怀孕分娩机能就不会增加。
+PRINTW 对其他能力的提升没有影响，只是针对于有这个嗜好的玩家存在。
+
+;家务经验
+@DICTIONARY_EXP_61
+PRINTL 代表着制作料理的次数。
+PRINTL 通过劳役指令「经营售餐棚」、「做饭」和调教指令「做家务」来提升。
+PRINTL 家务经验越多就越是谙于此道，所制作的料理也能卖出更高的价格。
+PRINTW 同时，也是提升「料理技能」能力的必要条件。
+
+;摄影经验
+@DICTIONARY_EXP_62
+PRINTL 代表着使用摄像机和照相机记录调教实况的次数。
+PRINTL 只要使用「摄像机」和「照相机」，相应的经验就会上升。
+PRINTW 是提升「摄影技能」能力的必要条件。
+
+;被摄经验
+@DICTIONARY_EXP_63
+PRINTL 代表着被摄像机和照相机记录下调教实况的次数。
+PRINTW 只要被「摄像机」和「照相机」拍摄，相应的经验就会上升。
+
+;歌唱经验
+@DICTIONARY_EXP_64
+PRINTL 代表着唱歌的次数。
+PRINTL 通过恋慕系劳役「演唱会」、淫乱系劳役「乱交LIVE」和调教指令「歌唱练习」等来上升。
+PRINTL 此项经验越高，演唱会的成功率就越大。
+PRINTL 相应的，各项劳役的收益也会提高。
+PRINTW 同时，也是提升「歌唱技能」能力的必要条件。
+
+;调教经验
+@DICTIONARY_EXP_70
+PRINTL 代表着调教者调教奴隶的次数。
+PRINTL 基本上作为主人或者助手实行调教指令就会上升。
+PRINTW 此经验越高，调教结束时技巧上升的可能性越大。
+
+;=============================================================================
+;用語辞典――珠
+;=============================================================================
+;--------------------------------------------------
+;珠解説メインページ
+;--------------------------------------------------
+@DICTIONARY_JUEL_MAIN
+P = 0
+$PRINT_LIST
+DRAWLINE
+PRINTFORML 「珠子」相关的大体说明。
+PRINTFORML 请选择想要了解的珠子。
+PRINTFORML 《》所括起来的技能只能用相应珠子提升等级。
+DRAWLINE
+;各表示
+FOR LOCAL, 0, 199
+	Q:LOCAL = 0
+	STRLENS PALAMNAME:LOCAL
+	IF RESULT > 0
+		IF LOCAL >= 100
+			PRINTFORML [{LOCAL}]%PALAMNAME:LOCAL%之珠
+		ELSE
+			PRINTFORML [{LOCAL, 2}] %PALAMNAME:LOCAL%之珠
+		ENDIF
+		Q:LOCAL = 1
+	ENDIF
+NEXT
+DRAWLINE
+PRINTL [200]返回
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 200
+	RETURN 0
+ELSEIF RESULT < 0 || RESULT > 200
+	GOTO INPUT_LOOP
+ELSE
+	SIF Q:RESULT == 0
+		GOTO INPUT_LOOP
+	PRINTFORML 【%PALAMNAME:RESULT%】
+	TRYCALLFORM DICTIONARY_JUEL_{RESULT}
+	GOTO PRINT_LIST
+ENDIF
+
+;--------------------------------------------------
+;珠解説
+;--------------------------------------------------
+;快Ｃ
+@DICTIONARY_JUEL_0
+PRINTL 由阴蒂和阴茎产生的快感积累而成的珠子。
+PRINTL 《Ｃ感觉》・百合属性・同性倾向・自慰成瘾・百合成瘾・男同成瘾的上升需要此类珠子。
+PRINTW 主要从调教中的快Ｃ值转换而来。
+
+;快Ｖ
+@DICTIONARY_JUEL_1
+PRINTL 由阴道产生的快感积累而成的珠子，女性专用。
+PRINTL 《Ｖ感觉》・性成瘾的上升需要此类珠子。
+PRINTW 主要从调教中的快Ｖ值转换而来。
+
+;快Ａ
+@DICTIONARY_JUEL_2
+PRINTL 由肛门产生的快感积累而成的珠子。
+PRINTL 《Ａ感觉》・自慰成瘾的上升需要此类珠子。
+PRINTW 主要从调教中的快Ａ值转换而来。
+
+;快Ｂ
+@DICTIONARY_JUEL_3
+PRINTL 由胸部产生的快感积累而成的珠子，男性较难获得。
+PRINTL 《Ｂ感觉》・喷乳成瘾的上升需要此类珠子。
+PRINTW 主要从调教中的快Ｂ值转换而来。
+
+;润滑
+@DICTIONARY_JUEL_4
+PRINTL 表明润滑程度的数值，实际上并不会转换成珠子。
+PRINTL 润滑数值较高的状态下调教会变得更加容易，也能减轻被调教者的负担。
+PRINTL 调教时请多多增加这个数值。
+PRINTW 主要从调教中各种液体带来的润滑值转换而来。
+
+;恭顺
+@DICTIONARY_JUEL_5
+PRINTL 对主人抱有恭敬服从等心理时积累而成的珠子。
+PRINTL 顺从・侍奉精神的上升需要此类珠子。
+PRINTW 主要从调教中的情爱・达成感・中毒充足等数值转换而来。
+
+;情欲
+@DICTIONARY_JUEL_6
+PRINTL 产生情欲的情况下积累而成的珠子。
+PRINTL 欲望・顺从・嗜虐属性・受虐属性・百合属性・同性倾向・自慰成瘾・精液成瘾
+PRINTL 性成瘾・百合成瘾・男同成瘾・喷乳成瘾的上升需要此类珠子。
+PRINTL 主要从调教中的快Ｃ・快Ｖ・快Ａ・快Ｂ・情爱・疼痛・
+PRINTW 中毒充足・情欲・露出等数值转换而来。
+
+;屈服
+@DICTIONARY_JUEL_7
+PRINTL 放弃抵抗，身心都对主人屈服时积累而成的珠子。
+PRINTL 顺从・侍奉精神・受虐属性・百合属性・同性倾向・精液成瘾・性成瘾・
+PRINTL 男同成瘾・百合中・毒喷乳成瘾的上升需要此类珠子。
+PRINTL 可以用来消去《反抗刻印》。
+PRINTW 主要从调教中的屈从・支配等数值转换而来。
+
+;学习
+@DICTIONARY_JUEL_8
+PRINTL 无论是性调教还是生活中的其他场合，只要熟能生巧就能积累下这样的珠子。
+PRINTL 也就是说，做便当和演唱会后也会积攒。
+PRINTL 技巧・侍奉精神・嗜虐属性・《料理》・《摄影》・《歌唱》的上升需要此类珠子。
+PRINTW 主要从调教中的性行动值转换而来。
+
+;耻情
+@DICTIONARY_JUEL_9
+PRINTL 在感到羞耻的情况下积累而成的珠子。
+PRINTL 《露出癖》・自慰成瘾的上升需要此类珠子。
+PRINTW 主要从调教中的露出值转换而来。
+
+;痛苦
+@DICTIONARY_JUEL_10
+PRINTL 在感到痛苦和疼痛时积累而成的珠子。
+PRINTL 受虐属性的上升需要此类珠子。
+PRINTW 主要从调教中的疼痛值转换而来。
+
+;恐怖
+@DICTIONARY_JUEL_11
+PRINTL 在感到恐惧的情况下积累而成的珠子。
+PRINTL 顺从・触手成瘾的上升需要此类珠子。
+PRINTW 主要从调教中的疼痛・恐惧等数值转换而来。
+
+;反感
+@DICTIONARY_JUEL_12
+PRINTL 在对主人感到反感时积累而成的珠子。
+PRINTL 这一类珠子很快就会转换成否定之珠。
+PRINTW 主要从调教中的逸脱・反感等数值转换而来。
+
+;不快
+@DICTIONARY_JUEL_13
+PRINTL 在感到不舒服的情况下积累而成的珠子。
+PRINTL 这一类珠子很快就会转换成否定之珠。
+PRINTW 主要从调教中的不洁值转换而来。
+
+;抑郁
+@DICTIONARY_JUEL_14
+PRINTL 在自我嫌恶的郁闷情况下积累而成的珠子。
+PRINTL 这一类珠子很快就会转换成否定之珠。
+PRINTW 主要从调教中的郁闷值转换而来。
+
+;快Ｗ
+@DICTIONARY_JUEL_22
+PRINTL 由翅膀产生的快感积累而成的珠子，人外专有珠子。
+PRINTL 《Ｗ感觉》的上升需要此类珠子。
+PRINTW 主要从调教中的快Ｗ值转换而来。
+
+;快Ｔ
+@DICTIONARY_JUEL_23
+PRINTL 由尾巴产生的快感积累而成的珠子，人外专有珠子。
+PRINTL 《Ｔ感觉》的上升需要此类珠子。
+PRINTW 主要从调教中的快Ｔ值转换而来。
+
+;快Ｅ
+@DICTIONARY_JUEL_24
+PRINTL 由耳朵产生的快感积累而成的珠子，人外专有珠子。
+PRINTL 《Ｅ感觉》的上升需要此类珠子。
+PRINTW 主要从调教中的快Ｅ值转换而来。
+
+;否定
+@DICTIONARY_JUEL_100
+PRINTL 在对其他事物感到否定时就会积累而成的珠子。
+PRINTL 同时也可能从反感・不快・抑郁之珠等珠子转换而来。
+PRINTL 增加时会减少恭顺・情欲・屈服・耻情・痛苦・恐怖之珠。
+PRINTL 这样的话，就妨碍到技能的上升了。
+PRINTW 其他请参考反感・不快・抑郁的珠子说明。
+
+;=============================================================================
+;用語辞典――劳役
+;=============================================================================
+;--------------------------------------------------
+;劳役解説メインページ
+;--------------------------------------------------
+@DICTIONARY_其他_WORK
+P = 0
+$PRINT_LIST
+DRAWLINE
+PRINTFORML 「劳役指示」相关的大体说明。
+PRINTFORML 请选择想要了解的劳役指令。
+PRINTFORML ※未满足担任助手的条件前，恋慕系･淫乱系･服从系劳役指令将无法实行。
+DRAWLINE
+PRINTL [ 0] 拍卖
+PRINTL [ 1] 经营售餐棚
+PRINTL [ 2] 娼馆打工
+PRINTL [ 3] 出租奴隶
+PRINTL [ 4] 演唱会
+PRINTL [ 5] 乱交LIVE
+PRINTL [ 6] 公共便所PLAY
+PRINTL [ 7] 画室打工
+PRINTL [ 8] 自己做饭/让奴隶做饭
+DRAWLINE
+PRINTLC [100]返回
+$INPUT_LOOP
+INPUT
+IF RESULT == 100
+	RETURN 0
+ELSEIF RESULT < 0 || RESULT > 8
+	GOTO INPUT_LOOP
+ELSE
+	Q = RESULT
+	TRYCALLFORM DICTIONARY_WORK_{Q}
+ENDIF
+GOTO PRINT_LIST
+
+;--------------------------------------------------
+;劳役解説
+;--------------------------------------------------
+;拍卖
+@DICTIONARY_WORK_0
+PRINTL 〔拍卖〕
+PRINTL 拍卖奴隶。最基本的来钱方式。
+PRINTW 拍卖需要满足相应条件，拍卖出去的奴隶不会再回来。
+
+;定食屋台
+@DICTIONARY_WORK_1
+PRINTL 〔经营售餐棚〕
+PRINTL 是与奴隶一起出摊卖套餐赚钱的恋慕系劳役指令。
+PRINTL 奴隶的体力必须在800以上才能委任。
+PRINTL 「料理技能」越高收益就越高。
+PRINTL 因为是家庭系的餐馆，店员在怀孕中的话也会增加收益。
+PRINTL 设备方面的投资需要$10万（可借贷），可以增设新的岗位。
+PRINTW 不过一旦开始这个打工，主人会在这里消耗掉半天的时间。
+
+;娼館バイト
+@DICTIONARY_WORK_2
+PRINTL 〔娼馆打工〕
+PRINTL 让奴隶出去卖春赚钱的淫乱系劳役指令。
+PRINTL 奴隶的体力必须在500以上才能委任。
+PRINTL 这个劳役指令只能在白天选择，被委任的奴隶整天都会待在娼馆里。
+PRINTL 顾客的数量和收益直接跟欲望、百合、ＢＬ等能力挂钩。
+PRINTW 这个指令下能获得的收益非常丰厚，缺钱的话请多多执行。
+
+;奴隶のレンタル
+@DICTIONARY_WORK_3
+PRINTL 〔出租奴隶〕
+PRINTL 将奴隶租出去来赚钱的服从系劳役指令。
+PRINTL 这个劳役指令只能在白天选择，奴隶的体力必须在500以上才能委任。
+PRINTL 出租高度顺从和有着自我奉献素质的奴隶能获得更多的收益。
+PRINTL 租出去的时间越多，奴隶消耗的体力也越大，想增加更多收入的话，最好多次调解以提高奴隶的体力。
+PRINTL 相应的，收入多寡也和奴隶的不同能力等级挂钩，一个足够完美的奴隶能创造的收益是尤为可观的。
+PRINTW 因为收益金和出租日数成比例，请确保奴隶的体力充足。
+
+;演唱会
+@DICTIONARY_WORK_4
+PRINTL 〔演唱会〕
+PRINTL 让奴隶出道成为偶像，以开演唱会的形式赚钱的恋慕系劳役指令。
+PRINTL 奴隶的歌唱技能至少要有2以上，体力必须在800以上才能委任。
+PRINTL 「歌唱技能」越高，收益就越高。
+PRINTL 满足一定条件的话，也可以组成具有增益效果的团体组合。
+PRINTL 由于听众的数量变化和可能出现的失败，这个种类的打工收益很不稳定。
+PRINTW 而且主人也会在这里消耗掉半天的时间。
+
+;乱交ライブ
+@DICTIONARY_WORK_5
+PRINTL 〔乱交LIVE〕
+PRINTL 让奴隶开演唱会，然后诱惑观众们袭击ＴＡ来赚钱的淫乱系劳役指令。
+PRINTL 奴隶的体力必须在800以上才能委任。
+PRINTL 奴隶的欲望越高，可以获得的收益就越多。
+PRINTL 可以给整场演出和乱交摄影，不过这样的话，摄影者会在这里消耗半天的时间。
+PRINTW 顺便不推荐被打上攻属性的角色来执行这个打工，负面修正太大赚不了多少钱。
+
+;公衆便所プ雷
+@DICTIONARY_WORK_6
+PRINTL 〔公共便所PLAY〕
+PRINTL 让奴隶做公共便所来赚钱的服从系劳役指令。
+PRINTL 奴隶的体力必须在300以上才能委任。
+PRINTL 不同场所能赚到的钱层层递进，越强悍的“存在”裤腰带…不对，是钱包就越松。
+PRINTW 所有打工中这一项的每日收入是最高的，但体力消耗跟压力值的增加也是最多的。
+
+;画室打工
+@DICTIONARY_WORK_7
+PRINTL 〔画室打工〕
+PRINTL 让奴隶去画室担任人体模特的陷落系劳役指令。
+PRINTL 奴隶的体力必须在500以上才能委任。
+PRINTL 是所有陷落系奴隶都能参与的工作，但白天和夜晚所做的“服务”完全不同。
+PRINTL 白天只是普通地担任模特，到了晚上就是含有性意味的群P盛宴。
+PRINTL 因此夜晚能派到画室打工的奴隶只有淫乱系和服从系。
+PRINTL 虽然该项打工的收益只是中规中矩，但可以一次性派大量奴隶出去，这一点非常便利。
+PRINTW 更何况还不用浪费掉主人的时间，何乐而不为呢？
+
+;做饭/作らせる
+@DICTIONARY_WORK_8
+PRINTL 〔自己做饭/让奴隶做饭〕
+PRINTL 自己做饭，或是让奴隶做饭，做出来的料理可以贩卖。
+PRINTL 并非所有奴隶一开始就能选择这个指令，需要一定程度的培养，但只要选了就会增加料理经验。
+PRINTL 可以得到微量的恭顺之珠，还可以顺便赚钱。
+PRINTL 另外，有一定概率出现奴隶在饭菜里下毒的事件，主人因此受到伤害，甚至是被毒杀都有可能。
+PRINTL 不过只要识破下毒，就能掌握奴隶的[弱点]，之后在调教上会变得轻松一些。
+PRINTW 只要不是毒便当，吃完后体力气力都会有一些回复。
+
+;=============================================================================
+;用語辞典――其他数値
+;=============================================================================
+;--------------------------------------------------
+;其他数値解説メインページ
+;--------------------------------------------------
+@DICTIONARY_其他_MAIN
+P = 0
+$PRINT_LIST
+DRAWLINE
+PRINTFORML 能力、刻印、经验和珠子以外的数值相关的大体说明。
+PRINTFORML 请选择想要了解的条目。 ＜page.{P+1}/2＞
+DRAWLINE
+IF P == 0
+	PRINTL [ 0] 体力
+	PRINTL [ 1] 气力
+	PRINTL [ 2] 射精槽
+	PRINTL [ 3] 母乳槽
+	PRINTL [ 4] 尿意槽
+	PRINTL [ 5] 阴毛的成长状况
+ELSEIF P == 1
+	PRINTL [10] 依赖度
+	PRINTL [11] 压力值
+	PRINTL [12] 日期
+	PRINTL [13] 资金
+	PRINTL [14] 角色固有编号
+	PRINTL [15] 认识与否
+ENDIF
+DRAWLINE
+PRINTFORMLC \@(P <= 0) ? %" " * 18% # [1001]上一页\@
+PRINTLC [1000]返回
+PRINTFORMLC \@(P >= 1) ? %" " * 18% # [1009]下一页\@
+$INPUT_LOOP
+INPUT
+IF RESULT == 1000
+	RETURN 0
+ELSEIF RESULT == 1001 && P > 0
+	P -= 1
+ELSEIF RESULT == 1009 && P < 1
+	P += 1
+ELSEIF RESULT < 0 || RESULT > 19
+	GOTO INPUT_LOOP
+ELSE
+	Q = RESULT
+	TRYCALLFORM DICTIONARY_其他_{Q}
+ENDIF
+GOTO PRINT_LIST
+
+;--------------------------------------------------
+;其他数値解説
+;--------------------------------------------------
+;体力
+@DICTIONARY_其他_0
+PRINTL 〔体力〕
+PRINTL 即角色的体力。
+PRINTL 即使变成0了也不会死亡，这点还请放心。不过会减少顺从度。
+PRINTL 另外，在部分事件中主人如果耗尽体力会迎来BAD END。
+PRINTL 根据设定和游戏模式的不同以及事件的发生，体力最大值可能会增加。
+PRINTW 休息和观看日常事件可以恢复体力。
+
+;气力
+@DICTIONARY_其他_1
+PRINTL 〔气力〕
+PRINTL 即角色的气力。
+PRINTL 即使变成0了也不会死亡，这点还请放心。但是在调教时与部分事件中会有负面影响。
+PRINTL 根据设定和游戏模式的不同以及事件的发生，气力最大值可能会增加。
+PRINTW 休息和观看日常事件可以恢复气力。
+
+;射精槽
+@DICTIONARY_其他_2
+PRINTL 〔射精槽〕
+PRINTL 直观显示角色还有多久射精。
+PRINTL 此量槽达到满值就会射精，除非因为某些原因禁止射精或无法射精。
+PRINTL 也就是说，这个量槽的上限越低就越容易射精。
+PRINTW 当然，要拥有这个量槽必须得有能射精的阴茎。
+
+;母乳ゲージ
+@DICTIONARY_其他_3
+PRINTL 〔母乳槽〕
+PRINTL 直观显示角色还有多久喷乳。
+PRINTL 此量槽达到满值就会喷乳，除非因为某些原因无法喷乳。
+PRINTL 也就是说，这个量槽的上限越低就越容易喷乳。
+PRINTL 当然，要拥有这个量槽必须得有母乳体质。
+PRINTW 顺便喷乳会导致体力消耗，请务必注意。
+
+;尿意ゲージ
+@DICTIONARY_其他_4
+PRINTL 〔尿意槽〕
+PRINTL 直观显示角色还有多久失禁。
+PRINTL 此量槽达到满值就会放尿，除非因为某些原因尿不出来。
+PRINTL 也就是说，这个量槽的上限越低就越容易放尿。
+PRINTW 必须由于某种原因引起尿意才会出现这个量槽，否则基本上是不会显示的，也不用介意。
+
+;陰毛の成长具合
+@DICTIONARY_其他_5
+PRINTL 〔阴毛的成长状况〕
+PRINTL 角色阴毛的增长度。不过这个数字是不会显示的。
+PRINTL 剃掉阴毛或是天生没有阴毛会获得〔白虎〕素质。
+PRINTL 一般来说矮小体型和小人体型的角色不会长阴毛。
+PRINTW 顺带一提，游戏中无法观测到阴毛增长的具体详情。
+
+
+;依赖度
+@DICTIONARY_其他_10
+PRINTL 〔依赖度〕
+PRINTL 角色对主人的依赖程度，或者说是好感度。
+PRINTL 依赖度为正时角色对主人抱有好感，依赖度为负时角色对主人抱有恐惧。
+PRINTL 以恋慕为目标的话就要尽量刷高依赖度，相反以服从为目标则要多多降低依赖度。
+PRINTL 角色的顺从等级越高，每次变动的依赖度就越多。
+PRINTL 因此想高效率地增减依赖度就要先提高顺从等级。
+PRINTL 想在更多指令中增加依赖度需要提高角色的侍奉精神，减少的情况则需要提高受虐属性。
+PRINTW 通常是无法确认数值的，但持有「观察眼」素质的话就能一目了然了。
+
+;ストレス
+@DICTIONARY_其他_11
+PRINTL 〔压力值〕
+PRINTL 角色承受的精神压力程度。
+PRINTL 进行调教、使用特殊药物或怀孕的话就会增加。
+PRINTL 不调教且让其休息的时候会减少。
+PRINTL 此外，委任恋慕系劳役的场合减少，委任淫乱系和服从系劳役的场合增加。
+PRINTL 请注意不要让这个数值达到100，否则奴隶会精神崩溃。
+PRINTL 届时将无法取得各陷落素质。
+PRINTL 已持有陷落素质时压力100，角色会在崩溃的同时失去陷落素质，且无法重新取得。
+PRINTW 通常是无法确认数值的，但持有「观察眼」素质的话就能一目了然了。
+
+;日付
+@DICTIONARY_其他_12
+PRINTL 〔日期〕
+PRINTL 每一天的日期进程，对游戏几乎没有影响。
+PRINTL 有事件接近的话也许会提前发出通告。这一点请在配置文件中进行变更。
+PRINTL （汉化者：实际上尝试过激活，并不是每一次都会提醒，并不稳定）
+PRINTW 也许会有在特定的日期才能看到的口上（汉化者：并没有）。
+
+;資金
+@DICTIONARY_其他_13
+PRINTL 〔资金〕
+PRINTL 即你现在能使用的资金。
+PRINTL 使这个数值达到目标以上是通关的条件之一。
+PRINTL 此外，消费资金可以购买道具、采购奴隶，以及获得其他方面的服务。
+PRINTL 执行剧情任务时也可能会消耗资金。
+PRINTL 一般资金变成0也不会Game Over，只是比较捉襟见肘。
+PRINTW 但根据困难程度不同以及通关结局后的情况，无法支付维持费会迎来强制结局END。
+
+;キャラクター固有番号
+@DICTIONARY_其他_14
+PRINTL 〔角色固有编号〕
+PRINTL 分配给主人和奴隶等全部登场角色的固有编号。
+PRINTL 也被称为角色ID码，是个人专属，其他人不会拥有相同的编号。
+PRINTW 这个编号用于游戏内部运算的处理，通常玩家是看不到的，也无需介意。
+
+;面識
+@DICTIONARY_其他_15
+PRINTL 〔认识与否〕
+PRINTL 即奴隶是否认识主人的FLAG。
+PRINTL 会影响调教、夺取处女和某些事件中的台词变化。
+PRINTW 这个FLAG用于游戏内部运算的处理，通常玩家是看不到的，也无需介意。

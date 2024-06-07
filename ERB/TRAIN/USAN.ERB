@@ -1,0 +1,169 @@
+﻿;=============================================================================
+;触手产卵系の地の文、処理
+;=============================================================================
+;--------------------------------------------------
+;卵放出の処理
+;--------------------------------------------------
+@EGGPLAY_OUT
+;#LATER
+CALL TRAIN_MESSAGE_EGGPLAY_OUT
+PRINTL 
+A = TEQUIP:41
+EXP:59 += A
+PRINTFORML 产卵经验＋{A}
+SIF A > 1
+	A /= 2
+EXP:52 += A
+PRINTFORML Ｖ扩张经验＋{A}
+IF EXP:59 == 0
+	EXP:50 += 1
+	PRINTL 异常经验＋1
+ENDIF
+TEQUIP:93 = 0
+WAIT
+
+;--------------------------------------------------
+;卵放出メッセージ
+;--------------------------------------------------
+@TRAIN_MESSAGE_EGGPLAY_OUT
+SIF FLAG:6 == 0
+	RETURN 0
+
+PRINTL 
+PRINTFORML 触手从%CALLNAME:TARGET%的身体里拔出去的瞬间
+PRINTFORML %CALLNAME:TARGET%子宫里的卵一个接一个地涌了出来
+PRINTL 
+IF ABL:9 == 0
+    PRINTFORML %CALLNAME:TARGET%的神情里似乎饱含着痛苦
+	PRINTFORMW 身体弯成く字形，因疼痛流下了屈辱的泪水
+ELSEIF ABL:9 == 1
+	PRINTFORML 汗水布满%CALLNAME:TARGET%的额头
+    IF TALENT:男性 || TALENT:双性
+    	PRINT 他
+    ELSE
+    	PRINT 她
+    ENDIF
+	PRINTFORMW 脸色惨白，努力忍耐下腹部残留的剧痛与不协调感
+ELSEIF ABL:9 == 2
+	PRINTFORMW %CALLNAME:TARGET%摩挲着残留有疼痛感的下腹部，脸上隐隐浮现出放松的表情
+ELSEIF ABL:9 == 3
+	PRINTFORMW %CALLNAME:TARGET%因异物滑过产道的感觉发出了妖艳的喘息
+ELSEIF ABL:9 == 4
+	PRINTFORMW %CALLNAME:TARGET%泪眼朦胧，泫然欲泣，享受着这令人毛骨悚然的产卵时间
+ELSE
+	PRINTFORML %CALLNAME:TARGET%的表情因快感而恍惚
+	PRINTFORML 从子宫里吐出卵的同时，口中也滴滴答答地滴落着口涎
+	PRINTFORML 即使产卵已经结束，%CALLNAME:TARGET%的阴道口依然大大敞开着
+	PRINTFORMW 如同在等待着新的一轮蹂躏，时不时地抽搐翕张……
+ENDIF
+
+;--------------------------------------------------
+;卵肛放出の処理
+;--------------------------------------------------
+@KANTYO_EGGPLAY_OUT
+;#LATER
+CALL TRAIN_MESSAGE_KANTYO_EGGPLAY_OUT
+PRINTL 
+A = TEQUIP:42
+SIF A > 1
+	A /= 2
+EXP:53 += A
+PRINTFORML Ａ扩张经验＋{A}
+IF EXP:59 == 0
+	EXP:50 += 1
+	PRINTL 异常经验＋1
+ENDIF
+TEQUIP:94 = 0
+WAIT
+
+;--------------------------------------------------
+;卵肛放出メッセージ
+;--------------------------------------------------
+@TRAIN_MESSAGE_KANTYO_EGGPLAY_OUT
+SIF FLAG:6 == 0
+	RETURN 0
+
+PRINTL 
+PRINTFORML 触手从%CALLNAME:TARGET%的肛门里拔出去的瞬间
+PRINTFORML %CALLNAME:TARGET%直肠里的卵一个接一个地涌了出来
+PRINTL 
+IF ABL:9 == 0
+	PRINTFORMW %CALLNAME:TARGET%头颅低垂，因疼痛流下耻辱的泪水
+ELSEIF ABL:9 == 1
+	PRINTFORML 汗水布满%CALLNAME:TARGET%的额头
+    IF TALENT:男性 || TALENT:双性
+    	PRINT 他
+    ELSE
+    	PRINT 她
+    ENDIF
+	PRINTFORMW 脸色惨白，努力忍耐下腹部残留的剧痛与不协调感
+ELSEIF ABL:9 == 2
+	PRINTFORMW %CALLNAME:TARGET%摩挲着残留有疼痛感的下腹部，脸上隐隐浮现出放松的表情
+ELSEIF ABL:9 == 3
+	PRINTFORMW %CALLNAME:TARGET%因异物滑过肛穴的感觉发出了妖艳的喘息
+ELSEIF ABL:9 == 4
+	PRINTFORML %CALLNAME:TARGET%的脸上挂满泪水，神情异常恍惚
+	PRINTFORMW 像是在享受着直肠内残留的异物感
+ELSE
+	PRINTFORML %CALLNAME:TARGET%的表情因快感而恍惚
+	PRINTFORML 从肛门里吐出卵的同时，口中也滴滴答答地滴落着口涎
+	PRINTFORML 即使产卵已经结束，%CALLNAME:TARGET%的肛穴口依然大大敞开着
+	PRINTFORMW 如同在等待着新的一轮蹂躏，时不时地抽搐翕张……
+ENDIF
+
+;--------------------------------------------------
+;卵両穴放出の処理
+;--------------------------------------------------
+@DOUBLE_EGGPLAY_OUT
+;#LATER
+CALL TRAIN_MESSAGE_DOUBLE_EGGPLAY_OUT
+PRINTL 
+A = TEQUIP:41
+B = TEQUIP:42
+EXP:59 += A
+PRINTFORML 产卵经验＋{A}
+SIF A > 1
+	A /= 2
+SIF B > 1
+	B /= 2
+EXP:52 += A
+EXP:53 += B
+PRINTFORML Ｖ扩张经验＋{A}
+PRINTFORML Ａ扩张经验＋{B}
+
+IF EXP:59 == 0
+	EXP:50 += 2
+	PRINTL 异常经验＋2
+ENDIF
+WAIT
+
+;--------------------------------------------------
+;卵両穴放出メッセージ
+;--------------------------------------------------
+@TRAIN_MESSAGE_DOUBLE_EGGPLAY_OUT
+SIF FLAG:6 == 0
+	RETURN 0
+
+PRINTL 
+PRINTFORML 触手从%CALLNAME:TARGET%的阴道与肛门抽出的瞬间
+PRINTL 留在身体里的触手的卵就像被拒绝了一样啪嗒啪嗒地争先恐后掉了出来
+PRINTL 每一枚都是覆盖着果冻状黏膜的圆形物体
+PRINTL 
+IF ABL:9 == 0
+	PRINTFORMW 目睹这一切的%CALLNAME:TARGET%因过于恐惧，大张着嘴发出了无声的叫喊
+ELSEIF ABL:9 == 1
+	PRINTFORML 额头布满汗水的%CALLNAME:TARGET%脸色惨白，身体痛苦地弯成く字形
+	PRINTW 下腹部残留的剧痛跟不协调感令其几欲呕吐，却不得不强迫自己忍住
+ELSEIF ABL:9 == 2
+	PRINTFORMW %CALLNAME:TARGET%摩挲着残留有疼痛感的下腹部，脸上隐隐浮现出放松的表情
+ELSEIF ABL:9 == 3
+	PRINTFORMW 无数的卵从双穴滑出的感觉让%CALLNAME:TARGET%发出了断断续续的艳丽呻吟
+ELSEIF ABL:9 == 4
+	PRINTFORML %CALLNAME:TARGET%剧烈地喘着气，脸上浮现出神清气爽的表情
+	PRINTFORMW 犹如在享受着下腹部的异物感
+ELSE
+	PRINTFORML %CALLNAME:TARGET%的表情因快感而恍惚
+	PRINTFORML 从阴道和肛门里吐出卵和体液的同时，口中也滴滴答答地滴落着口涎
+	PRINTFORML 或许是排卵这一行为把体力消耗一空了，%CALLNAME:TARGET%筋疲力尽地瘫在那里
+	PRINTFORMW 但阴道口和肛门却似乎犹嫌不足地随着呼吸淫靡地一开一合……
+ENDIF

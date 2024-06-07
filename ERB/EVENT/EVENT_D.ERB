@@ -1,0 +1,288 @@
+﻿;-------------------------------------------------
+;EVENT_D.ERB、EVENT_DEPENDENCE、依赖度系统の処理
+;依赖度はプラスに大きいと主人に对して慕う形で依赖し、
+;マイ茄子に大きいと主人を畏怖する形で依赖していく
+;依赖度ベクトルは各调教指令ごとで指示されており、増加と减少で処理は異なっている
+;-------------------------------------------------
+@MASTER_DEPENDENCE_CHECK
+SIF NPC回合
+RETURN 0
+;依赖度のベクトル処理
+;0は関数終了、崩溃も依赖度は变化しない
+IF TFLAG:33 == 0 || TALENT:9 == 1
+	SETCOLOR 192, 192, 192
+	PRINTL <依赖度无变化>
+	RESETCOLOR
+	RETURN 0
+;1は依赖度が0以上で増加、0未満で减少
+ELSEIF TFLAG:33 == 1
+	SIF CFLAG:2 >= 0
+		CALL MASTER_DEPENDENCE_PLUS
+	SIF CFLAG:2 < 0
+		CALL MASTER_DEPENDENCE_MINUS
+;2は増加、但し服从、隶属持ちは减少
+ELSEIF TFLAG:33 == 2
+	IF TALENT:5 || TALENT:8
+		CALL MASTER_DEPENDENCE_MINUS
+	ELSE
+		CALL MASTER_DEPENDENCE_PLUS
+	ENDIF
+;3は减少、但し恋慕、相亲相爱持ちは増加
+ELSEIF TFLAG:33 == 3
+	IF TALENT:3 || TALENT:6
+		CALL MASTER_DEPENDENCE_PLUS
+	ELSE
+		CALL MASTER_DEPENDENCE_MINUS
+	ENDIF
+;4は強制増加
+ELSEIF TFLAG:33 == 4
+	CALL MASTER_DEPENDENCE_PLUS
+;5は強制减少
+ELSEIF TFLAG:33 == 5
+	CALL MASTER_DEPENDENCE_MINUS
+ENDIF
+
+RETURN 0
+
+
+;依赖度増加処理
+@MASTER_DEPENDENCE_PLUS
+SIF NPC回合
+RETURN 0
+R = 0
+
+;ABL:顺从をみる
+R += ABL:0*2
+
+;ABL:侍奉精神をみる
+R += ABL:7
+
+;困难度を見る
+;EASY
+IF FLAG:4 == 1
+	R += 1
+;NORMAL
+ELSEIF FLAG:4 == 2
+	R += 0
+;HARD
+ELSEIF FLAG:4 == 3
+	R -= 1
+ENDIF
+
+;素質による増減
+;陷落素質
+;恋慕
+SIF TALENT:3
+	R += 5
+;相亲相爱
+SIF TALENT:6
+	R += 7
+;淫乱
+M = NO:MASTER
+SIF TALENT:4 && RELATION:M > 100
+	R += 3
+;娼妇
+SIF TALENT:7 && RELATION:M > 100
+	R += 5
+;服从
+SIF TALENT:5
+	R += 10
+;隶属
+SIF TALENT:8
+	R += 20
+
+;其他素質
+;自慰狂
+SIF TALENT:74
+	R += 1
+;淫壶
+SIF TALENT:75
+	R += 1
+;尻穴狂
+SIF TALENT:76
+	R += 1
+;淫乳
+SIF TALENT:77
+	R += 1
+;性爱狂
+Q = SELECTCOM
+SIF TALENT:78 && (Q == 60 || Q == 61 || Q == 62 || Q == 63 || Q == 64 || Q == 65 || Q == 66 || Q == 67 || Q == 68 || Q == 69 || Q == 70 || Q == 71 || Q == 72 || Q == 73 || Q == 74 || Q == 75 || Q == 76 || Q == 77 || Q == 122 || Q == 205 || Q == 206 || Q == 211 || Q == 212 || Q == 213 || Q == 214 || Q == 225 || Q == 226 || Q == 500 || Q == 506 || Q == 507 || Q == 512 || Q == 513 || Q == 514 || Q == 515 || Q == 516 || Q == 517 || Q == 518 || Q == 591 || Q == 592 || Q == 593 || Q == 594 || Q == 595)
+	R += 2
+;盲信
+SIF TALENT:86
+	R += 2
+
+
+;主人の魅力
+SIF TALENT:MASTER:92
+	R += 2
+;主人の魅惑
+SIF TALENT:MASTER:93
+	R += 3
+;主人の谜之魅力
+SIF TALENT:MASTER:94
+	R += 5
+;主人の治疗
+SIF TALENT:MASTER:135
+	R += 2
+;主人の鼓舞
+SIF TALENT:MASTER:136
+	R += 2
+;主人の人气
+SIF TALENT:MASTER:145
+	R += 3
+
+;依赖度補正を加算
+R += TFLAG:30
+
+;失意で半分になる
+SIF TALENT:162
+	R /= 2
+
+;結果が0未満の場合は0にする
+SIF R < 0
+	R = 0
+
+CFLAG:2 += R
+
+IF R > 0
+	SETCOLOR 252, 131, 167
+	PRINTL <依赖度増加>
+ELSE
+	SETCOLOR 192, 192, 192
+	PRINTL <依赖度无变化>
+ENDIF
+RESETCOLOR
+
+R = 0
+TFLAG:30 = 0
+
+
+RETURN 0
+
+
+
+;依赖度减少処理
+@MASTER_DEPENDENCE_MINUS
+SIF NPC回合
+RETURN 0
+R = 0
+
+;ABL:顺从をみる
+R += ABL:0*2
+
+;ABL:受虐属性をみる
+R += ABL:9
+
+;困难度を見る
+;EASY
+IF FLAG:4 == 1
+	R += 1
+;NORMAL
+ELSEIF FLAG:4 == 2
+	R += 0
+;HARD
+ELSEIF FLAG:4 == 3
+	R -= 1
+ENDIF
+
+;素質による増減
+;陷落素質
+;恋慕
+SIF TALENT:3
+	R += 10
+;相亲相爱
+SIF TALENT:6
+	R += 20
+;淫乱
+M = NO:MASTER
+SIF TALENT:4 && RELATION:M > 100
+	R += 3
+;娼妇
+SIF TALENT:7 && RELATION:M > 100
+	R += 5
+;服从
+SIF TALENT:5
+	R += 5
+;隶属
+SIF TALENT:8
+	R += 7
+
+;其他素質
+;自慰狂
+SIF TALENT:74
+	R += 1
+;淫壶
+SIF TALENT:75
+	R += 1
+;尻穴狂
+SIF TALENT:76
+	R += 1
+;淫乳
+SIF TALENT:77
+	R += 1
+;性爱狂
+Q = SELECTCOM
+SIF TALENT:78 && (Q == 60 || Q == 61 || Q == 62 || Q == 63 || Q == 64 || Q == 65 || Q == 66 || Q == 67 || Q == 68 || Q == 69 || Q == 70 || Q == 71 || Q == 72 || Q == 73 || Q == 74 || Q == 75 || Q == 76 || Q == 77 || Q == 122 || Q == 205 || Q == 206 || Q == 211 || Q == 212 || Q == 213 || Q == 214 || Q == 225 || Q == 226 || Q == 500 || Q == 506 || Q == 507 || Q == 512 || Q == 513 || Q == 514 || Q == 515 || Q == 516 || Q == 517 || Q == 518 || Q == 591 || Q == 592 || Q == 593)
+	R += 2
+;施虐狂
+SIF TALENT:83
+	R -= 1
+;受虐狂
+SIF TALENT:84
+	R += 1
+;盲信
+SIF TALENT:86
+	R += 2
+
+
+;主人の魅力
+SIF TALENT:MASTER:92
+	R += 2
+;主人の魅惑
+SIF TALENT:MASTER:93
+	R += 3
+;主人の谜之魅力
+SIF TALENT:MASTER:94
+	R += 5
+;主人の治疗
+SIF TALENT:MASTER:135
+	R += 2
+;主人の鼓舞
+SIF TALENT:MASTER:136
+	R += 2
+;主人の人气
+SIF TALENT:MASTER:145
+	R += 3
+
+
+;依赖度補正を加算
+R += TFLAG:30
+
+;失意で半分になる
+SIF TALENT:162
+	R /= 2
+
+;結果が0未満の場合は0にする
+SIF R < 0
+	R = 0
+
+CFLAG:2 -= R
+
+IF R > 0
+	SETCOLOR 74, 74, 255
+	PRINTL <依赖度减少>
+	
+ELSE
+	SETCOLOR 192, 192, 192
+	PRINTL <依赖度无变化>
+ENDIF
+RESETCOLOR
+R = 0
+TFLAG:30 = 0
+
+
+RETURN 0
+
+
+

@@ -1,0 +1,388 @@
+﻿;--------------------------------------------------
+;称号紹介メインページ　　（元：キャラクター解説メインページ）
+;--------------------------------------------------
+@DICTIONARY_TITLE_MAIN
+P = 0
+$TITLE_HELP
+DRAWLINE
+PRINTL 「称号」相关的大体说明。
+PRINTL 想获得特定称号的话可以来这里参考一下获得条件。
+PRINTL 称号没有特别的影响和效果，只是拿来看的而已。
+PRINTFORML ＜page.{P+1}/3＞
+DRAWLINE
+;各ページを表示
+FOR LOCAL:1, 0, 20
+	LOCAL = LOCAL:1 + P*20 + 900
+	STRLENS TALENTNAME:LOCAL
+	SIF RESULT > 0
+		PRINTFORML [{LOCAL, 3}]%TALENTNAME:LOCAL%
+	IF LOCAL == 944
+		PRINTFORML [990]%TALENTNAME:990%
+		PRINTFORML [992]%TALENTNAME:992%
+	ENDIF
+NEXT
+DRAWLINE
+PRINTFORMLC \@(P <= 0) ? %" " * 16% # [1001]上一页\@
+PRINTLC [1000]返回
+PRINTFORMLC \@(P >= 2) ? %" " * 16% # [1009]下一页\@
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 1000
+	RETURN 0
+ELSEIF RESULT == 1001 && P > 0
+	P -= 1
+	GOTO TITLE_HELP
+ELSEIF RESULT == 1009 && P < 3
+	P += 1
+	GOTO TITLE_HELP
+ELSEIF RESULT == 900
+	PRINTL 【总攻】
+	PRINTL 要获得这个称号请先赋予[攻]素质。
+	PRINTL 这样不会造成失误被推的情况，很方便。
+	PRINTL 
+	PRINTL 主人的场合…嗜虐属性5以上、嗜虐快乐经验1500以上、陷落人数10人以上
+	PRINTL 奴隶的场合…嗜虐属性3以上、嗜虐快乐经验300以上、Ｖ经验＆Ａ经验10以下
+	PRINTW 称号丧失：奴隶的场合…Ｖ经验ｏｒＡ经验11以上
+ELSEIF RESULT == 901
+	PRINTL 【捆绑达人】
+	PRINTL 绑缚奴隶的技巧相当高超，能玩出各种不同的花样。
+	PRINTL 用英语来说的话好像是Nawashi？
+	PRINTL 
+	PRINTL 主人专属称号
+	PRINTL 需持有施虐狂、眼罩、绳子、口塞球、项圈
+	PRINTW 嗜虐快乐经验1500以上，且全角色的紧缚经验合计1000以上
+ELSEIF RESULT == 902
+	PRINTL 【正太控】
+	PRINTL 对正太、伪娘、女装少年满怀热忱的猛者。
+	PRINTL 
+	PRINTL 主人专属称号
+	PRINTW 奴隶3人以上，且半数以上都是矮小体型
+	PRINTW 称号丧失：取得条件不再维持
+ELSEIF RESULT == 903
+	PRINTL 【肌肉控】
+	PRINTL 对筋肉有着超乎寻常的爱。
+	PRINTL 和相扑没有关系。
+	PRINTL 
+	PRINTL 主人专属称号
+	PRINTW 奴隶3人以上，且半数以上都是高大体型
+	PRINTW 称号丧失：取得条件不再维持
+ELSEIF RESULT == 904
+	PRINTL 【腐调教师】
+	PRINTL 偏爱调教出有ＢＬ气质的奴隶的调教师。
+	PRINTL 主人是男性的时候很容易获得。
+	PRINTL 
+	PRINTL 主人专属称号
+	PRINTW 持有奴隶4人以上，且半数以上是同性倾向3以上的男性
+ELSEIF RESULT == 905
+	PRINTL 【女仆控】
+	PRINTL eraQueenA+的场合下，单纯只是一种女装萌的表现。
+	PRINTL 
+	PRINTL 主人专属称号
+	PRINTW 奴隶3人以上，且半数以上都是穿着女仆装结束调教
+	PRINTW 初期着衣设定必须设定为上回结束时
+ELSEIF RESULT == 906
+	PRINTL 【眼镜控】
+	PRINTL 总而言之，眼镜即为正义。
+	PRINTL 
+	PRINTL 主人专属称号
+	PRINTL 持有奴隶3人以上，且半数以上都是戴着眼镜结束调教
+	PRINTW 初期着衣设定必须设定为上回结束时
+ELSEIF RESULT == 907
+	PRINTL 【女王受】
+	PRINTL 虽然是被插的一方，但其实是攻（？）
+	PRINTL 
+	PRINTL 女主人的场合…嗜虐属性3以上、Ｖ经验500以上、嗜虐快乐经验1000以上
+	PRINTL 男主人的场合…嗜虐属性3以上、Ａ经验500以上、嗜虐快乐经验1000以上
+	PRINTW 奴隶的场合…嗜虐属性3以上、高傲、Ａ经验200以上、嗜虐快乐经验200以上
+ELSEIF RESULT == 908
+	PRINTL 【轻佻】
+	PRINTL 把一本正经的角色[轻佻]化是一件趣事。
+	PRINTL 
+	PRINTL 奴隶专属称号
+	PRINTL 恋慕陷落、性成瘾LV3、欲望3以上、CVAB感觉合计10以上、
+	PRINTL 快乐刻印LV3、绝顶经验200以上、百合/蔷薇经验1000以上
+	PRINTW 调教过4人以上
+ELSEIF RESULT == 909
+	PRINTL 【触手控】
+	PRINTL 触手对奴隶们相当中意呢。
+	PRINTL 
+	PRINTL 奴隶专属称号
+	PRINTW 触手经验100以上
+ELSEIF RESULT == 910
+	PRINTL 【超级抖Ｓ】
+	PRINTL 主人容易取得，奴隶相对比较困难。
+	PRINTL 
+	PRINTL 主人的场合…嗜虐属性6以上、嗜虐快乐经验2000以上
+	PRINTW 奴隶的场合…嗜虐属性4以上、嗜虐快乐经验500以上
+ELSEIF RESULT == 911
+	PRINTL 【超级抖M】
+	PRINTL 奴隶容易取得，主人相对比较困难。
+	PRINTL 
+	PRINTW 受虐属性5以上、痛苦快乐经验500以上
+ELSEIF RESULT == 912
+	PRINTL 【爱的传道士】
+	PRINTL 那究竟是不是爱呢？
+	PRINTL 
+	PRINTL 主人专属称号
+	PRINTW 拥有5人以上恋慕陷落的奴隶
+ELSEIF RESULT == 913
+	PRINTL 【酒池肉林的国王陛下】
+	PRINTL 以酒为池，以肉为林，为长夜之饮…
+	PRINTL 话说这肉不会腐烂吗…
+	PRINTL 
+	PRINTL 主人专属称号
+	PRINTW 拥有5人以上淫乱陷落的奴隶
+ELSEIF RESULT == 914
+	PRINTL 【异常】
+	PRINTL 什么是正常，什么又是异常…
+	PRINTL 
+	PRINTL 主人的场合…奴隶们的异常经验合计30以上
+	PRINTW 奴隶的场合…异常经验10以上
+ELSEIF RESULT == 915
+	PRINTL 【ＳＭ的女王大人】
+	PRINTL 穿着束缚装的身姿与鞭子是如此相配，不愧是女王陛下。
+	PRINTL 
+	PRINTL 主人专属称号
+	PRINTW 拥有5人以上服从陷落的奴隶
+ELSEIF RESULT == 916
+	PRINTL 【处女守护者】
+	PRINTL 前所未闻的纯洁调教师。
+	PRINTL 男性主人性转或变成双性后亦可获得。
+	PRINTL
+	PRINTL 主人专属称号
+	PRINTL 陷落人数1人以上、还是处女
+	PRINTW 称号丧失：失去处女
+ELSEIF RESULT == 917
+	PRINTL 【铁壁的Ｗ城门】
+	PRINTL 当之无愧难攻不落。
+	PRINTL 预先赋予[攻]素質的话自然就会变成这样吧…
+	PRINTL 男性主人性转或变成双性后亦可获得。
+	PRINTL 
+	PRINTL 主人专属称号
+	PRINTL 陷落人数2人以上、还是处女＆后庭处子
+	PRINTW 称号丧失：失去处女或后庭处子
+ELSEIF RESULT == 918
+	PRINTL 【可攻可受】
+	PRINTL 是攻，还是受呢，最开始的模样还记得吗？
+	PRINTL 
+	PRINTL 奴隶专属称号
+	PRINTW 嗜虐属性3以上、嗜虐快乐经验200以上、Ａ经验200以上､同性倾向lv3以上
+ELSEIF RESULT == 919
+	PRINTL 【暴露狂】
+	PRINTL 不知为何总是抓不住，警察们需再接再厉。
+	PRINTL 
+	PRINTL 奴隶专属称号
+	PRINTW 在露出PLAY中结束一天。露出癖lv4以上
+ELSEIF RESULT == 920
+	PRINTL 【动物园园长】
+	PRINTL 戴上伪兽耳就能轻松得到。
+	PRINTL 
+	PRINTL 主人专属称号
+	PRINTL 兽耳系奴隶3人以上
+	PRINTW 初期着衣设定必须设定为上回结束时
+ELSEIF RESULT == 921
+	PRINTL 【兄弟丼】
+	PRINTL ＢＬ的定番之一？
+	PRINTL 
+	PRINTL 奴隶专属称号
+	PRINTL 与兄弟角色们的纠缠经验200以上
+	PRINTW ※以原性别为判断基准，所以即使性转后也仍然被认识是兄弟
+ELSEIF RESULT == 922
+	PRINTL 【挂满精液】
+	PRINTL 调教者是女性的话很难取得。
+	PRINTL 目前还没有沾满尿液的称号…不会有的，请不要期待。
+	PRINTL 
+	PRINTL 奴隶专属称号
+	PRINTW 精液经验500以上
+ELSEIF RESULT == 923
+	PRINTL 【榨精师】
+	PRINTL 挤牛奶的时候也一定会顺利的。
+	PRINTL 
+	PRINTL 主人专属称号
+	PRINTW 精液经验500以上
+ELSEIF RESULT == 924
+	PRINTL 【口交达人】
+	PRINTL 侍奉还是玩弄视场合而定。
+	PRINTL 
+	PRINTL 主人的场合…口交经验500以上
+	PRINTW 奴隶的场合…口交经验200以上
+ELSEIF RESULT == 925
+	PRINTL 【废物】
+	PRINTL 噢哟，身上有根多余的东西呢。
+	PRINTL 也只有这根东西能证明是男人了吧。
+	PRINTL 
+	PRINTL 奴隶专属称号
+	PRINTL 童贞且Ａ经验200以上
+	PRINTW 称号丧失：失去童贞
+ELSEIF RESULT == 926
+	PRINTL 【舌尖高手】
+	PRINTL 用舌头给樱桃打结什么的很在行哦？
+	PRINTL 
+	PRINTW 舔阴经验200以上
+ELSEIF RESULT == 927
+	PRINTL 【扩张高手】
+	PRINTL 再大一点…再大一点也没关系哦？
+	PRINTL 
+	PRINTL 主人专属称号
+	PRINTW 全角色的扩张经验合计200以上
+ELSEIF RESULT == 928
+	PRINTL 【触手高手】
+	PRINTL 不是女性向常见的那种植物触手。
+	PRINTL 其实很听话哦。
+	PRINTL
+	PRINTL 主人专属称号
+	PRINTW 全角色的触手经验合计500以上
+ELSEIF RESULT == 929
+	PRINTL 【光屁股星人】
+	PRINTL 很难取得的称号，不过反正也不太好听。
+	PRINTL 
+	PRINTL 奴隶专属称号
+	PRINTL 只靠肛门绝顶的经验合计100以上（男奴隶限定）
+	PRINTW 称号丧失：不再是男性（性转了）
+ELSEIF RESULT == 930
+	PRINTL 【淫乳男孩】
+	PRINTL 就算是大叔，这里姑且也算作男孩吧。
+	PRINTL 
+	PRINTL 奴隶专属称号
+	PRINTL 只靠胸部绝顶的经验合计100以上（男奴隶限定）
+	PRINTW 称号丧失：不再是男性（性转了）
+ELSEIF RESULT == 931
+	PRINTL 【童贞集邮狂】
+	PRINTL 处女厨的心之友。
+	PRINTL 
+	PRINTL 主人专属称号
+	PRINTL 陷落人数3人以上，半数以上还是童贞
+	PRINTW 称号丧失：取得条件不再维持
+ELSEIF RESULT == 932
+	PRINTL 【接吻魔】
+	PRINTL 要试试被亲到高潮的感觉吗？
+	PRINTL 
+	PRINTL 主人专属称号
+	PRINTW 陷落人数3人以上，半数以上的接吻指令实行回数100回以上
+ELSEIF RESULT == 933
+	PRINTL 【反被狩猎】
+	PRINTL 假面骑士被骑。
+	PRINTL 
+	PRINTL 奴隶专属称号
+	PRINTW 逆强奸回数200回以上
+ELSEIF RESULT == 934
+	PRINTL 【热衷假阳具】
+	PRINTL 是热爱着性别倒错第四爱的女调教师。
+	PRINTL 
+	PRINTL 主人专属称号
+	PRINTW 假阳具插入指令实行回数500回以上
+ELSEIF RESULT == 935
+	PRINTL 【包装师】
+	PRINTL 用蝴蝶结打个结装饰一下，不能太紧哦。
+	PRINTL 
+	PRINTW 禁止射精指令的实行回数50以上
+ELSEIF RESULT == 936
+	PRINTL 【人体椅子】
+	PRINTL 坐着舒服吗？附有按摩功能哦。
+	PRINTL 
+	PRINTL 奴隶专属称号
+	PRINTW 人体家具回数＋颜面骑乘回数100以上
+ELSEIF RESULT == 937
+	PRINTL 【针山】
+	PRINTL 和针灸相通的地方……没有。
+	PRINTL 
+	PRINTL 奴隶专属称号
+	PRINTW 针刺回数50以上
+ELSEIF RESULT == 938
+	PRINTL 【究极抖Ｍ调教师】
+	PRINTL 总 攻 ＆ 女 攻 游 戏
+	PRINTL 是授予无视这一点的勇者的称号。
+	PRINTL 
+	PRINTL 主人专属称号
+	PRINTL 痛苦快乐经验500以上、嗜虐快乐经验200未満、嗜虐属性3以上的奴隶半数以上
+	PRINTW 称号丧失：取得条件不再维持
+ELSEIF RESULT == 939
+	PRINTL 【踢踏舞队】
+	PRINTL 全名是踢踏舞队脚下的地板。
+	PRINTL 最开始只是稍微踩一下就会反抗，后来却…
+	PRINTL 对方只有一个人也是队。
+	PRINTL 
+	PRINTL 奴隶专属称号
+	PRINTW 被践踏100回就能得到的好东西
+ELSEIF RESULT == 940
+	PRINTL 【像狗一样留下记号】
+	PRINTL 是时候购入宠物厕所了…
+	PRINTL 
+	PRINTL 奴隶专属称号
+	PRINTW 20回野外放尿
+ELSEIF RESULT == 941
+	PRINTL 【萝莉控】
+	PRINTL 为什么会有那么多喜欢被萝莉骂的抖Ｍ男呢。
+	PRINTL
+	PRINTL 主人获得条件
+	PRINTL 奴隶3人以上，且半数以上都是矮小贫乳的女性
+	PRINTL 称号丧失：取得条件不再维持
+	PRINTL
+	PRINTL 奴隶获得条件
+	PRINTL 恋慕系陷落或服从系陷落、主人是矮小贫乳的女性
+	PRINTW 称号丧失：主人不再矮小且贫乳
+ELSEIF RESULT == 942
+	PRINTL 【胸部星人】
+	PRINTL 从欧派星球来的。
+	PRINTL 是为了传递欧派之美才降临地球的使者｡
+	PRINTL
+	PRINTL 主人的场合…玩弄胸部的回数2000以上、饮用母乳的回数20以上
+	PRINTW 奴隶的场合…主人是巨乳、玩弄主人胸部的回数100以上、饮用主人乳汁的回数10以上
+ELSEIF RESULT == 943
+	PRINTL 【手淫达人】
+	PRINTL 大概是整天除了玩自己的性器就没有别的事要做了。
+	PRINTL 
+	PRINTL 奴隶专属称号
+	PRINTW 手淫回数200以上
+ELSEIF RESULT == 944
+	PRINTL 【女装癖】
+	PRINTL 强迫不适合女装的男性女装是一种情趣。
+	PRINTL 初期着衣设定设定为上回结束时的话比较容易达成。
+	PRINTL 
+	PRINTL 男奴隶专属称号
+	PRINTL 露出癖Lv3以上、穿着女装时的时间经过回数100回以上
+	PRINTW 称号丧失：不再是男性（性转了）
+ELSEIF RESULT == 945
+	PRINTL 【亲子丼】
+	PRINTL 很好吃呢。
+	PRINTL 
+	PRINTW 特定的父母和孩子纠缠的经验200以上
+ELSEIF RESULT == 946
+	PRINTL 【总受】
+	PRINTL 被“爱”系男子（）
+	PRINTL 
+	PRINTL 男奴隶专属称号
+	PRINTL 馆里的奴隶人数3人以上
+	PRINTL 童贞、V经验+A经验200以上、与馆里半数以上的男性奴隶纠缠过
+	PRINTW 称号丧失：取得条件不再维持。不再是男性（性转了）
+ELSEIF RESULT == 947
+	PRINTL 【病娇】
+	PRINTL Nice boat.
+	PRINTL 
+	PRINTL 同时持有[嫉妒]和[疯癫]的奴隶。
+	PRINTW 让情绪不安定的奴隶恋慕陷落，然后置之不理的话…
+ELSEIF RESULT == 948
+	PRINTL 【人外控】
+	PRINTL 人类已经玩厌了，还是人外比较刺♂激。
+	PRINTL 外形当然是越夸张越好，光有个兽耳算什么人外.JPG
+	PRINTL
+	PRINTL 主人专属称号
+	PRINTL 所持奴隶有半数以上都是人外
+	PRINTW 称号丧失：取得条件不再维持
+ELSEIF RESULT == 990
+	PRINTL 【吉时已到】
+	PRINTL 傲娇总有一天只剩娇。
+	PRINTL 
+	PRINTL 奴隶专属称号
+	PRINTW 让持有傲娇素质的奴隶恋慕陷落
+ELSEIF RESULT == 992
+	PRINTL 【上级调教师】
+	PRINTL 多亏了可以定制奴隶，不然特别难。
+	PRINTL 
+	PRINTL 主人专属称号
+	PRINTW 困难度HARD的条件下陷落4人以上
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+GOTO TITLE_HELP

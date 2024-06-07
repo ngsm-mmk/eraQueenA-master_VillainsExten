@@ -1,0 +1,211 @@
+﻿;-------------------------------------------------
+;鳗鱼池
+;严厉な调教指令、レベル4
+;-------------------------------------------------
+@COM151
+PRINTL 鳗鱼池
+STR:0 = 鳗鱼池
+
+
+F = 1
+R = 1
+;Vに道具を插入している場合
+IF TEQUIP:13 || TALENT:140
+	F = 0
+ELSE
+	;V经验を伴う指令のフラグ(处女膜再生对応)
+	TFLAG:19 = 1
+ENDIF
+
+;Aに道具を插入している場合
+IF TEQUIP:14 || TEQUIP:15 || TEQUIP:21 || TEQUIP:22 || TEQUIP:23
+	R = 0
+ENDIF
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 400
+LOSEBASE:1 += 650
+
+SOURCE:0 = 100
+SOURCE:3 = 100
+SOURCE:7 = 1000
+SOURCE:8 = 2000
+SOURCE:14 = 1200
+SOURCE:15 = 800
+SOURCE:17 = 1500
+SOURCE:18 = 1500
+;Vに道具を插入していない場合
+IF F > 0
+	SOURCE:1 = 100
+	SOURCE:7 += 500
+	SOURCE:8 += 500
+ENDIF
+;Aに道具を插入していない場合
+IF R > 0
+	SOURCE:2 = 100
+	SOURCE:7 += 500
+	SOURCE:8 += 500
+ENDIF
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;Vに道具を插入していない場合のみ見る
+IF F > 0
+	;Vへの痛苦は先に処理しておく
+	;EXP:Ｖ经验をみる（处女の反感は別途処理済みなので省略）
+	IF EXP:0 < EXPLV:1
+		TIMES SOURCE:7 , 2.50
+	ELSEIF EXP:0 < EXPLV:2
+		TIMES SOURCE:7 , 0.80
+		TIMES SOURCE:18 , 1.20
+	ELSEIF EXP:0 < EXPLV:3
+		TIMES SOURCE:7 , 0.40
+	ELSEIF EXP:0 < EXPLV:4
+		TIMES SOURCE:7 , 0.10
+	ELSEIF EXP:0 < EXPLV:5
+		TIMES SOURCE:7 , 0.00
+	ELSEIF EXP:0 >= EXPLV:5
+		TIMES SOURCE:7 , 0.00
+	ENDIF
+
+	;PALAM:润滑をみる
+	IF PALAM:4 < PALAMLV:1
+		TIMES SOURCE:7 , 1.20
+		TIMES SOURCE:18 , 1.50
+	ELSEIF PALAM:4 < PALAMLV:2
+		TIMES SOURCE:7 , 0.70
+		TIMES SOURCE:18 , 1.20
+	ELSEIF PALAM:4 < PALAMLV:3
+		TIMES SOURCE:7 , 0.40
+	ELSEIF PALAM:4 < PALAMLV:4
+		TIMES SOURCE:7 , 0.10
+	ELSEIF PALAM:4 >= PALAMLV:4
+		TIMES SOURCE:7 , 0.10
+	ENDIF
+ENDIF
+
+;Aに道具を插入していない場合のみ見る
+IF R > 0
+	;Aへの痛苦は先に処理しておく
+	;EXP:Ａ经验をみる
+	IF EXP:1 < EXPLV:1
+		TIMES SOURCE:7 , 3.00
+		TIMES SOURCE:18 , 3.00
+	ELSEIF EXP:1 < EXPLV:2
+		TIMES SOURCE:7 , 1.20
+		TIMES SOURCE:18 , 2.00
+	ELSEIF EXP:1 < EXPLV:3
+		TIMES SOURCE:7 , 0.80
+		TIMES SOURCE:18 , 1.50
+	ELSEIF EXP:1 < EXPLV:4
+		TIMES SOURCE:7 , 0.60
+		TIMES SOURCE:18 , 1.20
+	ELSEIF EXP:1 < EXPLV:5
+		TIMES SOURCE:7 , 0.40
+	ELSEIF EXP:1 >= EXPLV:5
+		TIMES SOURCE:7 , 0.20
+	ENDIF
+
+	;PALAM:润滑をみる
+	IF PALAM:4 < PALAMLV:1
+		TIMES SOURCE:7 , 1.20
+		TIMES SOURCE:18 , 2.00
+	ELSEIF PALAM:4 < PALAMLV:2
+		TIMES SOURCE:7 , 1.00
+		TIMES SOURCE:18 , 1.50
+	ELSEIF PALAM:4 < PALAMLV:3
+		TIMES SOURCE:7 , 0.60
+	ELSEIF PALAM:4 < PALAMLV:4
+		TIMES SOURCE:7 , 0.30
+	ELSEIF PALAM:4 >= PALAMLV:4
+		TIMES SOURCE:7 , 0.20
+	ENDIF
+ENDIF
+
+;特に严厉な指令では、异常经验に応じて効果を減らす
+IF EXP:50 < EXPLV:1
+	TIMES SOURCE:8 , 1.20
+	TIMES SOURCE:17 , 1.20
+	TIMES SOURCE:18 , 1.20
+ELSEIF EXP:50 < EXPLV:2
+	TIMES SOURCE:8 , 0.90
+	TIMES SOURCE:17 , 0.90
+	TIMES SOURCE:18 , 0.90
+ELSEIF EXP:50 < EXPLV:3
+	TIMES SOURCE:8 , 0.80
+	TIMES SOURCE:17 , 0.80
+	TIMES SOURCE:18 , 0.80
+ELSEIF EXP:50 < EXPLV:4
+	TIMES SOURCE:8 , 0.70
+	TIMES SOURCE:17 , 0.70
+	TIMES SOURCE:18 , 0.70
+ELSEIF EXP:50 < EXPLV:5
+	TIMES SOURCE:8 , 0.60
+	TIMES SOURCE:17 , 0.60
+	TIMES SOURCE:18 , 0.60
+ELSE
+	TIMES SOURCE:8 , 0.50
+	TIMES SOURCE:17 , 0.50
+	TIMES SOURCE:18 , 0.50
+ENDIF
+
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;粘液の汚れ
+STAIN:1 = 32
+STAIN:2 = 32
+STAIN:3 = 32
+SIF R > 0
+	STAIN:4 = 32
+STAIN:5 = 32
+IF F > 0
+	STAIN:6 = 32
+	;膣内に破瓜の血の汚れを付加
+	SIF TALENT:0 == 1 || TALENT:1 == 1
+		STAIN:6 |= 64
+ENDIF
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;V经验
+IF F > 0
+	IF EXP:0 == 0
+		EXP:50 += 2
+		PRINTL 异常经验＋２
+	ENDIF
+	EXP:0 += 2
+	PRINTL Ｖ经验＋２
+ENDIF
+
+;A经验
+IF R > 0
+	EXP:1 += 2
+	PRINTL Ａ经验＋２
+	STAIN:4 = 8
+ENDIF
+
+;异常经验が5未満のとき、异常经验追加
+IF EXP:50 < 5
+	EXP:50 += 2
+	PRINTL 异常经验＋２
+ENDIF
+
+;依赖度ベクトル
+TFLAG:33 = 5
+
+;依赖度補正値(服从で1、隶属で2）
+IF TALENT:5 && ASSIPLAY == 0
+	TFLAG:30 += 1
+ELSEIF TALENT:8 && ASSIPLAY == 0
+	TFLAG:30 += 2
+ENDIF
+
+
+RETURN 1
+

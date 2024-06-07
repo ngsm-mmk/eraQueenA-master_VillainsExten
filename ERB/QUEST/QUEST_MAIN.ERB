@@ -1,0 +1,53 @@
+﻿;-------------------------------------------------
+;剧情任务（还没做完请不要偷窥o(￣ヘ￣o＃)
+;-------------------------------------------------
+;分主线和支线，有相应解锁条件，未满足条件无法开启
+;执行任务的过程中可能会花费金钱和道具，当然也能获得
+;任务中可能获得新角色，也有需要新角色才能开启的特殊个人剧情
+;有可重复刷的任务（主要用来获得约会券）
+;FLAG:2001～2050 用于任务编号和进度
+;-------------------------------------------------
+@SHOW_QUEST
+CALL KAIGYO
+DRAWLINE
+PRINTL 请选择要进行的剧情任务
+DRAWLINE
+
+;循环检索任务
+FOR LOCAL, 0, 999
+	TFLAG:LOCAL = 0
+	RESULTS =
+	TRYCCALLFORM QUEST_FLAG_{LOCAL}
+		IF RESULT
+			TFLAG:LOCAL = 1
+			IF RESULTS != ""
+			    IF LOCAL >= 10
+				    PRINTFORM [ {LOCAL}]
+				ELSE
+				    PRINTFORM [  {LOCAL}]
+				ENDIF
+				PRINTFORML  - %RESULTS%
+			ENDIF
+		ENDIF
+	CATCH
+	ENDCATCH
+NEXT
+DRAWLINE
+PRINTL [100] - 返回
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 100
+	RETURN 0
+ELSEIF RESULT < 0 || RESULT > 100
+	GOTO INPUT_LOOP
+ELSEIF TFLAG:RESULT
+	TRYCALLFORM QUEST_EVENT_{RESULT}
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+RETURN 0
+
+
+
+

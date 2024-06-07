@@ -1,0 +1,164 @@
+﻿;-------------------------------------------------
+;肛门爱抚
+;爱抚系指令、レベル2
+;-------------------------------------------------
+@COM5
+;-------------------------------------
+;COMF5.ERB内の「@COM5」の下の行に追加
+;COMF3.ERB内アレンジ
+;-------------------------------------
+;特殊派生処理
+;-------------------------------------------------
+;下身内衣をつけている、布偶装を着ている、もしく水手裙以外の下身外衣を履いていると派生无
+IF TEQUIP:2 || TEQUIP:4 > 1 || TEQUIP:6 == 7
+ELSE
+	;前回の调教が肛门爱抚かつプ雷ヤの技巧4以上だと前立腺刺激に
+	IF PREVCOM == 5 && ABL:PLAYER:2 >= 4 
+		CALL COM_ABLE590
+		SIF RESULT == 1
+			JUMP COM590
+	ENDIF
+	;前回の调教が前立腺ならさらに前立腺刺激に
+	;IF PREVCOM == 590 
+	;	CALL COM_ABLE590
+	;	SIF RESULT == 1
+	;		JUMP COM590
+	;ENDIF
+ENDIF
+;------------------------------------------------
+;貼り付けここまで
+;---------------------------------------------
+;下身内衣をつけている、布偶装を着ている、もしく水手裙以外の下身外衣を履いている
+IF TEQUIP:2 || TEQUIP:4 > 1 || TEQUIP:6 == 7
+	PRINTL 隔衣玩弄肛门
+ELSE
+	PRINTL 玩弄肛门
+ENDIF
+STR:0 = 玩弄肛门
+
+
+;手指灵巧持ちで着衣のときびりびりしない
+IF TALENT:PLAYER:58 && (TEQUIP:2 || TEQUIP:4 > 1 || TEQUIP:6 == 7)
+ELSE
+	;丝袜びりびりフラグ
+	IF TEQUIP:1 == 5 || TEQUIP:1 == 6
+		TFLAG:55 = 1
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 40
+LOSEBASE:1 += 100
+
+SOURCE:2 = 100
+IF PREVCOM:91
+	SOURCE:7 = 80
+ELSE
+	SOURCE:7 = 100
+ENDIF
+SOURCE:14 = 100
+SOURCE:17 = 80
+SOURCE:18 = 60
+
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 100
+
+;Aへの痛苦は先に処理しておく
+;EXP:Ａ经验をみる
+IF EXP:1 < EXPLV:1
+	TIMES SOURCE:7 , 3.00
+	TIMES SOURCE:18 , 3.00
+ELSEIF EXP:1 < EXPLV:2
+	TIMES SOURCE:7 , 1.20
+	TIMES SOURCE:18 , 2.00
+ELSEIF EXP:1 < EXPLV:3
+	TIMES SOURCE:7 , 0.80
+	TIMES SOURCE:18 , 1.50
+ELSEIF EXP:1 < EXPLV:4
+	TIMES SOURCE:7 , 0.60
+	TIMES SOURCE:18 , 1.20
+ELSEIF EXP:1 < EXPLV:5
+	TIMES SOURCE:7 , 0.40
+ELSEIF EXP:1 >= EXPLV:5
+	TIMES SOURCE:7 , 0.20
+	TIMES SOURCE:18 , 0.80
+ENDIF
+
+;PALAM:润滑をみる
+IF PALAM:4 < PALAMLV:1
+	TIMES SOURCE:7 , 1.20
+	TIMES SOURCE:18 , 2.00
+ELSEIF PALAM:4 < PALAMLV:2
+	TIMES SOURCE:7 , 1.00
+	TIMES SOURCE:18 , 1.50
+ELSEIF PALAM:4 < PALAMLV:3
+	TIMES SOURCE:7 , 0.60
+ELSEIF PALAM:4 < PALAMLV:4
+	TIMES SOURCE:7 , 0.30
+	TIMES SOURCE:18 , 0.60
+ELSEIF PALAM:4 >= PALAMLV:4
+	TIMES SOURCE:7 , 0.20
+	TIMES SOURCE:18 , 0.30
+ENDIF
+
+;手指灵巧持ちで着衣のとき
+IF TALENT:PLAYER:58 && (TEQUIP:2 || TEQUIP:4 > 1 || TEQUIP:6 == 7)
+	;布偶装か水手裙以外の下身外衣を着ている
+	IF TEQUIP:4 > 1 || TEQUIP:6 == 7
+		;快Ａのソース減少
+		TIMES SOURCE:2 , 0.80
+		;下着を着けてないと逸脱のソース増加
+		SIF TEQUIP:2 == 0
+			TIMES SOURCE:17 , 1.20
+	ENDIF
+	;下身内衣を着ている
+	IF TEQUIP:2
+		;快Ａのソース減少
+		TIMES SOURCE:2 , 0.80
+	ENDIF
+	;疼痛・逸脱のソース減少
+	TIMES SOURCE:7 , 0.50
+	TIMES SOURCE:17 , 0.80
+ENDIF
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+IF TEQUIP:25
+	;奴隶のＡに触手の汚れがつく
+	STAIN:4 |= 32
+;下身内衣をつけている、布偶装を着ている、もしく水手裙以外の下身外衣を履いている
+ELSEIF TEQUIP:2 || TEQUIP:4 > 1 || TEQUIP:6 == 7
+ELSE
+	;奴隶のＡ⇔调教者の指の汚れが移动
+	STAIN:4 |= STAIN:PLAYER:1
+	STAIN:PLAYER:1 |= STAIN:4
+ENDIF
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;下身内衣をつけている、布偶装を着ている、もしく水手裙以外の下身外衣を履いている
+IF TEQUIP:2 || TEQUIP:4 > 1 || TEQUIP:6 == 7
+ELSE
+	EXP:1 += 1
+	PRINTL Ａ经验＋１
+ENDIF
+
+;蔷薇经验とか加算
+CALL COM_EXP(2)
+
+
+
+;依赖度ベクトル
+TFLAG:33 = 3
+
+
+RETURN 1
+

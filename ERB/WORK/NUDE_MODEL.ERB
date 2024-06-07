@@ -1,0 +1,1938 @@
+﻿;画室打工
+;白天是普通的人体模特，晚上是涉及性的裸模，会增加暴露经验
+;基本是娼馆改的（。
+;TFLAG:13 = 67  画室打工event地文和口上
+;CFLAG:12  = 劳役中 1 出租、2 娼馆、3 画室（昼）、4 画室（夜）
+;CFLAG:133 用于记录收益
+@NUDE_MODEL
+;使用する変数の初期化
+A = 0
+B = 0
+D = 0
+Q = 0
+Q:1 = 0
+N = 0
+S = 0
+S:1 = 0
+LOCAL = 0
+;选择奴隶
+PRINTL 请选择去画室打工的奴隶
+REPEAT CHARANUM
+	SIF COUNT == MASTER
+		CONTINUE
+	SIF CFLAG:COUNT:1 < 2
+		CONTINUE
+	SIF CFLAG:COUNT:12 > 0
+		CONTINUE
+	SIF (TALENT:COUNT:3 || TALENT:COUNT:6) && TIME
+		CONTINUE
+	C = COUNT
+	CALL CHECK_CHILD_CARE
+	SIF RESULT == 1
+		CONTINUE
+	IF CFLAG:COUNT:1 == 2 && (TALENT:COUNT:3 || TALENT:COUNT:6 || TALENT:COUNT:4 || TALENT:COUNT:7 || TALENT:COUNT:5 || TALENT:COUNT:8) && BASE:COUNT:0 > 500
+		PRINTFORML [{COUNT}] - %CALLNAME:COUNT%
+		Q += 1
+		LOCAL:Q = COUNT
+		SIF !TALENT:COUNT:140
+			Q:1 += 1
+	ENDIF
+REND
+SIF Q > 1
+	PRINTFORML [998] - 以上{Q}名全员去画室打工
+SIF Q > 1 && Q:1 && TIME
+	PRINTFORML [999] - 以上{Q}名全员去画室打工（＆避孕结界）
+PRINTL [100] - 返回
+$INPUT_LOOP
+INPUT
+IF RESULT == 100
+	RETURN 0
+ELSEIF RESULT < 0
+	GOTO INPUT_LOOP
+ELSEIF RESULT >= CHARANUM && RESULT != 998 && RESULT != 999
+	GOTO INPUT_LOOP
+ELSEIF RESULT == MASTER
+	GOTO INPUT_LOOP
+ELSEIF RESULT == 998
+    IF TIME
+        Q:1 = 0
+    ENDIF
+ELSEIF RESULT == 999
+ELSEIF CFLAG:RESULT:1 < 2
+	GOTO INPUT_LOOP
+ELSEIF CFLAG:RESULT:12 > 0
+	GOTO INPUT_LOOP
+ELSEIF (TALENT:RESULT:4 == 0 && TALENT:RESULT:7 == 0 && TALENT:RESULT:3 == 0 && TALENT:RESULT:6 == 0 && TALENT:RESULT:5 == 0 && TALENT:RESULT:8 == 0) || BASE:RESULT:0 <= 500
+	GOTO INPUT_LOOP
+ELSE
+	A = RESULT
+	Q = 0
+	Q:1 = 0
+ENDIF
+
+;夜晚，裸模
+IF TIME
+    $ALL_PROSTITUTION
+    IF Q > 1
+        N += 1
+        A = LOCAL:N
+    ENDIF
+    ;行為内容の算出。高い能力や持ってる素質によって行為の頻度が増減
+    ;それによって避妊具の消費量も変化する
+    C = 0
+    SIF Q > 1
+        PRINTFORML --%CALLNAME:A%--
+    ;まずは行為の総数を計算（ここは報酬の基礎値にも使用）
+    ;ABL:顺从をみる
+    IF ABL:A:0 == 0
+        P = 0
+    ELSEIF ABL:A:0 == 1
+        P = 1
+    ELSEIF ABL:A:0 == 2
+        P = 2
+    ELSEIF ABL:A:0 == 3
+        P = 3
+    ELSEIF ABL:A:0 == 4
+        P = 4
+    ELSEIF ABL:A:0 == 5
+        P = 5
+    ELSEIF ABL:A:0 == 6
+        P = 6
+    ELSEIF ABL:A:0 == 7
+        P = 7
+    ELSEIF ABL:A:0 == 8
+        P = 8
+    ELSEIF ABL:A:0 == 9
+        P = 9
+    ELSE
+        P = 12
+    ENDIF
+    SIF P > 0
+        PRINTFORML %ABLNAME:0%LV{ABL:A:0} 行为数+{P}
+    C += P
+
+    ;ABL:欲望をみる
+    IF ABL:A:1 == 0
+        P = 1
+    ELSEIF ABL:A:0 == 1
+        P = 2
+    ELSEIF ABL:A:0 == 2
+        P = 3
+    ELSEIF ABL:A:0 == 3
+        P = 5
+    ELSEIF ABL:A:0 == 4
+        P = 7
+    ELSEIF ABL:A:0 == 5
+        P = 9
+    ELSEIF ABL:A:0 == 6
+        P = 11
+    ELSEIF ABL:A:0 == 7
+        P = 13
+    ELSEIF ABL:A:0 == 8
+        P = 15
+    ELSEIF ABL:A:0 == 9
+        P = 18
+    ELSE
+        P = 20
+    ENDIF
+    SIF P > 0
+        PRINTFORML %ABLNAME:1%LV{ABL:A:1} 行为数+{P}
+    C += P
+
+
+    ;ABL:Ｖ感觉をみる
+    IF ABL:A:4 == 0
+        P = 1
+    ELSEIF ABL:A:4 == 1
+        P = 1
+    ELSEIF ABL:A:4 == 2
+        P = 2
+    ELSEIF ABL:A:4 == 3
+        P = 2
+    ELSEIF ABL:A:4 == 4
+        P = 3
+    ELSEIF ABL:A:4 == 5
+        P = 3
+    ELSEIF ABL:A:4 == 6
+        P = 4
+    ELSEIF ABL:A:4 == 7
+        P = 4
+    ELSEIF ABL:A:4 == 8
+        P = 5
+    ELSEIF ABL:A:4 == 9
+        P = 5
+    ELSE
+        P = 6
+    ENDIF
+    ;攻だったら０に
+    SIF TALENT:A:158
+        P = 0
+    SIF P > 0
+        PRINTFORML %ABLNAME:4%LV{ABL:A:4} 行为数+{P}
+    C += P
+
+
+    ;ABL:Ａ感觉をみる
+    IF ABL:A:5 == 0
+        P = 1
+    ELSEIF ABL:A:5 == 1
+        P = 1
+    ELSEIF ABL:A:5 == 2
+        P = 2
+    ELSEIF ABL:A:5 == 3
+        P = 2
+    ELSEIF ABL:A:5 == 4
+        P = 3
+    ELSEIF ABL:A:5 == 5
+        P = 3
+    ELSEIF ABL:A:5 == 6
+        P = 4
+    ELSEIF ABL:A:5 == 7
+        P = 4
+    ELSEIF ABL:A:5 == 8
+        P = 5
+    ELSEIF ABL:A:5 == 9
+        P = 5
+    ELSE
+        P = 6
+    ENDIF
+    ;攻だったら０に
+    SIF TALENT:A:158
+        P = 0
+    SIF P > 0
+        PRINTFORML %ABLNAME:5%LV{ABL:A:5} 行为数+{P}
+    C += P
+
+
+    ;ABL:侍奉精神をみる
+    IF ABL:A:7 == 0
+        P = 0
+    ELSEIF ABL:A:7 == 1
+        P = 1
+    ELSEIF ABL:A:7 == 2
+        P = 2
+    ELSEIF ABL:A:7 == 3
+        P = 3
+    ELSEIF ABL:A:7 == 4
+        P = 4
+    ELSEIF ABL:A:7 == 5
+        P = 5
+    ELSEIF ABL:A:7 == 6
+        P = 6
+    ELSEIF ABL:A:7 == 7
+        P = 7
+    ELSEIF ABL:A:7 == 8
+        P = 8
+    ELSEIF ABL:A:7 == 9
+        P = 9
+    ELSE
+        P = 12
+    ENDIF
+    SIF P > 0
+        PRINTFORML %ABLNAME:7%LV{ABL:A:7} 行为数+{P}
+    C += P
+
+
+
+    ;ABL:百合属性をみる
+    IF ABL:A:11 == 0
+        P = 1
+    ELSEIF ABL:A:11 == 1
+        P = 1
+    ELSEIF ABL:A:11 == 2
+        P = 2
+    ELSEIF ABL:A:11 == 3
+        P = 2
+    ELSEIF ABL:A:11 == 4
+        P = 3
+    ELSEIF ABL:A:11 == 5
+        P = 3
+    ELSEIF ABL:A:11 == 6
+        P = 4
+    ELSEIF ABL:A:11 == 7
+        P = 4
+    ELSEIF ABL:A:11 == 8
+        P = 5
+    ELSEIF ABL:A:11 == 9
+        P = 5
+    ELSE
+        P = 6
+    ENDIF
+    SIF P > 0
+        PRINTFORML %ABLNAME:11%LV{ABL:A:11} 行为数+{P}
+    C += P
+
+    ;ABL:精液成瘾をみる
+    IF ABL:A:16 == 0
+        P = 0
+    ELSEIF ABL:A:16 == 1
+        P = 1
+    ELSEIF ABL:A:16 == 2
+        P = 2
+    ELSEIF ABL:A:16 == 3
+        P = 3
+    ELSEIF ABL:A:16 == 4
+        P = 4
+    ELSEIF ABL:A:16 == 5
+        P = 5
+    ELSEIF ABL:A:16 == 6
+        P = 6
+    ELSEIF ABL:A:16 == 7
+        P = 7
+    ELSEIF ABL:A:16 == 8
+        P = 8
+    ELSEIF ABL:A:16 == 9
+        P = 9
+    ELSE
+        P = 12
+    ENDIF
+    SIF P > 0
+        PRINTFORML %ABLNAME:16%LV{ABL:A:16} 行为数+{P}
+    C += P
+
+    ;ABL:百合成瘾をみる
+    IF ABL:A:17 == 0
+        P = 0
+    ELSEIF ABL:A:17 == 1
+        P = 1
+    ELSEIF ABL:A:17 == 2
+        P = 2
+    ELSEIF ABL:A:17 == 3
+        P = 3
+    ELSEIF ABL:A:17 == 4
+        P = 4
+    ELSEIF ABL:A:17 == 5
+        P = 5
+    ELSEIF ABL:A:17 == 6
+        P = 6
+    ELSEIF ABL:A:17 == 7
+        P = 7
+    ELSEIF ABL:A:17 == 8
+        P = 8
+    ELSEIF ABL:A:17 == 9
+        P = 9
+    ELSE
+        P = 12
+    ENDIF
+    SIF P > 0
+        PRINTFORML %ABLNAME:17%LV{ABL:A:17} 行为数+{P}
+    C += P
+
+
+    ;ABL:性成瘾をみる
+    IF ABL:A:18 == 0
+        P = 0
+    ELSEIF ABL:A:18 == 1
+        P = 1
+    ELSEIF ABL:A:18 == 2
+        P = 2
+    ELSEIF ABL:A:18 == 3
+        P = 3
+    ELSEIF ABL:A:18 == 4
+        P = 4
+    ELSEIF ABL:A:18 == 5
+        P = 5
+    ELSEIF ABL:A:18 == 6
+        P = 6
+    ELSEIF ABL:A:18 == 7
+        P = 7
+    ELSEIF ABL:A:18 == 8
+        P = 8
+    ELSEIF ABL:A:18 == 9
+        P = 9
+    ELSE
+        P = 12
+    ENDIF
+    SIF P > 0
+        PRINTFORML %ABLNAME:18%LV{ABL:A:18} 行为数+{P}
+    C += P
+
+
+    ;ABL:同性倾向をみる
+    IF ABL:A:20 == 0
+        P = 1
+    ELSEIF ABL:A:20 == 1
+        P = 1
+    ELSEIF ABL:A:20 == 2
+        P = 2
+    ELSEIF ABL:A:20 == 3
+        P = 2
+    ELSEIF ABL:A:20 == 4
+        P = 3
+    ELSEIF ABL:A:20 == 5
+        P = 3
+    ELSEIF ABL:A:20 == 6
+        P = 4
+    ELSEIF ABL:A:20 == 7
+        P = 4
+    ELSEIF ABL:A:20 == 8
+        P = 5
+    ELSEIF ABL:A:20 == 9
+        P = 5
+    ELSE
+        P = 6
+    ENDIF
+    SIF P > 0
+        PRINTFORML %ABLNAME:20%LV{ABL:A:20} 行为数+{P}
+    C += P
+
+    ;ABL:男同成瘾をみる
+    IF ABL:A:21 == 0
+        P = 0
+    ELSEIF ABL:A:21 == 1
+        P = 1
+    ELSEIF ABL:A:21 == 2
+        P = 2
+    ELSEIF ABL:A:21 == 3
+        P = 3
+    ELSEIF ABL:A:21 == 4
+        P = 4
+    ELSEIF ABL:A:21 == 5
+        P = 5
+    ELSEIF ABL:A:21 == 6
+        P = 6
+    ELSEIF ABL:A:21 == 7
+        P = 7
+    ELSEIF ABL:A:21 == 8
+        P = 8
+    ELSEIF ABL:A:21 == 9
+        P = 9
+    ELSE
+        P = 12
+    ENDIF
+    SIF P > 0
+        PRINTFORML %ABLNAME:21%LV{ABL:A:21} 行为数+{P}
+    C += P
+
+
+    ;奴隶の体力によって、行为数を減らす（1プ雷体力20で換算）
+    IF BASE:A:0 < C*20
+        C = BASE:A:0/20
+        PRINTFORML <体力不足>
+    ENDIF
+
+    SIF C > 0
+        PRINTFORML 总行为数：{C}
+
+    ;素質、能力に応じて行為の比率の決定(各素質は持ってれば1が入っている）
+    ;做爱系、基本的に大きい。AV感覚、处女、再生处女、性成瘾、淫壶、尻穴狂
+    ;男性が無い場合のみＶでの回数を加算、攻での回数を加算する
+    E:0 = 0
+    IF TALENT:A:158
+        E:0 += ABL:A:18+TALENT:A:76*5
+    ELSEIF TALENT:A:140
+        E:0 += ABL:A:5+ABL:A:18+TALENT:A:76*5
+    ELSE
+        E:0 = ABL:A:4+TALENT:A:0*7+TALENT:A:1*3+TALENT:A:75*5
+    ENDIF
+    ;侍奉系、侍奉精神と精液成瘾が高く、自我奉献
+    E:1 = ABL:A:7+ABL:A:16+TALENT:A:63*5
+
+    ;SM系、|嗜虐属性-受虐属性|の数値が大きい、性倒错、施虐狂、受虐狂、体力大目
+    ;受虐狂傾向
+    IF ABL:A:9 >= ABL:A:10
+        E:2 = ABL:A:9-ABL:A:10+TALENT:A:84*10+TALENT:A:80*5
+    ;施虐狂傾向
+    ELSEIF ABL:A:10 > ABL:A:9
+        E:2 = ABL:A:10-ABL:A:9+TALENT:A:83*10+TALENT:A:80*5
+    ;同値
+    ELSE
+        E:2 = ABL:A:9+TALENT:A:80*5
+    ENDIF
+    ;5未満は0にする
+    SIF E:2 < 5
+        E:2 = 0
+
+    ;百合系、百合属性、百合成瘾、男女通吃、攻、男性の場合は同性倾向と男同成瘾
+    E:3 = ABL:A:11+ABL:A:17*2+TALENT:A:81*5+ABL:A:20+ABL:A:21*2+TALENT:A:158*5
+    ;5未満は0にする
+    SIF E:3 < 5
+        E:3 = 0
+
+    M:0 = E:0
+    M:1 = E:1
+    M:2 = E:2
+    M:3 = E:3
+    X = 0
+    Y = 0
+
+    ;擬似バブルソート
+    ;ソートを行い、M:0から高い順に並べる
+    REPEAT 3
+        Y = COUNT+1
+        IF M:COUNT < M:Y
+            X = M:COUNT
+            M:COUNT = M:Y
+            M:Y = X
+        ENDIF
+    REND
+    REPEAT 2
+        Y = COUNT+1
+        IF M:COUNT < M:Y
+            X = M:COUNT
+            M:COUNT = M:Y
+            M:Y = X
+        ENDIF
+    REND
+
+    IF M:0 < M:1
+        X = M:0
+        M:0 = M:1
+        M:1 = X
+    ENDIF
+
+    ;ソートを元に行為頻度決定
+    REPEAT 4
+        IF M:0 == E:COUNT
+            Z:0 = C
+            TIMES Z:0 , 0.45
+            SIF E:COUNT == E:0
+                D = Z:0
+            SIF E:COUNT == E:1
+                G = Z:0
+            SIF E:COUNT == E:2
+                H = Z:0
+            SIF E:COUNT == E:3
+                I = Z:0
+        ENDIF
+        IF M:1 == E:COUNT
+            Z:1 = C
+            TIMES Z:1 , 0.30
+            SIF E:COUNT == E:0
+                D = Z:1
+            SIF E:COUNT == E:1
+                G = Z:1
+            SIF E:COUNT == E:2
+                H = Z:1
+            SIF E:COUNT == E:3
+                I = Z:1
+        ENDIF
+        IF M:2 == E:COUNT
+            Z:2 = C
+            TIMES Z:2 , 0.15
+            SIF E:COUNT == E:0
+                D = Z:2
+            SIF E:COUNT == E:1
+                G = Z:2
+            SIF E:COUNT == E:2
+                H = Z:2
+            SIF E:COUNT == E:3
+                I = Z:2
+        ENDIF
+        IF M:3 == E:COUNT
+            Z:3 = C
+            TIMES Z:3 , 0.10
+            SIF E:COUNT == E:0
+                D = Z:3
+            SIF E:COUNT == E:1
+                G = Z:3
+            SIF E:COUNT == E:2
+                H = Z:3
+            SIF E:COUNT == E:3
+                I = Z:3
+        ENDIF
+    REND
+
+    CFLAG:A:30 = Z:0
+    CFLAG:A:31 = Z:1
+    CFLAG:A:32 = Z:2
+    CFLAG:A:33 = Z:3
+
+    ;避妊の選択、避孕套は安価だが報酬が下がる。しない場合は怀孕の確立が上がる。避妊結界は報酬は下がらないが、高価。
+    ;既に避妊結界を使用している場合はスキップる
+    $INPUT_LOOP_2
+    IF CFLAG:A:108
+        PRINTL <避孕结界有效>
+        B = 4
+    ELSE
+        ;男性の場合且非omega、避妊をする必要は無い
+        IF (TALENT:A:140 && !TALENT:A:164) || (Q > 0 && !Q:1)
+            B = 1
+        ELSEIF Q:1
+        ELSE
+            PRINTL 请选择避孕的方式
+            PRINTL [0]   - 不避孕
+            SIF MONEY > 2000
+                PRINTFORML [1]   - 子宫内避孕结界($-2000）
+            PRINTL [100] -   返回
+            INPUT
+            IF RESULT == 0
+                B = 1
+            ELSEIF RESULT == 1 && MONEY > 2000
+                B = 3
+                Q:1 = 1
+            ELSEIF RESULT == 100
+                RETURN 0
+            ELSE
+                GOTO INPUT_LOOP_2
+            ENDIF
+        ENDIF
+    ENDIF
+
+    ;報酬の計算
+    S = C * 520
+
+    ;素質による補正
+    F = 0
+    V = 100
+    ;素質による拍卖額補正値計算
+    ;TALENT:处女をみる
+    IF TALENT:A:0
+        F = 100
+        V += 100
+        PRINTFORML %TALENTNAME:0% ＋{F}％
+    ENDIF
+    ;TALENT:再生处女をみる
+    IF TALENT:A:1
+        F = 20
+        V += 20
+        PRINTFORML %TALENTNAME:1% ＋{F}％
+    ENDIF
+    ;素質による増減
+    ;陷落素質
+    ;恋慕
+    IF TALENT:A:3
+        F = 50
+        V -= 50
+        PRINTFORML %TALENTNAME:3% －{F}％
+    ENDIF
+    ;淫乱
+    IF TALENT:A:4
+        F = 50
+        V += 50
+        PRINTFORML %TALENTNAME:4% ＋{F}％
+    ENDIF
+    ;服从
+    IF TALENT:A:5
+        F = 30
+        V += 30
+        PRINTFORML %TALENTNAME:5% ＋{F}％
+    ENDIF
+    ;相亲相爱
+    IF TALENT:A:6
+        F = 80
+        V -= 80
+        PRINTFORML %TALENTNAME:6% －{F}％
+    ENDIF
+    ;娼妇
+    IF TALENT:A:7
+        F = 100
+        V += 100
+        PRINTFORML %TALENTNAME:7% ＋{F}％
+    ENDIF
+    ;隶属
+    IF TALENT:A:8
+        F = 60
+        V += 60
+        PRINTFORML %TALENTNAME:8% ＋{F}％
+    ENDIF
+
+
+
+    ;其他素質
+    ;胆怯
+    IF TALENT:A:10
+        F = 20
+        V -= 20
+        PRINTFORML %TALENTNAME:10% －{F}％
+    ENDIF
+    ;反抗
+    IF TALENT:A:11
+        F = 20
+        V += 20
+        PRINTFORML %TALENTNAME:11% ＋{F}％
+    ENDIF
+    ;刚强
+    IF TALENT:A:12
+        F = 40
+        V += 40
+        PRINTFORML %TALENTNAME:12% ＋{F}％
+    ENDIF
+    ;直率
+    IF TALENT:A:13
+        F = 20
+        V -= 20
+        PRINTFORML %TALENTNAME:13% －{F}％
+    ENDIF
+    ;老实
+    IF TALENT:A:14
+        F = 20
+        V -= 20
+        PRINTFORML %TALENTNAME:14% －{F}％
+    ENDIF
+    ;高傲
+    IF TALENT:A:15
+        F = 20
+        V += 20
+        PRINTFORML %TALENTNAME:15% ＋{F}％
+    ENDIF
+    ;自大
+    IF TALENT:A:16
+        F = 20
+        V += 20
+        PRINTFORML %TALENTNAME:16% ＋{F}％
+    ENDIF
+    ;自卑
+    IF TALENT:A:17
+        F = 20
+        V -= 20
+        PRINTFORML %TALENTNAME:17% －{F}％
+    ENDIF
+    ;傲娇
+    IF TALENT:A:18
+        F = 20
+        V += 20
+        PRINTFORML %TALENTNAME:18% ＋{F}％
+    ENDIF
+    ;自制力
+    IF TALENT:A:20
+        F = 20
+        V += 20
+        PRINTFORML %TALENTNAME:20% ＋{F}％
+    ENDIF
+    ;无动于衷
+    IF TALENT:A:21
+        F = 20
+        V -= 20
+        PRINTFORML %TALENTNAME:21% －{F}％
+    ENDIF
+    ;缺乏感情
+    IF TALENT:A:22
+        F = 20
+        V -= 20
+        PRINTFORML %TALENTNAME:22% －{F}％
+    ENDIF
+    ;性好奇
+    IF TALENT:A:23
+        F = 10
+        V += 10
+        PRINTFORML %TALENTNAME:23% ＋{F}％
+    ENDIF
+    ;性保守
+    IF TALENT:A:24
+        F = 10
+        V += 10
+        PRINTFORML %TALENTNAME:24% ＋{F}％
+    ENDIF
+    ;难以越过的底线
+    IF TALENT:A:27
+        F = 30
+        V += 30
+        PRINTFORML %TALENTNAME:27% ＋{F}％
+    ENDIF
+    ;喜欢引人注目
+    IF TALENT:A:28
+        F = 10
+        V += 10
+        PRINTFORML %TALENTNAME:28% ＋{F}％
+    ENDIF
+    ;贞操重视
+    IF TALENT:A:30
+        F = 20
+        V += 20
+        PRINTFORML %TALENTNAME:30% ＋{F}％
+    ENDIF
+    ;贞操淡漠
+    IF TALENT:A:31
+        F = 20
+        V -= 20
+        PRINTFORML %TALENTNAME:31% －{F}％
+    ENDIF
+    ;性开放
+    IF TALENT:A:33
+        F = 10
+        V += 10
+        PRINTFORML %TALENTNAME:33% ＋{F}％
+    ENDIF
+    ;害羞
+    IF TALENT:A:35
+        F = 10
+        V += 10
+        PRINTFORML %TALENTNAME:35% ＋{F}％
+    ENDIF
+    ;不知羞耻
+    IF TALENT:A:36
+        F = 10
+        V -= 10
+        PRINTFORML %TALENTNAME:36% －{F}％
+    ENDIF
+    ;怕痛
+    IF TALENT:A:40
+        F = 20
+        V -= 20
+        PRINTFORML %TALENTNAME:40% －{F}％
+    ENDIF
+    ;耐痛
+    IF TALENT:A:41
+        F = 20
+        V += 20
+        PRINTFORML %TALENTNAME:41% ＋{F}％
+    ENDIF
+    ;容易湿
+    IF TALENT:A:42
+        F = 10
+        V += 10
+        PRINTFORML %TALENTNAME:42% ＋{F}％
+    ENDIF
+    ;不易湿
+    IF TALENT:A:43
+        F = 10
+        V -= 10
+        PRINTFORML %TALENTNAME:43% －{F}％
+    ENDIF
+    ;学得快
+    IF TALENT:A:50
+        F = 10
+        V += 10
+        PRINTFORML %TALENTNAME:50% ＋{F}％
+    ENDIF
+    ;学得慢
+    IF TALENT:A:51
+        F = 10
+        V -= 10
+        PRINTFORML %TALENTNAME:51% －{F}％
+    ENDIF
+    ;善用舌头
+    IF TALENT:A:52
+        F = 30
+        V += 30
+        PRINTFORML %TALENTNAME:52% ＋{F}％
+    ENDIF
+    ;药物抗性
+    IF TALENT:A:56
+        F = 20
+        V -= 20
+        PRINTFORML %TALENTNAME:56% －{F}％
+    ENDIF
+    ;漏尿癖
+    IF TALENT:A:57
+        F = 10
+        V += 10
+        PRINTFORML %TALENTNAME:57% ＋{F}％
+    ENDIF
+    ;容易自慰
+    IF TALENT:A:60
+        F = 10
+        V += 10
+        PRINTFORML %TALENTNAME:60% ＋{F}％
+    ENDIF
+    ;污臭钝感
+    IF TALENT:A:61
+        F = 20
+        V -= 20
+        PRINTFORML %TALENTNAME:61% －{F}％
+    ENDIF
+    ;污臭敏感
+    IF TALENT:A:62
+        F = 20
+        V += 20
+        PRINTFORML %TALENTNAME:62% ＋{F}％
+    ENDIF
+    ;自我奉献
+    IF TALENT:A:63
+        F = 30
+        V += 30
+        PRINTFORML %TALENTNAME:63% ＋{F}％
+    ENDIF
+    ;接受快感
+    IF TALENT:A:70
+        F = 30
+        V -= 30
+        PRINTFORML %TALENTNAME:70% －{F}％
+    ENDIF
+    ;否定快感
+    IF TALENT:A:71
+        F = 30
+        V += 30
+        PRINTFORML %TALENTNAME:71% ＋{F}％
+    ENDIF
+    ;容易高潮
+    IF TALENT:A:73
+        F = 50
+        V -= 50
+        PRINTFORML %TALENTNAME:73% －{F}％
+    ENDIF
+    ;自慰狂
+    IF TALENT:A:74
+        F = 20
+        V += 20
+        PRINTFORML %TALENTNAME:74% ＋{F}％
+    ENDIF
+    ;淫壶
+    IF TALENT:A:75
+        F = 30
+        V += 30
+        PRINTFORML %TALENTNAME:75% ＋{F}％
+    ENDIF
+    ;尻穴狂
+    IF TALENT:A:76
+        F = 20
+        V += 20
+        PRINTFORML %TALENTNAME:76% ＋{F}％
+    ENDIF
+    ;淫乳
+    IF TALENT:A:77
+        F = 30
+        V += 30
+        PRINTFORML %TALENTNAME:77% ＋{F}％
+    ENDIF
+    ;性爱狂
+    IF TALENT:A:78
+        C = 30
+        V += 30
+        PRINTFORML %TALENTNAME:78% ＋{F}％
+    ENDIF
+    ;性倒错
+    IF TALENT:A:80
+        F = 10
+        V += 10
+        PRINTFORML %TALENTNAME:80% ＋{F}％
+    ENDIF
+    ;讨厌男人
+    IF TALENT:A:82
+        F = 10
+        V -= 10
+        PRINTFORML %TALENTNAME:82% －{F}％
+    ENDIF
+    ;施虐狂
+    IF TALENT:A:83
+        F = 30
+        V += 30
+        PRINTFORML %TALENTNAME:83% ＋{F}％
+    ENDIF
+    ;受虐狂
+    IF TALENT:A:84
+        F = 40
+        V += 40
+        PRINTFORML %TALENTNAME:84% ＋{F}％
+    ENDIF
+    ;盲信
+    IF TALENT:A:86
+        F = 30
+        V += 30
+        PRINTFORML %TALENTNAME:86% ＋{F}％
+    ENDIF
+    ;讨厌女人
+    IF TALENT:A:88
+        F = 10
+        V -= 10
+        PRINTFORML %TALENTNAME:88% －{F}％
+    ENDIF
+    ;小恶魔
+    IF TALENT:A:87
+        F = 20
+        V += 20
+        PRINTFORML %TALENTNAME:87% ＋{F}％
+    ENDIF
+    ;妖狐
+    IF TALENT:A:91
+        F = 20
+        V += 20
+        PRINTFORML %TALENTNAME:91% ＋{F}％
+    ENDIF
+    ;魅力
+    IF TALENT:A:92
+        F = 20
+        V += 20
+        PRINTFORML %TALENTNAME:92% ＋{F}％
+    ENDIF
+    ;魅惑
+    IF TALENT:A:93
+    	F = 20
+    	V += 20
+    	PRINTFORML %TALENTNAME:93% ＋{F}％
+    ENDIF
+    ;谜之魅力
+    IF TALENT:A:94
+        F = 100
+        V += 100
+        PRINTFORML %TALENTNAME:94% ＋{F}％
+    ENDIF
+    ;Ｃ钝感（感覚が4以上なら无效）
+    IF TALENT:A:101 && ABL:A:3 < 4
+        F = 30
+        V -= 30
+        PRINTFORML %TALENTNAME:101% －{F}％
+    ENDIF
+    ;Ｃ敏感（感覚が3未満なら无效）
+    IF TALENT:A:102 && ABL:A:3 >= 3
+        F = 30
+        V += 30
+        PRINTFORML %TALENTNAME:102% ＋{F}％
+    ENDIF
+    ;Ｖ钝感（感覚が4以上なら无效）
+    IF TALENT:A:103 && ABL:A:4 < 4
+        F = 30
+        V -= 30
+        PRINTFORML %TALENTNAME:103% －{F}％
+    ENDIF
+    ;Ｖ敏感（感覚が3未満なら无效）
+    IF TALENT:A:104 && ABL:A:4 >= 3
+        F = 30
+        V += 30
+        PRINTFORML %TALENTNAME:104% ＋{F}％
+    ENDIF
+    ;Ａ钝感（感覚が4以上なら无效）
+    IF TALENT:A:105 && ABL:A:5 < 4
+        F = 30
+        V -= 30
+        PRINTFORML %TALENTNAME:105% －{F}％
+    ENDIF
+    ;Ａ敏感（感覚が3未満なら无效）
+    IF TALENT:A:106 && ABL:A:5 >= 3
+        F = 30
+        V += 30
+        PRINTFORML %TALENTNAME:106% ＋{F}％
+    ENDIF
+    ;Ｂ钝感（感覚が4以上なら无效）
+    IF TALENT:A:107 && ABL:A:6 < 4
+        F = 30
+        V -= 30
+        PRINTFORML %TALENTNAME:107% －{F}％
+    ENDIF
+    ;Ｂ敏感（感覚が3未満なら无效）
+    IF TALENT:A:108 && ABL:A:6 >= 3
+        F = 30
+        V += 30
+        PRINTFORML %TALENTNAME:108% ＋{F}％
+    ENDIF
+    ;Ｗ钝感（感覚が4以上なら无效）
+    IF TALENT:A:231 && ABL:A:22 < 4
+    	F = 30
+    	V -= 30
+    	PRINTFORML %TALENTNAME:231% －{F}％
+    ENDIF
+    ;Ｗ敏感（感覚が3未満なら无效）
+    IF TALENT:A:230 && ABL:A:22 >= 3
+    	F = 30
+    	V += 30
+    	PRINTFORML %TALENTNAME:230% ＋{F}％
+    ENDIF
+    ;Ｔ钝感（感覚が4以上なら无效）
+    IF TALENT:A:233 && ABL:A:23 < 4
+    	F = 30
+    	V -= 30
+    	PRINTFORML %TALENTNAME:233% －{F}％
+    ENDIF
+    ;Ｔ敏感（感覚が3未満なら无效）
+    IF TALENT:A:232 && ABL:A:23 >= 3
+    	F = 30
+    	V += 30
+    	PRINTFORML %TALENTNAME:232% ＋{F}％
+    ENDIF
+    ;Ｅ钝感（感覚が4以上なら无效）
+    IF TALENT:A:235 && ABL:A:24 < 4
+    	F = 30
+    	V -= 30
+    	PRINTFORML %TALENTNAME:235% －{F}％
+    ENDIF
+    ;Ｅ敏感（感覚が3未満なら无效）
+    IF TALENT:A:234 && ABL:A:24 >= 3
+    	F = 30
+    	V += 30
+    	PRINTFORML %TALENTNAME:234% ＋{F}％
+    ENDIF
+    ;贫乳
+    IF TALENT:A:109
+        F = 20
+        V -= 20
+        PRINTFORML %TALENTNAME:109% －{F}％
+    ENDIF
+    ;绝壁
+    IF TALENT:A:110
+        F = 10
+        V += 10
+        PRINTFORML %TALENTNAME:110% ＋{F}％
+    ENDIF
+    ;巨乳
+    IF TALENT:A:111
+        F = 20
+        V += 20
+        PRINTFORML %TALENTNAME:111% ＋{F}％
+    ENDIF
+    ;爆乳
+    IF TALENT:A:112
+        F = 10
+        V += 10
+        PRINTFORML %TALENTNAME:112% ＋{F}％
+    ENDIF
+    ;恢复快
+    IF TALENT:A:130
+        F = 20
+        V += 20
+        PRINTFORML %TALENTNAME:130% ＋{F}％
+    ENDIF
+    ;恢复慢
+    IF TALENT:A:131
+        F = 20
+        V -= 20
+        PRINTFORML %TALENTNAME:131% －{F}％
+    ENDIF
+    ;吸血鬼
+    IF TALENT:A:132
+        F = 30
+        V += 30
+        PRINTFORML %TALENTNAME:132% ＋{F}％
+    ENDIF
+    ;兽耳
+    IF TALENT:A:143
+        F = 20
+        V += 20
+        PRINTFORML %TALENTNAME:143% ＋{F}％
+    ENDIF
+    ;人气
+    IF TALENT:A:145
+        F = 50
+        V += 50
+        PRINTFORML %TALENTNAME:145% ＋{F}％
+    ENDIF
+    ;人外
+    IF TALENT:A:147
+        F = 70
+        V += 70
+        PRINTFORML %TALENTNAME:147% ＋{F}％
+    ENDIF
+    ;天使
+    IF TALENT:A:166
+    	F = 50
+    	V += 50
+    	PRINTFORML %TALENTNAME:166% ＋{F}％
+    ENDIF
+    ;堕天使
+    IF TALENT:A:167
+    	F = 50
+    	V += 50
+    	PRINTFORML %TALENTNAME:167% ＋{F}％
+    ENDIF
+    ;恶魔
+    IF TALENT:A:168
+    	F = 50
+    	V += 50
+    	PRINTFORML %TALENTNAME:168% ＋{F}％
+    ENDIF
+    ;幽灵
+    IF TALENT:A:183
+    	F = 30
+    	V += 30
+    	PRINTFORML %TALENTNAME:183% ＋{F}％
+    ENDIF
+    ;可怕的种族会减价格，无形体也有debuff
+    ;无头
+    IF TALENT:A:237
+    	F = 30
+    	V -= 30
+    	PRINTFORML %TALENTNAME:237% －{F}％
+    ENDIF
+    ;僵尸
+    IF TALENT:A:181
+    	F = 30
+    	V -= 30
+    	PRINTFORML %TALENTNAME:181% －{F}％
+    ENDIF
+    ;无形体
+    IF TALENT:A:177
+    	F = 30
+    	V -= 30
+    	PRINTFORML %TALENTNAME:177% －{F}％
+    ENDIF
+    ;异形
+    IF TALENT:A:178
+    	F = 30
+    	V -= 30
+    	PRINTFORML %TALENTNAME:178% －{F}％
+    ENDIF
+
+    ;多尾
+    IF TALENT:A:210
+    	F = 30
+    	V += 30
+    	PRINTFORML %TALENTNAME:210% ＋{F}％
+    ENDIF
+    ;巨大体型
+    IF TALENT:A:224
+    	F = 60
+    	V += 60
+    	PRINTFORML %TALENTNAME:224% ＋{F}％
+    ENDIF
+    ;母乳体质
+    IF TALENT:A:149
+        F = 20
+        V += 20
+        PRINTFORML %TALENTNAME:149% ＋{F}％
+    ENDIF
+    ;受
+    IF TALENT:A:157
+        F = 10
+        V -= 10
+        PRINTFORML %TALENTNAME:157% －{F}％
+    ENDIF
+    ;攻
+    IF TALENT:A:158
+        F = 50
+        V -= 50
+        PRINTFORML %TALENTNAME:158% －{F}％
+    ENDIF
+    ;美人
+    IF TALENT:A:310
+    	F = 50
+    	V += 50
+    	PRINTFORML %TALENTNAME:310% ＋{F}％
+    ENDIF
+    ;美术属性
+    IF TALENT:A:319
+    	F = 30
+    	V += 30
+    	PRINTFORML %TALENTNAME:319% ＋{F}％
+    ENDIF
+    ;omega
+    IF TALENT:A:164
+    	F = 50
+    	V += 50
+    	PRINTFORML %TALENTNAME:164% ＋{F}％
+    ENDIF
+    ;崩溃,疯癫,怀孕は報酬をかなり低くする（顺从によって、80％まで回復）
+    IF TALENT:A:9 || TALENT:A:141 || TALENT:A:153
+        IF TALENT:A:9
+            S *= ABL:A:0
+            TIMES S , 0.08
+            Z = ABL:A:0
+            Z *= 8
+            PRINTFORML ※%TALENTNAME:9% ×{Z}％
+        ELSEIF TALENT:A:141
+            S *= ABL:A:0
+            TIMES S , 0.08
+            Z = ABL:A:0
+            Z *= 8
+            PRINTFORML ※%TALENTNAME:141% ×{Z}％
+        ELSEIF TALENT:A:153
+            S *= ABL:A:0
+            TIMES S , 0.08
+            Z = ABL:A:0
+            Z *= 8
+            PRINTFORML ※%TALENTNAME:153% ×{Z}％
+        ENDIF
+    ENDIF
+
+    ;補正値が0以下の場合は1にする
+    SIF V < 0
+        V = 1
+
+    PRINTFORML 最终倍率 {V}％
+
+    ;補正値の適用
+    S *= V
+    S /= 100
+
+
+    ;困难度処理
+    ;EASY
+    IF FLAG:4 == 1
+        PRINTFORML 困难度:EASY ×120％
+        TIMES S , 1.20
+    ;NORMAL
+    ELSEIF FLAG:4 == 2
+        TIMES S , 1.00
+    ;HARD
+    ELSEIF FLAG:4 == 3
+        PRINTFORML 困难度:HARD ×80％
+        TIMES S , 0.80
+    ENDIF
+
+    ;经验の保管はここへ移动
+    ;避妊具の有無：B、総プ雷数：C、做爱系：D、侍奉系：G、SM系：H、百合系：Iにプ雷数保管、報酬額：S
+    CFLAG:A:13 = B
+    CFLAG:A:14 = C
+    CFLAG:A:15 = D
+    CFLAG:A:16 = G
+    CFLAG:A:17 = H
+    CFLAG:A:18 = I
+    CFLAG:A:19 = S
+
+    IF Q > 1 && N < Q
+        S:1 += S
+        GOTO ALL_PROSTITUTION
+    ENDIF
+
+    S += S:1
+
+    IF S > 0
+        PRINTFORMW 大概能获得${S}左右的利润
+    ELSE
+        PRINTFORMW 计算出的报酬结果低于$0，中止行为
+        RETURN 0
+    ENDIF
+
+    ;画室指令实行
+    PRINT 要让
+    PRINTS CALLNAME:A
+    SIF Q
+        PRINT 等人
+    PRINTL 去画室打工吗？
+    PRINTL [0] -   打工
+    PRINTL [100] - 放弃
+    $INPUT_LOOP_3
+    INPUT
+    IF RESULT == 0
+        PRINTS CALLNAME:A
+        SIF Q
+            PRINT 等人
+        PRINTL 去画室打工了
+        IF B == 3 || Q:1
+            PRINTFORML 避孕具的相关费用一共花了${(Q:1)*2000}
+            MONEY -= (Q:1)*2000
+        ENDIF
+        ;经验の保管
+        ;避妊具の有無：B、総プ雷数：C、做爱系：D、侍奉系：G、SM系：H、百合系：Iにプ雷数保管、報酬額：S
+        IF Q
+            REPEAT N
+                CFLAG:(LOCAL:(COUNT+1)):12 = 4
+        ;		CFLAG:(LOCAL:(COUNT+1)):13 = B
+        ;		CFLAG:(LOCAL:(COUNT+1)):14 = C
+        ;		CFLAG:(LOCAL:(COUNT+1)):15 = D
+        ;		CFLAG:(LOCAL:(COUNT+1)):16 = G
+        ;		CFLAG:(LOCAL:(COUNT+1)):17 = H
+        ;		CFLAG:(LOCAL:(COUNT+1)):18 = I
+        ;		CFLAG:(LOCAL:(COUNT+1)):19 = S
+            REND
+        ELSE
+            CFLAG:A:12 = 4
+        ;	CFLAG:A:13 = B
+        ;	CFLAG:A:14 = C
+        ;	CFLAG:A:15 = D
+        ;	CFLAG:A:16 = G
+        ;	CFLAG:A:17 = H
+        ;	CFLAG:A:18 = I
+        ;	CFLAG:A:19 = S
+        ENDIF
+        ;イベント口上
+        T = TARGET
+        TARGET = A
+        TFLAG:13 = 67
+        CALL KOJO_MESSAGE_EVENT
+        TARGET = T
+        IF Q
+            REPEAT N
+                SIF LOCAL:(COUNT+1) == TARGET
+                    TARGET = -1
+                SIF LOCAL:(COUNT+1) == ASSI
+                    ASSI = -1
+            REND
+        ELSE
+            SIF A == TARGET
+                TARGET = -1
+            SIF A == ASSI
+                ASSI = -1
+        ENDIF
+    	;个人房相关
+    	IF Q
+    		REPEAT N
+    		    E = LOCAL:(COUNT+1)
+                CALL GO_BACK2
+    		REND
+    	ELSE
+    	    E = A
+            CALL GO_BACK2
+    	ENDIF
+        PRINTL 　
+    ELSEIF RESULT == 100
+        RETURN 0
+    ELSE
+        GOTO INPUT_LOOP_3
+    ENDIF
+;白天正常模特
+ELSE
+    $ALL_NUDE
+    IF Q > 1
+        N += 1
+        A = LOCAL:N
+    ENDIF
+    C = 0
+    SIF Q > 1
+        PRINTFORML --%CALLNAME:A%--
+    ;奴隶の能力、素質による倍率計算
+    V = 100
+    ;ABL:顺从をみる
+    C = NUDE_ABL_BAIRITSU(10, A, 0)
+    SIF C > 0
+        PRINTFORML %ABLNAME:0%LV{ABL:A:0} +{C}％
+    V += C
+    ;ABL:欲望をみる
+    C = NUDE_ABL_BAIRITSU(10, A, 1)
+    SIF C > 0
+        PRINTFORML %ABLNAME:1%LV{ABL:A:1} +{C}％
+    V += C
+    ;ABL:技巧をみる
+    C = NUDE_ABL_BAIRITSU(5, A, 2)
+    SIF C > 0
+        PRINTFORML %ABLNAME:2%LV{ABL:A:2} +{C}％
+    V += C
+    ;ABL:侍奉精神をみる
+    C = NUDE_ABL_BAIRITSU(10, A, 7)
+    SIF C > 0
+        PRINTFORML %ABLNAME:7%LV{ABL:A:7} +{C}％
+    V += C
+    ;ABL:露出癖
+    C = NUDE_ABL_BAIRITSU(25, A, 8)
+    SIF C > 0
+        PRINTFORML %ABLNAME:8%LV{ABL:A:8} +{C}％
+    V += C
+    ;ABL:受虐属性をみる
+    C = NUDE_ABL_BAIRITSU(5, A, 9)
+    SIF C > 0
+        PRINTFORML %ABLNAME:9%LV{ABL:A:9} +{C}％
+    V += C
+    ;ABL:嗜虐属性をみる
+    C = NUDE_ABL_BAIRITSU(5, A, 10)
+    SIF C > 0
+        PRINTFORML %ABLNAME:10%LV{ABL:A:10} +{C}％
+    V += C
+    IF MALE(A)
+        ;ABL:同性倾向をみる
+        C = NUDE_ABL_BAIRITSU(5, A, 20)
+        SIF C > 0
+            PRINTFORML %ABLNAME:20%LV{ABL:A:20} +{C}％
+        V += C
+    ELSE
+        ;ABL:百合属性をみる
+        C = NUDE_ABL_BAIRITSU(5, A, 11)
+        SIF C > 0
+            PRINTFORML %ABLNAME:11%LV{ABL:A:11} +{C}％
+        V += C
+    ENDIF
+    ;素質による倍率補正
+    U = 0
+    CALL NUDE_TALENT_BAIRITSU1(A)
+    V += U
+
+    ;補正値が0以下の場合は1にする
+    SIF V < 0
+        V = 1
+
+    PRINTFORML 最终倍率 {V}％
+
+    ;報酬の計算
+    S = C * 3
+    ;補正値の適用
+    S *= V
+
+    ;困难度処理
+    ;EASY
+    IF FLAG:4 == 1
+        PRINTFORML 困难度:EASY ×120％
+        TIMES S , 1.20
+    ;NORMAL
+    ELSEIF FLAG:4 == 2
+        TIMES S , 1.00
+    ;HARD
+    ELSEIF FLAG:4 == 3
+        PRINTFORML 困难度:HARD ×80％
+        TIMES S , 0.80
+    ENDIF
+
+    IF Q > 1 && N < Q
+        S:1 += S
+        GOTO ALL_NUDE
+    ENDIF
+    S += S:1
+
+    ;画室打工开始吗？
+    IF S > 0
+        PRINTFORMW 大概能获得${S}左右的利润
+    ELSE
+        PRINTFORMW 无法预估利润，中止行为
+        RETURN 0
+    ENDIF
+    ;画室指令实行
+    PRINT 要让
+    PRINTS CALLNAME:A
+    SIF Q
+        PRINT 等人
+    PRINTL 去画室打工吗？
+    PRINTL [0] -   打工
+    PRINTL [100] - 放弃
+    $INPUT_LOOP_NUDE
+    INPUT
+    IF RESULT == 0
+    	PRINTS CALLNAME:A
+    	SIF Q
+    		PRINT 等人
+    	PRINTL 去画室打工了
+        IF Q
+            REPEAT N
+                CFLAG:(LOCAL:(COUNT+1)):12 = 3
+                CFLAG:(LOCAL:(COUNT+1)):133 = S
+            REND
+        ELSE
+            CFLAG:A:12 = 3
+            CFLAG:A:133 = S
+        ENDIF
+        ;イベント口上
+        T = TARGET
+        TARGET = A
+        TFLAG:13 = 67
+        CALL KOJO_MESSAGE_EVENT
+        TARGET = T
+        IF Q
+            REPEAT N
+                SIF LOCAL:(COUNT+1) == TARGET
+                    TARGET = -1
+                SIF LOCAL:(COUNT+1) == ASSI
+                    ASSI = -1
+            REND
+        ELSE
+            SIF A == TARGET
+                TARGET = -1
+            SIF A == ASSI
+                ASSI = -1
+        ENDIF
+    	;个人房相关
+    	IF Q
+    		REPEAT N
+    		    E = LOCAL:(COUNT+1)
+                CALL GO_BACK2
+    		REND
+    	ELSE
+    	    E = A
+            CALL GO_BACK2
+    	ENDIF
+    	PRINTL 　
+    ELSEIF RESULT == 100
+    	RETURN 0
+    ELSE
+    	GOTO INPUT_LOOP_NUDE
+    ENDIF
+ENDIF
+
+@END_NUDE_MODEL
+Q = 0
+S = 0
+REPEAT CHARANUM
+	IF CFLAG:COUNT:12 == 4
+		A = COUNT
+		Q += 1
+		B = CFLAG:A:13
+		C = CFLAG:A:14
+		D = CFLAG:A:15
+		G = CFLAG:A:16
+		H = CFLAG:A:17
+		I = CFLAG:A:18
+		S += CFLAG:A:19
+
+		;体力の減少
+		BASE:A:0 -= C*15
+		;ストレス値の付加
+		CFLAG:A:10 += 2
+
+		L = 0
+		;做爱系
+		IF D > 0
+			;VとAのプ雷差
+			;男性はAのみ
+			IF TALENT:A:140
+				M = ABL:A:5
+				J = 0
+				K = D
+			ELSEIF ABL:A:4 > ABL:A:5
+				M = ABL:A:4-ABL:A:5
+				K = D/2 - M
+				SIF K < 1
+					K = 0
+				J = D - K
+			ELSE
+				M = ABL:A:5-ABL:A:4
+				J = D/2-M
+				SIF J < 1
+					J = 0
+				K = D - J
+			ENDIF
+			;奴隶が处女の場合
+			IF TALENT:A:0
+				J += M/2
+				K -= M/2
+				L = 20
+			ENDIF
+			SIF J < 0
+				J = 0
+			SIF K < 0
+				K = 0
+			;奴隶が攻
+			IF TALENT:A:158
+				J = 0
+				K = 0
+				B = 0
+			ENDIF
+			EXP:A:0 += J
+			EXP:A:1 += K
+			EXP:A:2 += D/3
+			;扶她か男性、孩童尺寸で無い
+			SIF (TALENT:A:137 || TALENT:A:139 || TALENT:A:140) && TALENT:A:114 == 0
+				EXP:A:3 += D/3
+			EXP:A:4 += D
+			;膣射､肛射经验
+			IF B == 1
+				EXP:A:5 += J
+				CFLAG:A:105 += J
+				EXP:A:8 += K
+				SIF TALENT:A:164
+				CFLAG:A:105 += K
+			ENDIF
+			JUEL:A:1 += J*50
+			JUEL:A:2 += K*50
+			JUEL:A:6 += D*30
+			JUEL:A:8 += D*50
+			JUEL:A:100 += (L+D)*100/ABL:A:0
+		ENDIF
+		;侍奉系
+		IF G > 0
+			EXP:A:20 += G
+			EXP:A:22 += G
+			EXP:A:25 += G
+			JUEL:A:5 += G*10
+			JUEL:A:8 += G*60
+			JUEL:A:100 += G*100/ABL:A:0
+		ENDIF
+		;ＳＭ系
+		IF H > 0
+			IF ABL:A:9 > ABL:A:10
+				EXP:A:30 += H
+				JUEL:A:10 += H*50
+			ENDIF
+			SIF ABL:A:10 > ABL:A:9
+				EXP:A:32 += H
+			JUEL:A:8 += H*40
+			JUEL:A:100 += H*100/ABL:A:0
+		ENDIF
+		;百合系
+		IF I > 0
+			EXP:A:2 += I/3
+			;扶她か男性
+			SIF TALENT:A:137 || TALENT:A:139 || TALENT:A:140
+				EXP:A:3 += I/3
+			;男性か双性は蔷薇经验
+			IF TALENT:A:137 || TALENT:A:140
+				EXP:A:41 += I
+			ELSE
+				EXP:A:40 += I
+			ENDIF
+			JUEL:A:0 += I*50
+			JUEL:A:6 += I*30
+			JUEL:A:8 += I*40
+			JUEL:A:100 += I*100/ABL:A:0
+		JUEL:A:9 += G*80+2000
+		ENDIF
+		PRINTL
+		PRINTFORML 在画室打完工的%CALLNAME:A%回来了
+		PRINTFORML 【%CALLNAME:A%的经验和珠子】
+
+		;经验表示は一括で行う
+		SIF J > 0 && TALENT:A:158 == 0
+			PRINTFORML %EXPNAME:0%＋{J}
+		SIF K > 0 && TALENT:A:158 == 0
+			PRINTFORML %EXPNAME:1%＋{K}
+		SIF (D/3+I/3) > 0
+			PRINTFORML %EXPNAME:2%＋{D/3+I/3}
+		SIF (TALENT:A:137 || TALENT:A:139 || TALENT:A:140) && (D/3+I/3) > 0
+			PRINTFORML %EXPNAME:3%＋{D/3+I/3}
+
+		SIF D > 0
+			PRINTFORML %EXPNAME:4%＋{D}
+		SIF B == 1 && J > 0
+			PRINTFORML %EXPNAME:5%＋{J}
+		SIF B == 1 && K > 0
+			PRINTFORML %EXPNAME:8%＋{K}
+		SIF G > 0
+			PRINTFORML %EXPNAME:20%＋{G}
+		SIF G > 0
+			PRINTFORML %EXPNAME:22%＋{G}
+		SIF G > 0
+			PRINTFORML %EXPNAME:25%＋{G}
+		IF H
+			SIF ABL:A:9 >= ABL:A:10
+				PRINTFORML %EXPNAME:30%＋{H}
+			SIF ABL:A:10 > ABL:A:9
+				PRINTFORML %EXPNAME:32%＋{H}
+		ENDIF
+
+		IF I
+			;男性か双性は蔷薇经验
+			IF TALENT:A:137 || TALENT:A:140
+				PRINTFORML %EXPNAME:41%＋{I}
+			ELSE
+				PRINTFORML %EXPNAME:40%＋{I}
+			ENDIF
+			
+		ENDIF
+		IF D > 0
+			IF TALENT:A:0 && TALENT:A:158 == 0
+				PRINTFORML 处女丧失
+				PRINTFORML %EXPNAME:50%＋2
+				EXP:A:50 += 2
+				TALENT:A:0 = 0
+				CSTR:A:20 = 在画室打工被轮奸而失去
+			ELSEIF TALENT:A:1 && TALENT:A:158 == 0
+				PRINTFORML 再生处女丧失
+				TALENT:A:1 = 0
+				CSTR:A:20 = 在画室打工被轮奸而失去
+			ENDIF
+			IF TALENT:A:160 && TALENT:A:157 == 0
+				PRINTFORML 童贞丧失
+				TALENT:A:160 = 0
+				CSTR:A:21 = 在画室打工被轮奸而失去
+			ENDIF
+			IF TALENT:A:161 && TALENT:A:158 == 0
+				PRINTFORML 后庭处子丧失
+				TALENT:A:161 = 0
+				CSTR:A:22 = 在画室打工被轮奸而失去
+			ENDIF
+		ENDIF
+
+		;珠表示も同様
+		SIF I > 0
+			PRINTFORML %PALAMNAME:0%之珠＋{I*50}
+		SIF J > 0 && TALENT:A:158 == 0
+			PRINTFORML %PALAMNAME:1%之珠＋{J*50}
+		SIF K > 0 && TALENT:A:158 == 0
+			PRINTFORML %PALAMNAME:2%之珠＋{K*50}
+		SIF G > 0
+			PRINTFORML %PALAMNAME:5%之珠＋{G*10}
+		SIF (D*30+I*30) > 0
+			PRINTFORML %PALAMNAME:6%之珠＋{D*30+I*30}
+		SIF (D*50+G*60+H*40+I*40) > 0
+			PRINTFORML %PALAMNAME:8%之珠＋{D*50+G*60+H*40+I*40}
+			PRINTFORML %PALAMNAME:9%之珠＋{G*80+2000}
+		SIF ABL:A:9 > ABL:A:10 && H
+			PRINTFORML %PALAMNAME:10%之珠＋{H*50}
+		SIF ((L+D+G+H+I)*100/ABL:A:0) > 0
+			PRINTFORML %PALAMNAME:100%之珠＋{(L+D+G+H+I)*100/ABL:A:0}
+
+		;フラグの重置
+		CFLAG:A:12 = 0
+		CFLAG:A:13 = 0
+		CFLAG:A:14 = 0
+		CFLAG:A:15 = 0
+		CFLAG:A:16 = 0
+		CFLAG:A:17 = 0
+		CFLAG:A:18 = 0
+		CFLAG:A:19 = 0
+	ENDIF
+REND
+;報酬額の加算
+IF Q > 1
+	PRINTL
+	PRINTFORMW %CALLNAME:A%等人一共赚取了${S}的收益
+ELSE
+	PRINTFORMW %CALLNAME:A%一共赚取了${S}的收益
+ENDIF
+MONEY += S
+
+
+RETURN 1
+
+
+@END_NUDE_MODEL2
+Q = 0
+S = 0
+PRINTL
+REPEAT CHARANUM
+	IF CFLAG:COUNT:12 == 3
+		A = COUNT
+		Q += 1
+		;体力の減少
+		BASE:A:0 -= 300
+		JUEL:A:9 += 1500
+		;ストレス値の付加
+		CFLAG:A:10 += 1
+		PRINTFORML 在画室打完工的%CALLNAME:A%回来了
+		PRINTFORML 【%CALLNAME:A%的珠子】
+        PRINTFORML %PALAMNAME:9%之珠＋1500
+        PRINTL
+        CFLAG:A:12 = 0
+	ENDIF
+REND
+
+IF !RAND:3
+    S += CFLAG:A:133*150/100
+ELSEIF !RAND:2
+    S += CFLAG:A:133
+ELSE
+    S += CFLAG:A:133*125/100
+ENDIF
+
+CFLAG:A:133 = 0
+;報酬額の加算
+IF Q > 1
+	PRINTL
+	PRINTFORMW %CALLNAME:A%等人一共赚取了${S}的收益
+ELSE
+	PRINTFORMW %CALLNAME:A%一共赚取了${S}的收益
+ENDIF
+MONEY += S
+
+
+RETURN 1
+
+
+@NUDE_TALENT_BAIRITSU1(ARG)
+;ARG:奴隶の登录番号
+;恋慕
+CALL NUDE_TALENT_BAIRITSU2(10, ARG, 3)
+;淫乱
+CALL NUDE_TALENT_BAIRITSU2(10, ARG, 4)
+;服从
+CALL NUDE_TALENT_BAIRITSU2(20, ARG, 5)
+;相亲相爱
+CALL NUDE_TALENT_BAIRITSU2(20, ARG, 6)
+;娼妇
+CALL NUDE_TALENT_BAIRITSU2(30, ARG, 7)
+;隶属
+CALL NUDE_TALENT_BAIRITSU2(20, ARG, 8)
+;胆怯
+CALL NUDE_TALENT_BAIRITSU2(-10, ARG, 10)
+;反抗
+CALL NUDE_TALENT_BAIRITSU2(-10, ARG, 11)
+;刚强
+CALL NUDE_TALENT_BAIRITSU2(20, ARG, 12)
+;直率
+CALL NUDE_TALENT_BAIRITSU2(10, ARG, 13)
+;老实
+CALL NUDE_TALENT_BAIRITSU2(10, ARG, 14)
+;高傲
+CALL NUDE_TALENT_BAIRITSU2(10, ARG, 15)
+;自大
+CALL NUDE_TALENT_BAIRITSU2(10, ARG, 16)
+;自卑
+CALL NUDE_TALENT_BAIRITSU2(10, ARG, 17)
+;傲娇
+CALL NUDE_TALENT_BAIRITSU2(20, ARG, 18)
+;自制力
+CALL NUDE_TALENT_BAIRITSU2(10, ARG, 20)
+;无动于衷
+CALL NUDE_TALENT_BAIRITSU2(10, ARG, 21)
+;缺乏感情
+CALL NUDE_TALENT_BAIRITSU2(10, ARG, 22)
+;难以越过的底线
+CALL NUDE_TALENT_BAIRITSU2(10, ARG, 27)
+;喜欢引人注目
+CALL NUDE_TALENT_BAIRITSU2(30, ARG, 28)
+;贞操重视
+CALL NUDE_TALENT_BAIRITSU2(10, ARG, 30)
+;贞操淡漠
+CALL NUDE_TALENT_BAIRITSU2(10, ARG, 31)
+;害羞
+CALL NUDE_TALENT_BAIRITSU2(-10, ARG, 35)
+;学得快
+CALL NUDE_TALENT_BAIRITSU2(10, ARG, 50)
+;学得慢
+CALL NUDE_TALENT_BAIRITSU2(10, ARG, 51)
+;自我奉献
+CALL NUDE_TALENT_BAIRITSU2(10, ARG, 63)
+;喜欢身体接触
+CALL NUDE_TALENT_BAIRITSU2(20, ARG, 65)
+;厌恶身体接触
+CALL NUDE_TALENT_BAIRITSU2(10, ARG, 66)
+;讨厌男人
+CALL NUDE_TALENT_BAIRITSU2(-20, ARG, 82)
+;小恶魔
+CALL NUDE_TALENT_BAIRITSU2(10, ARG, 87)
+;讨厌女人
+CALL NUDE_TALENT_BAIRITSU2(-20, ARG, 88)
+;妖狐
+CALL NUDE_TALENT_BAIRITSU2(10, ARG, 91)
+;魅力
+CALL NUDE_TALENT_BAIRITSU2(30, ARG, 92)
+;魅惑
+CALL NUDE_TALENT_BAIRITSU2(30, ARG, 93)
+;谜之魅力
+CALL NUDE_TALENT_BAIRITSU2(30, ARG, 94)
+;贫乳
+CALL NUDE_TALENT_BAIRITSU2(-10, ARG, 109)
+;绝壁
+CALL NUDE_TALENT_BAIRITSU2(-20, ARG, 110)
+;巨乳
+CALL NUDE_TALENT_BAIRITSU2(20, ARG, 111)
+;爆乳
+CALL NUDE_TALENT_BAIRITSU2(10, ARG, 112)
+;兽耳
+CALL NUDE_TALENT_BAIRITSU2(10, ARG, 143)
+;人气
+CALL NUDE_TALENT_BAIRITSU2(30, ARG, 145)
+;人外
+CALL NUDE_TALENT_BAIRITSU2(20, ARG, 147)
+;幼稚
+CALL NUDE_TALENT_BAIRITSU2(30, ARG, 151)
+;怀孕
+CALL NUDE_TALENT_BAIRITSU2(30, ARG, 153)
+;天使
+CALL CONCERT_TALENT_BAIRITSU2(30, ARG, 166)
+;堕天使
+CALL CONCERT_TALENT_BAIRITSU2(30, ARG, 167)
+;恶魔
+CALL CONCERT_TALENT_BAIRITSU2(30, ARG, 168)
+;幽灵
+CALL CONCERT_TALENT_BAIRITSU2(30, ARG, 183)
+;无头
+CALL CONCERT_TALENT_BAIRITSU2(30, ARG, 237)
+;僵尸
+CALL CONCERT_TALENT_BAIRITSU2(30, ARG, 181)
+;无形体
+CALL CONCERT_TALENT_BAIRITSU2(30, ARG, 177)
+;异形
+CALL CONCERT_TALENT_BAIRITSU2(30, ARG, 178)
+;多尾
+CALL CONCERT_TALENT_BAIRITSU2(30, ARG, 210)
+;巨大体型
+CALL CONCERT_TALENT_BAIRITSU2(20, ARG, 224)
+;美人
+CALL NUDE_TALENT_BAIRITSU2(30, ARG, 310)
+;伪娘,
+CALL NUDE_TALENT_BAIRITSU2(30, ARG, 311)
+;美术属性
+CALL NUDE_TALENT_BAIRITSU2(30, ARG, 319)
+;冒冒失失
+CALL NUDE_TALENT_BAIRITSU2(10, ARG, 331)
+;大叔
+CALL NUDE_TALENT_BAIRITSU2(10, ARG, 332)
+;擅长歌唱
+CALL NUDE_TALENT_BAIRITSU2(10, ARG, 333)
+;女装癖
+CALL NUDE_TALENT_BAIRITSU2(20, ARG, 944)
+;崩溃,疯癫は利潤をかなり低くする
+CALL NUDE_TALENT_BAIRITSU2(-200, ARG, 9)
+CALL NUDE_TALENT_BAIRITSU2(-100, ARG, 141)
+
+@NUDE_TALENT_BAIRITSU2(ARG, ARG:1, ARG:2)
+IF TALENT:(ARG:1):(ARG:2)
+	IF ARG < 0
+		C = -(ARG)
+	ELSE
+		C = ARG
+	ENDIF
+	U += ARG
+ENDIF
+
+@NUDE_ABL_BAIRITSU(ARG, ARG:1, ARG:2)
+#FUNCTION
+IF ABL:(ARG:1):(ARG:2) == 0
+	LOCAL = 0
+ELSEIF ABL:(ARG:1):(ARG:2) == 1
+	LOCAL = ARG
+ELSEIF ABL:(ARG:1):(ARG:2) == 2
+	LOCAL = ARG*2
+ELSEIF ABL:(ARG:1):(ARG:2) == 3
+	LOCAL = ARG*3
+ELSEIF ABL:(ARG:1):(ARG:2) == 4
+	LOCAL = ARG*4
+ELSEIF ABL:(ARG:1):(ARG:2) == 5
+	LOCAL = ARG*5
+ELSEIF ABL:(ARG:1):(ARG:2) == 6
+	LOCAL = ARG*6
+ELSEIF ABL:(ARG:1):(ARG:2) == 7
+	LOCAL = ARG*7
+ELSEIF ABL:(ARG:1):(ARG:2) == 8
+	LOCAL = ARG*8
+ELSEIF ABL:(ARG:1):(ARG:2) == 9
+	LOCAL = ARG*9
+ELSE
+	LOCAL = ARG*10
+ENDIF
+RETURNF LOCAL

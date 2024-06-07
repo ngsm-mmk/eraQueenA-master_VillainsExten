@@ -1,0 +1,2822 @@
+﻿;--------------------------------------------------
+;奴隶調達 番号1～100是自定义奴隶 201～299是自定义人外 300～400是子代
+;101～199是人类番号
+;417～1000是人外番号
+;FLAG:8  自定义奴隶番号管理
+;FLAG:29 自定义人外番号管理
+;FLAG:1504 一次性事件开关（1为？？？君商店开场白）
+;--------------------------------------------------
+@NINGAI_CUSTOM(ARG)
+REPEAT CHARANUM
+    SIF NO:COUNT == 200
+        X = COUNT
+REND
+FLAG:29 += 1
+ADDCHARA (FLAG:29 + 200)
+CALL KAIGYO
+;現在の调教对象を記録
+M = TARGET
+K = CHARANUM - 1
+TARGET = K
+TALENT:人外 = 1
+DRAWLINE
+PRINTFORML %CALLNAME:X%：
+PRINTFORML 「定向召唤需要相应的媒介，正好%CSTR:X:0%这里有一些材料。
+PRINTFORML   %CSTR:X:3%，请选择要作为召唤媒介的物品」 （标注☆的物品附有额外部件）
+DRAWLINE
+PRINT [ 0] 洁白的羽毛
+PRINT      [ 1] 漆黑的羽毛
+PRINTL      [ 2] 山羊的头骨
+PRINT [ 3] 鲜艳的花环
+PRINT      [ 4] 野兽的皮毛
+PRINTL      [ 5] 雏鸟的绒毛
+PRINT [ 6] 发光的鳞片
+PRINT      [ 7] 彩色的贝壳
+PRINTL      [ 8] 新抽的嫩芽
+PRINT [ 9] 人体解剖图 ☆
+PRINT   [10] 不规则软泥 ☆
+PRINTL   [11] 神秘的芯片 ☆
+PRINTL [12] 死灵之书
+DRAWLINE
+PRINTL [13] 放弃召唤
+$INPUT_SUMMON1
+INPUT
+IF RESULT == 0
+    TALENT:天使 = 1
+    TALENT:化形 = 1
+    TALENT:白肤 = 1
+    TALENT:羽翅 = 1
+    TALENT:飞翔 = 1
+    TALENT:恒温体质 = 1
+    CALL KAIGYO
+    DRAWLINE
+    PRINTFORML %CALLNAME:X%：
+    PRINTFORML 「洁白的羽毛，隐隐散发出圣洁的气息……
+    PRINTFORML   看来会召唤出光属性的天使。他有下列特征吗？」
+    DRAWLINE
+ELSEIF RESULT == 1
+    TALENT:堕天使 = 1
+    TALENT:化形 = 1
+    TALENT:黑皮 = 1
+    TALENT:羽翅 = 1
+    TALENT:飞翔 = 1
+    TALENT:恒温体质 = 1
+    CALL KAIGYO
+    DRAWLINE
+    PRINTFORML %CALLNAME:X%：
+    PRINTFORML 「漆黑的羽毛，交缠着圣洁与邪恶的气息……
+    PRINTFORML   看来会召唤出暗属性的堕天使。他有下列特征吗？」
+    DRAWLINE
+ELSEIF RESULT == 2
+    TALENT:恶魔 = 1
+    TALENT:化形 = 1
+    TALENT:蝠翼 = 1
+    TALENT:双角 = 1
+    TALENT:兽尾 = 1
+    TALENT:飞翔 = 1
+    TALENT:恒温体质 = 1
+    CALL KAIGYO
+    DRAWLINE
+    PRINTFORML %CALLNAME:X%：
+    PRINTFORML 「山羊的头骨，环绕着纯粹的邪恶意志……
+    PRINTFORML   看来会召唤出亵渎神明的恶魔。他有下列特征吗？」
+    DRAWLINE
+ELSEIF RESULT == 3
+    TALENT:精灵 = 1
+    TALENT:尖耳 = 1
+    TALENT:恒温体质 = 1
+    CALL KAIGYO
+    DRAWLINE
+    PRINTFORML %CALLNAME:X%：
+    PRINTFORML 「鲜艳的花环，代表着生机、活力与美……
+    PRINTFORML   看来会召唤出与自然亲近的精灵。他有下列特征吗？」
+    DRAWLINE
+ELSEIF RESULT == 4
+    TALENT:走兽 = 1
+    TALENT:化形 = 1
+    TALENT:兽耳 = 1
+    TALENT:兽尾 = 1
+    TALENT:恒温体质 = 1
+    CALL KAIGYO
+    DRAWLINE
+    PRINTFORML %CALLNAME:X%：
+    PRINTFORML 「野兽的皮毛，充斥着野性和大地的气息……
+    PRINTFORML   看来会召唤出活动范围在陆地的走兽。他有下列特征吗？」
+    DRAWLINE
+ELSEIF RESULT == 5
+    TALENT:飞禽 = 1
+    TALENT:化形 = 1
+    TALENT:羽翅 = 1
+    TALENT:飞翔 = 1
+    TALENT:恒温体质 = 1
+    CALL KAIGYO
+    DRAWLINE
+    PRINTFORML %CALLNAME:X%：
+    PRINTFORML 「雏鸟的绒毛，让人联想到苍鹰的新巢……
+    PRINTFORML   看来会召唤出活动范围在空中的飞禽。他有下列特征吗？」
+    DRAWLINE
+ELSEIF RESULT == 6
+    TALENT:爬虫 = 1
+    TALENT:化形 = 1
+    TALENT:变温体质 = 1
+    CALL KAIGYO
+    DRAWLINE
+    PRINTFORML %CALLNAME:X%：
+    PRINTFORML 「发光的鳞片，美丽的同时也很危险……
+    PRINTFORML   看来会召唤出爬虫一类。他有下列特征吗？」
+    DRAWLINE
+ELSEIF RESULT == 7
+    TALENT:水生 = 1
+    TALENT:化形 = 1
+    TALENT:变温体质 = 1
+    CALL KAIGYO
+    DRAWLINE
+    PRINTFORML %CALLNAME:X%：
+    PRINTFORML 「彩色的贝壳，能从中听到海浪的声音……
+    PRINTFORML   看来会召唤出水生族群。他有下列特征吗？」
+    DRAWLINE
+ELSEIF RESULT == 8
+    TALENT:植物 = 1
+    TALENT:化形 = 1
+    TALENT:无体温 = 1
+    CALL KAIGYO
+    DRAWLINE
+    PRINTFORML %CALLNAME:X%：
+    PRINTFORML 「新抽的嫩芽，蕴含着极为浓厚的自然之力……
+    PRINTFORML   看来会召唤出扎根土壤的植物系族群。他有下列特征吗？」
+    DRAWLINE
+ELSEIF RESULT == 9
+    TALENT:类人 = 1
+    CALL KAIGYO
+    DRAWLINE
+    PRINTFORML %CALLNAME:X%：
+    PRINTFORML 「请选择额外部件的类型」
+    DRAWLINE
+    PRINTL [0] 唯独缺少头部的铠甲
+    PRINTL [1] 人偶的残肢
+    PRINTL [2] 机器的零件
+    PRINTL [3] 高脚杯里的鲜血
+    PRINTL [4] 充满腐败气息的土壤
+    PRINTL [5] 不使用额外部件
+    DRAWLINE
+    PRINTL [6] 放弃召唤
+    $INPUT_NINGAI_DEMI
+    INPUT
+    IF RESULT == 0
+        TALENT:无头骑士 = 1
+        TALENT:不死系 = 1
+        TALENT:无头 = 1
+        CALL KAIGYO
+        DRAWLINE
+        PRINTFORML %CALLNAME:X%：
+        PRINTFORML 「唯独缺少头部的铠甲，有死亡的气息……
+        PRINTFORML   看来会召唤出传说中的无头骑士。他有下列特征吗？」
+        DRAWLINE
+    ELSEIF RESULT == 1
+        TALENT:人偶 = 1
+        TALENT:无体温 = 1
+        CALL KAIGYO
+        DRAWLINE
+        PRINTFORML %CALLNAME:X%：
+        PRINTFORML 「人偶的残肢，呵呵，能听到细弱的婴啼呢。
+        PRINTFORML   看来会召唤出拥有了生命的人偶。他有下列特征吗？」
+        DRAWLINE
+    ELSEIF RESULT == 2
+        TALENT:机器人 = 1
+        TALENT:无体温 = 1
+        CALL KAIGYO
+        DRAWLINE
+        PRINTFORML %CALLNAME:X%：
+        PRINTFORML 「机器的零件，磨损非常严重，但却是难得的好东西哦。
+        PRINTFORML   看来会召唤出为人类服务的机器人。他有下列特征吗？」
+        DRAWLINE
+    ELSEIF RESULT == 3
+        TALENT:吸血鬼 = 1
+        TALENT:化形 = 1
+        TALENT:白肤 = 1
+        TALENT:恒温体质 = 1
+        TALENT:不死系 = 1
+        CALL KAIGYO
+        DRAWLINE
+        PRINTFORML %CALLNAME:X%：
+        PRINTFORML 「高脚杯里的鲜血，看到这个就会自然而然产生联想……
+        PRINTFORML   看来会召唤出吸血鬼呢。他有下列特征吗？」
+        DRAWLINE
+    ELSEIF RESULT == 4
+        TALENT:僵尸 = 1
+        TALENT:青肤 = 1
+        TALENT:不死系 = 1
+        TALENT:无体温 = 1
+        CALL KAIGYO
+        DRAWLINE
+        PRINTFORML %CALLNAME:X%：
+        PRINTFORML 「充满腐败气息的土壤，也就是说，沾染了尸体的味道……
+        PRINTFORML   看来会召唤出坟墓里爬出的僵尸呢。他有下列特征吗？」
+        DRAWLINE
+    ELSEIF RESULT == 5
+        CALL KAIGYO
+        DRAWLINE
+        PRINTFORML %CALLNAME:X%：
+        PRINTFORML 「不需要额外部件吗？只使用人体解剖图的话……
+        PRINTFORML   看来会召唤出近似人却又非人的族群呢。他有下列特征吗？」
+        DRAWLINE
+    ELSEIF RESULT == 6
+    	TARGET = M
+    	DELCHARA K
+    	FLAG:29 -= 1
+    	RETURN 0
+    ELSE
+        GOTO INPUT_NINGAI_DEMI
+    ENDIF
+ELSEIF RESULT == 10
+    TALENT:不定形 = 1
+    TALENT:化形 = 1
+    CALL KAIGYO
+    DRAWLINE
+    PRINTFORML %CALLNAME:X%：
+    PRINTFORML 「请选择额外部件的类型」
+    DRAWLINE
+    PRINTL [0] 半透明的果冻状物体
+    PRINTL [1] 一盒不明人物的骨灰
+    PRINTL [2] 不使用额外部件
+    DRAWLINE
+    PRINTL [3] 放弃召唤
+    $INPUT_NINGAI_SLM
+    INPUT
+    IF RESULT == 0
+        TALENT:史莱姆 = 1
+        CALL KAIGYO
+        DRAWLINE
+        PRINTFORML %CALLNAME:X%：
+        PRINTFORML 「半透明的果冻状物体，想必除了粘性大外，弹跳力也很惊人……
+        PRINTFORML   看来会召唤出新手勇者们又爱又恨的史莱姆呢。他有下列特征吗？」
+        DRAWLINE
+    ELSEIF RESULT == 1
+        TALENT:幽灵 = 1
+        TALENT:无体温 = 1
+        TALENT:不死系 = 1
+        CALL KAIGYO
+        DRAWLINE
+        PRINTFORML %CALLNAME:X%：
+        PRINTFORML 「一盒不明人物的骨灰，想要复活谁吗？呵呵，开玩笑的。
+        PRINTFORML   看来会召唤出游荡在人世间的幽灵呢。他有下列特征吗？」
+        DRAWLINE
+    ELSEIF RESULT == 2
+        CALL KAIGYO
+        DRAWLINE
+        PRINTFORML %CALLNAME:X%：
+        PRINTFORML 「不需要额外部件吗？只使用不规则软泥的话……
+        PRINTFORML   看来会召唤出软绵绵的家伙呢。他有下列特征吗？」
+        DRAWLINE
+    ELSEIF RESULT == 3
+    	TARGET = M
+    	DELCHARA K
+    	FLAG:29 -= 1
+    	RETURN 0
+    ELSE
+        GOTO INPUT_NINGAI_SLM
+    ENDIF
+ELSEIF RESULT == 11
+    TALENT:无形体 = 1
+    TALENT:化形 = 1
+    TALENT:无体温 = 1
+    CALL KAIGYO
+    DRAWLINE
+    PRINTFORML %CALLNAME:X%：
+    PRINTFORML 「神秘的芯片，寄宿着微薄的意志……
+    PRINTFORML   看来是并无形体的概念存在。他有下列特征吗？」
+    DRAWLINE
+    CALL KAIGYO
+    DRAWLINE
+    PRINTFORML %CALLNAME:X%：
+    PRINTFORML 「请选择额外部件的类型」
+    DRAWLINE
+    PRINTL [0] 像素图案的芯片
+    PRINTL [1] 能投影出蓝色光幕的芯片
+    PRINTL [2] 不使用额外部件
+    DRAWLINE
+    PRINTL [3] 放弃召唤
+    $INPUT_NINGAI_BUGSTER
+    INPUT
+    IF RESULT == 0
+        TALENT:数据体 = 1
+        CALL KAIGYO
+        DRAWLINE
+        PRINTFORML %CALLNAME:X%：
+        PRINTFORML 「像素图案的芯片，说到像素的话，第一反应都是古早的游戏呢。
+        PRINTFORML   看来会召唤出在网络中穿行的数据体。他有下列特征吗？」
+        DRAWLINE
+    ELSEIF RESULT == 1
+        TALENT:人工智能 = 1
+        CALL KAIGYO
+        DRAWLINE
+        PRINTFORML %CALLNAME:X%：
+        PRINTFORML 「能投影出蓝色光幕的芯片，是很前卫的媒介……
+        PRINTFORML   看来会召唤出忠诚的人工智能呢。他有下列特征吗？」
+        DRAWLINE
+    ELSEIF RESULT == 2
+        CALL KAIGYO
+        DRAWLINE
+        PRINTFORML %CALLNAME:X%：
+        PRINTFORML 「不需要额外部件吗？只使用神秘芯片的话……
+        PRINTFORML   看来会召唤出充满未来感的契约对象。他有下列特征吗？」
+        DRAWLINE
+    ELSEIF RESULT == 3
+    	TARGET = M
+    	DELCHARA K
+    	FLAG:29 -= 1
+    	RETURN 0
+    ELSE
+        GOTO INPUT_NINGAI_BUGSTER
+    ENDIF
+ELSEIF RESULT == 12
+    TALENT:异形 = 1
+    TALENT:化形 = 1
+    CALL KAIGYO
+    DRAWLINE
+    PRINTFORML %CALLNAME:X%：
+    PRINTFORML 「死灵之书…哦呀，%CSTR:X:2%怎么会想到用这个？
+    PRINTFORML   接下来不论召唤出什么样的东西可都不要吃惊哦。
+    PRINTFORML   那么，他有下列特征吗？」
+    DRAWLINE
+ELSEIF RESULT == 13
+	TARGET = M
+	DELCHARA K
+	FLAG:29 -= 1
+	RETURN 0
+ELSE
+    GOTO INPUT_SUMMON1
+ENDIF
+PRINTL
+PRINTL
+PRINTL
+PRINTL
+PRINTL    点击继续...
+PRINTL
+PRINTL
+PRINTL
+PRINTL
+DRAWLINE
+PRINTW
+WHILE 1
+    CALL KAIGYO
+    DRAWLINE
+    PRINTFORML %CALLNAME:X%：
+    PRINTFORML 「如果杂糅的特征太多且不是异形的话，
+    PRINTFORM   大概会变成奇美拉一样的生物哦？」  （当前种族为[
+    SIF TALENT:K:天使
+        PRINT 天使
+    SIF TALENT:K:堕天使
+        PRINT 堕天使
+    SIF TALENT:K:恶魔
+        PRINT 恶魔
+    SIF TALENT:K:精灵
+        PRINT 精灵
+    SIF TALENT:K:走兽
+        PRINT 走兽
+    SIF TALENT:K:飞禽
+        PRINT 飞禽
+    SIF TALENT:K:爬虫
+        PRINT 爬虫
+    SIF TALENT:K:水生
+        PRINT 水生
+    SIF TALENT:K:植物
+        PRINT 植物
+    SIF TALENT:K:类人 && !TALENT:K:无头骑士 && !TALENT:K:人偶 && !TALENT:K:机器人 && !TALENT:K:吸血鬼 && !TALENT:K:僵尸
+        PRINT 类人
+    SIF TALENT:K:无头骑士
+        PRINT 无头骑士
+    SIF TALENT:K:人偶
+        PRINT 人偶
+    SIF TALENT:K:机器人
+        PRINT 机器人
+    SIF TALENT:K:吸血鬼
+        PRINT 吸血鬼
+    SIF TALENT:K:僵尸
+        PRINT 僵尸
+    SIF TALENT:K:不定形 && !TALENT:K:史莱姆 && !TALENT:K:幽灵
+        PRINT 不定形
+    SIF TALENT:K:史莱姆
+        PRINT 史莱姆
+    SIF TALENT:K:幽灵
+        PRINT 幽灵
+    SIF TALENT:K:无形体 && !TALENT:K:数据体 && !TALENT:K:人工智能
+        PRINT 无形体
+    SIF TALENT:K:数据体
+        PRINT 数据体
+    SIF TALENT:K:人工智能
+        PRINT 人工智能
+    SIF TALENT:K:异形
+        PRINT 异形
+    PRINTFORML ]，固有特征无法更改）
+    DRAWLINE
+	LOCAL:2 = GETCOLOR()
+	LOCAL:4 = GETSTYLE()
+ARG = K
+    U = 0
+	SETCOLOR TALENT:K:白肤 ? 0x00FF00 # 0xA0A0A0
+	PRINTFORM [307] %TALENTNAME:307,12,LEFT%
+	FONTSTYLE LOCAL:4
+	CALL CHECK_NEWLINE_NINGAI
+	SETCOLOR LOCAL:2
+	SETCOLOR TALENT:K:青肤 ? 0x00FF00 # 0xA0A0A0
+	PRINTFORM [238] %TALENTNAME:238,12,LEFT%
+	CALL CHECK_NEWLINE_NINGAI
+	SETCOLOR LOCAL:2
+	SETCOLOR TALENT:K:312 ? 0x00FF00 # 0xA0A0A0
+	PRINTFORM [312] %TALENTNAME:312,12,LEFT%
+	CALL CHECK_NEWLINE_NINGAI
+	SETCOLOR LOCAL:2
+	LOCAL:3 = 4
+	FOR LOCAL, 201, 215
+		SETCOLOR TALENT:K:LOCAL ? 0x00FF00 # 0xA0A0A0
+		PRINTFORM [{LOCAL,3}] %GET_TALENTNAME(ARG, LOCAL),12,LEFT%
+		CALL CHECK_NEWLINE_NINGAI
+	NEXT
+	SETCOLOR TALENT:K:马身 ? 0x00FF00 # 0xA0A0A0
+	PRINTFORM [236] %TALENTNAME:236,12,LEFT%
+	SETCOLOR LOCAL:2
+	CALL CHECK_NEWLINE_NINGAI
+	SETCOLOR TALENT:K:无头 ? 0x00FF00 # 0xA0A0A0
+	PRINTFORM [237] %TALENTNAME:237,12,LEFT%
+	SETCOLOR LOCAL:2
+	CALL CHECK_NEWLINE_NINGAI
+	SETCOLOR TALENT:K:狐狸 ? 0x00FF00 # 0xA0A0A0
+	PRINTFORM [ 90] %TALENTNAME:90,12,LEFT%
+	SETCOLOR LOCAL:2
+	CALL CHECK_NEWLINE_NINGAI
+	SETCOLOR TALENT:K:兽耳 ? 0x00FF00 # 0xA0A0A0
+	PRINTFORM [143] %TALENTNAME:143,12,LEFT%
+	SETCOLOR LOCAL:2
+	CALL CHECK_NEWLINE_NINGAI
+	SETCOLOR TALENT:K:猫舌 ? 0x00FF00 # 0xA0A0A0
+	PRINTFORM [ 54] %TALENTNAME:54,12,LEFT%
+	SETCOLOR LOCAL:2
+	CALL CHECK_NEWLINE_NINGAI
+	FOR LOCAL, 215, 224
+		SETCOLOR TALENT:K:LOCAL ? 0x00FF00 # 0xA0A0A0
+		PRINTFORM [{LOCAL,3}] %GET_TALENTNAME(ARG, LOCAL),12,LEFT%
+		CALL CHECK_NEWLINE_NINGAI
+	NEXT
+	SETCOLOR TALENT:K:小人体型 ? 0x00FF00 # 0xA0A0A0
+	PRINTFORM [142] %TALENTNAME:142,12,LEFT%
+	SETCOLOR LOCAL:2
+	CALL CHECK_NEWLINE_NINGAI
+	FOR LOCAL, 224, 236
+		SETCOLOR TALENT:K:LOCAL ? 0x00FF00 # 0xA0A0A0
+		PRINTFORM [{LOCAL,3}] %GET_TALENTNAME(ARG, LOCAL),12,LEFT%
+		CALL CHECK_NEWLINE_NINGAI
+	NEXT
+	SETCOLOR LOCAL:2
+	PRINTL
+	DRAWLINE
+	ALIGNMENT RIGHT
+	PRINT [997] - 放弃召唤　　
+	PRINT [998] - 重置　　
+	PRINTL  [999] - 设定完毕　
+	ALIGNMENT LEFT
+;-----------------------------------------------------------
+;输入処理部分
+;-----------------------------------------------------------
+	$INPUT_LOOP_SHORI2
+	INPUT
+	IF RESULT == 54 || RESULT == 90 || RESULT == 143 || RESULT == 142 || (RESULT >= 201 && RESULT <= 238) || RESULT == 307 || RESULT == 312
+		TALENT:K:RESULT = !TALENT:K:RESULT
+        IF !TALENT:K:异形
+            ;不是异形的话只能有一种羽翼
+            IF RESULT == 201
+                TALENT:K:202 = 0
+                TALENT:K:203 = 0
+                TALENT:K:204 = 0
+            ELSEIF RESULT == 202
+                TALENT:K:201 = 0
+                TALENT:K:203 = 0
+                TALENT:K:204 = 0
+            ELSEIF RESULT == 203
+                TALENT:K:201 = 0
+                TALENT:K:202 = 0
+                TALENT:K:204 = 0
+            ELSEIF RESULT == 204
+                TALENT:K:201 = 0
+                TALENT:K:202 = 0
+                TALENT:K:203 = 0
+            ENDIF
+			;肤色不共存
+			IF RESULT == 307
+				TALENT:K:312 = 0
+				TALENT:K:238 = 0
+			ELSEIF RESULT == 312
+				TALENT:K:307 = 0
+				TALENT:K:238 = 0
+			ELSEIF RESULT == 238
+				TALENT:K:307 = 0
+				TALENT:K:312 = 0
+			ENDIF
+            ;只能有一种角
+            IF RESULT == 205
+                TALENT:K:206 = 0
+            ELSEIF RESULT == 206
+                TALENT:K:205 = 0
+            ENDIF
+            ;只能有一种尾巴
+            IF RESULT == 207
+                TALENT:K:208 = 0
+                TALENT:K:209 = 0
+            ELSEIF RESULT == 208
+                TALENT:K:207 = 0
+                TALENT:K:209 = 0
+            ELSEIF RESULT == 209
+                TALENT:K:207 = 0
+                TALENT:K:208 = 0
+            ENDIF
+            ;尖耳兽耳不共存
+            IF RESULT == 143
+                TALENT:K:215 = 0
+            ELSEIF RESULT == 215
+                TALENT:K:143 = 0
+            ENDIF
+		ENDIF
+		;不是变色龙
+		IF RESULT == 238
+		    TALENT:K:307 = 0
+		    TALENT:K:312 = 0
+		ELSEIF RESULT == 307
+		    TALENT:K:312 = 0
+		    TALENT:K:238 = 0
+		ELSEIF RESULT == 312
+		    TALENT:K:307 = 0
+		    TALENT:K:238 = 0
+		ENDIF
+		;体型不共存
+		IF RESULT == 142
+		    TALENT:K:224 = 0
+		ELSEIF RESULT == 224
+		    TALENT:K:142 = 0
+		ENDIF
+		;体质不共存
+		IF RESULT == 226
+		    TALENT:K:227 = 0
+		    TALENT:K:228 = 0
+		ELSEIF RESULT == 227
+		    TALENT:K:226 = 0
+		    TALENT:K:228 = 0
+		ELSEIF RESULT == 228
+		    TALENT:K:226 = 0
+		    TALENT:K:227 = 0
+		ENDIF
+		;没有翅膀不存在Ｗ敏钝、不可以飞翔
+		IF !TALENT:K:201 && !TALENT:K:202 && !TALENT:K:203 && !TALENT:K:204
+		    TALENT:K:230 = 0
+		    TALENT:K:231 = 0
+		    TALENT:K:219 = 0
+		ENDIF
+		;没有兽耳和尖耳不存在Ｅ敏钝
+		IF !TALENT:K:143 && !TALENT:K:215
+		    TALENT:K:234 = 0
+		    TALENT:K:235 = 0
+		ENDIF
+		;没有尾巴不存在Ｔ敏钝，不存在多尾
+		IF !TALENT:K:207 && !TALENT:K:208 && !TALENT:K:209
+		    TALENT:K:210 = 0
+		    TALENT:K:232 = 0
+		    TALENT:K:233 = 0
+		ENDIF
+		;敏感相悖
+		IF RESULT == 230
+		    TALENT:K:231 = 0
+		ELSEIF RESULT == 231
+		    TALENT:K:230 = 0
+		ENDIF
+		IF RESULT == 232
+		    TALENT:K:233 = 0
+		ELSEIF RESULT == 233
+		    TALENT:K:232 = 0
+		ENDIF
+		IF RESULT == 234
+		    TALENT:K:235 = 0
+		ELSEIF RESULT == 235
+		    TALENT:K:234 = 0
+		ENDIF
+		;非不死系、非异形不可以没有头
+		SIF !TALENT:K:不死系 && !TALENT:K:异形
+		    TALENT:K:237 = 0
+		;类人无马身、多足
+        IF TALENT:K:类人
+		    TALENT:K:236 = 0
+		    TALENT:K:多足 = 0
+		ENDIF
+		;非走兽无狐狸
+        SIF !TALENT:K:走兽 && !TALENT:K:异形
+		    TALENT:K:狐狸 = 0
+		IF TALENT:K:马身
+            TALENT:K:鱼尾 = 0
+            TALENT:K:蛇尾 = 0
+        ENDIF
+        SIF TALENT:K:鱼尾 || TALENT:K:蛇尾
+            TALENT:K:马身 = 0
+        ;固有不可变
+        IF TALENT:K:天使
+            TALENT:K:羽翅 = 1
+            TALENT:K:飞翔 = 1
+            TALENT:K:潜游 = 0
+            TALENT:K:爬行 = 0
+            TALENT:K:四足步行 = 0
+            TALENT:K:白肤 = 1
+            TALENT:K:恒温体质 = 1
+            TALENT:K:变温体质 = 0
+            TALENT:K:无体温 = 0
+            TALENT:K:蝠翼 = 0
+            TALENT:K:虫翼 = 0
+            TALENT:K:骨翅 = 0
+            TALENT:K:独角 = 0
+            TALENT:K:双角 = 0
+            TALENT:K:兽尾 = 0
+            TALENT:K:鱼尾 = 0
+            TALENT:K:蛇尾 = 0
+            TALENT:K:多尾 = 0
+            TALENT:K:复眼 = 0
+            TALENT:K:兽耳 = 0
+            TALENT:K:猫舌 = 0
+            TALENT:K:黑皮 = 0
+            TALENT:K:青肤 = 0
+            TALENT:K:多足 = 0
+            TALENT:K:手爪 = 0
+            TALENT:K:足爪 = 0
+            TALENT:K:触手 = 0
+        ELSEIF TALENT:K:堕天使
+            TALENT:K:羽翅 = 1
+            TALENT:K:蝠翼 = 0
+            TALENT:K:骨翅 = 0
+            TALENT:K:虫翼 = 0
+            TALENT:K:飞翔 = 1
+            TALENT:K:潜游 = 0
+            TALENT:K:爬行 = 0
+            TALENT:K:四足步行 = 0
+            TALENT:K:黑皮 = 1
+            TALENT:K:白肤 = 0
+            TALENT:K:青肤 = 0
+            TALENT:K:多足 = 0
+            TALENT:K:手爪 = 0
+            TALENT:K:足爪 = 0
+            TALENT:K:触手 = 0
+            TALENT:K:兽尾 = 0
+            TALENT:K:鱼尾 = 0
+            TALENT:K:蛇尾 = 0
+            TALENT:K:多尾 = 0
+            TALENT:K:复眼 = 0
+            TALENT:K:兽耳 = 0
+            TALENT:K:猫舌 = 0
+            TALENT:K:恒温体质 = 1
+            TALENT:K:变温体质 = 0
+            TALENT:K:无体温 = 0
+        ELSEIF TALENT:K:恶魔
+            TALENT:K:蝠翼 = 1
+            TALENT:K:羽翅 = 0
+            TALENT:K:骨翅 = 0
+            TALENT:K:虫翼 = 0
+            TALENT:K:双角 = 1
+            TALENT:K:独角 = 0
+            TALENT:K:兽尾 = 1
+            TALENT:K:蛇尾 = 0
+            TALENT:K:鱼尾 = 0
+            TALENT:K:飞翔 = 1
+            TALENT:K:潜游 = 0
+            TALENT:K:爬行 = 0
+            TALENT:K:多足 = 0
+            TALENT:K:兽耳 = 0
+            TALENT:K:复眼 = 0
+            TALENT:K:四足步行 = 0
+            TALENT:K:漂浮 = 0
+            TALENT:K:恒温体质 = 1
+            TALENT:K:变温体质 = 0
+            TALENT:K:无体温 = 0
+        ELSEIF TALENT:K:精灵
+            TALENT:K:尖耳 = 1
+            TALENT:K:兽耳 = 0
+            TALENT:K:恒温体质 = 1
+            TALENT:K:变温体质 = 0
+            TALENT:K:无体温 = 0
+            TALENT:K:爬行 = 0
+            TALENT:K:潜游 = 0
+            TALENT:K:四足步行 = 0
+            TALENT:K:多足 = 0
+            TALENT:K:手爪 = 0
+            TALENT:K:足爪 = 0
+            TALENT:K:青肤 = 0
+            TALENT:K:骨翅 = 0
+            TALENT:K:蝠翼 = 0
+            TALENT:K:羽翅 = 0
+            TALENT:K:独角 = 0
+            TALENT:K:双角 = 0
+            TALENT:K:兽尾 = 0
+            TALENT:K:鱼尾 = 0
+            TALENT:K:蛇尾 = 0
+            TALENT:K:触手 = 0
+            TALENT:K:复眼 = 0
+            TALENT:K:不死系 = 0
+        ELSEIF TALENT:K:走兽
+            TALENT:K:兽耳 = 1
+            TALENT:K:尖耳 = 0
+            TALENT:K:兽尾 = 1
+            TALENT:K:蛇尾 = 0
+            TALENT:K:鱼尾 = 0
+            TALENT:K:复眼 = 0
+            TALENT:K:爬行 = 0
+            TALENT:K:漂浮 = 0
+            TALENT:K:瞬移 = 0
+            TALENT:K:潜游 = 0
+            TALENT:K:多足 = 0
+            TALENT:K:不死系 = 0
+            TALENT:K:恒温体质 = 1
+            TALENT:K:变温体质 = 0
+            TALENT:K:无体温 = 0
+        ELSEIF TALENT:K:飞禽
+            TALENT:K:羽翅 = 1
+            TALENT:K:骨翅 = 0
+            TALENT:K:虫翼 = 0
+            TALENT:K:蝠翼 = 0
+            TALENT:K:飞翔 = 1
+            TALENT:K:潜游 = 0
+            TALENT:K:爬行 = 0
+            TALENT:K:四足步行 = 0
+            TALENT:K:漂浮 = 0
+            TALENT:K:瞬移 = 0
+            TALENT:K:复眼 = 0
+            TALENT:K:兽尾 = 0
+            TALENT:K:鱼尾 = 0
+            TALENT:K:蛇尾 = 0
+            TALENT:K:多尾 = 0
+            TALENT:K:触手 = 0
+            TALENT:K:多足 = 0
+            TALENT:K:复眼 = 0
+            TALENT:K:兽耳 = 0
+            TALENT:K:不死系 = 0
+            TALENT:K:猫舌 = 0
+            TALENT:K:恒温体质 = 1
+            TALENT:K:变温体质 = 0
+            TALENT:K:无体温 = 0
+        ELSEIF TALENT:K:爬虫
+            TALENT:K:变温体质 = 1
+            TALENT:K:恒温体质 = 0
+            TALENT:K:无体温 = 0
+            TALENT:K:羽翅 = 0
+            TALENT:K:骨翅 = 0
+            TALENT:K:鱼尾 = 0
+            TALENT:K:猫舌 = 0
+            TALENT:K:兽耳 = 0
+            TALENT:K:漂浮 = 0
+            TALENT:K:瞬移 = 0
+            TALENT:K:不死系 = 0
+        ELSEIF TALENT:K:水生
+            TALENT:K:变温体质 = 1
+            TALENT:K:恒温体质 = 0
+            TALENT:K:无体温 = 0
+            TALENT:K:羽翅 = 0
+            TALENT:K:骨翅 = 0
+            TALENT:K:蝠翼 = 0
+            TALENT:K:虫翼 = 0
+            TALENT:K:兽耳 = 0
+            TALENT:K:兽尾 = 0
+            TALENT:K:复眼 = 0
+            TALENT:K:不死系 = 0
+            TALENT:K:四足步行 = 0
+            TALENT:K:飞翔 = 0
+            TALENT:K:漂浮 = 0
+            TALENT:K:瞬移 = 0
+        ELSEIF TALENT:K:人偶 || TALENT:K:机器人
+            TALENT:K:无体温 = 1
+            TALENT:K:恒温体质 = 0
+            TALENT:K:变温体质 = 0
+            TALENT:K:四足步行 = 0
+            TALENT:K:潜游 = 0
+            TALENT:K:瞬移 = 0
+            TALENT:K:漂浮 = 0
+        ELSEIF TALENT:K:无形体 || TALENT:K:数据体 || TALENT:K:人工智能
+            TALENT:K:无体温 = 1
+            TALENT:K:恒温体质 = 0
+            TALENT:K:变温体质 = 0
+            TALENT:K:四足步行 = 0
+            TALENT:K:爬行 = 0
+            TALENT:K:飞翔 = 0
+        ELSEIF TALENT:K:植物
+            TALENT:K:无体温 = 1
+            TALENT:K:恒温体质 = 0
+            TALENT:K:变温体质 = 0
+            TALENT:K:兽尾 = 0
+            TALENT:K:鱼尾 = 0
+            TALENT:K:蛇尾 = 0
+            TALENT:K:多尾 = 0
+            TALENT:K:羽翅 = 0
+            TALENT:K:蝠翼 = 0
+            TALENT:K:虫翼 = 0
+            TALENT:K:骨翅 = 0
+            TALENT:K:潜游 = 0
+            TALENT:K:爬行 = 0
+            TALENT:K:飞翔 = 0
+            TALENT:K:四足步行 = 0
+            TALENT:K:瞬移 = 0
+            TALENT:K:漂浮 = 0
+            TALENT:K:不死系 = 0
+            TALENT:K:马身 = 0
+            TALENT:K:多足 = 0
+            TALENT:K:手爪 = 0
+            TALENT:K:足爪 = 0
+            TALENT:K:兽耳 = 0
+            TALENT:K:独角 = 0
+            TALENT:K:双角 = 0
+            TALENT:K:复眼 = 0
+            TALENT:K:三目 = 0
+            TALENT:K:猫舌 = 0
+        ELSEIF TALENT:K:无头骑士
+            TALENT:K:不死系 = 1
+            TALENT:K:无头 = 1
+            TALENT:K:羽翅 = 0
+            TALENT:K:蝠翼 = 0
+            TALENT:K:虫翼 = 0
+            TALENT:K:骨翅 = 0
+            TALENT:K:独角 = 0
+            TALENT:K:双角 = 0
+            TALENT:K:兽尾 = 0
+            TALENT:K:鱼尾 = 0
+            TALENT:K:蛇尾 = 0
+            TALENT:K:多尾 = 0
+            TALENT:K:手爪 = 0
+            TALENT:K:足爪 = 0
+            TALENT:K:多足 = 0
+            TALENT:K:触手 = 0
+            TALENT:K:三目 = 0
+            TALENT:K:复眼 = 0
+            TALENT:K:兽耳 = 0
+            TALENT:K:尖耳 = 0
+            TALENT:K:猫舌 = 0
+            TALENT:K:飞翔 = 0
+            TALENT:K:爬行 = 0
+            TALENT:K:瞬移 = 0
+            TALENT:K:潜游 = 0
+            TALENT:K:四足步行 = 0
+            TALENT:K:漂浮 = 0
+            TALENT:K:巨大体型 = 0
+            TALENT:K:变化体型 = 0
+            TALENT:K:小人体型 = 0
+        ELSEIF TALENT:K:吸血鬼
+            TALENT:K:恒温体质 = 1
+            TALENT:K:变温体质 = 0
+            TALENT:K:无体温 = 0
+            TALENT:K:不死系 = 1
+            TALENT:K:白肤 = 1
+            TALENT:K:青肤 = 0
+            TALENT:K:黑皮 = 0
+            TALENT:K:四足步行 = 0
+            TALENT:K:爬行 = 0
+            TALENT:K:潜游 = 0
+            TALENT:K:漂浮 = 0
+            TALENT:K:小人体型 = 0
+            TALENT:K:巨大体型 = 0
+            TALENT:K:变化体型 = 0
+        ELSEIF TALENT:K:僵尸
+            TALENT:K:青肤 = 1
+            TALENT:K:黑皮 = 0
+            TALENT:K:白肤 = 0
+            TALENT:K:羽翅 = 0
+            TALENT:K:骨翅 = 0
+            TALENT:K:蝠翼 = 0
+            TALENT:K:虫翼 = 0
+            TALENT:K:飞翔 = 0
+            TALENT:K:瞬移 = 0
+            TALENT:K:兽耳 = 0
+            TALENT:K:兽尾 = 0
+            TALENT:K:鱼尾 = 0
+            TALENT:K:蛇尾 = 0
+            TALENT:K:多尾 = 0
+            TALENT:K:独角 = 0
+            TALENT:K:双角 = 0
+            TALENT:K:猫舌 = 0
+            TALENT:K:潜游 = 0
+            TALENT:K:无体温 = 1
+            TALENT:K:恒温体质 = 0
+            TALENT:K:变温体质 = 0
+            TALENT:K:无头 = 0
+            TALENT:K:不死系 = 1
+        ELSEIF TALENT:K:幽灵
+            TALENT:K:无体温 = 1
+            TALENT:K:恒温体质 = 0
+            TALENT:K:变温体质 = 0
+            TALENT:K:不死系 = 1
+            TALENT:K:四足步行 = 0
+            TALENT:K:飞翔 = 0
+            TALENT:K:潜游 = 0
+            TALENT:K:爬行 = 0
+            TALENT:K:羽翅 = 0
+            TALENT:K:蝠翼 = 0
+            TALENT:K:虫翼 = 0
+            TALENT:K:骨翅 = 0
+            TALENT:K:独角 = 0
+            TALENT:K:双角 = 0
+            TALENT:K:兽尾 = 0
+            TALENT:K:鱼尾 = 0
+            TALENT:K:蛇尾 = 0
+            TALENT:K:多尾 = 0
+            TALENT:K:手爪 = 0
+            TALENT:K:足爪 = 0
+            TALENT:K:多足 = 0
+            TALENT:K:触手 = 0
+            TALENT:K:三目 = 0
+            TALENT:K:复眼 = 0
+            TALENT:K:兽耳 = 0
+            TALENT:K:尖耳 = 0
+            TALENT:K:猫舌 = 0
+        ELSEIF TALENT:K:史莱姆
+            TALENT:K:黑皮 = 0
+            TALENT:K:羽翅 = 0
+            TALENT:K:蝠翼 = 0
+            TALENT:K:虫翼 = 0
+            TALENT:K:骨翅 = 0
+            TALENT:K:独角 = 0
+            TALENT:K:双角 = 0
+            TALENT:K:兽尾 = 0
+            TALENT:K:鱼尾 = 0
+            TALENT:K:蛇尾 = 0
+            TALENT:K:多尾 = 0
+            TALENT:K:手爪 = 0
+            TALENT:K:足爪 = 0
+            TALENT:K:多足 = 0
+            TALENT:K:触手 = 0
+            TALENT:K:三目 = 0
+            TALENT:K:复眼 = 0
+            TALENT:K:兽耳 = 0
+            TALENT:K:尖耳 = 0
+            TALENT:K:猫舌 = 0
+            TALENT:K:飞翔 = 0
+            TALENT:K:瞬移 = 0
+            TALENT:K:潜游 = 0
+            TALENT:K:四足步行 = 0
+            TALENT:K:漂浮 = 0
+            TALENT:K:不死系 = 0
+        ENDIF
+	ELSEIF RESULT == 997
+		TARGET = M
+		DELCHARA K
+		FLAG:29 -= 1
+		RETURN 0
+	ELSEIF RESULT == 998
+	    TALENT:K:白肤 = 0
+	    TALENT:K:黑皮 = 0
+	    TALENT:K:青肤 = 0
+	    TALENT:K:狐狸 = 0
+	    TALENT:K:兽耳 = 0
+	    TALENT:K:猫舌 = 0
+	    TALENT:K:小人体型 = 0
+	    A = 0
+		REPEAT 100
+		    A = COUNT + 201
+			TALENT:K:A = 0
+		REND
+        IF TALENT:K:天使
+            TALENT:K:羽翅 = 1
+            TALENT:K:飞翔 = 1
+            TALENT:K:白肤 = 1
+            TALENT:K:恒温体质 = 1
+        ELSEIF TALENT:K:堕天使
+            TALENT:K:羽翅 = 1
+            TALENT:K:飞翔 = 1
+            TALENT:K:黑皮 = 1
+            TALENT:K:恒温体质 = 1
+        ELSEIF TALENT:K:恶魔
+            TALENT:K:蝠翼 = 1
+            TALENT:K:双角 = 1
+            TALENT:K:兽尾 = 1
+            TALENT:K:飞翔 = 1
+            TALENT:K:恒温体质 = 1
+        ELSEIF TALENT:K:精灵
+            TALENT:K:尖耳 = 1
+            TALENT:K:恒温体质 = 1
+        ELSEIF TALENT:K:走兽
+            TALENT:K:兽耳 = 1
+            TALENT:K:兽尾 = 1
+            TALENT:K:恒温体质 = 1
+        ELSEIF TALENT:K:飞禽
+            TALENT:K:羽翅 = 1
+            TALENT:K:飞翔 = 1
+            TALENT:K:恒温体质 = 1
+        ELSEIF TALENT:K:爬虫 || TALENT:K:水生
+            TALENT:K:变温体质 = 1
+        ELSEIF TALENT:K:植物 || TALENT:K:无形体 || TALENT:K:人偶 || TALENT:K:机器人 || TALENT:K:数据体 || TALENT:K:人工智能
+            TALENT:K:无体温 = 1
+        ELSEIF TALENT:K:无头骑士
+            TALENT:K:不死系 = 1
+            TALENT:K:无头 = 1
+        ELSEIF TALENT:K:吸血鬼
+            TALENT:K:恒温体质 = 1
+            TALENT:K:不死系 = 1
+            TALENT:K:白肤 = 1
+        ELSEIF TALENT:K:僵尸
+            TALENT:K:青肤 = 1
+            TALENT:K:无体温 = 1
+            TALENT:K:不死系 = 1
+        ELSEIF TALENT:K:幽灵
+            TALENT:K:无体温 = 1
+            TALENT:K:不死系 = 1
+        ENDIF
+	;设定完了
+	ELSEIF RESULT == 999
+		;预设招唤人外为男性
+		TALENT:K:男性 = 1
+		BREAK
+	ELSE
+		CLEARLINE 1
+		GOTO INPUT_LOOP_SHORI2
+	ENDIF
+WEND
+CALL KAIGYO
+DRAWLINE
+PRINTFORML %CALLNAME:X%：
+PRINTFORML 「嗯…是这样的形象么？%CSTR:X:2%认为他的心智大概是什么阶段？」
+DRAWLINE
+PRINTL [0] 还是初生体的幼年阶段
+PRINTL [1] 尚处于成长期的少年阶段
+PRINTL [2] 可以独当一面的青年阶段
+PRINTL [3] 历经沧桑的大叔阶段
+DRAWLINE
+PRINTL [4] 放弃召唤
+$INPUT_NR
+INPUT
+IF RESULT == 0
+    TALENT:幼稚 = 1
+    TALENT:大人 = 0
+    TALENT:大叔 = 0
+ELSEIF RESULT == 1
+    TALENT:幼稚 = 0
+    TALENT:大人 = 0
+    TALENT:大叔 = 0
+ELSEIF RESULT == 2
+    TALENT:幼稚 = 0
+    TALENT:大人 = 1
+    TALENT:大叔 = 0
+ELSEIF RESULT == 3
+    TALENT:幼稚 = 0
+    TALENT:大人 = 1
+    TALENT:大叔 = 1
+ELSEIF RESULT == 4
+   	TARGET = M
+   	DELCHARA K
+   	FLAG:29 -= 1
+   	RETURN 0
+ELSE
+    GOTO INPUT_NR
+ENDIF
+CALL KAIGYO
+DRAWLINE
+PRINTFORML %CALLNAME:X%：
+PRINTFORML 「要召唤位于什么时代背景的他？」
+DRAWLINE
+PRINTL [0] 西洋风（幻想风格）
+PRINTL [1] 中国风
+PRINTL [2] 和风
+PRINTL [3] 普通的现代风
+DRAWLINE
+PRINTL [4] 放弃召唤
+$INPUT_SD
+INPUT
+IF RESULT == 0
+    TALENT:西洋风 = 1
+    TALENT:中国风 = 0
+    TALENT:和风 = 0
+ELSEIF RESULT == 1
+    TALENT:西洋风 = 0
+    TALENT:中国风 = 1
+    TALENT:和风 = 0
+ELSEIF RESULT == 2
+    TALENT:西洋风 = 0
+    TALENT:中国风 = 0
+    TALENT:和风 = 1
+ELSEIF RESULT == 3
+    TALENT:西洋风 = 0
+    TALENT:中国风 = 0
+    TALENT:和风 = 0
+ELSEIF RESULT == 4
+   	TARGET = M
+   	DELCHARA K
+   	FLAG:29 -= 1
+   	RETURN 0
+ELSE
+    GOTO INPUT_SD
+ENDIF
+CALL KAIGYO
+DRAWLINE
+PRINTFORML %CALLNAME:X%：
+PRINTFORML 「契约书上的内容逐渐充实了，顺便也补充下通常素质吧」
+DRAWLINE
+PRINTL
+PRINTL 　　[0] 深入了解。
+PRINTL    　　※几乎所有素质都能自己设定
+PRINTL
+PRINTFORML 　　[1] 随便填填。
+PRINTL    　　※对于契约者的素质直到弄到手前都还不知道
+PRINTL
+$INPUT_LOOP_ESPER
+INPUT
+IF RESULT == 0
+	TFLAG:166 = 0
+ELSEIF RESULT == 1
+	TFLAG:166 = 1
+ELSE
+	GOTO INPUT_LOOP_ESPER
+ENDIF
+WHILE 1
+	DRAWLINE
+	LOCAL:2 = GETCOLOR()
+	LOCAL:4 = GETSTYLE()
+	PRINTL
+	CALL KAIGYO
+    DRAWLINE
+    PRINTFORML %CALLNAME:X%：
+    PRINTFORML 「请点击想变更的项目，选定的项目将变为绿色。固有特征无法更改。
+    PRINTFORML   极端的设定可能会加大调教的难度，不过%CSTR:X:2%应该相当喜欢挑战自我吧？」
+    DRAWLINE
+	PRINTL 不太清楚素质的效果和影响时，请参考【素质解说】
+	PRINTL [996] - 【素质解说】
+	SETCOLOR TALENT:K:男性 ? 0x00FF00 # 0xA0A0A0
+	PRINTFORM [140] %TALENTNAME:140,14,LEFT%  
+	SETCOLOR TALENT:K:女性 ? 0x00FF00 # 0xA0A0A0
+	PRINTFORM [163] %TALENTNAME:163,14,LEFT%  
+	SETCOLOR TALENT:K:双性 ? 0x00FF00 # 0xA0A0A0
+	PRINTFORM [137] %TALENTNAME:137,14,LEFT%  
+	SETCOLOR TALENT:K:扶她 ? 0x00FF00 # 0xA0A0A0
+	PRINTFORM [139] %TALENTNAME:139,14,LEFT%               
+	SETCOLOR TALENT:K:处女 ? 0x00FF00 # 0xA0A0A0
+	PRINTFORM [  0] %TALENTNAME:0,14,LEFT%  
+	SETCOLOR TALENT:K:童贞 ? 0x00FF00 # 0xA0A0A0
+	PRINTFORM [160] %TALENTNAME:160,14,LEFT%　
+	FONTSTYLE LOCAL:4
+	SETCOLOR TALENT:K:后庭处子 ? 0x00FF00 # 0xA0A0A0
+	PRINTFORML [161] %TALENTNAME:161,14,LEFT%　
+	SETCOLOR LOCAL:2
+    LOCAL = 0
+	LOCAL:3 = 4
+	FOR LOCAL, 10, 157
+		IF LOCAL:3 && LOCAL != 10
+			;空白
+			PRINT 　
+		ELSEIF LOCAL != 10
+			;改行
+			PRINTL
+			LOCAL:3 = 4
+		ENDIF
+		LOCAL:3--
+		SETCOLOR TALENT:K:LOCAL ? 0x00FF00 # 0xA0A0A0
+		PRINTFORM [{LOCAL,3}] %GET_TALENTNAME(ARG, LOCAL),14,LEFT%
+
+		;一部の素質を飛ばす
+		SELECTCASE LOCAL
+			;空欄
+			CASE 18, 28
+				LOCAL += 1
+			;抵抗
+			CASE 33
+				LOCAL += 1
+			;弱点、空欄
+			CASE 37
+				LOCAL += 2
+			;非エスパーモードで容易湿は自己设定できない
+			CASE 41
+				SIF TFLAG:166
+					LOCAL += 2
+			;空欄
+			CASE 44
+				LOCAL += 5
+			;猫舌（効果がイマイチなので）
+			CASE 53
+				LOCAL += 1
+			CASE 59
+				;容易自慰
+				SIF TFLAG:166
+					LOCAL += 1
+			;空欄
+			CASE 66
+				LOCAL += 3
+			;自慰狂､淫壶､尻穴狂､淫乳､性爱狂､空欄
+			CASE 73
+				LOCAL += 6
+			;嫉妒､盲信
+			CASE 84
+				LOCAL += 2
+			;空欄､狐狸､妖狐
+			CASE 88
+				LOCAL += 3
+			;空欄
+			CASE 94
+				LOCAL += 5
+			;非エスパーモードでABCの感度は自己设定できない
+			CASE 100
+				SIF TFLAG:166
+					LOCAL += 12
+			;Ｖ钝感､Ｖ敏感
+			;CASE 102
+				;LOCAL += 2
+			;贫乳､绝壁、巨乳、爆乳
+			;CASE 108
+				;LOCAL += 4
+			;孩童尺寸
+			CASE 113
+				;非エスパーモードでブツの大きさは自己设定できない
+				IF TFLAG:166
+					LOCAL += 4
+				ELSE
+					LOCAL += 1
+				ENDIF
+			;非エスパーモード
+			CASE 118
+				SIF TFLAG:166
+					LOCAL += 11
+			;空欄
+			CASE 119
+				LOCAL += 10
+			;吸血鬼不可
+			CASE 131
+			    LOCAL += 1
+			;双性、不可思议的根、扶她、男性、疯癫、小人体型、兽耳
+			CASE 136
+				LOCAL += 7
+			;具现化、人外、疯癫の目、母乳体质、孩童尺寸
+			CASE 145
+			    ;幼稚的性格限制
+				IF CFLAG:600 != 1 && CFLAG:600 != 2 && CFLAG:600 != 5 && CFLAG:600 != 8 && CFLAG:600 != 10 && CFLAG:600 != 11 && CFLAG:600 != 13
+					LOCAL += 6
+				ELSE
+				    LOCAL += 5
+				ENDIF
+			;怀孕、育儿中、母性
+			CASE 152
+				LOCAL += 3
+		ENDSELECT
+	NEXT
+		PRINTL
+		SETCOLOR TALENT:K:孩童尺寸? 0x00FF00 # 0xA0A0A0
+		IF !TFLAG:166
+			PRINTFORML [114] %GET_TALENTNAME(ARG, 114),12,LEFT%
+		ENDIF
+		SETCOLOR LOCAL:2
+	PRINTL
+
+	DRAWLINE
+	ALIGNMENT RIGHT
+	PRINT [997] - 放弃奴隶采购　　
+	PRINT [998] - 重置　　
+	PRINTL  [999] - 设定完毕　
+	ALIGNMENT LEFT
+
+;-----------------------------------------------------------
+;输入処理部分
+;-----------------------------------------------------------
+	$INPUT_LOOP_SHORI
+	INPUT
+	;童贞→童贞を反転
+	IF RESULT == 160
+		TALENT:K:童贞 = !TALENT:K:童贞
+		SIF TALENT:K:女性
+		TALENT:K:童贞 = 0
+	;后庭处子→后庭处子を反転
+	ELSEIF RESULT == 161
+		TALENT:K:后庭处子 = !TALENT:K:后庭处子
+	ELSEIF RESULT == 0
+		TALENT:K:处女 = !TALENT:K:处女
+		SIF TALENT:K:男性
+		TALENT:K:处女 = 0
+	ELSEIF RESULT == 140
+		TALENT:K:处女 = 0
+		TALENT:K:140 = 1
+		TALENT:K:163 = 0
+		TALENT:K:137 = 0
+		TALENT:K:139 = 0
+	ELSEIF RESULT == 163
+		TALENT:K:童贞 = 0
+		TALENT:K:140 = 0
+		TALENT:K:163 = 1
+		TALENT:K:137 = 0
+		TALENT:K:139 = 0
+	ELSEIF RESULT == 137
+		TALENT:K:140 = 0
+		TALENT:K:163 = 0
+		TALENT:K:137 = 1
+		TALENT:K:139 = 0
+	ELSEIF RESULT == 139
+		TALENT:K:140 = 0
+		TALENT:K:163 = 0
+		TALENT:K:137 = 0
+		TALENT:K:139 = 1
+	;贫乳→绝壁/巨乳/爆乳をOFF
+	ELSEIF RESULT == 109
+		TALENT:K:贫乳 = !TALENT:K:贫乳
+		TALENT:K:绝壁 = 0
+		TALENT:K:巨乳 = 0
+		TALENT:K:爆乳 = 0
+		SIF TALENT:K:男性
+		TALENT:K:109 = 0
+	;绝壁→贫乳/巨乳/爆乳をOFF
+	ELSEIF RESULT == 110
+		TALENT:K:绝壁 = !TALENT:K:绝壁
+		TALENT:K:贫乳 = 0
+		TALENT:K:巨乳 = 0
+		TALENT:K:爆乳 = 0
+		SIF TALENT:K:男性
+		TALENT:K:110 = 0
+	;巨乳→贫乳/绝壁/爆乳をOFF
+	ELSEIF RESULT == 111
+		TALENT:K:巨乳 = !TALENT:K:巨乳
+		TALENT:K:贫乳 = 0
+		TALENT:K:绝壁 = 0
+		TALENT:K:爆乳 = 0
+		SIF TALENT:K:男性
+		TALENT:K:111 = 0
+	;爆乳→贫乳/绝壁/巨乳をOFF
+	ELSEIF RESULT == 112
+		TALENT:K:爆乳 = !TALENT:K:爆乳
+		TALENT:K:贫乳 = 0
+		TALENT:K:绝壁 = 0
+		TALENT:K:巨乳 = 0
+		SIF TALENT:K:男性
+		TALENT:K:112 = 0
+	ELSEIF (RESULT >= 74 && RESULT <= 78) || RESULT == 90 || RESULT == 91 || (RESULT >= 109 && RESULT <= 112) || RESULT == 132 || (RESULT >= 137 && RESULT <= 142) || RESULT == 143 || RESULT == 146 || (RESULT >= 147 && RESULT <= 150)
+		GOTO INPUT_LOOP_SHORI
+	ELSEIF TFLAG:166 && (RESULT == 42 || RESULT == 43 || RESULT == 60 || (RESULT >= 101 && RESULT <= 108) || (RESULT >= 114 && RESULT <= 117) || RESULT == 119)
+		GOTO INPUT_LOOP_SHORI
+	ELSEIF RESULT >= 10 && RESULT <= 156
+		;输入した素質を反転
+		TALENT:K:RESULT = !TALENT:K:RESULT
+		;反抗→直率をOFF
+		IF RESULT == 11
+			TALENT:K:13 = 0
+		;直率→反抗をOFF
+		ELSEIF RESULT == 13
+			TALENT:K:11 = 0
+		;自卑→高傲をOFF
+		ELSEIF RESULT == 17
+			TALENT:K:15 = 0
+		;高傲→自卑をOFF
+		ELSEIF RESULT == 15
+			TALENT:K:17 = 0
+		;无动于衷→性好奇をOFF
+		ELSEIF RESULT == 21
+			TALENT:K:23 = 0
+		;性好奇→无动于衷をOFF
+		ELSEIF RESULT == 23
+			TALENT:K:21 = 0
+		;乐观→悲观をOFF
+		ELSEIF RESULT == 25
+			TALENT:K:26 = 0
+		;悲观→乐观をOFF
+		ELSEIF RESULT == 26
+			TALENT:K:25 = 0
+		;贞操重视→贞操淡漠をOFF
+		ELSEIF RESULT == 30
+			TALENT:K:31 = 0
+		;贞操淡漠→贞操重视をOFF
+		ELSEIF RESULT == 31
+			TALENT:K:30 = 0
+		;性压抑→解放をOFF
+		ELSEIF RESULT == 33
+			TALENT:K:34 = 0
+		;性开放→性压抑をOFF
+		ELSEIF RESULT == 34
+			TALENT:K:33 = 0
+		;害羞→不知羞耻をOFF
+		ELSEIF RESULT == 35
+			TALENT:K:36 = 0
+		;不知羞耻→害羞をOFF
+		ELSEIF RESULT == 36
+			TALENT:K:35 = 0
+		;怕痛→耐痛をOFF
+		ELSEIF RESULT == 40
+			TALENT:K:41 = 0
+		;耐痛→怕痛をOFF
+		ELSEIF RESULT == 41
+			TALENT:K:40 = 0
+		;容易湿→不易湿をOFF
+		ELSEIF RESULT == 42
+			TALENT:K:43 = 0
+		;不易湿→容易湿をOFF
+		ELSEIF RESULT == 43
+			TALENT:K:42 = 0
+		;不擅料理→擅长料理をOFF
+		ELSEIF RESULT == 44
+			TALENT:K:59 = 0
+		;擅长料理→不擅料理をOFF
+		ELSEIF RESULT == 59
+			TALENT:K:44 = 0
+		;学得快→学得慢をOFF
+		ELSEIF RESULT == 50
+			TALENT:K:51 = 0
+		;学得慢→学得快をOFF
+		ELSEIF RESULT == 51
+			TALENT:K:50 = 0
+		;污臭钝感→污臭敏感をOFF
+		ELSEIF RESULT == 61
+			TALENT:K:62 = 0
+		;污臭敏感→污臭钝感、脏污无视をOFF
+		ELSEIF RESULT == 62
+			TALENT:K:61 = 0
+			TALENT:K:64 = 0
+		;脏污无视→污臭敏感をOFF
+		ELSEIF RESULT == 64
+			TALENT:K:62 = 0
+		;喜欢身体接触→厌恶身体接触をOFF
+		ELSEIF RESULT == 65
+			TALENT:K:66 = 0
+		;厌恶身体接触→喜欢身体接触をOFF
+		ELSEIF RESULT == 66
+			TALENT:K:65 = 0
+		;接受快感→否定快感をOFF
+		ELSEIF RESULT == 70
+			TALENT:K:71 = 0
+		;否定快感→接受快感をOFF
+		ELSEIF RESULT == 71
+			TALENT:K:70 = 0
+		;男女通吃→讨厌男人、讨厌女人をOFF
+		ELSEIF RESULT == 81
+			TALENT:K:82 = 0
+			TALENT:K:88 = 0
+		;讨厌男人→男女通吃をOFF
+		ELSEIF RESULT == 82
+			TALENT:K:81 = 0
+		;讨厌女人→男女通吃をOFF
+		ELSEIF RESULT == 88
+			TALENT:K:81 = 0
+		;施虐狂→受虐狂をOFF
+		ELSEIF RESULT == 83
+			TALENT:K:84 = 0
+		;受虐狂→施虐狂をOFF
+		ELSEIF RESULT == 84
+			TALENT:K:83 = 0
+		;Ｃ钝感→Ｃ敏感をOFF
+		ELSEIF RESULT == 101
+			TALENT:K:102 = 0
+			SIF TALENT:K:女性
+			TALENT:K:101 = 0
+		;Ｃ敏感→Ｃ钝感をOFF
+		ELSEIF RESULT == 102
+			TALENT:K:101 = 0
+			SIF TALENT:K:女性
+			TALENT:K:102 = 0
+		;v鈍感→v敏感をOFF
+		ELSEIF RESULT == 103
+			TALENT:K:104 = 0
+			SIF TALENT:K:男性
+			TALENT:K:103 = 0
+		;v敏感→v鈍感をOFF
+		ELSEIF RESULT == 104
+			TALENT:K:103 = 0
+			SIF TALENT:K:男性
+			TALENT:K:104 = 0
+		;Ａ钝感→Ａ敏感をOFF
+		ELSEIF RESULT == 105
+			TALENT:K:106 = 0
+		;Ａ敏感→Ａ钝感をOFF
+		ELSEIF RESULT == 106
+			TALENT:K:105 = 0
+		;Ｂ钝感→Ｂ敏感をOFF
+		ELSEIF RESULT == 107
+			TALENT:K:108 = 0
+		;Ｂ敏感→Ｂ钝感をOFF
+		ELSEIF RESULT == 108
+			TALENT:K:107 = 0
+		;矮小体型→高大体型をOFF
+		ELSEIF RESULT == 100
+			TALENT:K:113 = 0
+		;高大体型→矮小体型をOFF
+		ELSEIF RESULT == 113
+			TALENT:K:100 = 0
+		;孩童尺寸→短小/巨根/尺寸傲人をOFF
+		ELSEIF RESULT == 114
+			TALENT:K:短小 = 0
+			TALENT:K:巨根 = 0
+			TALENT:K:尺寸傲人 = 0
+			SIF TALENT:K:女性
+			TALENT:K:114 = 0
+		;短小→孩童尺寸/巨根/尺寸傲人をOFF
+		ELSEIF RESULT == 115
+			TALENT:K:孩童尺寸= 0
+			TALENT:K:巨根 = 0
+			TALENT:K:尺寸傲人 = 0
+			SIF TALENT:K:女性
+			TALENT:K:115 = 0
+		;巨根→孩童尺寸/短小/尺寸傲人をOFF
+		ELSEIF RESULT == 116
+			TALENT:K:孩童尺寸= 0
+			TALENT:K:短小 = 0
+			TALENT:K:尺寸傲人 = 0
+			SIF TALENT:K:女性
+			TALENT:K:116 = 0
+		;尺寸傲人→孩童尺寸/短小/巨根をOFF
+		ELSEIF RESULT == 117
+			TALENT:K:孩童尺寸= 0
+			TALENT:K:短小 = 0
+			TALENT:K:巨根 = 0
+			SIF TALENT:K:女性
+			TALENT:K:117 = 0
+		ELSEIF RESULT == 119
+			SIF TALENT:K:女性
+			TALENT:K:117 = 0
+		;恢复快→恢复慢をOFF
+		ELSEIF RESULT == 130
+			TALENT:K:131 = 0
+		;恢复慢→恢复快をOFF
+		ELSEIF RESULT == 131
+			TALENT:K:130 = 0
+		;日光浴→月光浴OFF
+		ELSEIF RESULT == 133
+			TALENT:K:134 = 0
+		;月光浴→日光浴をOFF
+		ELSEIF RESULT == 134
+			TALENT:K:133 = 0
+		ENDIF
+		IF TALENT:K:机器人 || TALENT:K:人偶
+		    TALENT:K:容易湿 = 0
+		    TALENT:K:不易湿 = 0
+		    TALENT:K:绝伦 = 0
+		ENDIF
+		SIF TALENT:K:吸血鬼
+		    TALENT:K:日光浴 = 0
+		SIF TALENT:K:无头
+		    TALENT:K:善用舌头 = 0
+	ELSEIF RESULT == 996
+		CALL DICTIONARY_TALENT_MAIN
+	ELSEIF RESULT == 997
+		TARGET = M
+		DELCHARA K
+		FLAG:29 -= 1
+		RETURN 0
+	ELSEIF RESULT == 998
+		REPEAT 300
+			TALENT:K:COUNT = 0
+		REND
+		REPEAT 100
+			EXP:K:COUNT = 0
+		REND
+		TALENT:K:男性 = 1
+		TALENT:K:童贞 = 1
+		TALENT:K:后庭处子 = 1
+	;设定完了
+	ELSEIF RESULT == 999
+		BREAK
+	ELSE
+		CLEARLINE 1
+		GOTO INPUT_LOOP_SHORI
+	ENDIF
+WEND
+;来取名！
+CALL KAIGYO
+DRAWLINE
+PRINTFORML %CALLNAME:X%：
+PRINTFORML 「契约书已成型，请注入神力，并为其命名……」
+DRAWLINE
+$INPUTS_LOOP_MYOJI
+PRINTL  ★★请在这里输入契约对象的姓氏★★
+PRINTL  ★★（没有姓氏的话空栏即可）★★
+INPUTS
+CSTR:4 = %RESULTS%
+PRINTL
+IF CSTR:4 == ""
+    CALL KAIGYO
+    DRAWLINE
+    PRINTFORML %CALLNAME:X%：
+    PRINTFORML 「没有姓氏，可以吗？」
+    DRAWLINE
+ELSE
+    CALL KAIGYO
+    DRAWLINE
+    PRINTFORML %CALLNAME:X%：
+    PRINTFORML 「姓氏是『%CSTR:4%』，对吗？」
+    DRAWLINE
+ENDIF
+PRINTL [0] 是
+PRINT [1] 否　　　　　　　　　　
+PRINTL [3] --放弃召唤--
+$INPUT_LOOP_NAME1
+INPUT
+SIF RESULT != 0 && RESULT != 1 && RESULT != 3
+	GOTO INPUT_LOOP_NAME1
+SIF RESULT == 1
+	GOTO INPUTS_LOOP_MYOJI
+IF RESULT == 3
+	TARGET = M
+	DELCHARA K
+	FLAG:29 -= 1
+	RETURN 0
+ENDIF
+
+CALL KAIGYO
+DRAWLINE
+PRINTFORML %CALLNAME:X%：
+PRINTFORML 「他的名字是？」
+DRAWLINE
+$INPUTS_LOOP_NAMAE
+PRINTL  ★★请在这里输入契约对象的名字★★
+PRINTL ★★（回车键会自动带入随机名字）★★
+INPUTS
+CSTR:5 = %RESULTS%
+SIF CSTR:5 == ""
+	CALL SLAVE_NAME_RANDOM
+;GOTO INPUTS_LOOP_NAMAE
+CSTR:5 = %RESULTS%
+CALL KAIGYO
+DRAWLINE
+PRINTFORML %CALLNAME:X%：
+PRINTFORML 「名字是『%CSTR:5%』，对吗？」
+DRAWLINE
+PRINTL [0] 是
+PRINT [1] 否　　　　　　　　　　
+PRINTL [3] --放弃召唤--
+$INPUT_LOOP_NAME2
+INPUT
+SIF RESULT != 0 && RESULT != 1 && RESULT != 3
+	GOTO INPUT_LOOP_NAME2
+SIF RESULT == 1
+	GOTO INPUTS_LOOP_NAMAE
+IF RESULT == 3
+	TARGET = M
+	DELCHARA K
+	FLAG:29 -= 1
+	RETURN 0
+ENDIF
+
+IF CSTR:4 != ""
+    CALL KAIGYO
+    DRAWLINE
+    PRINTFORML %CALLNAME:X%：
+    PRINTFORML 「姓名表现方式是？」
+    DRAWLINE
+	PRINTFORML [0] %CSTR:4%%CSTR:5%（东洋系）
+	PRINTFORML [1] %CSTR:5%・%CSTR:4%（西洋系）
+	$INPUT_LOOP_HYOKI
+	INPUT
+	IF RESULT == 0
+		NAME = %CSTR:4%%CSTR:5%
+	ELSEIF RESULT == 1
+		NAME = %CSTR:5%・%CSTR:4%
+	ELSE
+		GOTO INPUT_LOOP_HYOKI
+	ENDIF
+
+    CALL KAIGYO
+    DRAWLINE
+    PRINTFORML %CALLNAME:X%：
+    PRINTFORML 「那么，%CSTR:X:2%喜欢如何称呼%NAME%？」
+    DRAWLINE
+	PRINTFORML [0] 更多使用「%CSTR:4%」来称呼
+	PRINTFORML [1] 更多使用「%CSTR:5%」来称呼
+	$INPUT_LOOP_YOBINA
+	INPUT
+	IF RESULT == 0
+		CALLNAME = %CSTR:4%
+	ELSEIF RESULT == 1
+		CALLNAME = %CSTR:5%
+	ELSE
+		GOTO INPUT_LOOP_YOBINA
+	ENDIF
+ELSE
+	NAME = %CSTR:5%
+	CALLNAME = %CSTR:5%
+ENDIF
+
+
+$INPUTS_LOOP_JISYO
+CALL KAIGYO
+DRAWLINE
+PRINTFORML %CALLNAME:X%：
+PRINTFORML 「他喜欢如何称呼自己？」
+DRAWLINE
+PRINT [11] 我　　
+PRINTL [12] 爷
+PRINT [13] 吾　　
+PRINTL [14] 余
+PRINT [15] 孤　　
+PRINTL [16] 在下
+PRINTL [20] --输入其他自称--
+INPUT
+SELECTCASE RESULT
+	CASE 11
+		CSTR:0 = 我
+	CASE 12
+		CSTR:0 = 爷
+	CASE 13
+		CSTR:0 = 吾
+	CASE 14
+		CSTR:0 = 余
+	CASE 15
+		CSTR:0 = 孤
+	CASE 16
+		CSTR:0 = 在下
+	CASE 20
+		INPUTS
+		CSTR:0 = %RESULTS%
+	CASEELSE
+		GOTO INPUTS_LOOP_JISYO
+ENDSELECT
+CALL KAIGYO
+DRAWLINE
+PRINTFORML %CALLNAME:X%：
+PRINTFORML 「自称是『%CSTR:0%』，对吗？」
+DRAWLINE
+PRINTL [0] 是
+PRINTL [1] 否
+$INPUT_LOOP_JISYO2
+INPUT
+SIF RESULT != 0 && RESULT != 1
+	GOTO INPUT_LOOP_JISYO2
+SIF RESULT == 1
+	GOTO INPUTS_LOOP_JISYO
+
+$INPUTS_LOOP_TAISYO
+CALL KAIGYO
+DRAWLINE
+PRINTFORML %CALLNAME:X%：
+PRINTFORML 「刚见面还没有消除警戒心时，他是如何称呼%CSTR:X:2%的？」
+DRAWLINE
+PRINTL  ★★请在这里决定契约对象的初期二人称★★
+PRINTL 
+PRINT [11] 你这混蛋　　　
+PRINTL [12] 你这家伙
+PRINT [13] 你这厮　　　　
+PRINTL [14] 你丫
+PRINT [15] 你　  　　　　
+PRINTL [16] 您　　
+PRINT [17] 前辈　 　   　
+PRINTL [18] 大姐姐
+PRINT [19] 大哥哥　　  　
+PRINTL [30] --输入其他二人称--
+INPUT
+SELECTCASE RESULT
+	CASE 11
+		CSTR:1 = 你这混蛋
+	CASE 12
+		CSTR:1 = 你这家伙
+	CASE 13
+		CSTR:1 = 你这厮　
+	CASE 14
+		CSTR:1 = 你丫
+	CASE 15
+		CSTR:1 = 你
+	CASE 16
+		CSTR:1 = 您
+	CASE 17
+		CSTR:1 = 前辈
+	CASE 18
+		CSTR:1 = 大姐姐
+	CASE 19
+		CSTR:1 = 大哥哥　
+	CASE 30
+		INPUTS
+		CSTR:1 = %RESULTS%
+	CASEELSE
+		GOTO INPUTS_LOOP_TAISYO
+ENDSELECT
+CALL KAIGYO
+DRAWLINE
+PRINTFORML %CALLNAME:X%：
+PRINTFORML 「初期二人称是『%CSTR:1%』，可以吗？」
+DRAWLINE
+PRINTL [0] 是
+PRINT [1] 否　　　　　　　　　　
+PRINTL [3] --放弃召唤--
+$INPUT_LOOP_TAISYO2
+INPUT
+SIF RESULT != 0 && RESULT != 1 && RESULT != 3
+	GOTO INPUT_LOOP_TAISYO2
+SIF RESULT == 1
+	GOTO INPUTS_LOOP_TAISYO
+IF RESULT == 3
+	TARGET = M
+	DELCHARA K
+	FLAG:29 -= 1
+	RETURN 0
+ENDIF
+
+$INPUTS_LOOP_TAISYO_ATO
+CALL KAIGYO
+DRAWLINE
+PRINTFORML %CALLNAME:X%：
+PRINTFORML 「态度软化后又是如何称呼%CSTR:X:2%的呢？」
+DRAWLINE
+PRINTL  ★★请在这里决定契约对象态度软化后的二人称★★
+PRINTL 
+PRINTL [10] --和初期一样--
+PRINT [11] 你这家伙　　　
+PRINTL [12] 你这混蛋
+PRINT [13] 你这厮　　　　
+PRINTL [14] 你丫
+PRINT [15] 你　  　　　　
+PRINTL [16] 您　　
+PRINT [17] 前辈　 　   　
+PRINTL [18] 大姐姐
+PRINTL [19] 大哥哥
+PRINTL [20] --输入其他二人称--
+INPUT
+SELECTCASE RESULT
+	CASE 10
+		CSTR:2 = %CSTR:1%
+	CASE 11
+		CSTR:2 = 你这家伙
+	CASE 12
+		CSTR:2 = 你这混蛋
+	CASE 13
+		CSTR:2 = 你这厮
+	CASE 14
+		CSTR:2 = 你丫
+	CASE 15
+		CSTR:2 = 你
+	CASE 16
+		CSTR:2 = 您
+	CASE 17
+		CSTR:2 = 前辈
+	CASE 18
+		CSTR:2 = 大姐姐
+	CASE 19
+		CSTR:2 = 大哥哥
+	CASE 20
+		INPUTS
+		CSTR:2 = %RESULTS%
+	CASEELSE
+		GOTO INPUTS_LOOP_TAISYO_ATO
+ENDSELECT
+CALL KAIGYO
+DRAWLINE
+PRINTFORML %CALLNAME:X%：
+PRINTFORML 「唔…软化后的二人称是『%CSTR:2%』，可以吗？」
+DRAWLINE
+PRINTL [0] 是
+PRINT [1] 否　　　　　　　　　　
+PRINTL [3] --放弃召唤--
+$INPUT_LOOP_TAISYO_ATO2
+INPUT
+SIF RESULT != 0 && RESULT != 1 && RESULT != 3
+	GOTO INPUT_LOOP_TAISYO_ATO2
+SIF RESULT == 1
+	GOTO INPUTS_LOOP_TAISYO_ATO
+IF RESULT == 3
+	TARGET = M
+	DELCHARA K
+	FLAG:29 -= 1
+	RETURN 0
+ENDIF
+
+;登录角色の主人公に对する特殊の呼び方 デフォは「ご主人様」
+CSTR:3 = 主人
+
+$INPUTS_LOOP_NAMAEYOBI
+CALL KAIGYO
+DRAWLINE
+PRINTFORML %CALLNAME:X%：
+PRINTFORML 「如果亲近到用名字来称呼，他会怎么称呼%CSTR:X:2%？」
+DRAWLINE
+PRINTL  ★★请在这里决定调教对象对你的亲近称呼方式★★
+PRINTL
+PRINTFORM [11] %CSTR:MASTER:4%　　    
+PRINTFORML [12] %CSTR:MASTER:5%
+PRINTFORM [13] %CSTR:MASTER:4%桑　　  
+PRINTFORML [14] %CSTR:MASTER:5%桑
+PRINTFORM [15] %CSTR:MASTER:4%君　　  
+PRINTFORML [16] %CSTR:MASTER:5%君
+PRINTFORM [17] %CSTR:MASTER:4%酱　　  
+PRINTFORML [18] %CSTR:MASTER:5%酱
+PRINTFORM [19] %CSTR:MASTER:4%前辈　　
+PRINTFORML [20] %CSTR:MASTER:5%前辈
+PRINTFORM [21] %CSTR:MASTER:4%姐姐　　
+PRINTFORML [22] %CSTR:MASTER:5%姐姐
+PRINTFORM [23] %CSTR:MASTER:4%哥哥　　
+PRINTFORML [24] %CSTR:MASTER:5%哥哥
+PRINTFORML [30] --输入其他称呼方式--
+INPUT
+SELECTCASE RESULT
+	CASE 11
+		MASTERNAME = %CSTR:MASTER:4%
+	CASE 12
+		MASTERNAME = %CSTR:MASTER:5%
+	CASE 13
+		MASTERNAME = %CSTR:MASTER:4%桑
+	CASE 14
+		MASTERNAME = %CSTR:MASTER:5%桑
+	CASE 15
+		MASTERNAME = %CSTR:MASTER:4%君
+	CASE 16
+		MASTERNAME = %CSTR:MASTER:5%君
+	CASE 17
+		MASTERNAME = %CSTR:MASTER:4%酱
+	CASE 18
+		MASTERNAME = %CSTR:MASTER:5%酱
+	CASE 19
+		MASTERNAME = %CSTR:MASTER:4%前辈
+	CASE 20
+		MASTERNAME = %CSTR:MASTER:5%前辈
+	CASE 21
+		MASTERNAME = %CSTR:MASTER:4%姐姐
+	CASE 22
+		MASTERNAME = %CSTR:MASTER:5%姐姐
+	CASE 23
+		MASTERNAME = %CSTR:MASTER:4%哥哥
+	CASE 24
+		MASTERNAME = %CSTR:MASTER:5%哥哥
+	CASE 30
+		INPUTS
+		MASTERNAME = %RESULTS%
+	CASEELSE
+		GOTO INPUTS_LOOP_NAMAEYOBI
+ENDSELECT
+CALL KAIGYO
+DRAWLINE
+PRINTFORML %CALLNAME:X%：
+PRINTFORML 「亲近的称呼方式是%MASTERNAME%，可以吗？」
+DRAWLINE
+PRINTL [0] 是
+PRINT [1] 否　　　　　　　　　　
+PRINTL [3] --放弃召唤--
+$INPUT_LOOP_NAMAEYOBI2
+INPUT
+SIF RESULT != 0 && RESULT != 1 && RESULT != 3
+	GOTO INPUT_LOOP_NAMAEYOBI2
+SIF RESULT == 1
+	GOTO INPUTS_LOOP_NAMAEYOBI
+IF RESULT == 3
+	TARGET = M
+	DELCHARA K
+	FLAG:29 -= 1
+	RETURN 0
+ENDIF
+
+CALL NINGAI_CUSTOM_GAIKEN_TOKUCHO
+SIF TFLAG:166
+	CALL SLAVE_CUSTOM_RANDOM_TALENT
+SIF TALENT:擅长料理
+	ABL:料理技能 = 2
+SIF TALENT:男女通吃 && ABL:同性倾向 == 0
+	ABL:同性倾向 = 1
+IF (TALENT:无动于衷 && TALENT:缺乏感情) || TALENT:幼稚
+	ABL:欲望 = 0
+	ABL:Ｃ感觉= 0
+ELSE
+	EXP:射精经验 += 5
+	EXP:自慰经验 += 10
+	ABL:欲望 = 1
+	ABL:Ｃ感觉= 1
+ENDIF
+SIF TALENT:性好奇
+	EXP:自慰经验 += 2
+SIF TALENT:不知羞耻
+	EXP:自慰经验 += 2
+IF TALENT:容易自慰
+	EXP:射精经验 += 25
+	EXP:自慰经验 += 30
+ENDIF
+IF TALENT:童贞 == 0
+	EXP:性交经验 += 5
+	EXP:射精经验 += 5
+	EXP:自慰经验 += 5
+	ABL:欲望 = 1
+	ABL:技巧 = 1
+	ABL:Ｃ感觉= 1
+ENDIF
+IF TALENT:自制力 || TALENT:性保守 || TALENT:难以越过的底线 || TALENT:性压抑 || TALENT:否定快感
+	ABL:欲望 = 0
+ENDIF
+
+SIF TALENT:化学属性
+	TALENT:调和知识 = 1
+
+IF TALENT:耐痛
+	MAXBASE:0 += 100
+	BASE:0 += 100
+ENDIF
+IF TALENT:高大体型
+	MAXBASE:0 += 200
+	BASE:0 += 200
+ENDIF
+IF TALENT:巨大体型
+	MAXBASE:0 += 400
+	BASE:0 += 400
+ENDIF
+IF TALENT:日光浴
+	MAXBASE:0 += 100
+	BASE:0 += 100
+ENDIF
+IF TALENT:喜欢运动
+	MAXBASE:0 += 100
+	BASE:0 += 100
+ENDIF
+;-----------------------------
+;种族加成（也可能是削弱）
+;-----------------------------
+IF TALENT:天使
+	MAXBASE:0 += 200
+	BASE:0 += 200
+	MAXBASE:1 += 300
+	BASE:1 += 300
+ENDIF
+IF TALENT:堕天使
+	MAXBASE:0 += 300
+	BASE:0 += 300
+	MAXBASE:1 += 200
+	BASE:1 += 200
+ENDIF
+IF TALENT:恶魔
+	MAXBASE:0 += 400
+	BASE:0 += 400
+	MAXBASE:1 += 200
+	BASE:1 += 200
+ENDIF
+IF TALENT:精灵
+	MAXBASE:0 -= 100
+	BASE:0 -= 100
+	MAXBASE:1 += 500
+	BASE:1 += 500
+ENDIF
+IF TALENT:走兽
+	MAXBASE:0 += 200
+	BASE:0 += 200
+ENDIF
+IF TALENT:飞禽
+	MAXBASE:0 -= 100
+	BASE:0 -= 100
+ENDIF
+IF TALENT:水生
+	MAXBASE:0 -= 200
+	BASE:0 -= 200
+ENDIF
+IF TALENT:爬虫
+	MAXBASE:0 += 100
+	BASE:0 += 100
+	MAXBASE:1 -= 100
+	BASE:1 -= 100
+ENDIF
+IF TALENT:植物
+	MAXBASE:0 -= 200
+	BASE:0 -= 200
+	MAXBASE:1 += 200
+	BASE:1 += 200
+ENDIF
+IF TALENT:无头骑士
+	MAXBASE:0 += 500
+	BASE:0 += 500
+ENDIF
+IF TALENT:人偶
+	MAXBASE:0 -= 100
+	BASE:0 -= 100
+	MAXBASE:1 -= 100
+	BASE:1 -= 100
+ENDIF
+IF TALENT:机器人
+	MAXBASE:0 += 400
+	BASE:0 += 400
+	MAXBASE:1 += 100
+	BASE:1 += 100
+ENDIF
+IF TALENT:吸血鬼
+	MAXBASE:0 += 400
+	BASE:0 += 400
+	MAXBASE:1 += 300
+	BASE:1 += 300
+ENDIF
+IF TALENT:僵尸
+	MAXBASE:0 -= 100
+	BASE:0 -= 100
+	MAXBASE:1 += 200
+	BASE:1 += 200
+ENDIF
+IF TALENT:史莱姆
+	MAXBASE:0 += 200
+	BASE:0 += 200
+	MAXBASE:1 += 100
+	BASE:1 += 100
+ENDIF
+IF TALENT:数据体
+	MAXBASE:0 += 400
+	BASE:0 += 400
+ENDIF
+IF TALENT:矮小体型
+	MAXBASE:0 -= 100
+	BASE:0 -= 100
+ENDIF
+IF TALENT:小人体型
+	MAXBASE:0 -= 200
+	BASE:0 -= 200
+ENDIF
+IF TALENT:月光浴
+	MAXBASE:0 -= 100
+	BASE:0 -= 100
+ENDIF
+
+;初期气力最大値調整
+IF TALENT:胆怯
+	MAXBASE:1 -= 100
+	BASE:1 -= 100
+ENDIF
+IF TALENT:自卑
+	MAXBASE:1 -= 100
+	BASE:1 -= 100
+ENDIF
+IF TALENT:性压抑
+	MAXBASE:1 -= 100
+	BASE:1 -= 100
+ENDIF
+IF TALENT:怕痛
+	MAXBASE:1 -= 100
+	BASE:1 -= 100
+ENDIF
+IF TALENT:容易自慰
+	MAXBASE:1 -= 100
+	BASE:1 -= 100
+ENDIF
+IF TALENT:容易上瘾
+	MAXBASE:1 -= 100
+	BASE:1 -= 100
+ENDIF
+;-----------------------------------------------------------
+REPEAT 40
+	PRINTL
+REND
+
+;撒花！
+CALL KAIGYO
+DRAWLINE
+PRINTFORML %CALLNAME:X%：
+PRINTFORML 「呵呵，辛苦了，让%CSTR:X:0%来计算一下所需的费用吧」
+DRAWLINE
+PRINTL
+PRINTL
+PRINTW
+CALL KAIGYO
+DRAWLINE
+PRINTFORML %CALLNAME:X%：
+PRINTFORML 「呵呵，辛苦了，让%CSTR:X:0%来计算一下所需的费用吧」
+DRAWLINE
+PRINTL 　　　　　　・
+PRINTL 　　　　　　・
+PRINTW 　　　　　　・
+;拉致の困难度で金額が変わる
+Y = 100000
+;捕獲が難しくなる要素
+SIF TALENT:巨大体型
+	Y += 10000
+SIF TALENT:飞翔
+	Y += 10000
+SIF TALENT:异形
+	Y += 25000
+SIF TALENT:高大体型
+	Y += 5000
+SIF TALENT:学得快
+	Y += 5000
+SIF TALENT:耐痛
+	Y += 5000
+SIF TALENT:抵抗
+	Y += 10000
+SIF TALENT:大人
+	Y += 5000
+SIF TALENT:喜欢运动
+	Y += 5000
+;捕獲が易しくなる要素
+SIF TALENT:矮小体型
+	Y -= 5000
+SIF TALENT:怕痛
+	Y -= 5000
+SIF TALENT:性好奇
+	Y -= 5000
+SIF TALENT:直率
+	Y -= 5000
+SIF TALENT:老实
+	Y -= 5000
+SIF TALENT:胆怯
+	Y -= 5000
+;最高値と最低値の制限
+SIF Y > 125000
+	Y = 125000
+SIF Y < 75000
+	Y = 75000
+IF TALENT:天使
+    CSTR:91 =
+    CSTR:92 = 背生双翼，来自天界的使者。
+    CSTR:93 = 代表着圣洁、良善与正直。
+    CSTR:94 = 遵从天界之主的旨意，是天界与人间的桥梁。
+    CSTR:95 = 通常肩负保护人类、监视人类的职责。
+    CSTR:96 =
+ELSEIF TALENT:堕天使
+    CSTR:91 =
+    CSTR:92 = 长着黑色的羽翼，被天界驱逐出来的天使。
+    CSTR:93 = 其原因通常是因为堕入黑暗，背叛了天神。
+    CSTR:94 = 与普通天使相反，堕天使性格残忍扭曲，以他人痛苦为乐。
+    CSTR:95 = 在审判日到来前，它们将一直在地上游荡。
+    CSTR:96 =
+ELSEIF TALENT:恶魔
+    CSTR:91 =
+    CSTR:92 = 长着双角、翅膀和光滑的尾巴，邪恶的象征。
+    CSTR:93 =
+    CSTR:94 = 会以其力量欺骗、操纵或蹂躏人类，擅长暗黑系术法。
+    CSTR:95 = 为阻碍人类与天使的沟通无所不用其极。
+    CSTR:96 =
+ELSEIF TALENT:精灵
+    CSTR:91 =
+    CSTR:92 = 精灵们热爱大自然，向往和平，居住在森林之中。
+    CSTR:93 = 它们的寿命很长，喜好艺术，擅长魔法和弓箭。
+    CSTR:94 =
+    CSTR:95 = 高贵、优雅、聪明且美丽，可谓是完美无缺的种族。
+    CSTR:96 =
+ELSEIF TALENT:走兽
+    CSTR:91 =
+    CSTR:92 = 与飞禽相对，主要活动范围在陆地上。
+    CSTR:93 =
+    CSTR:94 = 典型的族群有狼人、半人马、狐妖、独角兽等。
+    CSTR:95 = 通常有着兽耳首尾和看上去很暖和的毛皮。
+    CSTR:96 =
+ELSEIF TALENT:飞禽
+    CSTR:91 =
+    CSTR:92 = 与走兽相对，主要活动范围在空中。
+    CSTR:93 =
+    CSTR:94 = 典型的族群有哈比、天狗、毕方、青鸟等。
+    CSTR:95 = 通常有着锐利的钩爪和美丽蓬松的羽翼。
+    CSTR:96 =
+ELSEIF TALENT:爬虫
+    CSTR:91 =
+    CSTR:92 = 爬虫主要为卵生，本游戏中昆虫也归为此类。
+    CSTR:93 = 也即包括爬虫与昆虫两个类别的含义。
+    CSTR:94 = 典型的族群有西方龙、蛇、蜘蛛、蜥蜴等。
+    CSTR:95 = 爬虫的主要行动方式为爬行，而昆虫则多为飞翔。
+    CSTR:96 =
+ELSEIF TALENT:水生
+    CSTR:91 =
+    CSTR:92 = 主要生活在水中，行动方式是潜游。
+    CSTR:93 =
+    CSTR:94 = 典型的族群有人鱼、章鱼、海蛇、海豚等。
+    CSTR:95 = 通常长着蹼，在水中腰肢灵活，速度极快。
+    CSTR:96 =
+ELSEIF TALENT:植物
+    CSTR:91 =
+    CSTR:92 = 花草树木，菌菇山参，皆为此列。
+    CSTR:93 =
+    CSTR:94 = 典型的族群有树妖、人参草、曼德拉草、食人花等。
+    CSTR:95 = 通常为绿色系，长有叶片或花瓣，通过光合作用生长。
+    CSTR:96 =
+ELSEIF TALENT:类人 && !TALENT:无头骑士 && !TALENT:人偶 && !TALENT:机器人 && !TALENT:吸血鬼 && !TALENT:僵尸
+    CSTR:91 =
+    CSTR:92 = 外貌有人类的特征，却又并非人类的种族。
+    CSTR:93 =
+    CSTR:94 = 典型的族群有无头骑士、人偶、机器人、吸血鬼等。
+    CSTR:95 = 类人种族通常不具有化形能力。
+    CSTR:96 =
+ELSEIF TALENT:无头骑士
+    CSTR:91 =
+    CSTR:92 = 骑着无头的马在夜间奔跑的无头骑士。
+    CSTR:93 = 是勾走将死之人魂魄，传达死讯的使者。
+    CSTR:94 = 8月底9月初这段时期是无头骑士频繁出没的日子。
+    CSTR:95 = 不过只要佩戴金饰，就能吓退无头骑士保住性命。
+    CSTR:96 =
+ELSEIF TALENT:人偶
+    CSTR:91 =
+    CSTR:92 = 被人类制造出来的人偶，有着精致的五官。
+    CSTR:93 = 只要被注入感情，就能拥有自我意识变成诸如此类的怪异。
+    CSTR:94 = 或许是为了报答主人给予的爱，又或许是为了报复主人的抛弃。
+    CSTR:95 = 拥有生命的那一刻，它们挣开双眼，机械性地踏出了第一步……
+    CSTR:96 =
+ELSEIF TALENT:机器人
+    CSTR:91 =
+    CSTR:92 = 机器人学三大法则：
+    CSTR:93 = 第一定律：机器人不得伤害人类个体，或者目睹人类个体将遭受危险而袖手不管。
+    CSTR:94 = 第二定律：机器人必须服从人给予它的命令，当该命令与第一定律冲突时例外。
+    CSTR:95 = 第三定律：机器人在不违反第一、第二定律的情况下要尽可能保护自己的生存。
+    CSTR:96 =
+ELSEIF TALENT:吸血鬼
+    CSTR:91 =
+    CSTR:92 = 传说中的超自然生物。
+    CSTR:93 =
+    CSTR:94 = 通过饮用人类或其它生物的血液，能够令自身长久生存下去。
+    CSTR:95 = 被它们吸食了血液的人类有概率变成下级吸血鬼，成为它们的眷属。
+    CSTR:96 =
+ELSEIF TALENT:僵尸
+    CSTR:91 =
+    CSTR:92 = 死而复生的人类，只要脑子没被破坏就能再次站起来。
+    CSTR:93 = 也称“丧尸”、“活死人”等。
+    CSTR:94 = 值得一提的是中国的僵尸则是双腿无法弯曲，只能跳跃行走的另一种怪物。
+    CSTR:95 = 人类若被它们袭击，僵尸病毒进入到体内后会被传染变成新的僵尸。
+    CSTR:96 =
+ELSEIF TALENT:不定形 && !TALENT:史莱姆 && !TALENT:幽灵
+    CSTR:91 =
+    CSTR:92 = 没有固定的形体，可以随心所欲变换外貌。
+    CSTR:93 =
+    CSTR:94 = 常见种族有史莱姆、幽灵等。
+    CSTR:95 = 部分异形也可归为此类，界限比较模糊。
+    CSTR:96 =
+ELSEIF TALENT:史莱姆
+    CSTR:91 =
+    CSTR:92 = 果冻状或半液体状，身体呈半透明，能自由变换形态、分裂融合的怪物。
+    CSTR:93 = 在剑与魔法世界中生存的勇者应该相当熟悉这种家伙。
+    CSTR:94 = 因身体柔软具有弹性，可以蠕动前行或者跳跃攻击。
+    CSTR:95 = 本游戏中可以变为人身步行。
+    CSTR:96 =
+ELSEIF TALENT:幽灵
+    CSTR:91 =
+    CSTR:92 = 死者的灵魂，以其生前样貌再度现身于世间。
+    CSTR:93 = 没有固定的形体，通常呈现出半透明的模样。
+    CSTR:94 =
+    CSTR:95 = 没有特殊的能力或羁绊的话，一般人是看不见它们的。
+    CSTR:96 =
+ELSEIF TALENT:无形体 && !TALENT:数据体 && !TALENT:人工智能
+    CSTR:91 =
+    CSTR:92 = 没有形体，或者说无法观测到形体。
+    CSTR:93 = 比如病毒、数据体、人工智能等。
+    CSTR:94 =
+    CSTR:95 = 多为概念一样的存在，抑或只有思想存在。
+    CSTR:96 =
+ELSEIF TALENT:数据体
+    CSTR:91 =
+    CSTR:92 = 存在纯粹由１和０的数据组成，只能在电子海中活动。
+    CSTR:93 =
+    CSTR:94 = 根据情况可以让设备投影出虚拟的体态作为自己的形象。
+    CSTR:95 = 只要核心主脑不灭，就能永远存活下去。
+    CSTR:96 =
+ELSEIF TALENT:人工智能
+    CSTR:91 =
+    CSTR:92 = 英文缩写为AI，是对人的意识、思维的信息过程的模拟。
+    CSTR:93 =
+    CSTR:94 = 它们能像人类那样思考，甚至可以超越人类的极限。
+    CSTR:95 =
+    CSTR:96 =
+ ELSEIF TALENT:异形
+     CSTR:91 =
+     CSTR:92 = 外形怪异奇特，对人来来说是无法接受的长相。
+     CSTR:93 = 不可名状之物，有的看了还会掉SAN值。
+     CSTR:94 = 有可能会具有不定形的特质。
+     CSTR:95 = 多为集肉块（？）、触手（？？）、腥臭液体（？？？）为一体的存在。
+     CSTR:96 =
+ ENDIF
+CALL KAIGYO
+DRAWLINE
+PRINTFORML %CALLNAME:X%：
+PRINTFORML 「准备媒介、制作契约书并实施召唤，所花费的费用一共是${Y}」
+DRAWLINE
+MONEY -= Y
+PRINTL 　　　　　　・
+PRINTL 　　　　　　・
+PRINTW 　　　　　　・
+PRINTFORMW  成功召唤出了%NAME%！
+PRINTL 　　　　　　・
+PRINTL 　　　　　　・
+PRINTW 　　　　　　・
+PRINTFORMW  ―― 开始在房间里豢养%NAME% ――
+LOCAL = DEFFICULTY(TARGET)
+IF LOCAL > 400
+	CSTR:10 = G
+ELSEIF LOCAL > 100
+	CSTR:10 = F
+ELSEIF LOCAL > -200
+	CSTR:10 = E
+ELSEIF LOCAL > -400
+	CSTR:10 = D
+ELSEIF LOCAL > -800
+	CSTR:10 = C
+ELSEIF LOCAL > -2000
+	CSTR:10 = B
+ELSEIF LOCAL > -3000
+	CSTR:10 = A
+ELSE
+	CSTR:10 = S
+ENDIF
+
+CFLAG:111 = -1
+CFLAG:1000 = -1
+CFLAG:1001 = -1
+
+
+@NINGAI_CUSTOM_GAIKEN_TOKUCHO
+IF !TALENT:无头
+    $INPUT_LOOP_GAIKEN
+    CALL KAIGYO
+    DRAWLINE
+    PRINTFORML %CALLNAME:X%：
+    PRINTFORML 「除此之外，是否还要设定一些细节？」 （○＝有  ×＝没有）
+    DRAWLINE
+    PRINT [306]
+    IF TALENT:长发
+        PRINT ○
+    ELSE
+        PRINT ×
+    ENDIF
+    PRINTL 头发很长
+
+    PRINT [309]
+    IF TALENT:呆毛
+        PRINT ○
+    ELSE
+        PRINT ×
+    ENDIF
+    PRINTL 有呆毛
+
+    PRINT [308]
+    IF TALENT:眼镜
+        PRINT ○
+    ELSE
+        PRINT ×
+    ENDIF
+    PRINTL 戴着眼镜
+
+    PRINT [310]
+    IF TALENT:美人
+        PRINT ○
+    ELSE
+        PRINT ×
+    ENDIF
+    PRINTL 是纤细的美人
+
+    PRINT [311]
+    IF TALENT:伪娘
+        PRINT ○
+    ELSE
+        PRINT ×
+    ENDIF
+    PRINTL 虽然性别男但外貌是女性
+
+    PRINTL [100] ■设定完毕■
+
+    INPUT
+    IF RESULT == 100
+    ELSEIF RESULT == 306 || RESULT == 308 || RESULT == 309 || RESULT == 310 || RESULT == 311
+        TALENT:RESULT = !TALENT:RESULT
+        GOTO INPUT_LOOP_GAIKEN
+    ELSE
+        GOTO INPUT_LOOP_GAIKEN
+    ENDIF
+ENDIF
+
+$INPUT_LOOP_TOKUCHO
+CALL KAIGYO
+DRAWLINE
+PRINTFORML %CALLNAME:X%：
+PRINTFORML 「他有什么喜好呢？」 （○＝有  ×＝没有）
+DRAWLINE
+
+PRINT [317]
+IF TALENT:喜欢读书
+	PRINT ○
+ELSE
+	PRINT ×
+ENDIF
+PRINTL 喜欢读书
+
+PRINT [318]
+IF TALENT:喜欢运动
+	PRINT ○
+ELSE
+	PRINT ×
+ENDIF
+PRINTL 喜欢运动
+
+PRINT [325]
+IF TALENT:机械迷
+	PRINT ○
+ELSE
+	PRINT ×
+ENDIF
+PRINTL 喜欢摆弄机械
+
+PRINT [326]
+IF TALENT:喜欢花草
+	PRINT ○
+ELSE
+	PRINT ×
+ENDIF
+PRINTL 喜欢侍弄花草
+
+PRINT [328]
+IF TALENT:喜欢扫除
+	PRINT ○
+ELSE
+	PRINT ×
+ENDIF
+PRINTL 喜欢扫除
+
+PRINT [319]
+IF TALENT:美术属性
+	PRINT ○
+ELSE
+	PRINT ×
+ENDIF
+PRINTL 从事美术工作
+
+PRINT [320]
+IF TALENT:音乐属性
+	PRINT ○
+ELSE
+	PRINT ×
+ENDIF
+PRINTL 从事音乐工作
+
+PRINT [321]
+IF TALENT:魔法／占卜属性
+	PRINT ○
+ELSE
+	PRINT ×
+ENDIF
+PRINTL 从事魔法、占卜工作
+
+PRINT [322]
+IF TALENT:化学属性
+	PRINT ○
+ELSE
+	PRINT ×
+ENDIF
+PRINTL 从事化学工作
+
+PRINT [323]
+IF TALENT:理系
+	PRINT ○
+ELSE
+	PRINT ×
+ENDIF
+PRINTL 理系人外
+
+PRINT [324]
+IF TALENT:文系
+	PRINT ○
+ELSE
+	PRINT ×
+ENDIF
+PRINTL 文系人外
+
+PRINT [327]
+IF TALENT:擅长裁缝
+	PRINT ○
+ELSE
+	PRINT ×
+ENDIF
+PRINTL 擅长缝纫
+
+
+PRINT [329]
+IF TALENT:说教癖
+	PRINT ○
+ELSE
+	PRINT ×
+ENDIF
+PRINTL 有说教癖
+
+
+PRINT [330]
+IF TALENT:信仰虔诚
+	PRINT ○
+ELSE
+	PRINT ×
+ENDIF
+PRINTL 有很深的信仰
+
+PRINT [331]
+IF TALENT:冒冒失失
+	PRINT ○
+ELSE
+	PRINT ×
+ENDIF
+PRINTL 莽撞轻率
+
+PRINT [334]
+IF TALENT:绅士
+	PRINT ○
+ELSE
+	PRINT ×
+ENDIF
+PRINTL 对女性/雌性很温柔的绅士
+
+PRINT [335]
+IF TALENT:嫉妒心
+	PRINT ○
+ELSE
+	PRINT ×
+ENDIF
+PRINTL 比较难搞的性格
+
+PRINT [336]
+IF TALENT:情绪不安定
+	PRINT ○
+ELSE
+	PRINT ×
+ENDIF
+PRINTL 情绪不安定，精神容易出问题
+
+PRINTL [100] ■设定完毕■
+
+INPUT
+IF RESULT == 100
+ELSEIF (RESULT >= 317 && RESULT <= 331) || (RESULT >= 334 && RESULT <= 336)
+	TALENT:RESULT = !TALENT:RESULT
+	GOTO INPUT_LOOP_TOKUCHO
+ELSE
+	GOTO INPUT_LOOP_TOKUCHO
+ENDIF
+
+
+IF TALENT:喜欢运动
+	$INPUTS_LOOP_SPORTS
+    CALL KAIGYO
+    DRAWLINE
+    PRINTFORML %CALLNAME:X%：
+    PRINTFORML 「要为他设定喜欢并擅长的运动吗？」
+    DRAWLINE
+	PRINTL [11] 网球
+	PRINTL [12] 篮球
+	PRINTL [13] 足球
+	PRINTL [14] 芭蕾
+	PRINTL [15] 棒球
+	PRINTL [16] 柔道
+	PRINTL [17] 空手道
+	PRINTL [18] 弓道
+	PRINTL [19] 舞蹈
+	PRINTL [20] --输入其他体育运动--
+	PRINTL [99] 全都喜欢（没有特别擅长的）
+	INPUT
+	SELECTCASE RESULT
+		CASE 11
+			CSTR:11 = 网球
+		CASE 12
+			CSTR:11 = 篮球
+		CASE 13
+			CSTR:11 = 足球
+		CASE 14
+			CSTR:11 = 芭蕾
+		CASE 15
+			CSTR:11 = 棒球
+		CASE 16
+			CSTR:11 = 柔道
+		CASE 17
+			CSTR:11 = 空手道
+		CASE 18
+			CSTR:11 = 弓道
+		CASE 19
+			CSTR:11 = 舞蹈
+		CASE 20
+			INPUTS
+			CSTR:11 = %RESULTS%
+	ENDSELECT
+	IF RESULT != 99 && RESULT >= 11 && RESULT <= 20
+        CALL KAIGYO
+        DRAWLINE
+        PRINTFORML %CALLNAME:X%：
+        PRINTFORML 「%CSTR:11%…确定吗？」
+        DRAWLINE
+		PRINTL [0] 是
+		PRINTL [1] 否
+		$INPUT_LOOP_SPORTS2
+		INPUT
+		SIF RESULT != 0 && RESULT != 1
+			GOTO INPUT_LOOP_SPORTS2
+		SIF RESULT == 1
+			GOTO INPUTS_LOOP_SPORTS
+	ELSEIF RESULT == 99
+		CSTR:11 =
+	ELSE
+		GOTO INPUTS_LOOP_SPORTS
+	ENDIF
+ENDIF
+
+
+IF TALENT:美术属性
+	$INPUTS_LOOP_ART
+    CALL KAIGYO
+    DRAWLINE
+    PRINTFORML %CALLNAME:X%：
+    PRINTFORML 「要为他设定喜欢并擅长的才艺吗？」
+    DRAWLINE
+	PRINTL [11] 绘画
+	PRINTL [12] 雕刻
+	PRINTL [13] 书法
+	PRINTL [14] 水墨画
+	PRINTL [15] 建筑
+	PRINTL [16] 工艺
+	PRINTL [17] 摄影
+	PRINTL [18] 漫画
+	PRINTL [20] --输入其他美术技能--
+	PRINTL [99] 全都喜欢（没有特别擅长的）
+	INPUT
+	SELECTCASE RESULT
+		CASE 11
+			CSTR:12 = 绘画
+		CASE 12
+			CSTR:12 = 雕刻
+		CASE 13
+			CSTR:12 = 书法
+		CASE 14
+			CSTR:12 = 水墨画
+		CASE 15
+			CSTR:12 = 建筑
+		CASE 16
+			CSTR:12 = 工艺
+		CASE 17
+			CSTR:12 = 摄影
+			ABL:摄影技能 = 2
+			EXP:摄影经验 = 20
+		CASE 18
+			CSTR:12 = 漫画
+		CASE 20
+			INPUTS
+			CSTR:12 = %RESULTS%
+	ENDSELECT
+	IF RESULT != 99 && ((RESULT >= 11 && RESULT <= 18) || RESULT == 20)
+        CALL KAIGYO
+        DRAWLINE
+        PRINTFORML %CALLNAME:X%：
+        PRINTFORML 「%CSTR:12%…确定吗？」
+        DRAWLINE
+		PRINTL [0] 是
+		PRINTL [1] 否
+		$INPUT_LOOP_ART2
+		INPUT
+		SIF RESULT != 0 && RESULT != 1
+			GOTO INPUT_LOOP_ART2
+		IF RESULT == 1
+			ABL:摄影技能 = 0
+			EXP:摄影经验 = 0
+			GOTO INPUTS_LOOP_ART
+		ENDIF
+	ELSEIF RESULT == 99
+		CSTR:12 =
+	ELSE
+		GOTO INPUTS_LOOP_ART
+	ENDIF
+ENDIF
+
+IF TALENT:音乐属性
+    CALL KAIGYO
+    DRAWLINE
+    PRINTFORML %CALLNAME:X%：
+    PRINTFORML 「他擅长唱歌吗？如果是人鱼种族的话，想必精于此道呢」
+    DRAWLINE
+	PRINTL [0] 擅长
+	PRINTL [1] 不擅长，好像并不喜欢
+	$INPUT_LOOP_UTA
+	INPUT
+	SIF RESULT != 0 && RESULT != 1
+		GOTO INPUT_LOOP_UTA
+	IF RESULT == 0
+		TALENT:擅长歌唱 = 1
+		EXP:歌唱经验 = 20
+		ABL:歌唱技能 = 2
+	ELSEIF RESULT == 1
+		TALENT:擅长歌唱 = 0
+	ENDIF
+	$INPUT_LOOP_MUSIC
+    CALL KAIGYO
+    DRAWLINE
+    PRINTFORML %CALLNAME:X%：
+    PRINTFORML 「要为他设定喜欢并擅长的乐器吗？」
+    DRAWLINE
+	PRINTL [11] 钢琴
+	PRINTL [12] 吉他
+	PRINTL [13] 小提琴
+	PRINTL [14] 琵琶
+	PRINTL [15] 二胡
+	PRINTL [16] 萧
+	PRINTL [17] 萨克斯
+	PRINTL [18] 竖笛
+	PRINTL [20] --输入其他乐器名--
+	PRINTL [99] 全都喜欢（没有特别擅长的）
+	INPUT
+	SELECTCASE RESULT
+		CASE 11
+			CSTR:13 = 钢琴
+		CASE 12
+			CSTR:13 = 吉他
+		CASE 13
+			CSTR:13 = 小提琴
+		CASE 14
+			CSTR:13 = 琵琶
+		CASE 15
+			CSTR:13 = 二胡
+		CASE 16
+			CSTR:13 = 萧
+		CASE 17
+			CSTR:13 = 萨克斯
+		CASE 18
+			CSTR:13 = 竖笛
+		CASE 20
+			PRINTL ＜请输入乐器的名称＞
+			INPUTS
+			CSTR:13 = %RESULTS%
+	ENDSELECT
+	IF RESULT != 99 && ((RESULT >= 11 && RESULT <= 13) || RESULT == 20)
+        CALL KAIGYO
+        DRAWLINE
+        PRINTFORML %CALLNAME:X%：
+        PRINTFORML 「%CSTR:13%…确定吗？」
+        DRAWLINE
+		PRINTL [0] 是
+		PRINTL [1] 否
+		$INPUT_LOOP_MUSIC2
+		INPUT
+		SIF RESULT != 0 && RESULT != 1
+			GOTO INPUT_LOOP_MUSIC2
+		SIF RESULT == 1
+			GOTO INPUT_LOOP_MUSIC
+	ELSEIF RESULT == 99
+		CSTR:13 =
+	ELSE
+		GOTO INPUT_LOOP_MUSIC
+	ENDIF
+ENDIF
+
+;相性の初期値
+REPEAT CHARANUM
+	RELATION:(NO:COUNT) = 100
+	RELATION:COUNT:(NO:TARGET) = 100
+REND

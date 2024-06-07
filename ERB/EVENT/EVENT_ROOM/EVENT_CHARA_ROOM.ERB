@@ -1,0 +1,5734 @@
+﻿;--------------------------------------------------------
+;CFLAG:2401 管理氛围 1 甜蜜氛围、2 工口氛围、3 ＳＭ氛围
+;CFLAG:2402 氛围数值
+;CFLAG:2403 窗户开关的记录 0 关 1 开
+;CFLAG:2404 房门开关的记录 0 开 1 关
+;CFLAG:2405 电视机 0 无 1  2  3恋初  4淫初  5服初  6恋中  7淫中  8服中  9恋高  10淫高  11服高
+;CFLAG:2406 书柜 0 无 1  2  3恋初  4淫初  5服初  6恋中  7淫中  8服中  9恋高  10淫高  11服高
+;CFLAG:2407 沙发 0 无 1  2  3恋初  4淫初  5服初  6恋中  7淫中  8服中  9恋高  10淫高  11服高
+;CFLAG:2408 衣柜 0 无 1  2  3恋初  4淫初  5服初  6恋中  7淫中  8服中  9恋高  10淫高  11服高
+;CFLAG:2409 展示柜 0 无 1  2  3恋初  4淫初  5服初  6恋中  7淫中  8服中  9恋高  10淫高  11服高
+;CFLAG:2410 床 0 最低 1  2  3恋初  4淫初  5服初  6恋中  7淫中  8服中  9恋高  10淫高  11服高
+;CFLAG:2411 落地灯 0 最低 1  2  3恋初  4淫初  5服初  6恋中  7淫中  8服中  9恋高  10淫高  11服高
+;CFLAG:2412 家具总数
+;CFLAG:2413 小鸟在窗口
+;CFLAG:2414 暂时不在个人房
+;CFLAG:2415 玩家房间内行动数
+;CFLAG:2416 台灯开关的记录 0 开 1 关
+;CFLAG:ARG:(NO:？+3000) 主人
+;--------------------------------------------------------
+@CHARA_ROOM(ARG)
+;跳出催眠返回
+SIF 催眠返回
+GOTO INPUT_HUDONG2
+CALL KAIGYO
+;每次进来时清空行动数
+CFLAG:ARG:2415 = 0
+DRAWLINE
+A = 0
+B = 0
+C = 0
+D = 0
+E = 0
+F = 0
+G = 0
+H = 0
+IF CFLAG:ARG:2404 == 1
+    PRINTW 门上锁了，换个时间再来看吧
+    RETURN 0
+ENDIF
+;B是可能偷情的对象，D是相性好的对象，E是关系差的对象（特指嫉妒），F是其他恋慕角色，G是子女/父母
+;决定B
+REPEAT CHARANUM
+    ;主人不可
+    SIF COUNT == MASTER
+        CONTINUE
+    ;娼馆、出租劳役中
+    SIF CFLAG:COUNT:12 > 0
+        CONTINUE
+    SIF CFLAG:COUNT:2404 == 1
+        CONTINUE
+    SIF CFLAG:COUNT:2414 == 1
+        CONTINUE
+    ;育儿室
+    SIF  (TALENT:COUNT:怀孕 && CFLAG:COUNT:110 - 3 <= DAY) || TALENT:COUNT:育儿中
+        CONTINUE
+    SIF BASE:COUNT:0 < 300
+        CONTINUE
+    ;排除恋慕
+    SIF TALENT:COUNT:3 || TALENT:COUNT:6
+        CONTINUE
+    SIF CFLAG:ARG:(NO:COUNT + 2000) == 29 && CFLAG:COUNT:(NO:ARG + 2000) == 29
+        B = COUNT
+REND
+;决定D
+REPEAT CHARANUM
+    ;主人不可
+    SIF COUNT == MASTER || COUNT == B
+        CONTINUE
+    ;娼馆、出租劳役中
+    SIF CFLAG:COUNT:12 > 0
+        CONTINUE
+    SIF CFLAG:COUNT:2404 == 1
+        CONTINUE
+    SIF CFLAG:COUNT:2414 == 1
+        CONTINUE
+    ;育儿室
+    SIF  (TALENT:COUNT:怀孕 && CFLAG:COUNT:110 - 3 <= DAY) || TALENT:COUNT:育儿中
+        CONTINUE
+    SIF BASE:COUNT:0 < 100
+        CONTINUE
+    SIF RELATION:ARG:(NO:COUNT) >= 120 && RELATION:COUNT:(NO:ARG) >= 120
+        D = COUNT
+REND
+;决定E E嫉妒ARG
+REPEAT CHARANUM
+    ;主人不可
+    SIF COUNT == MASTER || COUNT == B || COUNT == D
+        CONTINUE
+    ;娼馆、出租劳役中
+    SIF CFLAG:COUNT:12 > 0
+        CONTINUE
+    SIF CFLAG:COUNT:2404 == 1
+        CONTINUE
+    SIF CFLAG:COUNT:2414 == 1
+        CONTINUE
+    ;育儿室
+    SIF  (TALENT:COUNT:怀孕 && CFLAG:COUNT:110 - 3 <= DAY) || TALENT:COUNT:育儿中
+        CONTINUE
+    SIF BASE:COUNT:0 < 200
+        CONTINUE
+    SIF RELATION:COUNT:(NO:ARG) <= 90 && TALENT:COUNT:嫉妒
+        E = COUNT
+REND
+;决定F
+REPEAT CHARANUM
+    ;主人不可
+    SIF COUNT == MASTER || COUNT == B || COUNT == D || COUNT == E || COUNT == ARG
+        CONTINUE
+    ;娼馆、出租劳役中
+    SIF CFLAG:COUNT:12 > 0
+        CONTINUE
+    SIF CFLAG:COUNT:2404 == 1
+        CONTINUE
+    SIF CFLAG:COUNT:2414 == 1
+        CONTINUE
+    ;育儿室
+    SIF  (TALENT:COUNT:怀孕 && CFLAG:COUNT:110 - 3 <= DAY) || TALENT:COUNT:育儿中
+        CONTINUE
+    SIF BASE:COUNT:0 < 200
+        CONTINUE
+    SIF TALENT:COUNT:3 ||TALENT:COUNT:6
+        F = COUNT
+REND
+;决定G
+REPEAT CHARANUM
+    ;主人不可
+    SIF COUNT == MASTER || COUNT == B || COUNT == D || COUNT == E || COUNT == F
+        CONTINUE
+    ;娼馆、出租劳役中
+    SIF CFLAG:COUNT:12 > 0
+        CONTINUE
+    SIF CFLAG:COUNT:2404 == 1
+        CONTINUE
+    SIF CFLAG:COUNT:2414 == 1
+        CONTINUE
+    ;育儿室
+    SIF  (TALENT:COUNT:怀孕 && CFLAG:COUNT:110 - 3 <= DAY) || TALENT:COUNT:育儿中
+        CONTINUE
+    SIF BASE:COUNT:0 < 200
+        CONTINUE
+    SIF CFLAG:ARG:(NO:COUNT + 2000) == 7 || CFLAG:ARG:(NO:COUNT + 2000) == 8 || CFLAG:COUNT:(NO:ARG + 2000) == 7 || CFLAG:COUNT:(NO:ARG + 2000) == 8
+        G = COUNT
+REND
+
+A = RAND:100
+
+IF A < 25 && CFLAG:ARG:12 == 0 && CFLAG:ARG:2414 == 0 && !TALENT:ARG:育儿中
+    CFLAG:ARG:2404 = 1
+    PRINTL 门锁着，要偷听吗？
+    PRINTL [0]是
+    PRINTL [1]否
+    $INPUT_DOOR1
+    INPUT
+    IF RESULT == 0
+        IF !RAND:10
+            PRINTW 没能听到什么，换个时间再来看吧
+            RETURN 0
+        ;睡懒觉
+        ELSEIF !RAND:9 && !TIME
+            PRINTL 依稀能听到轻轻的鼾声
+            PRINTL 不是吧，这个点了还在睡懒觉？
+            PRINTL 要敲门吗？
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_DOORSLEEP
+            INPUT
+            IF RESULT == 0
+                IF !RAND:3
+                    PRINTL 敲门之后，里面的鼾声消失了，取而代之的是一阵手忙脚乱的动静
+                    PRINTFORM 随后门打开了，
+					SIF CFLAG:ARG:7021
+					PRINTFORM 一丝不挂的
+					PRINTFORML %CALLNAME:ARG%的头发还凌乱着，睡眼惺忪的模样
+					SIF CFLAG:ARG:7023
+					PRINTFORML 四肢着地慵懒地叼着室内鞋，来迎接%PLAYER_NAME()%……
+                    CFLAG:ARG:2404 = 0
+                    GOTO INPUT_HUDONG
+                ELSEIF !RAND:2
+                    PRINTL 敲门之后，迟迟无人回应…
+                    PRINTW 睡得可真死啊，一时半会是醒不了了，换个时间再来吧
+                    RETURN 0
+                ELSE
+                    PRINTL 敲门之后，里面的鼾声消失了
+                    PRINTL 取而代之的是一阵手忙脚乱的动静，之后再无声响
+                    PRINTW 不方便吗？那换个时间再来看吧
+                    RETURN 0
+                ENDIF
+            ELSEIF RESULT == 1
+                PRINTW 等人睡醒了再来看吧
+                RETURN 0
+            ELSE
+                GOTO INPUT_DOORSLEEP
+            ENDIF
+        ;教育子女
+        ELSEIF !RAND:8 && NO:G > 0
+            CFLAG:G:2404 = 0
+            CFLAG:G:2414 = 1
+            CFLAG:ARG:(NO:G+3000) = 1
+            ;G是子女
+            IF CFLAG:ARG:(NO:G+2000) == 7 || CFLAG:ARG:(NO:G+2000) == 8
+                PRINTFORML 依稀能听到两个人说话的声音
+                PRINTFORML 似乎在谆谆教诲的是%CALLNAME:ARG%，偶尔顶撞一两句的是%CALLNAME:G%
+                PRINTFORML 大概是在进行父母和子女间的谈话吧
+                PRINTL 要敲门吗？
+                PRINTL [0]是
+                PRINTL [1]否
+                $INPUT_DOORZN
+                INPUT
+                IF RESULT == 0
+                    IF !RAND:3
+                        CFLAG:G:2414 = 0
+                        CFLAG:ARG:(NO:G+3000) = 0
+                        PRINTL 敲门之后，门打开了
+                        ;主人是父母
+                        IF MARK:G:反抗刻印 == 0 && (CFLAG:G:2000 == 5 || CFLAG:G:2000 == 6)
+                            PRINTFORML %CALLNAME:G%笑着喊了一声\@ MALE(MASTER) ? 父亲 # 母亲 \@，向两人告别后离开了
+                        ELSEIF CFLAG:G:2000 == 5 || CFLAG:G:2000 == 6
+                            PRINTFORML %CALLNAME:G%有点在意%PLAYER_NAME()%的存在，避开视线向%CALLNAME:ARG%告别后离去
+                        ELSE
+                            PRINTFORML %CALLNAME:G%有点害怕%PLAYER_NAME()%的样子，避开视线向%CALLNAME:ARG%告别后离去
+                        ENDIF
+						SIF CFLAG:ARG:7021
+							PRINTFORM 一丝不挂的
+                        IF TALENT:ARG:3 || TALENT:ARG:4 || TALENT:ARG:5 || TALENT:ARG:6 || TALENT:ARG:7 || TALENT:ARG:8
+                            PRINTFORML %CALLNAME:ARG%把%PLAYER_NAME()%请进屋内
+							SIF CFLAG:ARG:7023
+							PRINTFORML 然後四肢着地，嘴裡叨著室內鞋来迎接%PLAYER_NAME()%……
+                        ELSE
+							IF CFLAG:ARG:7023
+								PRINTFORML %CALLNAME:ARG%犹豫了一下，四肢着地转身叨著室內鞋来迎接%PLAYER_NAME()%了……
+							ELSE
+								PRINTFORML %CALLNAME:ARG%犹豫了一下，转身回房间了
+							ENDIF
+                        ENDIF
+                        CFLAG:ARG:2404 = 0
+                        GOTO INPUT_HUDONG
+                    ELSEIF !RAND:2
+                        PRINTL 敲门之后，迟迟无人回应…
+                        PRINTW 大概要说上好一阵呢，先离开吧
+                        RETURN 0
+                    ELSE
+                        PRINTL 敲门之后，里面的说话声消失了
+                        PRINTW 其实不用在意这边也可以的啊…总之暂且离开吧
+                        RETURN 0
+                    ENDIF
+                ELSEIF RESULT == 1
+                    PRINTW 现在怕是没空吧，换个时间再来比较好
+                    RETURN 0
+                ELSE
+                    GOTO INPUT_DOORZN
+                ENDIF
+            ;G是父母
+            ELSEIF CFLAG:ARG:(NO:G+2000) == 5 || CFLAG:ARG:(NO:G+2000) == 6
+                PRINTFORML 依稀能听到两个人说话的声音
+                PRINTFORML 似乎在谆谆教诲的是%CALLNAME:G%，偶尔顶撞一两句的是%CALLNAME:ARG%
+                PRINTFORML 大概是在进行父母和子女间的谈话吧
+                PRINTL 要敲门吗？
+                PRINTL [0]是
+                PRINTL [1]否
+                $INPUT_DOORFM
+                INPUT
+                IF RESULT == 0
+                    IF !RAND:3
+                        CFLAG:G:2414 = 0
+                        CFLAG:ARG:(NO:G+3000) = 0
+                        PRINTL 敲门之后，门打开了
+                        ;主人是父母
+                        IF MARK:G:反抗刻印 == 0 && (CFLAG:ARG:2000 == 5 || CFLAG:ARG:2000 == 6)
+                            PRINTFORML %CALLNAME:ARG%喊了一声\@ MALE(MASTER) ? 父亲 # 母亲 \@，%CALLNAME:G%也微笑着点了点头
+                            PRINTFORML 之后%CALLNAME:G%又交代了%CALLNAME:ARG%几句后离开了
+                        ELSEIF CFLAG:ARG:2000 == 5 || CFLAG:ARG:2000 == 6
+                            PRINTFORML %CALLNAME:G%有点在意%PLAYER_NAME()%的存在，匆匆向%CALLNAME:ARG%告别后离去
+                        ELSE
+                            PRINTFORML %CALLNAME:G%有点不太自然，避开%PLAYER_NAME()%的视线向%CALLNAME:ARG%告别后离去
+                        ENDIF
+						SIF CFLAG:ARG:7021
+							PRINTFORM 一丝不挂的
+                        IF TALENT:ARG:3 || TALENT:ARG:4 || TALENT:ARG:5 || TALENT:ARG:6 || TALENT:ARG:7 || TALENT:ARG:8
+                            PRINTFORML %CALLNAME:ARG%把%PLAYER_NAME()%请进屋内
+							SIF CFLAG:ARG:7023
+							PRINTFORML 然後四肢着地，嘴裡叨著室內鞋来迎接%PLAYER_NAME()%……
+                        ELSE
+							IF CFLAG:ARG:7023
+								PRINTFORML %CALLNAME:ARG%犹豫了一下，四肢着地转身叨著室內鞋来迎接%PLAYER_NAME()%了……
+							ELSE
+								PRINTFORML %CALLNAME:ARG%犹豫了一下，转身回房间了
+							ENDIF
+                        ENDIF
+                        CFLAG:ARG:2404 = 0
+                        GOTO INPUT_HUDONG
+                    ELSEIF !RAND:2
+                        PRINTL 敲门之后，迟迟无人回应…
+                        PRINTW 大概要说上好一阵呢，先离开吧
+                        RETURN 0
+                    ELSE
+                        PRINTL 敲门之后，里面的说话声消失了
+                        PRINTW 其实不用在意这边也可以的啊…总之暂且离开吧
+                        RETURN 0
+                    ENDIF
+                ELSEIF RESULT == 1
+                    PRINTW 现在怕是没空吧，换个时间再来比较好
+                    RETURN 0
+                ELSE
+                    GOTO INPUT_DOORFM
+                ENDIF
+            ENDIF
+        ELSEIF !RAND:7 && NO:E > 0
+            CFLAG:E:2404 = 0
+            CFLAG:E:2414 = 1
+            CFLAG:ARG:(NO:E+3000) = 1
+            PRINTFORML 貌似有两个人吵架的声音…
+            PRINTFORML 声音比较小的是%CALLNAME:ARG%，比较咄咄逼人的是%CALLNAME:E%
+            PRINTL 要敲门吗？
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_DOOR7
+            INPUT
+            IF RESULT == 0
+                IF !RAND:3
+                    PRINTL 敲门之后，门打开了
+                    PRINTFORMW %CALLNAME:E%看清是%PLAYER_NAME()%，稍微收敛了神色
+                    PRINTFORML 换上一副笑脸的%CALLNAME:E%请求%PLAYER_NAME()%现在去\@ MALE(D) ? 他 # 她 \@那儿坐坐
+                    PRINTFORMW %CALLNAME:ARG%的脸色不是很好，同时又隐含希望地看向%PLAYER_NAME()%
+                    CFLAG:E:2414 = 0
+                    CFLAG:ARG:(NO:E+3000) = 0
+                    ;去E房间的选项
+                    PRINTL 要去吗？
+                    PRINTL [0]答应
+                    PRINTL [1]拒绝
+                    $INPUT_QIANGREN
+                    INPUT
+                    IF RESULT == 0
+                        PRINTFORMW %CALLNAME:ARG%难堪地低下头，%CALLNAME:E%则露出了幸福的笑颜
+                        PRINTFORML 在%CALLNAME:ARG%的面前，%CALLNAME:E%炫耀似的拉着%PLAYER_NAME()%走了
+                        CFLAG:ARG:2404 = 0
+                        ARG = E
+                        GOTO INPUT_HUDONG
+                    ELSEIF RESULT == 1
+                        PRINTFORML 把这样的%CALLNAME:ARG%丢下实在是太可怜了，所以拒绝了%CALLNAME:E%
+                        PRINTFORMW %CALLNAME:E%变得非常沮丧，垂着头离开了
+						SIF CFLAG:ARG:7021
+						PRINTFORM 一丝不挂的
+                        PRINTFORML %CALLNAME:ARG%有几分喜悦和感激地道谢，把%PLAYER_NAME()%迎进了房间
+						SIF CFLAG:ARG:7023
+						PRINTFORML 然後四肢着地高兴地叼着室内鞋，让%PLAYER_NAME()%穿上……
+                        CFLAG:ARG:2404 = 0
+                        GOTO INPUT_HUDONG
+                    ELSE
+                        GOTO INPUT_QIANGREN
+                    ENDIF
+                ELSEIF !RAND:2
+                    PRINTL 敲门之后，迟迟无人回应…
+                    PRINTW 就这么激烈吗…有点担心啊。不过现在只能暂时离开了
+                    RETURN 0
+                ELSE
+                    PRINTL 敲门之后，里面顿时偃旗息鼓，但还是没有人来开门
+                    PRINTW 搞什么啊…算了，先暂时离开吧
+                    RETURN 0
+                ENDIF
+            ELSEIF RESULT == 1
+                PRINTW 总觉得现在进去就变成修罗场了，还是换个时间再来看比较好
+                RETURN 0
+            ELSE
+                GOTO INPUT_DOOR7
+            ENDIF
+        ELSEIF !RAND:6 && CFLAG:ARG:2405 > 0
+            PRINTL 好像有电视的声音
+            PRINTL 要敲门吗？
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_DOOR2
+            INPUT
+            IF RESULT == 0
+                IF !RAND:3
+                    PRINTL 敲门之后，里面响起一阵手忙脚乱的动静
+                    PRINTFORML 随后门打开了，面前%CALLNAME:ARG%的脸泛着诡异的红
+                    CFLAG:ARG:2404 = 0
+                    GOTO INPUT_HUDONG
+                ELSEIF !RAND:2
+                    PRINTL 敲门之后，迟迟无人回应…
+                    PRINTW 可能在忙，换个时间再来看吧
+                    RETURN 0
+                ELSE
+                    PRINTL 敲门之后，里面响起一阵手忙脚乱的动静，之后就没声响了
+                    PRINTW 可能不方便，换个时间再来看吧
+                    RETURN 0
+                ENDIF
+            ELSEIF RESULT == 1
+                PRINTW 换个时间再来看吧
+                RETURN 0
+            ELSE
+                GOTO INPUT_DOOR2
+            ENDIF
+        ELSEIF !RAND:5 && CFLAG:ARG:2405 > 0 && CFLAG:ARG:20
+            PRINTL 好像有电视的声音，那听起来不像是正常的节目
+            PRINTL 要敲门吗？
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_DOOR3
+            INPUT
+            IF RESULT == 0
+                IF !RAND:3
+                    PRINTL 敲门之后，里面响起一阵手忙脚乱的动静
+                    PRINTFORM 随后门打开了，
+					SIF CFLAG:ARG:7021
+						PRINTFORM 一丝不挂的
+					PRINTFORML %CALLNAME:ARG%的脸泛着诡异的红
+					SIF CFLAG:ARG:7023
+					PRINTFORML 然後四肢着地叼着室内鞋，来迎接%PLAYER_NAME()%……
+                    CFLAG:ARG:2404 = 0
+                    GOTO INPUT_HUDONG
+                ELSEIF !RAND:2
+                    PRINTL 敲门之后，迟迟无人回应…
+                    PRINTW 可能正“忙着”呢，换个时间再来看吧
+                    RETURN 0
+                ELSE
+                    PRINTL 敲门之后，里面响起一阵手忙脚乱的动静，之后就没声响了
+                    PRINTW 真狼狈啊，换个时间再来看吧
+                    RETURN 0
+                ENDIF
+            ELSEIF RESULT == 1
+                PRINTW 既然如此，还是换个时间再来看吧
+                RETURN 0
+            ELSE
+                GOTO INPUT_DOOR3
+            ENDIF
+        ELSEIF !RAND:4 && NO:B > 0 && (TALENT:ARG:4 || TALENT:ARG:7)
+            CFLAG:B:2404 = 0
+            CFLAG:B:2414 = 1
+            CFLAG:ARG:(NO:B+3000) = 1
+            PRINTFORML 是错觉吗，感觉听到了两人的喘息声
+            PRINTFORML 其中一个是%CALLNAME:ARG%，而另一个…好像是%CALLNAME:B%？
+            PRINTL 要敲门吗？
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_DOOR4
+            INPUT
+            IF RESULT == 0
+                IF !RAND:3
+                    CFLAG:B:2414 = 0
+                    CFLAG:ARG:(NO:B+3000) = 0
+                    PRINTL 敲门之后，里面响起一阵手忙脚乱的动静
+                    PRINTFORML 等了好一会儿，门打开了，一个人影冲出来与%PLAYER_NAME()%擦肩而过
+					SIF CFLAG:ARG:7021
+						PRINTFORM 一丝不挂的
+                    PRINTFORML %CALLNAME:ARG%的脸红红的，头发也有些凌乱
+					SIF CFLAG:ARG:7023
+					PRINTFORML 然後四肢着地叼着室内鞋，来迎接%PLAYER_NAME()%……
+                    ;B未陷落则掌握弱点
+                    IF TALENT:B:弱点 == 0 && !KANRAKU(B)
+                        WAIT
+                        PRINTFORML
+                        PRINTFORML 成功掌握了%CALLNAME:B%的【弱点】。
+                        TALENT:B:弱点 = 1
+                        ;反抗刻印が2以上なら1つ下がる
+                        IF MARK:B:3 > 1
+                            PRINTFORML %CALLNAME:B%的反抗刻印下降到Lv{MARK:B:3-1}
+                            MARK:B:3 -= 1
+                        ENDIF
+                    ENDIF
+                    CFLAG:ARG:2404 = 0
+                    GOTO INPUT_HUDONG
+                ELSEIF !RAND:2
+                    PRINTL 敲门之后，迟迟无人回应…
+                    PRINTW 毕竟正“忙着”，换个时间再来看吧
+                    RETURN 0
+                ELSE
+                    PRINTL 敲门之后，里面响起一阵手忙脚乱的动静，之后就没声响了
+                    PRINTW 现在装作不在也晚了吧…总之换个时间再来比较好
+                    RETURN 0
+                ENDIF
+            ELSEIF RESULT == 1
+                PRINTW …现在不是进去的时候，还是换个时间再来看吧
+                RETURN 0
+            ELSE
+                GOTO INPUT_DOOR4
+            ENDIF
+        ELSEIF !RAND:3 && ABL:ARG:15 >=3
+            PRINTFORML 听到了%CALLNAME:ARG%急促的喘息声…
+            PRINTL 要敲门吗？
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_DOOR5
+            INPUT
+            IF RESULT == 0
+                IF !RAND:3
+                    PRINTL 敲门之后，里面响起一阵手忙脚乱的动静
+                    PRINTFORM 等了好一会儿门才打开，
+					SIF CFLAG:ARG:7021
+						PRINTFORM 一丝不挂的
+					PRINTFORML %CALLNAME:ARG%的脸红红的
+					SIF CFLAG:ARG:7023
+					PRINTFORML 然後四肢着地叼着室内鞋，来迎接%PLAYER_NAME()%……
+                    CFLAG:ARG:2404 = 0
+                    GOTO INPUT_HUDONG
+                ELSEIF !RAND:2
+                    PRINTL 敲门之后，迟迟无人回应…
+                    PRINTW 毕竟正“忙着”，换个时间再来看吧
+                    RETURN 0
+                ELSE
+                    PRINTL 敲门之后，里面响起一阵手忙脚乱的动静，之后就没声响了
+                    PRINTW 很狼狈的样子…总之换个时间再来比较好
+                    RETURN 0
+                ENDIF
+            ELSEIF RESULT == 1
+                PRINTW 总而言之，还是换个时间再来看吧
+                RETURN 0
+            ELSE
+                GOTO INPUT_DOOR5
+            ENDIF
+        ELSEIF !RAND:2 && NO:D > 0
+            CFLAG:D:2404 = 0
+            CFLAG:D:2414 = 1
+            CFLAG:ARG:(NO:D+3000) = 1
+            PRINTFORML 依稀能听到两个人谈话的声音
+            PRINTFORML 其中一个是%CALLNAME:ARG%，另一个好像是%CALLNAME:D%
+            PRINTL 要敲门吗？
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_DOOR6
+            INPUT
+            IF RESULT == 0
+                IF !RAND:3
+                    CFLAG:D:2414 = 0
+                    CFLAG:ARG:(NO:D+3000) = 0
+                    PRINTL 敲门之后，门打开了
+                    IF MARK:D:反抗刻印 == 0
+                        PRINTFORML %CALLNAME:D%朝%PLAYER_NAME()%点点头，向%CALLNAME:ARG%告别后离去
+                    ELSEIF TALENT:D:3 || TALENT:D:6
+                        PRINTFORML %CALLNAME:D%朝%PLAYER_NAME()%微笑着说希望%PLAYER_NAME()%有空能去\@ MALE(D) ? 他 # 她 \@那儿坐坐
+                        PRINTFORML 随后%CALLNAME:D%向两人告别后离去
+                    ELSE
+                        PRINTFORML %CALLNAME:D%向%CALLNAME:ARG%告别后离去
+                    ENDIF
+					SIF CFLAG:ARG:7021
+						PRINTFORM 一丝不挂的
+                        IF TALENT:ARG:3 || TALENT:ARG:4 || TALENT:ARG:5 || TALENT:ARG:6 || TALENT:ARG:7 || TALENT:ARG:8
+                            PRINTFORML %CALLNAME:ARG%把%PLAYER_NAME()%请进屋内
+							SIF CFLAG:ARG:7023
+							PRINTFORML 然後四肢着地，嘴裡叨著室內鞋来迎接%PLAYER_NAME()%……
+                        ELSE
+							IF CFLAG:ARG:7023
+								PRINTFORML %CALLNAME:ARG%犹豫了一下，四肢着地转身叨著室內鞋来迎接%PLAYER_NAME()%了……
+							ELSE
+								PRINTFORML %CALLNAME:ARG%犹豫了一下，转身回房间了
+							ENDIF
+                        ENDIF
+                    CFLAG:ARG:2404 = 0
+                    GOTO INPUT_HUDONG
+                ELSEIF !RAND:2
+                    PRINTL 敲门之后，迟迟无人回应…
+                    PRINTW 聊得很投入啊，换个时间再来看吧
+                    RETURN 0
+                ELSE
+                    PRINTL 敲门之后，里面的说话声消失了
+                    PRINTW 打扰到了吗…先离开吧
+                    RETURN 0
+                ENDIF
+            ELSEIF RESULT == 1
+                PRINTW 正好没空的样子，换个时间再来看吧
+                RETURN 0
+            ELSE
+                GOTO INPUT_DOOR6
+            ENDIF
+        ELSE
+            PRINTFORML 听到了%CALLNAME:ARG%自言自语的声音，似乎是在思考什么难题
+            PRINTFORML 到底是什么要紧事呢…
+            PRINTL 要敲门吗？
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_DOOR8
+            INPUT
+            IF RESULT == 0
+                IF !RAND:3
+                    PRINTL 敲门之后，门打开了
+                    PRINTFORM 见到是%PLAYER_NAME()%，
+					SIF CFLAG:ARG:7021
+						PRINTFORM 一丝不挂的
+					PRINTFORML %CALLNAME:ARG%有些惊讶
+					SIF CFLAG:ARG:7023
+						PRINTFORML 然後转身四肢着地叼着室内鞋，来迎接%PLAYER_NAME()%了……
+                    CFLAG:ARG:2404 = 0
+                    GOTO INPUT_HUDONG
+                ELSEIF !RAND:2
+                    PRINTL 敲门之后，迟迟无人回应…
+                    PRINTW 是很重要的问题吧，就不要去打扰了
+                    RETURN 0
+                ELSE
+                    PRINTL 敲门之后，声音消失了
+                    PRINTW 打扰到了吗…先离开吧
+                    RETURN 0
+                ENDIF
+            ELSEIF RESULT == 1
+                PRINTW 还是不要打扰人家，换个时间再来看吧
+                RETURN 0
+            ELSE
+                GOTO INPUT_DOOR8
+            ENDIF
+        ENDIF
+    ELSEIF RESULT == 1
+        PRINTW 换个时间再来看吧
+        RETURN 0
+    ELSE
+        GOTO INPUT_DOOR1
+    ENDIF
+ENDIF
+;⊙●○⊕◎Θ⊙¤▁ ▂ ▃ ▄ ▅ ▆ ▇ █ ▓ 回 □ 〓 ≡ ☰☲☱☴☵☶☳☷
+;『』♀♂◆◇◣◢◥▲▼△▽⊿          ◥■◤    ◥◄►▶◀◣◢▲
+;┌┬┐ ┌─┐ ┍┯┑ ╔╦╗ ┏┳┓ ┏━┓ ┎┰┒ ╔═╗ ╓╥╖ ╒╤╕
+;├┼┤ │┼│ ┝┿┥ ╠╬╣ ┣╋┫ ┃╋┃ ┠╂┨ ║╬║ ╟╫╢ ╞╪╡
+;└┴┘ └─┘ ┕┷┙ ╚╩╝ ┗┻┛ ┗━┛ ┖┸┚ ╚═╝ ╙╨╜ ╘╧╛
+;┏┱┐ ┌┲┓ ┌┬┐ ┏┳┓ ╭─╮ ╱╲  ┄ ┈ ┉ ┅    ﹏﹋﹌
+;┡╃┤ ├╄┩ ┟╁┧ ┞╀┦ │╳││┼│┇ ┋ ㅐ ㅒ ㅖ
+;└┴┘ └┴┘ ┗┻┛ └┴┘ ╰─╯ ╲╱ ┊ ┆ ㅔ ㅕ ㅛ ≒
+;
+;初始房间的样貌
+;1 PRINTL  █━═━━━━━━━━█
+;2 PRINTL  ┃┌──┐　　　　　¤┃
+;3 PRINTL  ┃└──┘　　　　　　┃
+;4 PRINTL  ┃　　　　　　　　　　┃                  
+;5 PRINTL  ┃　　　　　　　　　　┃
+;6 PRINTL  ┃　　　　　　　　　　┃ 
+;7 PRINTL  ┃　　　　　　　　　　┃
+;8 PRINTL  █━━━━┫　┣━━━█
+;
+;最高级房间的样貌
+;1 PRINTL  █━═━━━━━━━━█
+;2 PRINTL  ┃┌──┐　◥〓◤　¤┃
+;3 PRINTL  ┃└──┘　　　　　　┃
+;4 PRINTL  ┠┐　　　　┌─┐　　┃                  
+;5 PRINTL  ┃║　　　　└┴┘　　┃
+;6 PRINTL  ┠┘　　　　　　　　　┃ 
+;7 PRINTL  ┃┌══┐　　　　≡≡┃
+;8 PRINTL  █┷━━┷┫　┣━━━█
+;--------------------------------------------------------------------
+;1   照常输出
+;2  ┃┌──┐　◥〓◤　¤┃   电视机
+;3   照常输出
+;4  ┠┐　　　　　　　　　┃  书柜
+;4  ┃　　　　　┌─┐　　┃  沙发
+;4  ┠┐　　　　┌─┐　　┃  书柜+沙发
+;--------------------------------------------------------------------
+;5  ┃║　　　　　　　　　┃   书柜
+;5  ┃　　　　　└┴┘　　┃   沙发
+;5  ┃║　　　　└┴┘　　┃   书柜+沙发
+;--------------------------------------------------------------------
+;6  ┠┘　　　　　　　　　┃   书柜
+;--------------------------------------------------------------------
+;7  ┃┌══┐　　　　　　┃   衣柜
+;7  ┃　　　　　　　　≡≡┃   展示柜
+;7  ┃┌══┐　　　　≡≡┃   衣柜+展示柜
+;--------------------------------------------------------------------
+;8  █┷━━┷┫　┣━━━█   开门+衣柜
+;8  █┷━━┷╋━╋━━━█   关门+衣柜
+;8  █┷━━┷╋━╋━━━█   关门
+;--------------------------------------------------------------------
+
+CALL CHARA_ROOM_SHOW(ARG)
+
+PRINTFORMW %PLAYER_NAME()%进入了%CALLNAME:ARG%的房间
+IF CFLAG:ARG:2405 == 0 && CFLAG:ARG:2406 == 0 && CFLAG:ARG:2407 == 0 && CFLAG:ARG:2408 == 0 && CFLAG:ARG:2409 == 0
+    PRINT 房间里
+    IF CFLAG:ARG:2410 == 0
+        PRINTL 只有孤零零一张稻草席
+    ELSEIF CFLAG:ARG:2410 == 1
+        PRINTL 只有孤零零一张廉价单人床
+    ELSEIF CFLAG:ARG:2410 == 2
+        PRINTL 只有孤零零一张行军床
+    ELSEIF CFLAG:ARG:2410 == 3
+        PRINTL 的床上铺着柔软的席梦思
+    ELSEIF CFLAG:ARG:2410 == 4
+        PRINTL 铺着一张清凉气垫床
+    ELSEIF CFLAG:ARG:2410 == 5
+        PRINTL 挂着一张尼龙吊床
+    ELSEIF CFLAG:ARG:2410 == 6
+        PRINTL 放置着一张自热地台床
+    ELSEIF CFLAG:ARG:2410 == 7
+        PRINTL 很突兀地放着一张情趣水床
+    ELSEIF CFLAG:ARG:2410 == 8
+        PRINTL 很突兀地放着一张远足帐篷床
+    ELSEIF CFLAG:ARG:2410 == 9
+        PRINTL 很突兀地铺陈着实木榻榻米
+    ELSEIF CFLAG:ARG:2410 == 10
+        PRINTL 的旋转木马床孤零零地转动着
+    ELSEIF CFLAG:ARG:2410 == 11
+        PRINTL 很突兀地放着一张智能电子床
+    ENDIF
+ELSE
+    SIF CFLAG:ARG:2405 > 0 && CFLAG:ARG:2406 > 0 && CFLAG:ARG:2407 > 0 && CFLAG:ARG:2408 > 0 && CFLAG:ARG:2409 > 0
+        PRINT 房间里设备一应俱全，
+	PRINTFORM 除了%床舖(ARG)%
+	PRINTL 外…还放着
+    SIF CFLAG:ARG:2405 >= 1
+		PRINTFORML 一台%电视(ARG)%
+    SIF CFLAG:ARG:2406 >= 1
+		PRINTFORML 一面%书架(ARG)%
+    SIF CFLAG:ARG:2407 >= 1
+        PRINTFORML 一张%沙发(ARG)%
+    SIF CFLAG:ARG:2408 >= 1
+        PRINTFORML 一组%衣柜(ARG)%
+    SIF CFLAG:ARG:2409 >= 1
+        PRINTFORML 一个%展示柜(ARG)%
+    PRINTW 显露出有人居住的生活气息
+ENDIF
+IF CFLAG:ARG:2403 == 1
+    PRINTFORM 窗户开着，
+    ;白天
+    IF !TIME
+        PRINT 阳光从窗外照射进来，
+        IF !RAND:2
+            PRINTFORML 有小鸟停在窗口
+            CFLAG:ARG:2413 = 1
+        ELSE
+            PRINTFORML 在地上铺成一片
+        ENDIF
+    ;夜晚
+    ELSE
+        PRINTL 夜风吹拂着窗帘
+    ENDIF
+ELSE
+    PRINT 窗户关着，
+    ;白天
+    IF !TIME
+        PRINTL 阳光从窗外照射进来，在地上铺成一片
+    ;夜晚
+    ELSE
+        PRINTL 窗外漆黑一片
+    ENDIF
+ENDIF
+IF TIME
+    ;开灯
+    IF CFLAG:ARG:2416 == 0
+        IF CFLAG:ARG:2411 == 0
+            PRINT 蜡烛微弱的萤火之光只能照亮前方几米的范围
+        ELSEIF CFLAG:ARG:2411 == 1
+            PRINT 廉价灯泡的黯淡灯光勉强照亮了房间
+        ELSEIF CFLAG:ARG:2411 == 2
+            PRINT 二手落地灯的昏黄灯光给房间增添了一丝温馨
+        ELSEIF CFLAG:ARG:2411 == 3
+            PRINT 蓝蔷薇落地灯的偏蓝灯光温柔如水地铺陈在这一方空间
+        ELSEIF CFLAG:ARG:2411 == 4
+            PRINT 紫罗兰落地灯的偏紫灯光给房间营造出几分魅惑与暧昧
+        ELSEIF CFLAG:ARG:2411 == 5
+            PRINT 鸢尾草落地灯的偏绿灯光透过灯罩的缝隙洒落出来
+        ELSEIF CFLAG:ARG:2411 == 6
+            PRINT 雪花球落地灯里的人造雪花片片洒落，非常浪漫
+        ELSEIF CFLAG:ARG:2411 == 7
+            PRINT 香氛落地灯里的蜡烛噗滋噗滋地燃烧着，能嗅到一股朦胧的香气
+        ELSEIF CFLAG:ARG:2411 == 8
+            PRINT 精准报时落地灯里的钟摆慢悠悠地摇晃着，能听到滴答滴答的声响
+        ELSEIF CFLAG:ARG:2411 == 9
+            PRINT 八音盒落地灯里的两个婚纱小人随着悠扬的旋律慢慢旋转着
+        ELSEIF CFLAG:ARG:2411 == 10
+            PRINT 迷迭香落地灯里的诱惑剪影忽隐忽现，房间里充斥着艳而不俗的芳香
+        ELSEIF CFLAG:ARG:2411 == 11
+            PRINT 豪华典雅落地灯的明亮灯光把房间里照得亮亮堂堂，所有角落一览无余
+        ENDIF
+    ELSE
+        IF CFLAG:ARG:2411 == 0
+            PRINT 蜡烛熄灭了，屋子里只有月光照明
+        ELSEIF CFLAG:ARG:2411 == 1
+            PRINT 灯关着，屋子里只有月光照明
+        ELSEIF CFLAG:ARG:2411 == 2
+            PRINT 二手落地灯关着，屋子里只有月光照明
+        ELSEIF CFLAG:ARG:2411 == 3
+            PRINT 蓝蔷薇落地灯关着，屋子里只有月光照明
+        ELSEIF CFLAG:ARG:2411 == 4
+            PRINT 紫罗兰落地灯关着，屋子里只有月光照明
+        ELSEIF CFLAG:ARG:2411 == 5
+            PRINT 鸢尾草落地灯关着，屋子里只有月光照明
+        ELSEIF CFLAG:ARG:2411 == 6
+            PRINT 雪花球落地灯关着，屋子里只有月光照明
+        ELSEIF CFLAG:ARG:2411 == 7
+            PRINT 香氛落地灯关着，屋子里只有月光照明，能闻到一股朦胧的香气
+        ELSEIF CFLAG:ARG:2411 == 8
+            PRINT 精准报时落地灯关着，屋子里只有月光照明，能听到钟摆滴答滴答的声响
+        ELSEIF CFLAG:ARG:2411 == 9
+            PRINT 八音盒落地灯关着，屋子里只有月光照明，能听到八音盒优美的旋律
+        ELSEIF CFLAG:ARG:2411 == 10
+            PRINT 迷迭香落地灯关着，屋子里只有月光照明，房间里充斥着艳而不俗的芳香
+        ELSEIF CFLAG:ARG:2411 == 11
+            PRINT 豪华典雅落地灯关着，屋子里只有月光照明
+        ENDIF
+    ENDIF
+ELSE
+    IF CFLAG:ARG:2405 == 0 && CFLAG:ARG:2406 == 0 && CFLAG:ARG:2407 == 0 && CFLAG:ARG:2408 == 0 && CFLAG:ARG:2409 == 0
+        PRINT 什么都没有的房间显得有点寒酸
+    ELSEIF CFLAG:ARG:2412 < 3
+        PRINT 环视屋内，稍微感觉有点空荡荡的
+    ELSE
+        IF CFLAG:ARG:2401 == 1
+            PRINT 总觉得待在这里会有非常甜蜜的感觉
+        ELSEIF CFLAG:ARG:2401 == 2
+            PRINT 总觉得待在这里就会有一种想做的感觉
+        ELSEIF CFLAG:ARG:2401 == 3
+            PRINT 总觉得待在这里会莫名有想使唤人的感觉
+        ELSE
+            PRINT 总觉得待在这里连心情都平静下来了
+        ENDIF
+    ENDIF
+ENDIF
+PRINTL
+PRINTL
+WAIT
+;劳役中，在别人房间
+IF CFLAG:ARG:12 > 0 || CFLAG:ARG:2414 == 1 || TALENT:ARG:育儿中
+    PRINTL 现在这里还没有人在
+ELSEIF CFLAG:ARG:119
+    PRINTFORML %CALLNAME:ARG%还没长大，这里是给%CALLNAME:ARG%预备的房间
+;常识改变(叼鞋)
+ELSEIF CFLAG:ARG:7023
+	    ;常识改变
+	SIF CFLAG:ARG:7021
+		PRINTFORM 一丝不挂的
+        PRINTFORMW %CALLNAME:ARG%四肢著地，嘴裡叨著室內鞋
+        PRINTFORMW 眼神迷離地爬到%PLAYER_NAME()%面前放下鞋子，微笑地招呼主人穿上
+;崩溃
+ELSEIF TALENT:ARG:9
+    ;常识改变
+	SIF CFLAG:ARG:7021
+		PRINTFORM 一丝不挂的
+    IF !RAND:2
+        PRINTFORMW %CALLNAME:ARG%面对着墙壁又哭又笑，令人毛骨悚然
+    ELSE
+        PRINTFORMW %CALLNAME:ARG%好像在自言自语地说着些听不清的话
+    ENDIF
+ELSEIF TALENT:ARG:失意
+    ;常识改变
+	SIF CFLAG:ARG:7021
+		PRINTFORM 一丝不挂的
+    IF !RAND:9
+        PRINTFORM %CALLNAME:ARG%正躺在%床舖(ARG)%
+        PRINTW 上不时翻动身体，看起来像是失眠了
+        PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@索性从床上坐了起来
+    ELSEIF !RAND:8
+        PRINTFORM %CALLNAME:ARG%正坐在%床舖(ARG)%
+        PRINTW 上发呆，神情很是落寞
+        PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+    ELSEIF !RAND:7
+        IF CFLAG:ARG:2413 == 1
+            PRINTFORMW %CALLNAME:ARG%正呆呆地望着窗外的鸟儿，即使%PLAYER_NAME()%进来也没发现
+            PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+        ELSE
+            PRINTFORMW %CALLNAME:ARG%正痴痴地眺望窗外，神情有些呆滞
+            PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+        ENDIF
+    ;电视机
+    ELSEIF !RAND:6 && CFLAG:ARG:2405 > 0
+        PRINTFORM %CALLNAME:ARG%似乎正在看电视，电视上放映着
+        ;不同节目
+        IF !RAND:33
+            PRINTL 爱情电影
+        ELSEIF !RAND:32 && TALENT:ARG:315
+            PRINTL 财经新闻
+        ELSEIF !RAND:31 && TALENT:ARG:318
+            PRINTL 体育赛事
+        ELSEIF !RAND:30 && TALENT:ARG:319
+            PRINTL 艺术讲座
+        ELSEIF !RAND:29 && (TALENT:ARG:320 || TALENT:ARG:333)
+            PRINTL 音乐话剧
+        ELSEIF !RAND:28 && (TALENT:ARG:320 || TALENT:ARG:333)
+            PRINTL 演唱会实况
+        ELSEIF !RAND:27 && TALENT:ARG:321
+            PRINTL 星座节目
+        ELSEIF !RAND:26 && (TALENT:ARG:322 || TALENT:ARG:323)
+            PRINTL 走近科学
+        ELSEIF !RAND:25 && (TALENT:ARG:322 || TALENT:ARG:323)
+            PRINTL 科技发表会实况
+        ELSEIF !RAND:24 && (TALENT:ARG:322 || TALENT:ARG:323)
+            PRINTL 学术讲座
+        ELSEIF !RAND:23 && TALENT:ARG:324
+            PRINTL 文学讲坛
+        ELSEIF !RAND:22 && TALENT:ARG:324
+            PRINTL 文艺电影
+        ELSEIF !RAND:21 && TALENT:ARG:325
+            PRINTL 高达动画片
+        ELSEIF !RAND:20 && TALENT:ARG:325
+            PRINTL 变形金刚电影
+        ELSEIF !RAND:19 && TALENT:ARG:326
+            PRINTL 植物纪录片
+        ELSEIF !RAND:18 && TALENT:ARG:327
+            PRINTL 时装秀
+        ELSEIF !RAND:17 && TALENT:ARG:330
+            PRINTL 宗教节目
+        ELSEIF !RAND:16 && TALENT:ARG:330
+            PRINTL 佛学讲座
+        ELSEIF !RAND:15 && TALENT:ARG:幼稚
+            PRINTL 动画片
+        ELSEIF !RAND:14 && TALENT:ARG:113
+            PRINTL 健身节目
+        ELSEIF !RAND:13 && TALENT:ARG:美人
+            PRINTL 美容节目
+        ELSEIF !RAND:12
+            PRINTL 天气预报
+        ELSEIF !RAND:11
+            PRINTL 美食节目
+        ELSEIF !RAND:10
+            PRINTL 料理节目
+        ELSEIF !RAND:9
+            PRINTL 恐怖电影
+        ELSEIF !RAND:8
+            PRINTL 喜剧电影
+        ELSEIF !RAND:7
+            PRINTL 动作电影
+        ELSEIF !RAND:6
+            PRINTL 游戏实况
+        ELSEIF !RAND:5
+            PRINTL ＮＨＫ新闻
+        ELSEIF !RAND:4
+            PRINTL 选秀节目
+        ELSEIF !RAND:3
+            PRINTL 综艺节目
+        ELSEIF !RAND:2
+            PRINTL 问答节目
+        ELSE
+            PRINTL 脱口秀
+        ENDIF
+        PRINTFORMW 不过%CALLNAME:ARG%的心思好像并不在电视上，而且连%PLAYER_NAME()%进来都没注意到
+        PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+    ;看书
+    ELSEIF !RAND:5 && CFLAG:ARG:2406 > 0
+        PRINTFORM %CALLNAME:ARG%似乎正在%书架(ARG)%
+        PRINT 旁看书，书本的标题是
+        ;不同书籍
+        IF !RAND:34
+            PRINTL 『四季便当：煮夫的首选』
+        ELSEIF !RAND:33
+            PRINTL 『伦敦塔的邂逅』
+        ELSEIF !RAND:32 && TALENT:ARG:315
+            PRINTL 『华尔街巨人』
+        ELSEIF !RAND:31 && TALENT:ARG:318
+            PRINTL 『挑战你的极限』
+        ELSEIF !RAND:30 && TALENT:ARG:319
+            PRINTL 『梵高手稿』
+        ELSEIF !RAND:29 && (TALENT:ARG:320 || TALENT:ARG:333)
+            PRINTL 『超时空的音乐通史』
+        ELSEIF !RAND:28 && (TALENT:ARG:320 || TALENT:ARG:333)
+            PRINTL 『约翰·克里斯朵夫』
+        ELSEIF !RAND:27 && TALENT:ARG:321
+            PRINTL 『不为人知的三十五种禁忌秘术』
+        ELSEIF !RAND:26 && (TALENT:ARG:322 || TALENT:ARG:323)
+            PRINTL 『万物论』
+        ELSEIF !RAND:25 && (TALENT:ARG:322 || TALENT:ARG:323)
+            PRINTL 『从一到无穷大』
+        ELSEIF !RAND:24 && (TALENT:ARG:322 || TALENT:ARG:323)
+            PRINTL 『上帝掷骰子吗：量子物理史话』
+        ELSEIF !RAND:23 && TALENT:ARG:324
+            PRINTL 『尼采与形而上学』
+        ELSEIF !RAND:22 && TALENT:ARG:324
+            PRINTL 『今天我活着』
+        ELSEIF !RAND:21 && TALENT:ARG:325
+            PRINTL 『齿轮热处理设计』
+        ELSEIF !RAND:20 && TALENT:ARG:325
+            PRINTL 『创新算法』
+        ELSEIF !RAND:19 && TALENT:ARG:326
+            PRINTL 『花的智慧』
+        ELSEIF !RAND:18 && TALENT:ARG:327
+            PRINTL 『古怪的身体』
+        ELSEIF !RAND:17 && TALENT:ARG:330
+            PRINTL 『但丁的圣约书』
+        ELSEIF !RAND:16 && TALENT:ARG:330
+            PRINTL 『论三位一体』
+        ELSEIF !RAND:15 && TALENT:ARG:幼稚
+            PRINTL 『海的女儿』
+        ELSEIF !RAND:14 && TALENT:ARG:113
+            PRINTL 『囚徒增肌』
+        ELSEIF !RAND:13 && TALENT:ARG:美人
+            PRINTL 『美肌革命』
+        ELSEIF !RAND:12
+            PRINTL 『别在该动脑子的时候动感情』
+        ELSEIF !RAND:11
+            PRINTL 『商界名人成功励志传奇故事』
+        ELSEIF !RAND:10
+            PRINTL 『戒了吧，拖延症！』
+        ELSEIF !RAND:9
+            PRINTL 『占星术杀人魔法』
+        ELSEIF !RAND:8
+            PRINTL 『月亮宝石』
+        ELSEIF !RAND:7
+            PRINTL 『我是猫』
+        ELSEIF !RAND:6
+            PRINTW 『在异世界当魔王的我穿越为十六岁人气偶像美少女却在第二天出车祸身亡？！』
+            PRINTL 为什么会有那么长的名字…
+        ELSEIF !RAND:5
+            PRINTL 『末世岛屿：一切坚守都已烟消云散』
+        ELSEIF !RAND:4
+            PRINTL 『我想吃掉你的胰脏』
+        ELSEIF !RAND:3
+            PRINTL 『绵羊和钢的森林』
+        ELSEIF !RAND:2
+            PRINTL 『便利店人生』
+        ELSE
+            PRINTL 『身体再僵硬的人也能轻松练成一字马的惊人方法』
+        ENDIF
+        PRINTFORMW 不过%CALLNAME:ARG%的心思好像不在书页上，连书都拿倒了
+        PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才\@ RAND:2 ? 慌忙关上书本 # 吓了一跳，丢下书本 \@转过头来
+    ;沙发
+    ELSEIF !RAND:4 && CFLAG:ARG:2407 > 0
+        PRINTFORM %CALLNAME:ARG%正坐在%沙发(ARG)%上
+        IF !RAND:3 && TALENT:ARG:327
+            PRINTFORML 织毛线，但针脚显然已经乱了
+        ELSEIF !RAND:2
+            PRINTFORML 小憩，眼神停滞在空中某处
+        ELSE
+            PRINTFORML 喝茶，茶杯端到嘴边，却迟迟未动
+        ENDIF
+        PRINTFORML 见到%PLAYER_NAME()%进来，%CALLNAME:ARG%吓了一跳似的，慌忙让出座位
+    ;衣柜
+    ELSEIF !RAND:3 && CFLAG:ARG:2408 > 0
+        PRINTFORM %CALLNAME:ARG%正在%衣柜(ARG)%
+        IF !RAND:3
+            PRINTFORML 前比划来比划去，但看上去不像是为了自己裁量
+        ELSEIF !RAND:2 && CFLAG:ARG:2408 >= 3
+            PRINTFORML 的镜子前，不知在想什么
+        ELSE
+            PRINTFORML 前试衣服，但看上去像是为别人试的
+        ENDIF
+        PRINTFORM 见到%PLAYER_NAME()%进来，%CALLNAME:ARG%
+        IF CFLAG:ARG:2408 == 1
+            PRINT 合上了纸箱
+        ELSEIF CFLAG:ARG:2408 == 2
+            PRINT 关上了组合塑料箱
+        ELSEIF CFLAG:ARG:2408 == 3
+            PRINT 关上了衣柜的门
+        ELSEIF CFLAG:ARG:2408 == 4
+            PRINT 关上了衣柜的门
+        ELSEIF CFLAG:ARG:2408 == 5
+            PRINT 关上了衣柜的门
+        ELSEIF CFLAG:ARG:2408 == 6
+            PRINT 合上了换衣间的挂帘
+        ELSEIF CFLAG:ARG:2408 == 7
+            PRINT 合上了换衣间的挂帘
+        ELSEIF CFLAG:ARG:2408 == 8
+            PRINT 关上了衣柜的门
+        ELSEIF CFLAG:ARG:2408 == 9
+            PRINT 关上了衣帽间的门
+        ELSEIF CFLAG:ARG:2408 == 10
+            PRINT 关上了衣帽间的门
+        ELSEIF CFLAG:ARG:2408 == 11
+            PRINT 关上了衣柜的门
+        ENDIF
+    ;展示柜
+    ELSEIF !RAND:2 && CFLAG:ARG:2409 > 0
+			;常识改变
+		IF CFLAG:ARG:7025
+				PRINTFORM %CALLNAME:ARG%正在摆弄%展示柜(ARG)%
+				PRINTFORML 上的内衣裤，但眼神飘忽在空中不知在看哪里
+		ELSE
+			IF !RAND:3
+				PRINTFORM %CALLNAME:ARG%正在清点%展示柜(ARG)%
+				PRINTFORML 上的物品，不过从刚才就数错了好几回
+			ELSEIF !RAND:2
+				PRINTFORM %CALLNAME:ARG%正在调整%展示柜(ARG)%
+				PRINTFORML 上的排列，但眼神飘忽在空中不知在看哪里
+			ELSE
+				PRINTFORM %CALLNAME:ARG%正在确认%展示柜(ARG)%
+				PRINTFORML 上的物品，但眼神飘忽在空中不知在看哪里
+			ENDIF
+		ENDIF
+        PRINTFORML 见到%PLAYER_NAME()%进来，%CALLNAME:ARG%像是回魂一样，眼中又有了焦距
+    ELSE
+        IF !RAND:2
+            PRINTFORML %CALLNAME:ARG%正在房间里练习舞步，像是在幻想与另一个人跳似的
+        ELSE
+            PRINTFORML %CALLNAME:ARG%正在做着扫除工作，时不时停下动作，不知在想些什么
+        ENDIF
+        PRINTFORML 见到%PLAYER_NAME()%进来，%CALLNAME:ARG%只是抬了抬眼皮
+    ENDIF
+ELSE
+    ;常识改变
+	SIF CFLAG:ARG:7021
+		PRINTFORM 一丝不挂的
+    ;陷落
+    IF TALENT:ARG:3 || TALENT:ARG:4 || TALENT:ARG:5 || TALENT:ARG:6 || TALENT:ARG:7 || TALENT:ARG:8
+        ;做自己的事，看到主人过来迎接
+        IF !RAND:2
+            IF !RAND:9
+                PRINTFORM %CALLNAME:ARG%正躺在%床舖(ARG)%
+                PRINTW 上不时翻动身体，最后索性从床上下来理了理头发
+            ELSEIF !RAND:8
+                PRINTFORM %CALLNAME:ARG%正坐在%床舖(ARG)%
+                PRINTW 上发呆
+            ELSEIF !RAND:7
+                IF CFLAG:ARG:2413 == 1
+                    PRINTFORMW %CALLNAME:ARG%正望着窗外的鸟
+                ELSE
+                    PRINTFORMW %CALLNAME:ARG%正在眺望窗外
+                ENDIF
+            ;电视机
+            ELSEIF !RAND:6 && CFLAG:ARG:2405 > 0
+                PRINTFORM %CALLNAME:ARG%似乎正在看电视，电视上放映着
+                ;不同节目
+                IF !RAND:33
+                    PRINTW 爱情电影
+                ELSEIF !RAND:32 && TALENT:ARG:315
+                    PRINTW 财经新闻
+                ELSEIF !RAND:31 && TALENT:ARG:318
+                    PRINTW 体育赛事
+                ELSEIF !RAND:30 && TALENT:ARG:319
+                    PRINTW 艺术讲座
+                ELSEIF !RAND:29 && (TALENT:ARG:320 || TALENT:ARG:333)
+                    PRINTW 音乐话剧
+                ELSEIF !RAND:28 && (TALENT:ARG:320 || TALENT:ARG:333)
+                    PRINTW 演唱会实况
+                ELSEIF !RAND:27 && TALENT:ARG:321
+                    PRINTW 星座节目
+                ELSEIF !RAND:26 && (TALENT:ARG:322 || TALENT:ARG:323)
+                    PRINTW 走近科学
+                ELSEIF !RAND:25 && (TALENT:ARG:322 || TALENT:ARG:323)
+                    PRINTW 科技发表会实况
+                ELSEIF !RAND:24 && (TALENT:ARG:322 || TALENT:ARG:323)
+                    PRINTW 学术讲座
+                ELSEIF !RAND:23 && TALENT:ARG:324
+                    PRINTW 文学讲坛
+                ELSEIF !RAND:22 && TALENT:ARG:324
+                    PRINTW 文艺电影
+                ELSEIF !RAND:21 && TALENT:ARG:325
+                    PRINTW 高达动画片
+                ELSEIF !RAND:20 && TALENT:ARG:325
+                    PRINTW 变形金刚电影
+                ELSEIF !RAND:19 && TALENT:ARG:326
+                    PRINTW 植物纪录片
+                ELSEIF !RAND:18 && TALENT:ARG:327
+                    PRINTW 时装秀
+                ELSEIF !RAND:17 && TALENT:ARG:330
+                    PRINTW 宗教节目
+                ELSEIF !RAND:16 && TALENT:ARG:330
+                    PRINTW 佛学讲座
+                ELSEIF !RAND:15 && TALENT:ARG:幼稚
+                    PRINTW 动画片
+                ELSEIF !RAND:14 && TALENT:ARG:113
+                    PRINTW 健身节目
+                ELSEIF !RAND:13 && TALENT:ARG:美人
+                    PRINTW 美容节目
+                ELSEIF !RAND:12
+                    PRINTW 天气预报
+                ELSEIF !RAND:11
+                    PRINTW 美食节目
+                ELSEIF !RAND:10
+                    PRINTW 料理节目
+                ELSEIF !RAND:9
+                    PRINTW 恐怖电影
+                ELSEIF !RAND:8
+                    PRINTW 喜剧电影
+                ELSEIF !RAND:7
+                    PRINTW 动作电影
+                ELSEIF !RAND:6
+                    PRINTW 游戏实况
+                ELSEIF !RAND:5
+                    PRINTW ＮＨＫ新闻
+                ELSEIF !RAND:4
+                    PRINTW 选秀节目
+                ELSEIF !RAND:3
+                    PRINTW 综艺节目
+                ELSEIF !RAND:2
+                    PRINTW 问答节目
+                ELSE
+                    PRINTW 脱口秀
+                ENDIF
+            ;看书
+            ELSEIF !RAND:5 && CFLAG:ARG:2406 > 0
+                PRINTFORM %CALLNAME:ARG%似乎正在%书架(ARG)%
+                PRINT 旁看书，书本的标题是
+                ;不同书籍
+                IF !RAND:34
+                    PRINTW 『四季便当：煮夫的首选』
+                ELSEIF !RAND:33
+                    PRINTW 『伦敦塔的邂逅』
+                ELSEIF !RAND:32 && TALENT:ARG:315
+                    PRINTW 『华尔街巨人』
+                ELSEIF !RAND:31 && TALENT:ARG:318
+                    PRINTW 『挑战你的极限』
+                ELSEIF !RAND:30 && TALENT:ARG:319
+                    PRINTW 『梵高手稿』
+                ELSEIF !RAND:29 && (TALENT:ARG:320 || TALENT:ARG:333)
+                    PRINTW 『超时空的音乐通史』
+                ELSEIF !RAND:28 && (TALENT:ARG:320 || TALENT:ARG:333)
+                    PRINTW 『约翰·克里斯朵夫』
+                ELSEIF !RAND:27 && TALENT:ARG:321
+                    PRINTW 『不为人知的三十五种禁忌秘术』
+                ELSEIF !RAND:26 && (TALENT:ARG:322 || TALENT:ARG:323)
+                    PRINTW 『万物论』
+                ELSEIF !RAND:25 && (TALENT:ARG:322 || TALENT:ARG:323)
+                    PRINTW 『从一到无穷大』
+                ELSEIF !RAND:24 && (TALENT:ARG:322 || TALENT:ARG:323)
+                    PRINTW 『上帝掷骰子吗：量子物理史话』
+                ELSEIF !RAND:23 && TALENT:ARG:324
+                    PRINTW 『尼采与形而上学』
+                ELSEIF !RAND:22 && TALENT:ARG:324
+                    PRINTW 『今天我活着』
+                ELSEIF !RAND:21 && TALENT:ARG:325
+                    PRINTW 『齿轮热处理设计』
+                ELSEIF !RAND:20 && TALENT:ARG:325
+                    PRINTW 『创新算法』
+                ELSEIF !RAND:19 && TALENT:ARG:326
+                    PRINTW 『花的智慧』
+                ELSEIF !RAND:18 && TALENT:ARG:327
+                    PRINTW 『古怪的身体』
+                ELSEIF !RAND:17 && TALENT:ARG:330
+                    PRINTW 『但丁的圣约书』
+                ELSEIF !RAND:16 && TALENT:ARG:330
+                    PRINTW 『论三位一体』
+                ELSEIF !RAND:15 && TALENT:ARG:幼稚
+                    PRINTW 『海的女儿』
+                ELSEIF !RAND:14 && TALENT:ARG:113
+                    PRINTW 『囚徒增肌』
+                ELSEIF !RAND:13 && TALENT:ARG:美人
+                    PRINTW 『美肌革命』
+                ELSEIF !RAND:12
+                    PRINTW 『别在该动脑子的时候动感情』
+                ELSEIF !RAND:11
+                    PRINTW 『商界名人成功励志传奇故事』
+                ELSEIF !RAND:10
+                    PRINTW 『戒了吧，拖延症！』
+                ELSEIF !RAND:9
+                    PRINTW 『占星术杀人魔法』
+                ELSEIF !RAND:8
+                    PRINTW 『月亮宝石』
+                ELSEIF !RAND:7
+                    PRINTW 『我是猫』
+                ELSEIF !RAND:6
+                    PRINTL 『在异世界当魔王的我穿越为十六岁人气偶像美少女却在第二天出车祸身亡？！』
+                    PRINTW 为什么会有那么长的名字…
+                ELSEIF !RAND:5
+                    PRINTW 『末世岛屿：一切坚守都已烟消云散』
+                ELSEIF !RAND:4
+                    PRINTW 『我想吃掉你的胰脏』
+                ELSEIF !RAND:3
+                    PRINTW 『绵羊和钢的森林』
+                ELSEIF !RAND:2
+                    PRINTW 『便利店人生』
+                ELSE
+                    PRINTW 『身体再僵硬的人也能轻松练成一字马的惊人方法』
+                ENDIF
+            ;沙发
+            ELSEIF !RAND:4 && CFLAG:ARG:2407 > 0
+                PRINTFORM %CALLNAME:ARG%正坐在%沙发(ARG)%上
+                IF !RAND:3 && TALENT:ARG:327
+                    PRINTFORMW 织毛线
+                ELSEIF !RAND:2
+                    PRINTFORMW 小憩
+                ELSE
+                    PRINTFORMW 喝茶
+                ENDIF
+            ;衣柜
+            ELSEIF !RAND:3 && CFLAG:ARG:2408 > 0
+                PRINTFORM %CALLNAME:ARG%正在%衣柜(ARG)%
+                IF !RAND:3
+                    PRINTFORML 前整理衣服
+                ELSEIF !RAND:2 && CFLAG:ARG:2408 >= 3
+                    PRINTFORML 前照镜子
+                ELSE
+                    PRINTFORML 前试衣服
+                ENDIF
+            ;展示柜
+            ELSEIF !RAND:2 && CFLAG:ARG:2409 > 0
+				;常识改变
+				IF CFLAG:ARG:7025
+					PRINTFORM %CALLNAME:ARG%正在摆弄%展示柜(ARG)%
+					PRINTFORML 上的内衣裤
+				ELSE
+					IF !RAND:3
+						PRINTFORM %CALLNAME:ARG%正在清点%展示柜(ARG)%
+						PRINTFORMW 上的物品
+					ELSEIF !RAND:2
+						PRINTFORM %CALLNAME:ARG%正在调整%展示柜(ARG)%
+						PRINTFORMW 上的排列
+					ELSE
+						PRINTFORM %CALLNAME:ARG%正在确认%展示柜(ARG)%
+						PRINTFORMW 上的物品
+					ENDIF
+				ENDIF
+            ELSE
+                IF !RAND:4
+                    PRINTFORMW %CALLNAME:ARG%正在房间里轻轻哼歌
+                ELSEIF !RAND:3
+                    PRINTFORMW %CALLNAME:ARG%正在房间里一个人跳舞
+                ELSEIF !RAND:2
+                    PRINTFORMW %CALLNAME:ARG%正在做着扫除工作
+                ELSE
+                    PRINTFORMW %CALLNAME:ARG%正在伸懒腰，还顺势活动了一下手脚
+                ENDIF
+            ENDIF
+            ;迎接
+            IF TALENT:ARG:3 || TALENT:ARG:6
+                PRINTFORML 看到%PLAYER_NAME()%进来，%CALLNAME:ARG%欣喜地走了过来
+            ELSEIF TALENT:ARG:4 || TALENT:ARG:7
+                PRINTFORML 看到%PLAYER_NAME()%进来，%CALLNAME:ARG%像是期待着什么一样走了过来
+            ELSEIF TALENT:ARG:5 || TALENT:ARG:8
+                PRINTFORML 看到%PLAYER_NAME()%进来，%CALLNAME:ARG%恭敬地走了过来
+            ENDIF
+        ;未中断当前行为，或是其他场合
+        ELSE
+            IF !RAND:9 && TALENT:ARG:嫉妒
+                PRINTFORM %CALLNAME:ARG%正躺在%床舖(ARG)%
+                PRINTW 上不时翻动身体，看起来是失眠了
+                PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@索性起身从床上下来了
+            ELSEIF !RAND:8
+                PRINTFORM %CALLNAME:ARG%正坐在%床舖(ARG)%
+                PRINTFORMW 上发呆，连%PLAYER_NAME()%进来都没注意到
+                PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+            ELSEIF !RAND:7
+                IF CFLAG:ARG:2413 == 1
+                    PRINTFORMW %CALLNAME:ARG%正望着窗台的鸟发呆，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSE
+                    PRINTFORMW %CALLNAME:ARG%正在眺望窗外，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ENDIF
+            ;电视机
+            ELSEIF !RAND:6 && CFLAG:ARG:2405 > 0
+                PRINTFORM %CALLNAME:ARG%似乎正在看电视，电视上放映着
+                ;不同节目
+                IF !RAND:34
+                    PRINTL 爱情电影
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ;自己的视频额外处理
+                ELSEIF !RAND:33 && CFLAG:ARG:20
+                    PRINTFORMW %CALLNAME:ARG%自己的录像
+                    PRINTFORML 看到%PLAYER_NAME()%进来，%CALLNAME:ARG%急忙红着脸把电视关掉了
+                ELSEIF !RAND:32 && TALENT:ARG:315
+                    PRINTL 财经新闻
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:31 && TALENT:ARG:318
+                    PRINTL 体育赛事
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:30 && TALENT:ARG:319
+                    PRINTL 艺术讲座
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:29 && (TALENT:ARG:320 || TALENT:ARG:333)
+                    PRINTL 音乐话剧
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:28 && (TALENT:ARG:320 || TALENT:ARG:333)
+                    PRINTL 演唱会实况
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:27 && TALENT:ARG:321
+                    PRINTL 星座节目
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:26 && (TALENT:ARG:322 || TALENT:ARG:323)
+                    PRINTL 走近科学
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:25 && (TALENT:ARG:322 || TALENT:ARG:323)
+                    PRINTL 科技发表会实况
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:24 && (TALENT:ARG:322 || TALENT:ARG:323)
+                    PRINTL 学术讲座
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:23 && TALENT:ARG:324
+                    PRINTL 文学讲坛
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:22 && TALENT:ARG:324
+                    PRINTL 文艺电影
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:21 && TALENT:ARG:325
+                    PRINTL 高达动画片
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:20 && TALENT:ARG:325
+                    PRINTL 变形金刚电影
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:19 && TALENT:ARG:326
+                    PRINTL 植物纪录片
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:18 && TALENT:ARG:327
+                    PRINTL 时装秀
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:17 && TALENT:ARG:330
+                    PRINTL 宗教节目
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:16 && TALENT:ARG:330
+                    PRINTL 佛学讲座
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:15 && TALENT:ARG:幼稚
+                    PRINTL 动画片
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:14 && TALENT:ARG:113
+                    PRINTL 健身节目
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:13 && TALENT:ARG:美人
+                    PRINTL 美容节目
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:12
+                    PRINTL 天气预报
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:11
+                    PRINTL 美食节目
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:10
+                    PRINTL 料理节目
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:9
+                    PRINTL 恐怖电影
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:8
+                    PRINTL 喜剧电影
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:7
+                    PRINTL 动作电影
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:6
+                    PRINTL 游戏实况
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:5
+                    PRINTL ＮＨＫ新闻
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:4
+                    PRINTL 选秀节目
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:3
+                    PRINTL 综艺节目
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSEIF !RAND:2
+                    PRINTL 问答节目
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ELSE
+                    PRINTL 脱口秀
+                    PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                    PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才转过头来
+                ENDIF
+            ;看书
+            ELSEIF !RAND:5 && CFLAG:ARG:2406 > 0
+                PRINTFORM %CALLNAME:ARG%似乎正在%书架(ARG)%
+                PRINT 旁看书，书本的标题是
+                ;不同书籍
+                IF !RAND:34
+                    PRINTL 『四季便当：煮夫的首选』
+                ELSEIF !RAND:33
+                    PRINTL 『伦敦塔的邂逅』
+                ELSEIF !RAND:32 && TALENT:ARG:315
+                    PRINTL 『华尔街巨人』
+                ELSEIF !RAND:31 && TALENT:ARG:318
+                    PRINTL 『挑战你的极限』
+                ELSEIF !RAND:30 && TALENT:ARG:319
+                    PRINTL 『梵高手稿』
+                ELSEIF !RAND:29 && (TALENT:ARG:320 || TALENT:ARG:333)
+                    PRINTL 『超时空的音乐通史』
+                ELSEIF !RAND:28 && (TALENT:ARG:320 || TALENT:ARG:333)
+                    PRINTL 『约翰·克里斯朵夫』
+                ELSEIF !RAND:27 && TALENT:ARG:321
+                    PRINTL 『不为人知的三十五种禁忌秘术』
+                ELSEIF !RAND:26 && (TALENT:ARG:322 || TALENT:ARG:323)
+                    PRINTL 『万物论』
+                ELSEIF !RAND:25 && (TALENT:ARG:322 || TALENT:ARG:323)
+                    PRINTL 『从一到无穷大』
+                ELSEIF !RAND:24 && (TALENT:ARG:322 || TALENT:ARG:323)
+                    PRINTL 『上帝掷骰子吗：量子物理史话』
+                ELSEIF !RAND:23 && TALENT:ARG:324
+                    PRINTL 『尼采与形而上学』
+                ELSEIF !RAND:22 && TALENT:ARG:324
+                    PRINTL 『今天我活着』
+                ELSEIF !RAND:21 && TALENT:ARG:325
+                    PRINTL 『齿轮热处理设计』
+                ELSEIF !RAND:20 && TALENT:ARG:325
+                    PRINTL 『创新算法』
+                ELSEIF !RAND:19 && TALENT:ARG:326
+                    PRINTL 『花的智慧』
+                ELSEIF !RAND:18 && TALENT:ARG:327
+                    PRINTL 『古怪的身体』
+                ELSEIF !RAND:17 && TALENT:ARG:330
+                    PRINTL 『但丁的圣约书』
+                ELSEIF !RAND:16 && TALENT:ARG:330
+                    PRINTL 『论三位一体』
+                ELSEIF !RAND:15 && TALENT:ARG:幼稚
+                    PRINTL 『海的女儿』
+                ELSEIF !RAND:14 && TALENT:ARG:113
+                    PRINTL 『囚徒增肌』
+                ELSEIF !RAND:13 && TALENT:ARG:美人
+                    PRINTL 『美肌革命』
+                ELSEIF !RAND:12
+                    PRINTL 『别在该动脑子的时候动感情』
+                ELSEIF !RAND:11
+                    PRINTL 『商界名人成功励志传奇故事』
+                ELSEIF !RAND:10
+                    PRINTL 『戒了吧，拖延症！』
+                ELSEIF !RAND:9
+                    PRINTL 『占星术杀人魔法』
+                ELSEIF !RAND:8
+                    PRINTL 『月亮宝石』
+                ELSEIF !RAND:7
+                    PRINTL 『我是猫』
+                ELSEIF !RAND:6
+                    PRINTW 『在异世界当魔王的我穿越为十六岁人气偶像美少女却在第二天出车祸身亡？！』
+                    PRINTL 为什么会有那么长的名字…
+                ELSEIF !RAND:5
+                    PRINTL 『末世岛屿：一切坚守都已烟消云散』
+                ELSEIF !RAND:4
+                    PRINTL 『我想吃掉你的胰脏』
+                ELSEIF !RAND:3
+                    PRINTL 『绵羊和钢的森林』
+                ELSEIF !RAND:2
+                    PRINTL 『便利店人生』
+                ELSE
+                    PRINTL 『身体再僵硬的人也能轻松练成一字马的惊人方法』
+                ENDIF
+                PRINTFORMW %CALLNAME:ARG%看得\@ RAND:2 ? 入迷 # 打瞌睡 \@，连%PLAYER_NAME()%进来都没注意到
+                PRINTFORML 出声喊了%CALLNAME:ARG%的名字，\@ MALE(ARG) ? 他 # 她 \@才\@ RAND:2 ? 慌忙关上书本 # 合上书本 \@转过头来
+            ;沙发
+            ELSEIF !RAND:4 && CFLAG:ARG:2407 > 0
+                PRINTFORM %CALLNAME:ARG%正坐在%沙发(ARG)%
+                PRINT 上
+                IF !RAND:3 && TALENT:ARG:327
+                    PRINTFORMW 织毛线
+                ELSEIF !RAND:2
+                    PRINTFORMW 小憩
+                ELSE
+                    PRINTFORMW 喝茶
+                ENDIF
+                PRINTFORML 见到%PLAYER_NAME()%进来，%CALLNAME:ARG%让出了座位，殷切地看过来
+            ;衣柜
+            ELSEIF !RAND:3 && CFLAG:ARG:2408 > 0
+                PRINTFORM %CALLNAME:ARG%正在%衣柜(ARG)%
+                IF !RAND:3
+                    PRINTFORML 前整理衣服
+                ELSEIF !RAND:2 && CFLAG:ARG:2408 >= 3
+                    PRINTFORML 前照镜子
+                ELSE
+                    PRINTFORML 前试衣服
+                ENDIF
+                IF !RAND:2
+                    PRINTFORM 见到%PLAYER_NAME()%进来，%CALLNAME:ARG%红着脸
+                    IF CFLAG:ARG:2408 == 1
+                        PRINT 合上纸箱
+                    ELSEIF CFLAG:ARG:2408 == 2
+                        PRINT 关上组合塑料箱
+                    ELSEIF CFLAG:ARG:2408 == 3
+                        PRINT 关上衣柜的门
+                    ELSEIF CFLAG:ARG:2408 == 4
+                        PRINT 关上衣柜的门
+                    ELSEIF CFLAG:ARG:2408 == 5
+                        PRINT 关上衣柜的门
+                    ELSEIF CFLAG:ARG:2408 == 6
+                        PRINT 合上换衣间的挂帘
+                    ELSEIF CFLAG:ARG:2408 == 7
+                        PRINT 合上换衣间的挂帘
+                    ELSEIF CFLAG:ARG:2408 == 8
+                        PRINT 关上衣柜的门
+                    ELSEIF CFLAG:ARG:2408 == 9
+                        PRINT 关上衣帽间的门
+                    ELSEIF CFLAG:ARG:2408 == 10
+                        PRINT 关上衣帽间的门
+                    ELSEIF CFLAG:ARG:2408 == 11
+                        PRINT 关上衣柜的门
+                    ENDIF
+                    PRINTL 转过身来
+                ELSE
+                    PRINTFORML 见到%PLAYER_NAME()%进来，%CALLNAME:ARG%红着脸走上前来关上了门
+                    CFLAG:ARG:2404 = 1
+                    PRINTL 这是被…赶出来了吗？
+                    RETURN 0
+                ENDIF
+            ;展示柜
+            ELSEIF !RAND:2 && CFLAG:ARG:2409 > 0
+				;常识改变
+				IF CFLAG:ARG:7025
+					PRINTFORM %CALLNAME:ARG%正在摆弄%展示柜(ARG)%
+					PRINTFORML 上的内衣裤
+				ELSE
+					IF !RAND:3
+						PRINTFORM %CALLNAME:ARG%正在清点%展示柜(ARG)%
+						PRINTFORMW 上的物品
+					ELSEIF !RAND:2
+						PRINTFORM %CALLNAME:ARG%正在调整%展示柜(ARG)%
+						PRINTFORMW 上的排列
+					ELSE
+						PRINTFORM %CALLNAME:ARG%正在确认%展示柜(ARG)%
+						PRINTFORMW 上的物品
+					ENDIF
+				ENDIF
+                PRINTFORML 见到%PLAYER_NAME()%进来，%CALLNAME:ARG%微笑着轻轻点了下头
+            ELSE
+                IF !RAND:4
+                    PRINTFORMW %CALLNAME:ARG%正在房间里轻轻哼歌
+                ELSEIF !RAND:3
+                    PRINTFORML %CALLNAME:ARG%正在房间里一个人跳舞
+                ELSEIF !RAND:2
+                    PRINTFORML %CALLNAME:ARG%正在做着扫除工作
+                ELSE
+                    PRINTFORML %CALLNAME:ARG%正在伸懒腰，还顺势活动了一下手脚
+                ENDIF
+                PRINTFORML 见到%PLAYER_NAME()%进来，%CALLNAME:ARG%有点窘迫，但还是迎了上来
+            ENDIF
+        ENDIF
+    ;未陷落
+    ELSEIF !TALENT:ARG:3 && !TALENT:ARG:4 && !TALENT:ARG:5 && !TALENT:ARG:6 && !TALENT:ARG:7 && !TALENT:ARG:8
+        IF !RAND:9
+            PRINTFORM %CALLNAME:ARG%正躺在%床舖(ARG)%
+            PRINTW 上不时翻动身体，看起来是失眠了
+        ELSEIF !RAND:8
+            PRINTFORM %CALLNAME:ARG%正坐在%床舖(ARG)%
+            PRINTW 上发呆
+        ELSEIF !RAND:7
+            IF CFLAG:ARG:2413 == 1
+                PRINTFORMW %CALLNAME:ARG%正望着窗外的鸟
+            ELSE
+                PRINTFORMW %CALLNAME:ARG%正在眺望窗外
+            ENDIF
+        ;电视机
+        ELSEIF !RAND:6 && CFLAG:ARG:2405 > 0
+            PRINTFORM %CALLNAME:ARG%似乎正在看电视，电视上放映着
+            ;不同节目
+            IF !RAND:33
+                PRINTW 爱情电影
+            ELSEIF !RAND:32 && TALENT:ARG:315
+                PRINTW 财经新闻
+            ELSEIF !RAND:31 && TALENT:ARG:318
+                PRINTW 体育赛事
+            ELSEIF !RAND:30 && TALENT:ARG:319
+                PRINTW 艺术讲座
+            ELSEIF !RAND:29 && (TALENT:ARG:320 || TALENT:ARG:333)
+                PRINTW 音乐话剧
+            ELSEIF !RAND:28 && (TALENT:ARG:320 || TALENT:ARG:333)
+                PRINTW 演唱会实况
+            ELSEIF !RAND:27 && TALENT:ARG:321
+                PRINTW 星座节目
+            ELSEIF !RAND:26 && (TALENT:ARG:322 || TALENT:ARG:323)
+                PRINTW 走近科学
+            ELSEIF !RAND:25 && (TALENT:ARG:322 || TALENT:ARG:323)
+                PRINTW 科技发表会实况
+            ELSEIF !RAND:24 && (TALENT:ARG:322 || TALENT:ARG:323)
+                PRINTW 学术讲座
+            ELSEIF !RAND:23 && TALENT:ARG:324
+                PRINTW 文学讲坛
+            ELSEIF !RAND:22 && TALENT:ARG:324
+                PRINTW 文艺电影
+            ELSEIF !RAND:21 && TALENT:ARG:325
+                PRINTW 高达动画片
+            ELSEIF !RAND:20 && TALENT:ARG:325
+                PRINTW 变形金刚电影
+            ELSEIF !RAND:19 && TALENT:ARG:326
+                PRINTW 植物纪录片
+            ELSEIF !RAND:18 && TALENT:ARG:327
+                PRINTW 时装秀
+            ELSEIF !RAND:17 && TALENT:ARG:330
+                PRINTW 宗教节目
+            ELSEIF !RAND:16 && TALENT:ARG:330
+                PRINTW 佛学讲座
+            ELSEIF !RAND:15 && TALENT:ARG:幼稚
+                PRINTW 动画片
+            ELSEIF !RAND:14 && TALENT:ARG:113
+                PRINTW 健身节目
+            ELSEIF !RAND:13 && TALENT:ARG:美人
+                PRINTW 美容节目
+            ELSEIF !RAND:12
+                PRINTW 天气预报
+            ELSEIF !RAND:11
+                PRINTW 美食节目
+            ELSEIF !RAND:10
+                PRINTW 料理节目
+            ELSEIF !RAND:9
+                PRINTW 恐怖电影
+            ELSEIF !RAND:8
+                PRINTW 喜剧电影
+            ELSEIF !RAND:7
+                PRINTW 动作电影
+            ELSEIF !RAND:6
+                PRINTW 游戏实况
+            ELSEIF !RAND:5
+                PRINTW ＮＨＫ新闻
+            ELSEIF !RAND:4
+                PRINTW 选秀节目
+            ELSEIF !RAND:3
+                PRINTW 综艺节目
+            ELSEIF !RAND:2
+                PRINTW 问答节目
+            ELSE
+                PRINTW 脱口秀
+            ENDIF
+        ;看书
+        ELSEIF !RAND:5 && CFLAG:ARG:2406 > 0
+            PRINTFORM %CALLNAME:ARG%似乎正在%书架(ARG)%
+            PRINT 旁看书，书本的标题是
+            ;不同书籍
+            IF !RAND:34
+                PRINTW 『四季便当：煮夫的首选』
+            ELSEIF !RAND:33
+                PRINTW 『伦敦塔的邂逅』
+            ELSEIF !RAND:32 && TALENT:ARG:315
+                PRINTW 『华尔街巨人』
+            ELSEIF !RAND:31 && TALENT:ARG:318
+                PRINTW 『挑战你的极限』
+            ELSEIF !RAND:30 && TALENT:ARG:319
+                PRINTW 『梵高手稿』
+            ELSEIF !RAND:29 && (TALENT:ARG:320 || TALENT:ARG:333)
+                PRINTW 『超时空的音乐通史』
+            ELSEIF !RAND:28 && (TALENT:ARG:320 || TALENT:ARG:333)
+                PRINTW 『约翰·克里斯朵夫』
+            ELSEIF !RAND:27 && TALENT:ARG:321
+                PRINTW 『不为人知的三十五种禁忌秘术』
+            ELSEIF !RAND:26 && (TALENT:ARG:322 || TALENT:ARG:323)
+                PRINTW 『万物论』
+            ELSEIF !RAND:25 && (TALENT:ARG:322 || TALENT:ARG:323)
+                PRINTW 『从一到无穷大』
+            ELSEIF !RAND:24 && (TALENT:ARG:322 || TALENT:ARG:323)
+                PRINTW 『上帝掷骰子吗：量子物理史话』
+            ELSEIF !RAND:23 && TALENT:ARG:324
+                PRINTW 『尼采与形而上学』
+            ELSEIF !RAND:22 && TALENT:ARG:324
+                PRINTW 『今天我活着』
+            ELSEIF !RAND:21 && TALENT:ARG:325
+                PRINTW 『齿轮热处理设计』
+            ELSEIF !RAND:20 && TALENT:ARG:325
+                PRINTW 『创新算法』
+            ELSEIF !RAND:19 && TALENT:ARG:326
+                PRINTW 『花的智慧』
+            ELSEIF !RAND:18 && TALENT:ARG:327
+                PRINTW 『古怪的身体』
+            ELSEIF !RAND:17 && TALENT:ARG:330
+                PRINTW 『但丁的圣约书』
+            ELSEIF !RAND:16 && TALENT:ARG:330
+                PRINTW 『论三位一体』
+            ELSEIF !RAND:15 && TALENT:ARG:幼稚
+                PRINTW 『海的女儿』
+            ELSEIF !RAND:14 && TALENT:ARG:113
+                PRINTW 『囚徒增肌』
+            ELSEIF !RAND:13 && TALENT:ARG:美人
+                PRINTW 『美肌革命』
+            ELSEIF !RAND:12
+                PRINTW 『别在该动脑子的时候动感情』
+            ELSEIF !RAND:11
+                PRINTW 『商界名人成功励志传奇故事』
+            ELSEIF !RAND:10
+                PRINTW 『戒了吧，拖延症！』
+            ELSEIF !RAND:9
+                PRINTW 『占星术杀人魔法』
+            ELSEIF !RAND:8
+                PRINTW 『月亮宝石』
+            ELSEIF !RAND:7
+                PRINTW 『我是猫』
+            ELSEIF !RAND:6
+                PRINTL 『在异世界当魔王的我穿越为十六岁人气偶像美少女却在第二天出车祸身亡？！』
+                PRINTW 为什么会有那么长的名字…
+            ELSEIF !RAND:5
+                PRINTW 『末世岛屿：一切坚守都已烟消云散』
+            ELSEIF !RAND:4
+                PRINTW 『我想吃掉你的胰脏』
+            ELSEIF !RAND:3
+                PRINTW 『绵羊和钢的森林』
+            ELSEIF !RAND:2
+                PRINTW 『便利店人生』
+            ELSE
+                PRINTW 『身体再僵硬的人也能轻松练成一字马的惊人方法』
+            ENDIF
+        ;沙发
+        ELSEIF !RAND:4 && CFLAG:ARG:2407 > 0
+            PRINTFORM %CALLNAME:ARG%正坐在%沙发(ARG)%
+            PRINT 上
+            IF !RAND:3 && TALENT:ARG:327
+                PRINTFORMW 织毛线
+            ELSEIF !RAND:2
+                PRINTFORMW 小憩
+            ELSE
+                PRINTFORMW 喝茶
+            ENDIF
+        ;衣柜
+        ELSEIF !RAND:3 && CFLAG:ARG:2408 > 0
+            PRINTFORM %CALLNAME:ARG%正在%衣柜(ARG)%
+            IF !RAND:3
+                PRINTFORML 前整理衣服
+            ELSEIF !RAND:2 && CFLAG:ARG:2408 >= 3
+                PRINTFORML 前照镜子
+            ELSE
+                PRINTFORML 前试衣服
+            ENDIF
+        ;展示柜
+        ELSEIF !RAND:2 && CFLAG:ARG:2409 > 0
+			;常识改变
+			IF CFLAG:ARG:7025
+				PRINTFORM %CALLNAME:ARG%正在摆弄%展示柜(ARG)%
+				PRINTFORML 上的内衣裤
+			ELSE
+				IF !RAND:3
+                PRINTFORM %CALLNAME:ARG%正在清点%展示柜(ARG)%
+                PRINTFORMW 上的物品
+				ELSEIF !RAND:2
+                PRINTFORM %CALLNAME:ARG%正在调整%展示柜(ARG)%
+                PRINTFORMW 上的排列
+				ELSE
+                PRINTFORM %CALLNAME:ARG%正在确认%展示柜(ARG)%
+                PRINTFORMW 上的物品
+				ENDIF
+			ENDIF
+        ELSE
+            IF !RAND:4
+                PRINTFORMW %CALLNAME:ARG%正在房间里轻轻哼歌
+            ELSEIF !RAND:3
+                PRINTFORMW %CALLNAME:ARG%正在房间里一个人跳舞
+            ELSEIF !RAND:2
+                PRINTFORMW %CALLNAME:ARG%正在做着扫除工作
+            ELSE
+                PRINTFORMW %CALLNAME:ARG%正在伸懒腰，还顺势活动了一下手脚
+            ENDIF
+        ENDIF
+        ;反应
+        IF MARK:ARG:反抗刻印 == 3
+            PRINTFORML 看到%PLAYER_NAME()%进来，%CALLNAME:ARG%像是没看见似的别过头去
+        ELSEIF MARK:ARG:反抗刻印 == 2
+            PRINTFORML 看到%PLAYER_NAME()%进来，%CALLNAME:ARG%讽刺似的嗤笑一声，走了过来
+        ELSE
+            PRINTFORML 看到%PLAYER_NAME()%进来，%CALLNAME:ARG%的动作不自然地停滞了
+        ENDIF
+    ;女儿
+    ELSE
+    ENDIF
+ENDIF
+Z = 0
+$INPUT_HUDONG
+PRINTL
+PRINTW
+$INPUT_HUDONG2
+催眠返回 = 0
+CALL CHARA_ROOM_SHOW(ARG)
+PRINTFORML　
+PRINTFORML %床舖(ARG),14,RIGHT%:%TOSTR(CFLAG:ARG:2410) + "級",4,RIGHT%    %衣柜(ARG),14,RIGHT%:%TOSTR(CFLAG:ARG:2408) + "級",4,RIGHT%
+IF !CFLAG:ARG:2420
+	PRINTFORML %电视(ARG),14,RIGHT%:%TOSTR(CFLAG:ARG:2405) + "級",4,RIGHT%    %沙发(ARG),14,RIGHT%:%TOSTR(CFLAG:ARG:2407) + "級",4,RIGHT%
+ELSE
+	PRINTFORM %电视(ARG) ,14,RIGHT%:%TOSTR(CFLAG:ARG:2405) + "級",4,RIGHT%
+	SETCOLOR 0xFFDD55
+	PRINTFORM ㊙
+	RESETCOLOR
+	PRINTFORML   %沙发(ARG),14,RIGHT%:%TOSTR(CFLAG:ARG:2407) + "級",4,RIGHT%
+ENDIF
+PRINTFORML %书架(ARG),14,RIGHT%:%TOSTR(CFLAG:ARG:2406) + "級",4,RIGHT%    %展示柜(ARG),14,RIGHT%:%TOSTR(CFLAG:ARG:2409) + "級",4,RIGHT%  
+PRINTFORML %灯具(ARG),14,RIGHT%:%TOSTR(CFLAG:ARG:2411) + "級",4,RIGHT%
+SIF FLAG:1503 == 0 && CFLAG:ARG:12 == 0 && CFLAG:ARG:2414 == 0 && !CFLAG:ARG:119 && !TALENT:ARG:育儿中
+    CALL CHARA_FACE3(ARG)
+IF CFLAG:ARG:7000
+SETCOLOR 0x99BBFF
+	IF CFLAG:ARG:7001
+		LOCALS:1 = √催眠陷落
+	ELSE
+		LOCALS:1 = 
+	ENDIF
+	IF CFLAG:ARG:7021
+		LOCALS:21 = √房间裸体
+	ELSE
+		LOCALS:21 = 
+	ENDIF
+	IF CFLAG:ARG:7022
+		LOCALS:22 = √裸体围裙
+	ELSE
+		LOCALS:22 = 
+	ENDIF
+	IF CFLAG:ARG:7023
+		LOCALS:23 = √叼鞋招待
+	ELSE
+		LOCALS:23 = 
+	ENDIF
+	IF CFLAG:ARG:7024
+		LOCALS:24 = √味觉改变
+	ELSE
+		LOCALS:24 = 
+	ENDIF
+	IF CFLAG:ARG:7025
+		LOCALS:25 = √内衣展示
+	ELSE
+		LOCALS:25 = 
+	ENDIF
+CSTR:ARG:70 = %UNICODE(0x2721)%催眠控制%UNICODE(0x2721)%%LOCALS:1%%LOCALS:21%%LOCALS:22%%LOCALS:23%%LOCALS:24%%LOCALS:25%
+PRINTFORML   %CSTR:ARG:70%
+RESETCOLOR
+ENDIF
+
+DRAWLINE
+;如果行動次數滿了(這裡設置為5次)，將會經過半天並主動離開房間
+IF CFLAG:ARG:2415 > 4
+    CFLAG:ARG:2404 = 0
+    CFLAG:ARG:2413 = 0
+	IF !TIME
+		PRINTFORMW 不知不觉天色都变了，该从%CALLNAME:ARG%的房间里出来了
+	ELSE 
+		PRINTFORMW 不知不觉都这么晚了，该从%CALLNAME:ARG%的房间里出来了
+    ENDIF
+	PRINTFORML
+        FLAG:0 = 1
+        BEGIN TURNEND
+	RETURN 0
+ENDIF
+PRINTL 要做些什么？
+DRAWLINE
+SETCOLORBYNAME Gray
+IF CFLAG:ARG:12 > 0 || CFLAG:ARG:2414 == 1 || CFLAG:ARG:119 || TALENT:ARG:育儿中
+    PRINTLC [---]
+ELSE
+    PRINTLCD [  0] 互动
+ENDIF
+PRINTLCD [  1] 摆弄家具
+IF CFLAG:ARG:12 > 0 || CFLAG:ARG:2414 == 1 || CFLAG:ARG:119 || TALENT:ARG:育儿中
+    PRINTLC [---]
+ELSE
+    IF TIME
+        PRINTLCD [  2] 吃晚餐
+    ELSE
+        PRINTLCD [  2] 吃午餐
+    ENDIF
+ENDIF
+PRINTL
+IF CFLAG:ARG:2403 == 1
+    PRINTLCD [ 97] 关窗
+ELSE
+    PRINTLCD [ 97] 开窗
+ENDIF
+IF CFLAG:ARG:2404 == 0
+    PRINTLCD [ 98] 关门
+ELSE
+    PRINTLCD [ 98] 开门
+ENDIF
+PRINTFORMLCD [ 99] 为%CALLNAME:ARG%购买家具
+PRINTL
+PRINTFORMLCD [100] 离开%CALLNAME:ARG%的房间
+PRINTL
+RESETCOLOR
+;劳役不可，人不在房间不可，成长中不可，崩潰不可，育兒中不可
+IF !CFLAG:ARG:12 && !CFLAG:ARG:2414 && !CFLAG:ARG:119 && !TALENT:ARG:9 && !TALENT:ARG:育儿中 && 催眠技术
+	DRAWLINE
+	PRINTL 催眠指令
+	DRAWLINE
+	IF CFLAG:ARG:7000
+		SETCOLOR 0xB088FF
+		PRINTFORM [900] %催眠暗示%开启催眠指令    
+		PRINTFORML [901] %催眠暗示%解除催眠状态
+		RESETCOLOR
+	ELSEIF 催眠技术 && !CFLAG:ARG:7000 && !每日催眠可实行次数
+		SETCOLOR 0x969696
+		PRINTFORML [---] 本日催眠次数已使用完毕
+		RESETCOLOR
+	ELSEIF 催眠技术 && !CFLAG:ARG:7000
+		SETCOLOR 0xB088FF
+		PRINTFORML [900] %催眠暗示%开始催眠
+		RESETCOLOR
+	ENDIF
+ENDIF
+$INPUT_LOOP
+INPUT
+;■互动 大坑 一时半会儿弄不完吧
+IF RESULT == 0
+    $INPUT_HUDONG3
+    LOSEBASE:0 = 0
+    LOSEBASE:1 = 0
+    DRAWLINE
+    PRINTFORML %NAME:ARG%
+    IF TALENT:PLAYER:156
+        PRINTFORML (依赖度:{CFLAG:ARG:2} 压力值{CFLAG:ARG:10})
+    ENDIF
+    PRINT 体力
+    CALL PRINT_COLORBAR, BASE:ARG:体力, MAXBASE:ARG:体力, 18, UNICODE(0x2584), UNICODE(0x2584), BARCOLORSET("青緑"), RESULT:1
+    PRINTFORML ({BASE:ARG:体力,5}/{MAXBASE:ARG:体力,5})
+    PRINT 气力
+    CALL PRINT_COLORBAR, BASE:ARG:气力, MAXBASE:ARG:气力, 18, UNICODE(0x2584), UNICODE(0x2584), BARCOLORSET("黄"), RESULT:1
+    PRINTFORML ({BASE:ARG:气力,5}/{MAXBASE:ARG:气力,5})
+    DRAWLINE
+    PRINTL 请选择互动形式
+    DRAWLINE
+    PRINTLCD [ 0] 聊天
+    SIF TALENT:ARG:3 || TALENT:ARG:4 || TALENT:ARG:5 || TALENT:ARG:6 || TALENT:ARG:7 || TALENT:ARG:8
+        PRINTLCD [ 1] 送礼物
+    SIF TALENT:ARG:3 || TALENT:ARG:4 || TALENT:ARG:5 || TALENT:ARG:6 || TALENT:ARG:7 || TALENT:ARG:8
+        PRINTLCD [ 2] 做家务
+    PRINTL
+    SIF (TALENT:ARG:3 || TALENT:ARG:4 || TALENT:ARG:5 || TALENT:ARG:6 || TALENT:ARG:7 || TALENT:ARG:8) && CFLAG:ARG:2405 > 0
+        PRINTLCD [ 3] 一起唱卡拉ＯＫ
+    SIF !TIME && (TALENT:ARG:3 || TALENT:ARG:4 || TALENT:ARG:5 || TALENT:ARG:6 || TALENT:ARG:7 || TALENT:ARG:8)
+        PRINTLCD [ 4] 去约会
+    IF TALENT:ARG:3 || TALENT:ARG:6
+        PRINTLCD [ 5] 亲吻
+        PRINTL
+    ENDIF
+    SIF TALENT:ARG:3 || TALENT:ARG:6
+        PRINTLCD [ 6] 亲肤接触
+    IF (TALENT:ARG:4 || TALENT:ARG:7) && CFLAG:ARG:2405 > 0 && CFLAG:ARG:20
+        PRINTLCD [ 7] 观看视频
+        PRINTL
+    ENDIF
+    IF TALENT:ARG:5 || TALENT:ARG:8
+        PRINTLCD [ 8] 训话
+        PRINTL
+    ENDIF
+    SIF ((TALENT:ARG:3 || TALENT:ARG:6) && CFLAG:ARG:2402 >= 60) || ((TALENT:ARG:4 || TALENT:ARG:7) && CFLAG:ARG:2402 >= 35) || ((TALENT:ARG:5 || TALENT:ARG:8) && CFLAG:ARG:2402 >= 80)
+        PRINTLCD [ 9] 推倒
+    PRINTLCD [10] 返回
+    $INPUT_KENGKENGKENG
+    INPUT
+    IF RESULT == 0
+        IF BASE:ARG:0 < 50
+            PRINTFORMW %CALLNAME:ARG%累了，需要休息
+            GOTO INPUT_HUDONG2
+        ELSE
+            PRINTFORML 与%CALLNAME:ARG%随意聊了聊…
+            PRINTL
+            ;消費体力、气力
+            LOSEBASE:0 += 10
+            LOSEBASE:1 += 20
+            ;爱情经验
+            IF TALENT:ARG:3 == 1 || TALENT:ARG:6 == 1
+                PRINTS EXPNAME:23
+                PRINTL +1
+                EXP:ARG:23 += 1
+            ENDIF
+            ;依赖度補正値(恋慕で1、相亲相爱で2）
+            IF TALENT:ARG:3
+            	TFLAG:30 += 1
+            ELSEIF TALENT:ARG:6
+            	TFLAG:30 += 2
+            ENDIF
+            CALL MASTER_DEPENDENCE_PLUS_ROOM(ARG)
+            CALL BASE_SHOW_ROOM(ARG)
+        ENDIF
+    ;■暂时这样，有bug的话还得修修
+    ELSEIF RESULT == 1 && (TALENT:ARG:3 || TALENT:ARG:4 || TALENT:ARG:5 || TALENT:ARG:6 || TALENT:ARG:7 || TALENT:ARG:8)
+        IF BASE:ARG:0 < 50
+            PRINTFORMW %CALLNAME:ARG%累了，需要休息
+            GOTO INPUT_HUDONG2
+        ELSE
+            PRINTFORML 要送什么礼物？
+            PRINTFORML [0] 笑容（仅此而已）
+            SIF MONEY >= 1000
+            	PRINTFORML [1] 食物($1000)
+            SIF MONEY >= 2500
+            	PRINTFORML [2] 日用品($2500)
+            SIF MONEY >= 10000
+            	PRINTFORML [3] 饰品($10000)
+            SIF MONEY >= 25000
+            	PRINTFORML [4] 衣服($25000)
+            SIF MONEY >= 150000
+            	PRINTFORML [5] 奢侈品($150000)
+            PRINTFORML [6] 还是算了
+            INPUT
+            IF RESULT == 1 && MONEY < 1000
+            	RESTART
+            ELSEIF RESULT == 2 && MONEY < 2500
+            	RESTART
+            ELSEIF RESULT == 3 && MONEY < 10000
+            	RESTART
+            ELSEIF RESULT == 4 && MONEY < 25000
+            	RESTART
+            ELSEIF RESULT == 5 && MONEY < 150000
+                RESTART
+            ELSEIF RESULT == 0
+            	;花を礼物
+            	TFLAG:17 = 0
+            ELSEIF RESULT == 1
+            	;食べ物を礼物
+            	TFLAG:17 = 1
+            	MONEY -= 1000
+            ELSEIF RESULT == 2
+            	;日用品を礼物
+            	TFLAG:17 = 2
+            	MONEY -= 2500
+            ELSEIF RESULT == 3
+            	;装饰品を礼物
+				CALL 送飾品(ARG)
+            	TFLAG:17 = 3
+            	MONEY -= 10000
+            ELSEIF RESULT == 4
+            	;服を礼物
+				CALL 送衣服(ARG)
+            	TFLAG:17 = 4
+            	MONEY -= 25000
+            ELSEIF RESULT == 5
+            	;高価な物を礼物
+            	TFLAG:17 = 5
+            	MONEY -= 150000
+            ELSEIF RESULT == 6
+            	PRINTFORMW 放弃送礼
+            	GOTO INPUT_HUDONG3
+            ELSE
+            	RESTART
+            ENDIF
+            PRINTFORM 把
+            IF TFLAG:17 == 0
+            	PRINTFORM 笑容
+            ELSEIF TFLAG:17 == 1
+            	IF (TALENT:ARG:大人 || TALENT:ARG:大叔) && !RAND:2
+            		PRINTFORM 好喝的酒
+            	ELSE
+            		PRINTFORM 美味的点心
+            	ENDIF
+            ELSEIF TFLAG:17 == 2
+            	PRINTFORM 轻便的日常用品
+            ELSEIF TFLAG:17 == 3
+            	PRINTFORM %CSTR:ARG:45%
+            ELSEIF TFLAG:17 == 4
+				PRINTFORM %CSTR:ARG:40%
+            ELSEIF TFLAG:17 == 5
+            	PRINTFORM 贵重的周年纪念酒
+            ENDIF
+            PRINTFORMW 送给了%CALLNAME:ARG%…
+            PRINTL
+            ;消費体力、气力
+            LOSEBASE:0 += 10
+            LOSEBASE:1 += 20
+            ;爱情经验
+            IF TALENT:ARG:3 == 1 || TALENT:ARG:6 == 1
+                A = TFLAG:17
+                PRINTS EXPNAME:23
+                PRINTVL +A
+                EXP:ARG:23 += A
+            ENDIF
+            ;依赖度補正値
+            SIF TALENT:ARG:3 == 1 || TALENT:ARG:6 == 1
+            	TFLAG:30 += TFLAG:17
+            CALL MASTER_DEPENDENCE_PLUS_ROOM(ARG)
+            CALL BASE_SHOW_ROOM(ARG)
+        ENDIF
+    ELSEIF RESULT == 2 && (TALENT:ARG:3 || TALENT:ARG:4 || TALENT:ARG:5 || TALENT:ARG:6 || TALENT:ARG:7 || TALENT:ARG:8)
+        IF BASE:ARG:0 < 100
+            PRINTFORMW %CALLNAME:ARG%累了，需要休息
+            GOTO INPUT_HUDONG2
+        ELSE
+            PRINTFORML 与%CALLNAME:ARG%一起做了家务…
+            PRINTL
+            ;消費体力、气力
+            LOSEBASE:0 += 50
+            LOSEBASE:1 += 50
+            ;三角巾着用中はボー茄子
+            A = ABL:ARG:12/3
+            A += 1
+            H = 1
+            IF TEQUIP:ARG:7 == 4
+            	A += 1
+            	H += 1
+            ENDIF
+            PRINTFORML ２人的%EXPNAME:61%＋{A}
+            EXP:ARG:61 += A
+            EXP:MASTER:61 += A
+            PRINTFORML %EXPNAME:23%＋{H}
+            EXP:ARG:23 += H
+            ;依赖度補正値(恋慕で1、相亲相爱で2）
+            IF TALENT:ARG:3
+            	TFLAG:30 += 1
+            ELSEIF TALENT:ARG:6
+            	TFLAG:30 += 2
+            ENDIF
+            CALL MASTER_DEPENDENCE_PLUS_ROOM(ARG)
+            CALL BASE_SHOW_ROOM(ARG)
+        ENDIF
+    ;卡拉ok
+    ELSEIF RESULT == 3 && (TALENT:ARG:3 || TALENT:ARG:4 || TALENT:ARG:5 || TALENT:ARG:6 || TALENT:ARG:7 || TALENT:ARG:8) && CFLAG:ARG:2405 > 0
+        IF BASE:ARG:0 < 80
+            PRINTFORMW %CALLNAME:ARG%累了，需要休息
+            GOTO INPUT_HUDONG2
+        ELSE
+            PRINTFORML 和%CALLNAME:ARG%一起唱了卡拉ＯＫ
+            PRINTFORM 两人共同演唱了『
+            IF !RAND:2
+                CALL SONG_NAME_ROOM1(ARG)
+            ELSE
+                CALL SONG_NAME_ROOM2(ARG)
+            ENDIF
+            PRINTFORML 』
+            ;歌唱技能
+            IF ABL:ARG:14 == 0
+                PRINTFORML 房间里回荡起%CALLNAME:ARG%不堪入耳的歌声…
+            ELSEIF ABL:ARG:14 == 1
+                PRINTFORML 房间里回荡起%CALLNAME:ARG%的歌声…
+            ELSEIF ABL:ARG:14 == 2
+                PRINTFORML 房间里回荡起%CALLNAME:ARG%悦耳的歌声…
+            ELSEIF ABL:ARG:14 == 3
+                PRINTFORML 房间里回荡起%CALLNAME:ARG%悠扬动听的歌声…
+            ELSEIF ABL:ARG:14 == 4
+                PRINTFORML 房间里回荡起%CALLNAME:ARG%令人着迷的歌声…
+            ELSE
+                PRINTFORML 房间里回荡起%CALLNAME:ARG%夺人心弦的天籁之音…
+            ENDIF
+            PRINTL
+            ;消費体力、气力
+            LOSEBASE:0 += 50
+            LOSEBASE:1 += 50
+            ;耳机着用中はボー茄子
+            A = ABL:ARG:14/3
+            A += 1
+            H = 1
+            IF TEQUIP:ARG:7 == 5
+                A += 1
+                H += 1
+            ENDIF
+            PRINTFORML %EXPNAME:64%＋{A}
+            EXP:ARG:64 += A
+            PRINTFORML %EXPNAME:23%＋{H}
+            EXP:ARG:23 += H
+            CALL MASTER_DEPENDENCE_PLUS_ROOM(ARG)
+            CALL BASE_SHOW_ROOM(ARG)
+        ENDIF
+    ;去约会
+    ELSEIF RESULT == 4 && !TIME && (TALENT:ARG:3 || TALENT:ARG:4 || TALENT:ARG:5 || TALENT:ARG:6 || TALENT:ARG:7 || TALENT:ARG:8)
+        IF BASE:ARG:0 < 300
+            PRINTFORMW %CALLNAME:ARG%累了，需要休息
+            GOTO INPUT_HUDONG2
+        ELSE
+            PRINTFORML %PLAYER_NAME()%和打扮齐整的%CALLNAME:ARG%一起去约会了…
+            PRINTL
+            CALL ROOM_DATE(ARG)
+            PRINTL
+            ;消費体力、气力
+            LOSEBASE:0 += 200
+            LOSEBASE:1 += 50
+            PRINTFORML %EXPNAME:23%＋10
+            EXP:ARG:23 += 10
+            ;依赖度補正値(恋慕で1、相亲相爱で2）
+            IF TALENT:ARG:3
+            	TFLAG:30 += 3
+            ELSEIF TALENT:ARG:6
+            	TFLAG:30 += 5
+            ENDIF
+            CALL MASTER_DEPENDENCE_PLUS_ROOM(ARG)
+            CALL BASE_SHOW_ROOM(ARG)
+            PRINTL
+            PRINTW 之后，回到了宅邸…
+            FLAG:0 = 1
+            BEGIN TURNEND
+            RETURN 1
+        ENDIF
+    ;亲吻
+    ELSEIF RESULT == 5 && (TALENT:ARG:3 || TALENT:ARG:6)
+        IF BASE:ARG:0 < 50
+            PRINTFORMW %CALLNAME:ARG%累了，需要休息
+            GOTO INPUT_HUDONG2
+        ELSE
+            IF TALENT:ARG:4 || TALENT:ARG:7
+                PRINTFORM 在%CALLNAME:ARG%口中逡巡时，%CALLNAME:ARG%的舌头积极地缠绕上来…
+            ELSE
+                PRINTFORM %PLAYER_NAME()%渐渐靠近%CALLNAME:ARG%的脸，
+                PRINTFORM %CALLNAME:ARG%
+                IF !RAND:3
+                    PRINT 投来含着笑意的视线，献上了自己的嘴唇…
+                ELSEIF !RAND:2
+                    PRINTFORM \@ RAND:2 ? 磨蹭着%PLAYER_NAME()%的身体， # 用手挂上%PLAYER_NAME()%的脖子， \@舌头热情地缠绕上来…
+                ELSE
+                    PRINT 闭上双眼扬起了头…
+                ENDIF
+            ENDIF
+            PRINTL
+            PRINTL
+            ;消費体力、气力
+            LOSEBASE:0 += 0
+            LOSEBASE:1 += 20
+            ;蔷薇经验とか加算
+            IF (TALENT:ARG:男性 || TALENT:ARG:双性) && (TALENT:MASTER:男性 || TALENT:MASTER:双性)
+                PRINTFORML ２人的%EXPNAME:41%＋1
+                EXP:ARG:41 += 1
+                EXP:MASTER:41 += 1
+            ENDIF
+            ;百合经验加算
+            IF (!TALENT:ARG:男性 && !TALENT:ARG:双性) && (!TALENT:MASTER:男性 && !TALENT:MASTER:双性)
+                PRINTFORML ２人的%EXPNAME:40%＋1
+                EXP:ARG:40 += 1
+                EXP:MASTER:40 += 1
+            ENDIF
+            ;爱情经验
+            IF TALENT:ARG:3 == 1 || TALENT:ARG:6 == 1
+                PRINTS EXPNAME:23
+                PRINTL +1
+                EXP:ARG:23 += 1
+            ENDIF
+            ;奴隶が猫舌持ちの場合は、调教者に嗜虐快乐经验を追加
+            IF TALENT:ARG:54
+                EXP:MASTER:32 += 1
+                PRINTFORML %CALLNAME:MASTER%的%EXPNAME:32%＋１
+            ENDIF
+            ;依赖度補正値(恋慕で1、相亲相爱で2）
+            IF TALENT:ARG:3
+            	TFLAG:30 += 1
+            ELSEIF TALENT:ARG:6
+            	TFLAG:30 += 2
+            ENDIF
+            CALL MASTER_DEPENDENCE_PLUS_ROOM(ARG)
+            CALL BASE_SHOW_ROOM(ARG)
+        ENDIF
+    ;亲肤接触
+    ELSEIF RESULT == 6 && (TALENT:ARG:3 || TALENT:ARG:6)
+        IF BASE:ARG:0 < 50
+            PRINTFORMW %CALLNAME:ARG%累了，需要休息
+            GOTO INPUT_HUDONG2
+        ELSE
+            PRINTFORML 与%CALLNAME:ARG%进行了身体接触
+            PRINTFORML %CALLNAME:ARG%好像很高兴的样子…
+            PRINTL
+            ;消費体力、气力
+            LOSEBASE:0 += 25
+            LOSEBASE:1 += 25
+            ;爱情经验
+            IF TALENT:ARG:3 == 1 || TALENT:ARG:6 == 1
+                PRINTS EXPNAME:23
+                PRINTL +1
+                EXP:ARG:23 += 1
+            ENDIF
+            ;依赖度補正値(恋慕で1、相亲相爱で2）
+            IF TALENT:ARG:3
+            	TFLAG:30 += 1
+            ELSEIF TALENT:ARG:6
+            	TFLAG:30 += 2
+            ENDIF
+            CALL MASTER_DEPENDENCE_PLUS_ROOM(ARG)
+            CALL BASE_SHOW_ROOM(ARG)
+        ENDIF
+    ;看视频
+    ELSEIF RESULT == 7 && (TALENT:ARG:4 || TALENT:ARG:7) && CFLAG:ARG:2405 > 0 && CFLAG:ARG:20
+        IF BASE:ARG:0 < 50
+            PRINTFORMW %CALLNAME:ARG%累了，需要休息
+            GOTO INPUT_HUDONG2
+        ELSE
+            PRINTFORML %PLAYER_NAME()%和%CALLNAME:ARG%一起观看了记录着%CALLNAME:ARG%痴态的录像带
+            PRINTFORML 看到画面上自己淫乱的身姿，%CALLNAME:ARG%脸红着别开了视线…
+            ;消費体力、气力
+            LOSEBASE:0 += 0
+            LOSEBASE:1 += 80
+            ;依赖度補正値
+            TFLAG:30 += 2
+            ;ビデオ所持フラグを減らす
+            CFLAG:ARG:20 -= 1
+            CALL MASTER_DEPENDENCE_PLUS_ROOM(ARG)
+            CALL BASE_SHOW_ROOM(ARG)
+        ENDIF
+    ;训话
+    ELSEIF RESULT == 8 && (TALENT:ARG:5 || TALENT:ARG:8)
+        IF BASE:ARG:0 < 50
+            PRINTFORMW %CALLNAME:ARG%累了，需要休息
+            GOTO INPUT_HUDONG2
+        ELSE
+            PRINTFORML %PLAYER_NAME()%对%CALLNAME:ARG%进行了训话
+            PRINTFORM %CALLNAME:ARG%
+            ;受虐属性
+            IF ABL:ARG:9 <= 5
+                IF TALENT:ARG:胆怯 || TALENT:ARG:直率
+                    PRINTFORML 畏畏缩缩，毕恭毕敬地听着%PLAYER_NAME()%一条条的数落…
+                ;反抗or高傲or自大
+                ELSEIF TALENT:ARG:11 || TALENT:ARG:15 || TALENT:ARG:16
+                    PRINTFORML 好像不太服气，面露不满，但还是没有反驳…
+                ELSE
+                    PRINTFORML 一副想要辩驳些什么的样子看着%PLAYER_NAME()%…
+                ENDIF
+            ELSE
+                PRINTFORML 非常认真地听着，不时点头应声做下保证
+                PRINTFORML 是错觉吗，感觉%CALLNAME:ARG%非常享受这一刻…
+                PRINTFORML 主从间的关系似乎得到了升华
+            ENDIF
+            ;消費体力、气力
+            LOSEBASE:0 += 20
+            LOSEBASE:1 += 60
+            ;依赖度補正値(恋慕で1、相亲相爱で2）
+            IF TALENT:ARG:3
+            	TFLAG:30 += 1
+            ELSEIF TALENT:ARG:6
+            	TFLAG:30 += 2
+            ENDIF
+            CALL MASTER_DEPENDENCE_PLUS_ROOM(ARG)
+            CALL BASE_SHOW_ROOM(ARG)
+        ENDIF
+    ;啪啪啪：床3级才能滚（双人床），换衣间可以滚，沙发3级以上可以滚，后期版本计算偷窥率
+    ELSEIF RESULT == 9 && (((TALENT:ARG:3 || TALENT:ARG:6) && CFLAG:ARG:2402 >= 60) || ((TALENT:ARG:4 || TALENT:ARG:7) && CFLAG:ARG:2402 >= 35) || ((TALENT:ARG:5 || TALENT:ARG:8) && CFLAG:ARG:2402 >= 80))
+		房間推倒中 = 1
+		BEGIN TRAIN
+         ;PRINTW 该功能还未开放，敬请期待
+         ;GOTO INPUT_HUDONG2
+    ELSEIF RESULT == 10
+        GOTO INPUT_HUDONG2
+    ELSE
+        GOTO INPUT_KENGKENGKENG
+    ENDIF
+    GOTO INPUT_HUDONG3
+;■后期实装经验珠子的增加什么的
+ELSEIF RESULT == 1
+    $INPUT_DODODO2
+    PRINTL 要调查什么家具呢？
+    SIF CFLAG:ARG:2405 >= 1
+       PRINTFORML [0] %电视(ARG)%
+
+    SIF CFLAG:ARG:2406 >= 1
+       PRINTFORML [1] %书架(ARG)%
+
+    SIF CFLAG:ARG:2407 >= 1
+       PRINTFORML [2] %沙发(ARG)%
+
+    SIF CFLAG:ARG:2408 >= 1
+       PRINTFORML [3] %衣柜(ARG)%
+
+    SIF CFLAG:ARG:2409 >= 1
+       PRINTFORML [4] %展示柜(ARG)%
+	   
+    SIF CFLAG:ARG:2410 >= 0
+       PRINTFORML [5] %床舖(ARG)%
+
+    SIF CFLAG:ARG:2411 >= 0
+       PRINTFORML [6] %灯具(ARG)%
+    PRINTL [7] 返回
+    $INPUT_DODODO
+    INPUT
+    IF RESULT == 0 && CFLAG:ARG:2405 > 0
+        $INPUT_OPENDS
+        PRINTL 打开了电视…要看哪个频道？
+        PRINTL [0] 随便换台
+        PRINTL [1] 电影频道
+        PRINTL [2] 新闻频道
+        PRINTL [3] 文艺频道
+        PRINTL [4] 教育频道
+        PRINTL [5] 体育频道
+        PRINTL [6] 娱乐频道
+		SIF CFLAG:ARG:2420
+		PRINTL [7] 色情频道
+        PRINTL [8] 返回
+        $INPUT_HUANTAI
+        INPUT
+        IF RESULT == 0
+            PRINTW 拿着遥控器随便选了一个台…
+            PRINT 啊，正在放映
+            IF !RAND:41
+                PRINTW 时装秀
+            ELSEIF !RAND:40
+                PRINTW 象棋之夜
+            ELSEIF !RAND:39
+                PRINTW 赌马直播
+            ELSEIF !RAND:38
+                PRINTW 国际新闻
+            ELSEIF !RAND:37
+                PRINTW 时事热点
+            ELSEIF !RAND:36
+                PRINTW 伦理电影
+            ELSEIF !RAND:35
+                PRINTW 文艺电影
+            ELSEIF !RAND:34
+                PRINTW 歌舞电影
+            ELSEIF !RAND:33
+                PRINTW 爱情电影
+            ELSEIF !RAND:32
+                PRINTW 财经新闻
+            ELSEIF !RAND:31
+                PRINTW 体育赛事
+            ELSEIF !RAND:30
+                PRINTW 艺术讲座
+            ELSEIF !RAND:29
+                PRINTW 音乐话剧
+            ELSEIF !RAND:28
+                PRINTW 演唱会实况
+            ELSEIF !RAND:27
+                PRINTW 星座节目
+            ELSEIF !RAND:26
+                PRINTW 走近科学
+            ELSEIF !RAND:25
+                PRINTW 科技发表会实况
+            ELSEIF !RAND:24
+                PRINTW 学术讲座
+            ELSEIF !RAND:23
+                PRINTW 文学讲坛
+            ELSEIF !RAND:22
+                PRINTW 文艺电影
+            ELSEIF !RAND:21
+                PRINTW 高达动画片
+            ELSEIF !RAND:20
+                PRINTW 变形金刚电影
+            ELSEIF !RAND:19
+                PRINTW 植物纪录片
+            ELSEIF !RAND:18
+                PRINTW 时装秀
+            ELSEIF !RAND:17
+                PRINTW 宗教节目
+            ELSEIF !RAND:16
+                PRINTW 佛学讲座
+            ELSEIF !RAND:15
+                PRINTW 动画片
+            ELSEIF !RAND:14
+                PRINTW 健身节目
+            ELSEIF !RAND:13
+                PRINTW 美容节目
+            ELSEIF !RAND:12
+                PRINTW 天气预报
+            ELSEIF !RAND:11
+                PRINTW 美食节目
+            ELSEIF !RAND:10
+                PRINTW 料理节目
+            ELSEIF !RAND:9
+                PRINTW 恐怖电影
+            ELSEIF !RAND:8
+                PRINTW 喜剧电影
+            ELSEIF !RAND:7
+                PRINTW 动作电影
+            ELSEIF !RAND:6
+                PRINTW 游戏实况
+            ELSEIF !RAND:5
+                PRINTW ＮＨＫ新闻
+            ELSEIF !RAND:4
+                PRINTW 选秀节目
+            ELSEIF !RAND:3
+                PRINTW 综艺节目
+            ELSEIF !RAND:2
+                PRINTW 问答节目
+            ELSE
+                PRINTW 脱口秀
+            ENDIF
+            IF CFLAG:ARG:12 > 0 || CFLAG:ARG:2414 == 1 || CFLAG:ARG:119 || TALENT:ARG:育儿中
+                PRINTW 一个人看了电视…
+            ELSE
+                PRINTFORMW 和%CALLNAME:ARG%一起看了电视…
+                IF (TALENT:ARG:3 || TALENT:ARG:6)
+                    PRINTL 爱情经验＋1
+                    EXP:ARG:23 += 1
+                ENDIF
+                JUEL:ARG:5 += 100
+                PRINTFORMW %PALAMNAME:5%之珠＋100
+            ENDIF
+            CFLAG:ARG:2415 += 1
+        ELSEIF RESULT == 1
+            PRINTW 拿着遥控器换到电影频道…
+            PRINT 啊，正在放映
+            IF !RAND:10
+                PRINTW 科幻电影
+            ELSEIF !RAND:9
+                PRINTW 恐怖电影
+            ELSEIF !RAND:8
+                PRINTW 喜剧电影
+            ELSEIF !RAND:7
+                PRINTW 动作电影
+            ELSEIF !RAND:6
+                PRINTW 奇幻电影
+            ELSEIF !RAND:5
+                PRINTW 伦理电影
+            ELSEIF !RAND:4
+                PRINTW 文艺电影
+            ELSEIF !RAND:3
+                PRINTW 动画电影
+            ELSEIF !RAND:2
+                PRINTW 歌舞电影
+            ELSE
+                PRINTW 爱情电影
+            ENDIF
+            IF CFLAG:ARG:12 > 0 || CFLAG:ARG:2414 == 1 || CFLAG:ARG:119 || TALENT:ARG:育儿中
+                PRINTW 一个人看了电视…
+            ELSE
+                PRINTFORMW 和%CALLNAME:ARG%一起看了电视…
+                IF (TALENT:ARG:3 || TALENT:ARG:6)
+                    PRINTL 爱情经验＋1
+                    EXP:ARG:23 += 1
+                ENDIF
+                JUEL:ARG:5 += 100
+                PRINTFORMW %PALAMNAME:5%之珠＋100
+            ENDIF
+            CFLAG:ARG:2415 += 1
+        ELSEIF RESULT == 2
+            PRINTW 拿着遥控器换到新闻频道…
+            PRINT 啊，正在放映
+            IF !RAND:5
+                PRINTW 财经新闻
+            ELSEIF !RAND:4
+                PRINTW ＮＨＫ新闻
+            ELSEIF !RAND:3
+                PRINTW 天气预报
+            ELSEIF !RAND:2
+                PRINTW 国际新闻
+            ELSE
+                PRINTW 时事热点
+            ENDIF
+            IF CFLAG:ARG:12 > 0 || CFLAG:ARG:2414 == 1 || CFLAG:ARG:119 || TALENT:ARG:育儿中
+                PRINTW 一个人看了电视…
+            ELSE
+                PRINTFORMW 和%CALLNAME:ARG%一起看了电视…
+                IF (TALENT:ARG:3 || TALENT:ARG:6)
+                    PRINTL 爱情经验＋1
+                    EXP:ARG:23 += 1
+                ENDIF
+                JUEL:ARG:5 += 100
+                PRINTFORMW %PALAMNAME:5%之珠＋100
+            ENDIF
+            CFLAG:ARG:2415 += 1
+        ELSEIF RESULT == 3
+            PRINTW 拿着遥控器换到文艺频道…
+            PRINT 啊，正在放映
+            IF !RAND:5
+                PRINTW 艺术讲座
+            ELSEIF !RAND:4
+                PRINTW 音乐话剧
+            ELSEIF !RAND:3
+                PRINTW 文学讲坛
+            ELSEIF !RAND:2
+                PRINTW 宗教节目
+            ELSE
+                PRINTW 佛学讲座
+            ENDIF
+            IF CFLAG:ARG:12 > 0 || CFLAG:ARG:2414 == 1 || CFLAG:ARG:119 || TALENT:ARG:育儿中
+                PRINTW 一个人看了电视…
+            ELSE
+                PRINTFORMW 和%CALLNAME:ARG%一起看了电视…
+                IF (TALENT:ARG:3 || TALENT:ARG:6)
+                    PRINTL 爱情经验＋1
+                    EXP:ARG:23 += 1
+                ENDIF
+                JUEL:ARG:5 += 100
+                PRINTFORMW %PALAMNAME:5%之珠＋100
+            ENDIF
+            CFLAG:ARG:2415 += 1
+        ELSEIF RESULT == 4
+            PRINTW 拿着遥控器换到教育频道…
+            PRINT 啊，正在放映
+            IF !RAND:5
+                PRINTW 走近科学
+            ELSEIF !RAND:4
+                PRINTW 科技发表会实况
+            ELSEIF !RAND:3
+                PRINTW 学术讲座
+            ELSEIF !RAND:2
+                PRINTW 植物纪录片
+            ELSE
+                PRINTW 料理节目
+            ENDIF
+            IF CFLAG:ARG:12 > 0 || CFLAG:ARG:2414 == 1 || CFLAG:ARG:119 || TALENT:ARG:育儿中
+                PRINTW 一个人看了电视…
+            ELSE
+                PRINTFORMW 和%CALLNAME:ARG%一起看了电视…
+                IF (TALENT:ARG:3 || TALENT:ARG:6)
+                    PRINTL 爱情经验＋1
+                    EXP:ARG:23 += 1
+                ENDIF
+                JUEL:ARG:5 += 100
+                PRINTFORMW %PALAMNAME:5%之珠＋100
+            ENDIF
+            CFLAG:ARG:2415 += 1
+        ELSEIF RESULT == 5
+            PRINTW 拿着遥控器换到体育频道…
+            PRINT 啊，正在放映
+            IF !RAND:5
+                PRINTW 体育赛事
+            ELSEIF !RAND:4
+                PRINTW 健身节目
+            ELSEIF !RAND:3
+                PRINTW 游戏实况
+            ELSEIF !RAND:2
+                PRINTW 赌马直播
+            ELSE
+                PRINTW 象棋之夜
+            ENDIF
+            IF CFLAG:ARG:12 > 0 || CFLAG:ARG:2414 == 1 || CFLAG:ARG:119 || TALENT:ARG:育儿中
+                PRINTW 一个人看了电视…
+            ELSE
+                PRINTFORMW 和%CALLNAME:ARG%一起看了电视…
+                IF (TALENT:ARG:3 || TALENT:ARG:6)
+                    PRINTL 爱情经验＋1
+                    EXP:ARG:23 += 1
+                ENDIF
+                JUEL:ARG:5 += 100
+                PRINTFORMW %PALAMNAME:5%之珠＋100
+            ENDIF
+            CFLAG:ARG:2415 += 1
+        ELSEIF RESULT == 6
+            PRINTW 拿着遥控器换到娱乐频道…
+            PRINT 啊，正在放映
+            IF !RAND:10
+                PRINTW 演唱会实况
+            ELSEIF !RAND:9
+                PRINTW 美食节目
+            ELSEIF !RAND:8
+                PRINTW 选秀节目
+            ELSEIF !RAND:7
+                PRINTW 综艺节目
+            ELSEIF !RAND:6
+                PRINTW 问答节目
+            ELSEIF !RAND:5
+                PRINTW 脱口秀
+            ELSEIF !RAND:4
+                PRINTW 星座节目
+            ELSEIF !RAND:3
+                PRINTW 动画片
+            ELSEIF !RAND:2
+                PRINTW 时装秀
+            ELSE
+                PRINTW 美容节目
+            ENDIF
+            IF CFLAG:ARG:12 > 0 || CFLAG:ARG:2414 == 1 || CFLAG:ARG:119 || TALENT:ARG:育儿中
+                PRINTW 一个人看了电视…
+            ELSE
+                PRINTFORMW 和%CALLNAME:ARG%一起看了电视…
+                IF (TALENT:ARG:3 || TALENT:ARG:6)
+                    PRINTL 爱情经验＋1
+                    EXP:ARG:23 += 1
+                ENDIF
+                JUEL:ARG:5 += 100
+                PRINTFORMW %PALAMNAME:5%之珠＋100
+            ENDIF
+            CFLAG:ARG:2415 += 1
+        ELSEIF RESULT == 7
+		    PRINTW 拿着遥控器换到色情频道…
+            IF CFLAG:ARG:12 > 0 || CFLAG:ARG:2414 == 1 || CFLAG:ARG:119 || TALENT:ARG:育儿中
+				PRINTW 一个人看这种节目还不如去调教呢……
+				 CFLAG:ARG:2415 += 1
+            ELSE
+				CALL A片(ARG)
+			ENDIF
+        ELSEIF RESULT == 8
+            GOTO INPUT_DODODO2
+        ELSE
+            GOTO INPUT_HUANTAI
+        ENDIF
+        GOTO INPUT_HUDONG2
+    ELSEIF RESULT == 1 && CFLAG:ARG:2406 > 0
+        PRINTFORM 来到了%书架(ARG)%
+        PRINTL 面前，要看什么类型的书？
+        PRINTL [0] 随便拿一本
+        PRINTL [1] 艺术类
+        PRINTL [2] 文学类
+        PRINTL [3] 教育类
+        PRINTL [4] 生活类
+        PRINTL [5] 科学类
+        PRINTL [6] 小说类
+        PRINTL [7] 返回
+        $INPUT_READING
+        INPUT
+        IF RESULT == 0
+            PRINTW 从一堆书里随手抽了一本
+			IF KANRAKU(ARG) && !RAND:5 && !CFLAG:ARG:12 && !CFLAG:ARG:2414 && !CFLAG:ARG:119 && !TALENT:ARG:育儿中 && !TALENT:ARG:9
+				CALL 小黃書(ARG)
+			ELSE
+				PRINT 标题是
+				IF !RAND:38
+                PRINTL 『在异世界当魔王的我穿越为十六岁人气偶像美少女却在第二天出车祸身亡？！』
+                PRINTW 为什么会有那么长的名字…
+				ELSEIF !RAND:37
+                PRINTW 『末世岛屿：一切坚守都已烟消云散』
+				ELSEIF !RAND:36
+                PRINTW 『我是猫』
+				ELSEIF !RAND:35
+                PRINTW 『月亮宝石』
+				ELSEIF !RAND:34
+                PRINTW 『占星术杀人魔法』
+				ELSEIF !RAND:33
+                PRINTW 『海的女儿』
+				ELSEIF !RAND:32
+                PRINTW 『伦敦塔的邂逅』
+				ELSEIF !RAND:31
+                PRINTW 『华尔街巨人』
+				ELSEIF !RAND:30
+                PRINTW 『创新算法』
+				ELSEIF !RAND:29
+                PRINTW 『齿轮热处理设计』
+				ELSEIF !RAND:28
+                PRINTW 『上帝掷骰子吗：量子物理史话』
+				ELSEIF !RAND:27
+                PRINTW 『从一到无穷大』
+				ELSEIF !RAND:26
+                PRINTW 『万物论』
+				ELSEIF !RAND:25
+                PRINTW 『六法全书』
+				ELSEIF !RAND:24
+                PRINTW 『商界名人成功励志传奇故事』
+				ELSEIF !RAND:23
+                PRINTW 『别在该动脑子的时候动感情』
+				ELSEIF !RAND:22
+                PRINTW 『不为人知的三十五种禁忌秘术』
+				ELSEIF !RAND:21
+                PRINTW 『戒了吧，拖延症！』
+				ELSEIF !RAND:20
+                PRINTW 『身体再僵硬的人也能轻松练成一字马的惊人方法』
+				ELSEIF !RAND:19
+                PRINTW 『美肌革命』
+				ELSEIF !RAND:18
+                PRINTW 『囚徒增肌』
+				ELSEIF !RAND:17
+                PRINTW 『古怪的身体』
+				ELSEIF !RAND:16
+                PRINTW 『挑战你的极限』
+				ELSEIF !RAND:15
+                PRINTW 『四季便当：煮夫的首选』
+				ELSEIF !RAND:14
+                PRINTW 『论三位一体』
+				ELSEIF !RAND:13
+                PRINTW 『但丁的圣约书』
+				ELSEIF !RAND:12
+                PRINTW 『今天我活着』
+				ELSEIF !RAND:11
+                PRINTW 『尼采与形而上学』
+				ELSEIF !RAND:10
+                PRINTW 『约翰·克里斯朵夫』
+				ELSEIF !RAND:9
+                PRINTW 『世界美术名作二十讲』
+				ELSEIF !RAND:8
+                PRINTW 『美的沉思』
+				ELSEIF !RAND:7
+                PRINTW 『加德纳艺术通史』
+				ELSEIF !RAND:6
+                PRINTW 『便利店人生』
+				ELSEIF !RAND:5
+                PRINTW 『绵羊和钢的森林』
+				ELSEIF !RAND:4
+                PRINTW 『我想吃掉你的胰脏』
+				ELSEIF !RAND:3
+                PRINTW 『梵高手稿』
+				ELSEIF !RAND:2
+                PRINTW 『超时空的音乐通史』
+				ELSE
+                PRINTW 『花的智慧』
+				ENDIF
+				CALL 和平看書(ARG)
+			ENDIF
+            CFLAG:ARG:2415 += 1
+        ELSEIF RESULT == 1
+            PRINTW 选了一本艺术类的书籍
+			IF KANRAKU(ARG) && !RAND:5 && !CFLAG:ARG:12 && !CFLAG:ARG:2414 && !CFLAG:ARG:119 && !TALENT:ARG:育儿中 && !TALENT:ARG:9
+				CALL 小黃書(ARG)
+			ELSE
+				PRINT 标题是
+				IF !RAND:6
+                PRINTW 『梵高手稿』
+				ELSEIF !RAND:5
+                PRINTW 『超时空的音乐通史』
+				ELSEIF !RAND:4
+                PRINTW 『花的智慧』
+				ELSEIF !RAND:3
+                PRINTW 『世界美术名作二十讲』
+				ELSEIF !RAND:2
+                PRINTW 『加德纳艺术通史』
+				ELSE
+                PRINTW 『美的沉思』
+				ENDIF
+				CALL 和平看書(ARG)
+			ENDIF
+            CFLAG:ARG:2415 += 1
+        ELSEIF RESULT == 2
+            PRINTW 选了一本文学类的书籍
+			IF KANRAKU(ARG) && !RAND:5 && !CFLAG:ARG:12 && !CFLAG:ARG:2414 && !CFLAG:ARG:119 && !TALENT:ARG:育儿中 && !TALENT:ARG:9
+				CALL 小黃書(ARG)
+			ELSE
+				PRINT 标题是
+				IF !RAND:5
+                PRINTW 『约翰·克里斯朵夫』
+				ELSEIF !RAND:4
+                PRINTW 『尼采与形而上学』
+				ELSEIF !RAND:3
+                PRINTW 『今天我活着』
+				ELSEIF !RAND:2
+                PRINTW 『但丁的圣约书』
+				ELSE
+                PRINTW 『论三位一体』
+				ENDIF
+				CALL 和平看書(ARG)
+			ENDIF
+            CFLAG:ARG:2415 += 1
+        ELSEIF RESULT == 3
+            PRINTW 选了一本教育类的书籍
+			IF KANRAKU(ARG) && !RAND:5 && !CFLAG:ARG:12 && !CFLAG:ARG:2414 && !CFLAG:ARG:119 && !TALENT:ARG:育儿中 && !TALENT:ARG:9
+				CALL 小黃書(ARG)
+			ELSE
+				PRINT 标题是
+				IF !RAND:6
+                PRINTW 『华尔街巨人』
+				ELSEIF !RAND:5
+                PRINTW 『戒了吧，拖延症！』
+				ELSEIF !RAND:4
+                PRINTW 『不为人知的三十五种禁忌秘术』
+				ELSEIF !RAND:3
+                PRINTW 『别在该动脑子的时候动感情』
+				ELSEIF !RAND:2
+                PRINTW 『商界名人成功励志传奇故事』
+				ELSE
+                PRINTW 『六法全书』
+				ENDIF
+				CALL 和平看書(ARG)
+			ENDIF
+            CFLAG:ARG:2415 += 1
+        ELSEIF RESULT == 4
+            PRINTW 选了一本生活类的书籍
+			IF KANRAKU(ARG) && !RAND:5 && !CFLAG:ARG:12 && !CFLAG:ARG:2414 && !CFLAG:ARG:119 && !TALENT:ARG:育儿中 && !TALENT:ARG:9
+				CALL 小黃書(ARG)
+			ELSE
+				PRINT 标题是
+				IF !RAND:6
+                PRINTW 『身体再僵硬的人也能轻松练成一字马的惊人方法』
+				ELSEIF !RAND:5
+                PRINTW 『四季便当：煮夫的首选』
+				ELSEIF !RAND:4
+                PRINTW 『挑战你的极限』
+				ELSEIF !RAND:3
+                PRINTW 『古怪的身体』
+				ELSEIF !RAND:2
+                PRINTW 『囚徒增肌』
+				ELSE
+                PRINTW 『美肌革命』
+				ENDIF
+				CALL 和平看書(ARG)
+			ENDIF
+            CFLAG:ARG:2415 += 1
+        ELSEIF RESULT == 5
+            PRINTW 选了一本科学类的书籍
+			IF KANRAKU(ARG) && !RAND:5 && !CFLAG:ARG:12 && !CFLAG:ARG:2414 && !CFLAG:ARG:119 && !TALENT:ARG:育儿中 && !TALENT:ARG:9
+				CALL 小黃書(ARG)
+			ELSE
+				PRINT 标题是
+				IF !RAND:5
+                PRINTW 『万物论』
+				ELSEIF !RAND:4
+                PRINTW 『从一到无穷大』
+				ELSEIF !RAND:3
+                PRINTW 『上帝掷骰子吗：量子物理史话』
+				ELSEIF !RAND:2
+                PRINTW 『齿轮热处理设计』
+				ELSE
+                PRINTW 『创新算法』
+				ENDIF
+				CALL 和平看書(ARG)
+			ENDIF
+            CFLAG:ARG:2415 += 1
+        ELSEIF RESULT == 6
+            PRINTW 选了一本小说类的书籍
+			IF KANRAKU(ARG) && !RAND:5 && !CFLAG:ARG:12 && !CFLAG:ARG:2414 && !CFLAG:ARG:119 && !TALENT:ARG:育儿中 && !TALENT:ARG:9
+				CALL 小黃書(ARG)
+			ELSE
+				PRINT 标题是
+				IF !RAND:10
+                PRINTL 『在异世界当魔王的我穿越为十六岁人气偶像美少女却在第二天出车祸身亡？！』
+                PRINTW 为什么会有那么长的名字…
+				ELSEIF !RAND:9
+                PRINTW 『便利店人生』
+				ELSEIF !RAND:8
+                PRINTW 『绵羊和钢的森林』
+				ELSEIF !RAND:7
+                PRINTW 『我想吃掉你的胰脏』
+				ELSEIF !RAND:6
+                PRINTW 『末世岛屿：一切坚守都已烟消云散』
+				ELSEIF !RAND:5
+                PRINTW 『伦敦塔的邂逅』
+				ELSEIF !RAND:4
+                PRINTW 『海的女儿』
+				ELSEIF !RAND:3
+                PRINTW 『占星术杀人魔法』
+				ELSEIF !RAND:2
+                PRINTW 『月亮宝石』
+				ELSE
+                PRINTW 『我是猫』
+				ENDIF
+				CALL 和平看書(ARG)
+			ENDIF
+        ELSEIF RESULT == 7
+            GOTO INPUT_DODODO2
+        ELSE
+            GOTO INPUT_READING
+        ENDIF
+        GOTO INPUT_HUDONG2
+    ELSEIF RESULT == 2 && CFLAG:ARG:2407 > 0
+        PRINTL 要怎么做？
+        PRINTL [0] 小憩
+        SIF !CFLAG:ARG:12 > 0 && !CFLAG:ARG:2414 == 1 && !CFLAG:ARG:119 || TALENT:ARG:育儿中
+            PRINTFORML [1] 招呼%CALLNAME:ARG%过来一起坐
+        SIF CFLAG:ARG:2405 > 0
+            PRINTL [2] 看电视
+        PRINTL [3] 返回
+        $INPUT_SF
+        INPUT
+        IF RESULT == 0
+            PRINTFORM 躺在%沙发(ARG)%
+            PRINTW 上小憩了一会儿…
+            IF CFLAG:ARG:2407 >= 3
+                IF !RAND:2
+                    PRINTW 睡得很舒服…回复了一些体力
+                    BASE:MASTER:0 += 100
+                ELSE
+                    PRINTW 精神充沛，根本就睡不着
+                ENDIF
+            ELSE
+                IF !RAND:2
+                    PRINTW 几乎是半梦半醒…只回复了少许体力
+                    BASE:MASTER:0 += 50
+                ELSE
+                    PRINTW 完全没有睡着，不过考虑到质量，这也是当然的
+                ENDIF
+            ENDIF
+            CFLAG:ARG:2415 += 1
+        ELSEIF RESULT == 1 && !CFLAG:ARG:12 > 0 && !CFLAG:ARG:2414 == 1 && !CFLAG:ARG:119 || TALENT:ARG:育儿中
+            PRINTFORM 把%CALLNAME:ARG%喊了过来并肩坐在%沙发(ARG)%
+            PRINTL 上
+            PRINTW 两个人一起小憩了一会儿
+            IF CFLAG:ARG:2407 >= 3
+                IF !RAND:2 && (TALENT:ARG:3 || TALENT:ARG:6)
+                    IF BASE:ARG:0 > 1000
+                        PRINTFORMW 枕着%CALLNAME:ARG%的膝枕，太紧张了结果完全没睡着
+                    ELSEIF BASE:ARG:0 >= 500
+                        PRINTFORMW 枕着%CALLNAME:ARG%的膝枕睡着了
+                    ELSE
+                        PRINTFORMW %CALLNAME:ARG%的膝枕很舒服…回复了一些体力
+                        BASE:MASTER:0 += 100
+                        BASE:ARG:0 += 75
+                    ENDIF
+                    IF (TALENT:ARG:3 || TALENT:ARG:6)
+                        PRINTL 爱情经验＋1
+                        EXP:ARG:23 += 1
+                    ENDIF
+                    JUEL:ARG:5 += 150
+                    PRINTFORMW %PALAMNAME:5%之珠＋150
+                ELSE
+                    IF BASE:ARG:0 > 1000
+                        PRINTFORMW 虽然没有睡着，但是相互依偎的感觉很不错
+                    ELSEIF BASE:ARG:0 >= 500
+                        PRINTFORMW 结果两人只是靠在一块儿闭目养神
+                    ELSE
+                        PRINTFORMW 听着%CALLNAME:ARG%均匀的呼吸逐渐进入梦乡…
+                        BASE:MASTER:0 += 100
+                        BASE:ARG:0 += 100
+                    ENDIF
+                    IF (TALENT:ARG:3 || TALENT:ARG:6)
+                        PRINTL 爱情经验＋1
+                        EXP:ARG:23 += 1
+                    ENDIF
+                    JUEL:ARG:5 += 100
+                    PRINTFORMW %PALAMNAME:5%之珠＋100
+                ENDIF
+            ELSE
+                IF BASE:ARG:0 > 1000
+                    PRINTFORMW 怎么说呢，这种地方根本不可能睡着吧…
+                ELSEIF BASE:ARG:0 >= 500
+                    PRINTFORMW 这种地方，就算想睡也睡不着
+                ELSE
+                    PRINTL 有点落枕，不过本来也不是睡觉的地方
+                    PRINTFORMW 看%CALLNAME:ARG%的表情也不是很满意，是时候升级家具了
+                    BASE:MASTER:0 += 45
+                    BASE:ARG:0 += 45
+                ENDIF
+                JUEL:ARG:5 += 50
+                PRINTFORMW %PALAMNAME:5%之珠＋50
+            ENDIF
+            CFLAG:ARG:2415 += 1
+        ELSEIF RESULT == 2 && CFLAG:ARG:2405 > 0
+            GOTO INPUT_OPENDS
+        ELSEIF RESULT == 3
+            GOTO INPUT_DODODO2        
+        ELSE
+            GOTO INPUT_SF
+        ENDIF
+        GOTO INPUT_HUDONG2
+    ELSEIF RESULT == 3 && CFLAG:ARG:2408 > 0
+		IF !STRLENS(CSTR:ARG:40)
+			PRINTW 打开了衣柜，但是里面只有零星挂着几套替换的衣服而已……
+			PRINTFORMW 也许有机会该多送点衣服给%CALLNAME:ARG%？
+		ELSEIF STRLENS(CSTR:ARG:40)
+			CALL 衣柜H(ARG)
+		ENDIF
+        GOTO INPUT_HUDONG2
+    ;展示柜功能后期再做
+    ELSEIF RESULT == 4 && CFLAG:ARG:2409 > 0
+		;常识改变
+		IF CFLAG:ARG:7025
+			PRINTFORML 看到%CALLNAME:ARG%摆在%展示柜(ARG)%上的内衣裤後
+            PRINTFORML [0] 观赏一下
+			PRINTFORML [1] 拿起来把玩
+			PRINTFORML [3] 返回
+			 INPUT
+			IF RESULT == 0
+				PRINTFORMW %PLAYER_NAME()%一边观赏一边跟%CALLNAME:ARG%讨论内衣裤的款式…
+				PRINTFORMW 而%CALLNAME:ARG%也觉得这就像是讨论天气一样，很认真的考量%PLAYER_NAME()%的建议…
+				JUEL:ARG:5 += 50
+				JUEL:ARG:6 += 50
+				PRINTFORMW %PALAMNAME:5%之珠＋50
+				PRINTFORMW %PALAMNAME:6%之珠＋50			
+				CFLAG:ARG:2415 += 1	
+				GOTO INPUT_DODODO2
+			ELSEIF RESULT == 1
+				PRINTFORMW %PLAYER_NAME()%随手拿起一件看起来顺眼的内裤检查
+				PRINTFORMW 而%CALLNAME:ARG%不但没有羞恼，甚至宛如内衣裤店员那样，介绍起这件内裤的特点以及穿起来的感觉等等……
+				JUEL:ARG:5 += 50
+				JUEL:ARG:6 += 50
+				PRINTFORMW %PALAMNAME:5%之珠＋50
+				PRINTFORMW %PALAMNAME:6%之珠＋50	
+				CFLAG:ARG:2415 += 1
+				GOTO INPUT_DODODO2
+			ELSE
+				GOTO INPUT_DODODO2
+			ENDIF
+		ELSE
+			IF !STRLENS(CSTR:ARG:45)
+				PRINTW 展示柜上并没有什么特别的东西
+				PRINTFORMW 也许该买点什么饰品来送给%CALLNAME:ARG%？
+			ELSE
+				CALL 展示柜摆饰(ARG)
+			ENDIF
+			GOTO INPUT_HUDONG2
+		ENDIF
+    ELSEIF RESULT == 5
+        PRINTL 要怎么做？
+        SIF !CFLAG:ARG:119
+            PRINTL [0] 翻找床铺
+        PRINTL [1] 小睡一下
+        SIF !CFLAG:ARG:12 > 0 && !CFLAG:ARG:2414 == 1 && !CFLAG:ARG:119 && TALENT:ARG:育儿中
+            PRINTFORML [2] 和%CALLNAME:ARG%一起小睡
+        PRINTL [3] 返回
+        $INPUT_BEDBBB
+        INPUT
+        IF RESULT == 0
+            PRINTW 翻找了几分钟后…
+            IF !RAND:21
+                PRINTL 找到了一块橡皮
+                PRINTW 这种东西为什么要放到床上？
+            ELSEIF !RAND:22
+                PRINTW 竟然找到了一颗图钉，这也太危险了吧，赶紧扔掉了
+            ELSEIF !RAND:21
+                PRINTW 找到了一把梳子，没什么值得在意的，所以又放了回去
+            ELSEIF !RAND:20
+                PRINTW 找到了一盒维生素，没什么值得在意的，所以又放了回去
+            ELSEIF !RAND:19
+                PRINTW 找到了一瓶眼药水，没什么值得在意的，所以又放了回去
+            ELSEIF !RAND:18 && NO:D > 0
+                PRINTFORMW 竟然找到了%CALLNAME:D%的相片，欸？
+                SIF !CFLAG:ARG:12 > 0 && !CFLAG:ARG:2414 == 1 && !TALENT:ARG:育儿中
+                    PRINTFORMW 趁%CALLNAME:ARG%没注意，赶紧又放回了原处
+            ELSEIF !RAND:17
+                PRINTW 竟然找到了一颗豌豆…豌豆公主？
+            ELSEIF !RAND:16
+                PRINTW 找到了被压得皱皱巴巴的草稿纸，不过上面倒是什么都没写
+            ELSEIF !RAND:15 && NO:B > 0
+                PRINTFORMW 竟然找到了%CALLNAME:B%的贴身衣物，哇——
+                SIF !CFLAG:ARG:12 > 0 && !CFLAG:ARG:2414 == 1 && !TALENT:ARG:育儿中
+                    PRINTFORMW %CALLNAME:ARG%很是尴尬地看向其他地方
+            ELSEIF !RAND:14
+                PRINTL 找到了一串入耳式耳机
+                PRINTW 拿走不太好，所以又放回去了
+            ELSEIF !RAND:13
+                PRINTW 竟然找到了速溶咖啡的包装袋，里面是空的…
+            ELSEIF !RAND:12
+                PRINTW 竟然找到了一瓶驱蚊花露水，已经到蚊子出没的季节了吗
+            ELSEIF !RAND:11 && TALENT:ARG:伪娘
+                PRINTW 竟然找到了女士内衣，嗯…果然如此吗
+            ELSEIF !RAND:10 && TALENT:ARG:伪娘
+                PRINTW 找到了氧气补水面膜，这个的效果好吗？姑且记下了牌子
+            ELSEIF !RAND:9
+                PRINTW 找到了柑橘味的凝神眼贴，看起来不错，记下了牌子
+            ELSEIF !RAND:8
+                PRINTW 找到了一些废弃的硬币，不过已经不能用了
+            ELSEIF !RAND:7
+                PRINTW 什么也没找到…
+            ELSEIF !RAND:6 && (CFLAG:ARG:600 == 11 || TALENT:ARG:幼稚)
+                PRINTW 竟然找到了还没有吃完的零食
+                SIF !CFLAG:ARG:12 > 0 && !CFLAG:ARG:2414 == 1 && !TALENT:ARG:育儿中
+                    PRINTFORMW %CALLNAME:ARG%有些不好意思
+            ELSEIF !RAND:5 && (CFLAG:ARG:600 == 11 || TALENT:ARG:幼稚)
+                PRINTW 竟然找到了一堆藏起来的零食
+                SIF !CFLAG:ARG:12 > 0 && !CFLAG:ARG:2414 == 1 && !TALENT:ARG:育儿中
+                    PRINTFORMW %CALLNAME:ARG%有些不好意思
+            ELSEIF !RAND:4 && MARK:ARG:反抗刻印 >= 2
+                PRINTW 竟然找到了一包藏起来的毒药，这是怎么弄到的啊？
+                SIF !CFLAG:ARG:12 > 0 && !CFLAG:ARG:2414 == 1 && !TALENT:ARG:育儿中
+                    PRINTFORMW %CALLNAME:ARG%见投毒计划败露，颇为懊恼
+            ELSEIF !RAND:3 && (TALENT:ARG:4 || TALENT:ARG:7)
+                PRINTFORMW 竟然找到了几件内衣…看起来像是%PLAYER_NAME()%的
+                SIF !CFLAG:ARG:12 > 0 && !CFLAG:ARG:2414 == 1 && !TALENT:ARG:育儿中
+                    PRINTFORMW %CALLNAME:ARG%似乎完全不觉得羞耻，反而有些骄傲（？）
+            ELSEIF !RAND:2
+                PRINTW 竟然找到了还没拆封的避孕套，啊、啊咧？
+                SIF !CFLAG:ARG:12 > 0 && !CFLAG:ARG:2414 == 1 && !TALENT:ARG:育儿中
+                    PRINTFORMW %CALLNAME:ARG%的脸可疑地红了
+            ELSE
+                ;■以后再丰富日记内容
+                PRINTW 这是…日记！
+                IF !CFLAG:ARG:12 > 0 && !CFLAG:ARG:2414 == 1 && !TALENT:ARG:育儿中
+                    PRINTFORML 想要翻开的时候，被%CALLNAME:ARG%劈手夺过去了
+                    PRINTFORMW 到底写了什么，好在意啊
+                ELSE
+                    PRINTW 想着翻开看看，没想到上了锁，好可惜啊
+                ENDIF
+            ENDIF
+            CFLAG:ARG:2415 += 1
+        ELSEIF RESULT == 1
+            PRINTFORM 躺在%床舖(ARG)%
+            PRINTW 上睡了一会儿…
+            IF CFLAG:ARG:2410 >= 3
+                IF !RAND:2
+                    PRINTW 睡得很舒服…回复了一些体力
+                    BASE:MASTER:0 += 200
+                ELSE
+                    PRINTW 精神充沛，根本就睡不着
+                ENDIF
+            ELSE
+                IF !RAND:2
+                    PRINTW 有点落枕，不过还是回复了少许体力
+                    BASE:MASTER:0 += 90
+                ELSE
+                    PRINTW 完全没有睡着，果然应该提升一下床具的质量
+                ENDIF
+            ENDIF
+            CFLAG:ARG:2415 += 1
+        ELSEIF RESULT == 2 && !CFLAG:ARG:12 > 0 && !CFLAG:ARG:2414 == 1 && !CFLAG:ARG:119 && !TALENT:ARG:育儿中
+            PRINTFORM 把%CALLNAME:ARG%喊了过来一起躺到%床舖(ARG)%
+            PRINTW 上睡了一会儿
+            IF CFLAG:ARG:2410 >= 3
+                IF !RAND:2 && (TALENT:ARG:3 || TALENT:ARG:6)
+                    IF BASE:ARG:0 > 1000
+                        PRINTFORMW %CALLNAME:ARG%的体温很舒服，不过两个人都没有睡着
+                    ELSEIF BASE:ARG:0 >= 500
+                        PRINTFORMW %CALLNAME:ARG%的体温很舒服，两人依偎着闭目养神了
+                    ELSE
+                        PRINTFORMW %CALLNAME:ARG%的体温很舒服…回复了一些体力
+                        BASE:MASTER:0 += 200
+                        BASE:ARG:0 += 200
+                    ENDIF
+                    IF (TALENT:ARG:3 || TALENT:ARG:6)
+                        PRINTL 爱情经验＋1
+                        EXP:ARG:23 += 1
+                    ENDIF
+                    JUEL:ARG:5 += 200
+                    PRINTFORMW %PALAMNAME:5%之珠＋200
+                ELSE
+                    IF BASE:ARG:0 > 1000
+                        PRINTFORMW 可能是太精神了，两个人都没有睡着
+                    ELSEIF BASE:ARG:0 >= 500
+                        PRINTFORMW …结果两人只是依偎着闭目养神
+                    ELSE
+                        PRINTFORMW 睡得很香甜…回复了一些体力
+                        BASE:MASTER:0 += 200
+                        BASE:ARG:0 += 200
+                    ENDIF
+                    IF (TALENT:ARG:3 || TALENT:ARG:6)
+                        PRINTL 爱情经验＋1
+                        EXP:ARG:23 += 1
+                    ENDIF
+                    JUEL:ARG:5 += 120
+                    PRINTFORMW %PALAMNAME:5%之珠＋120
+                ENDIF
+            ELSE
+                IF BASE:ARG:0 > 1000
+                    PRINTFORMW 床具质量太差，两个人都没有睡着…
+                ELSEIF BASE:ARG:0 >= 500
+                    PRINTFORMW 床具质量太差，两人充其量只是闭目养神
+                ELSE
+                    PRINTL 有点落枕，睡得不是很好
+                    PRINTFORMW 看%CALLNAME:ARG%的表情也不是很满意，是时候升级家具了
+                    BASE:MASTER:0 += 90
+                    BASE:ARG:0 += 90
+                ENDIF
+                JUEL:ARG:5 += 90
+                PRINTFORMW %PALAMNAME:5%之珠＋90
+            ENDIF
+            CFLAG:ARG:2415 += 1
+        ELSEIF RESULT == 3
+            GOTO INPUT_DODODO2
+        ELSE
+            GOTO INPUT_BEDBBB
+        ENDIF
+        GOTO INPUT_HUDONG2
+    ELSEIF RESULT == 6
+        PRINTL 要怎么做？
+        IF CFLAG:ARG:2416 == 0
+            SIF CFLAG:ARG:2411 == 0
+                PRINTL [0] 吹灭蜡烛
+            SIF CFLAG:ARG:2411 > 0
+                PRINTL [0] 关灯
+        ELSE
+            SIF CFLAG:ARG:2411 == 0
+                PRINTL [0] 点燃蜡烛
+            SIF CFLAG:ARG:2411 > 0    
+                PRINTL [0] 开灯
+        ENDIF
+        PRINTL [1] 返回
+        $INPUT_LAMPONOFF
+        INPUT
+        IF RESULT == 0
+            IF CFLAG:ARG:2416 == 0
+                SIF CFLAG:ARG:2411 == 0
+                    PRINTW 把蜡烛吹灭了
+                SIF CFLAG:ARG:2411 > 0
+                    PRINTW 把灯关上了
+                CFLAG:ARG:2416 = 1
+            ELSE
+                SIF CFLAG:ARG:2411 == 0
+                    PRINTW 把蜡烛点燃了
+                SIF CFLAG:ARG:2411 > 0
+                    PRINTW 把灯打开了
+                CFLAG:ARG:2416 = 0
+            ENDIF
+        ELSEIF RESULT == 1
+            GOTO INPUT_DODODO2
+        ELSE
+            GOTO INPUT_LAMPONOFF
+        ENDIF
+        GOTO INPUT_HUDONG2
+    ELSEIF RESULT == 7
+        GOTO INPUT_HUDONG2
+    ELSE
+        GOTO INPUT_DODODO
+    ENDIF    
+ELSEIF RESULT == 2
+    PRINTL 那么，谁来下厨呢？
+    PRINTFORML [0] %CALLNAME:ARG%
+    PRINTFORML [1] %CALLNAME:MASTER%
+    PRINTL [2] 返回
+    $INPUT_DEAL
+    INPUT
+    IF RESULT == 0
+        CALL ROOM_LUNCH_EAT(ARG)
+    ELSEIF RESULT == 1
+        CALL LUNCH_SELF_ROOM(ARG)
+    ELSEIF RESULT == 2
+        GOTO INPUT_HUDONG2
+    ELSE
+        GOTO INPUT_DEAL
+    ENDIF
+ELSEIF RESULT == 97
+    IF CFLAG:ARG:2403 == 1
+        PRINTW 把窗关上了
+        CFLAG:ARG:2403 = 0
+    ELSE
+        PRINTW 把窗打开了
+        CFLAG:ARG:2403 = 1
+    ENDIF
+    GOTO INPUT_HUDONG2
+ELSEIF RESULT == 98
+    IF CFLAG:ARG:2404 == 0
+        PRINTW 把门关上了
+        CFLAG:ARG:2404 = 1
+    ELSE
+        PRINTW 把门打开了
+        CFLAG:ARG:2404 = 0
+    ENDIF
+    GOTO INPUT_HUDONG2
+ELSEIF RESULT == 99
+    $INPUT_JIAJU
+    PRINTFORML 要购买什么家具？当前余额为${MONEY}
+    PRINTL [0] 不买了
+    PRINTL [1] 电视机
+    PRINTL [2] 书柜
+    PRINTL [3] 沙发
+    PRINTL [4] 衣柜
+    PRINTL [5] 展示柜
+    PRINTL [6] 床具
+    PRINTL [7] 灯具
+	SIF CFLAG:ARG:2405 >= 3 && !CFLAG:ARG:2420 && MONEY > 10000
+	PRINTL [8] Ａ片机上盒
+    $INPUT_JIAJU2
+    INPUT
+    IF RESULT == 1
+        IF CFLAG:ARG:2405 == 0
+            PRINTL 要购入黑白电视机吗？需要$5000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_TELEVISION1
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 5000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 5000
+                    PRINTW 已购入黑白电视机！现在可以在房间里看电视了
+                    CFLAG:ARG:2412 += 1
+                    CFLAG:ARG:2405 = 1
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_TELEVISION1
+            ENDIF
+        ELSEIF CFLAG:ARG:2405 == 1
+            PRINTL 要将黑白电视机升级为等离子电视机吗？需要$20000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_TELEVISION2
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 20000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 20000
+                    PRINTW 已将黑白电视机升级为等离子电视机！
+                    CFLAG:ARG:2405 = 2
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_TELEVISION2
+            ENDIF
+        ELSEIF CFLAG:ARG:2405 == 2
+            IF !TALENT:ARG:3 && !TALENT:ARG:4 && !TALENT:ARG:5 && !TALENT:ARG:6 && !TALENT:ARG:7 && !TALENT:ARG:8
+                PRINTFORMW 无法再提升等级，需要%CALLNAME:ARG%陷落后才能继续升级
+                GOTO INPUT_JIAJU
+            ELSEIF TALENT:ARG:3 || TALENT:ARG:6
+                PRINTL 要将等离子电视机升级为液晶电视机吗？需要$50000
+                PRINTL [0]是
+                PRINTL [1]否
+                $INPUT_JIAJU_TELEVISION3
+                INPUT
+                IF RESULT == 0
+                    IF MONEY < 50000
+                        PRINTL
+                        PRINTFORML 余额不足……
+                        PRINTW
+                        GOTO INPUT_JIAJU
+                    ELSE
+                        MONEY -= 50000
+                        PRINTL 已将等离子电视机升级为液晶电视机！
+                        PRINTW 房间的甜蜜氛围增加了15！
+                        CFLAG:ARG:2405 = 3
+                        CFLAG:ARG:2401 = 1
+                        CFLAG:ARG:2402 += 15
+                        GOTO INPUT_HUDONG2
+                    ENDIF
+                ELSEIF RESULT == 1
+                    GOTO INPUT_JIAJU
+                ELSE
+                    GOTO INPUT_JIAJU_TELEVISION3
+                ENDIF
+            ELSEIF TALENT:ARG:4 || TALENT:ARG:7
+                PRINTL 要将等离子电视机升级为防水电视机吗？需要$50000
+                PRINTL [0]是
+                PRINTL [1]否
+                $INPUT_JIAJU_TELEVISION4
+                INPUT
+                IF RESULT == 0
+                    IF MONEY < 50000
+                        PRINTL
+                        PRINTFORML 余额不足……
+                        PRINTW
+                        GOTO INPUT_JIAJU
+                    ELSE
+                        MONEY -= 50000
+                        PRINTL 已将等离子电视机升级为防水电视机！
+                        PRINTW 房间的工口氛围增加了15！
+                        CFLAG:ARG:2405 = 4
+                        CFLAG:ARG:2401 = 2
+                        CFLAG:ARG:2402 += 15
+                        GOTO INPUT_HUDONG2
+                    ENDIF
+                ELSEIF RESULT == 1
+                    GOTO INPUT_JIAJU
+                ELSE
+                    GOTO INPUT_JIAJU_TELEVISION4
+                ENDIF
+            ELSEIF TALENT:ARG:5 || TALENT:ARG:8
+                PRINTL 要将等离子电视机升级为监控电视机吗？需要$50000
+                PRINTL [0]是
+                PRINTL [1]否
+                $INPUT_JIAJU_TELEVISION5
+                INPUT
+                IF RESULT == 0
+                    IF MONEY < 50000
+                        PRINTL
+                        PRINTFORML 余额不足……
+                        PRINTW
+                        GOTO INPUT_JIAJU
+                    ELSE
+                        MONEY -= 50000
+                        PRINTL 已将等离子电视机升级为监控电视机！
+                        PRINTW 房间的ＳＭ氛围增加了15！
+                        CFLAG:ARG:2405 = 5
+                        CFLAG:ARG:2401 = 3
+                        CFLAG:ARG:2402 += 15
+                        GOTO INPUT_HUDONG2
+                    ENDIF
+                ELSEIF RESULT == 1
+                    GOTO INPUT_JIAJU
+                ELSE
+                    GOTO INPUT_JIAJU_TELEVISION5
+                ENDIF
+            ENDIF
+        ELSEIF CFLAG:ARG:2405 == 3
+            PRINTL 要将液晶电视机升级为挂壁式电视吗？需要$85000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_TELEVISION6
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 85000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 85000
+                    PRINTL 已将液晶电视机升级为挂壁式电视！
+                    PRINTW 房间的甜蜜氛围增加了30！
+                    CFLAG:ARG:2405 = 6
+                    CFLAG:ARG:2402 += 30
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_TELEVISION6
+            ENDIF
+        ELSEIF CFLAG:ARG:2405 == 4
+            PRINTL 要将防水电视机升级为嵌入式电视吗？需要$85000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_TELEVISION7
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 85000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 85000
+                    PRINTL 已将防水电视机升级为嵌入式电视！
+                    PRINTW 房间的工口氛围增加了30！
+                    CFLAG:ARG:2405 = 7
+                    CFLAG:ARG:2402 += 30
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_TELEVISION7
+            ENDIF
+        ELSEIF CFLAG:ARG:2405 == 5
+            PRINTL 要将监控电视机升级为曲面全景电视吗？需要$85000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_TELEVISION8
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 85000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 85000
+                    PRINTL 已将监控电视机升级为曲面全景电视！
+                    PRINTW 房间的ＳＭ氛围增加了30！
+                    CFLAG:ARG:2405 = 8
+                    CFLAG:ARG:2402 += 30
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_TELEVISION8
+            ENDIF
+        ELSEIF CFLAG:ARG:2405 == 6
+            PRINTL 要将挂壁式电视升级为4D放映机吗？需要$200000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_TELEVISION9
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 200000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 200000
+                    PRINTL 已将挂壁式电视升级为4D放映机！
+                    PRINTW 房间的甜蜜氛围增加了40！
+                    CFLAG:ARG:2405 = 9
+                    CFLAG:ARG:2402 += 40
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_TELEVISION9
+            ENDIF
+        ELSEIF CFLAG:ARG:2405 == 7
+            PRINTL 要将嵌入式电视升级为镜面放映机吗？需要$200000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_TELEVISION10
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 200000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 200000
+                    PRINTL 已将嵌入式电视升级为镜面放映机！
+                    PRINTW 房间的工口氛围增加了40！
+                    CFLAG:ARG:2405 = 10
+                    CFLAG:ARG:2402 += 40
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_TELEVISION10
+            ENDIF
+        ELSEIF CFLAG:ARG:2405 == 8
+            PRINTL 要将曲面全景电视升级为全视投影仪吗？需要$200000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_TELEVISION11
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 200000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 200000
+                    PRINTL 已将曲面全景电视升级为全视投影仪！
+                    PRINTW 房间的ＳＭ氛围增加了40！
+                    CFLAG:ARG:2405 = 11
+                    CFLAG:ARG:2402 += 40
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_TELEVISION11
+            ENDIF
+        ELSEIF CFLAG:ARG:2405 == 9
+            PRINTW 电视机已升至当前最高等级，无法再提升了！
+            GOTO INPUT_JIAJU
+        ELSEIF CFLAG:ARG:2405 == 10
+            PRINTW 电视机已升至当前最高等级，无法再提升了！
+            GOTO INPUT_JIAJU
+        ELSEIF CFLAG:ARG:2405 == 11
+            PRINTW 电视机已升至当前最高等级，无法再提升了！
+            GOTO INPUT_JIAJU
+        ENDIF
+    ELSEIF RESULT == 2
+        IF CFLAG:ARG:2406 == 0
+            PRINTL 要购入纸箱吗？需要$3000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_BOOK1
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 3000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 3000
+                    PRINTW 已购入纸箱！现在可以在房间里放书了
+                    CFLAG:ARG:2412 += 1
+                    CFLAG:ARG:2406 = 1
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_BOOK1
+            ENDIF
+        ELSEIF CFLAG:ARG:2406 == 1
+            PRINTL 要将纸箱升级为简易书架吗？需要$6000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_BOOK2
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 6000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 6000
+                    PRINTW 已将纸箱升级为简易书架！
+                    CFLAG:ARG:2406 = 2
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_BOOK2
+            ENDIF
+        ELSEIF CFLAG:ARG:2406 == 2
+            IF !TALENT:ARG:3 && !TALENT:ARG:4 && !TALENT:ARG:5 && !TALENT:ARG:6 && !TALENT:ARG:7 && !TALENT:ARG:8
+                PRINTFORMW 无法再提升等级，需要%CALLNAME:ARG%陷落后才能继续升级
+                GOTO INPUT_JIAJU
+            ELSEIF TALENT:ARG:3 || TALENT:ARG:6
+                PRINTL 要将简易书架升级为原木挂式书柜吗？需要$10000
+                PRINTL [0]是
+                PRINTL [1]否
+                $INPUT_JIAJU_BOOK3
+                INPUT
+                IF RESULT == 0
+                    IF MONEY < 10000
+                        PRINTL
+                        PRINTFORML 余额不足……
+                        PRINTW
+                        GOTO INPUT_JIAJU
+                    ELSE
+                        MONEY -= 10000
+                        PRINTL 已将简易书架升级为原木挂式书柜！
+                        PRINTW 房间的甜蜜氛围增加了5！
+                        CFLAG:ARG:2406 = 3
+                        CFLAG:ARG:2401 = 1
+                        CFLAG:ARG:2402 += 5
+                        GOTO INPUT_HUDONG2
+                    ENDIF
+                ELSEIF RESULT == 1
+                    GOTO INPUT_JIAJU
+                ELSE
+                    GOTO INPUT_JIAJU_BOOK3
+                ENDIF
+            ELSEIF TALENT:ARG:4 || TALENT:ARG:7
+                PRINTL 要将简易书架升级为可活动折叠书架吗？需要$10000
+                PRINTL [0]是
+                PRINTL [1]否
+                $INPUT_JIAJU_BOOK4
+                INPUT
+                IF RESULT == 0
+                    IF MONEY < 10000
+                        PRINTL
+                        PRINTFORML 余额不足……
+                        PRINTW
+                        GOTO INPUT_JIAJU
+                    ELSE
+                        MONEY -= 10000
+                        PRINTL 已将简易书架升级为可活动折叠书架！
+                        PRINTW 房间的工口氛围增加了5！
+                        CFLAG:ARG:2406 = 4
+                        CFLAG:ARG:2401 = 2
+                        CFLAG:ARG:2402 += 5
+                        GOTO INPUT_HUDONG2
+                    ENDIF
+                ELSEIF RESULT == 1
+                    GOTO INPUT_JIAJU
+                ELSE
+                    GOTO INPUT_JIAJU_BOOK4
+                ENDIF
+            ELSEIF TALENT:ARG:5 || TALENT:ARG:8
+                PRINTL 要将简易书架升级为塑料组装书架吗？需要$10000
+                PRINTL [0]是
+                PRINTL [1]否
+                $INPUT_JIAJU_BOOK5
+                INPUT
+                IF RESULT == 0
+                    IF MONEY < 10000
+                        PRINTL
+                        PRINTFORML 余额不足……
+                        PRINTW
+                        GOTO INPUT_JIAJU
+                    ELSE
+                        MONEY -= 10000
+                        PRINTL 已将简易书架升级为塑料组装书架！
+                        PRINTW 房间的ＳＭ氛围增加了5！
+                        CFLAG:ARG:2406 = 5
+                        CFLAG:ARG:2401 = 3
+                        CFLAG:ARG:2402 += 5
+                        GOTO INPUT_HUDONG2
+                    ENDIF
+                ELSEIF RESULT == 1
+                    GOTO INPUT_JIAJU
+                ELSE
+                    GOTO INPUT_JIAJU_BOOK5
+                ENDIF
+            ENDIF
+        ELSEIF CFLAG:ARG:2406 == 3
+            PRINTL 要将原木挂式书柜升级为沉香色书柜吗？需要$20000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_BOOK6
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 20000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 20000
+                    PRINTL 已将原木挂式书柜升级为沉香色书柜！
+                    PRINTW 房间的甜蜜氛围增加了10！
+                    CFLAG:ARG:2406 = 6
+                    CFLAG:ARG:2402 += 10
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_BOOK6
+            ENDIF
+        ELSEIF CFLAG:ARG:2406 == 4
+            PRINTL 要将可活动折叠书架升级为镂空镶边书架吗？需要$20000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_BOOK7
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 20000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 20000
+                    PRINTL 已将可活动折叠书架升级为镂空镶边书架！
+                    PRINTW 房间的工口氛围增加了10！
+                    CFLAG:ARG:2406 = 7
+                    CFLAG:ARG:2402 += 10
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_BOOK7
+            ENDIF
+        ELSEIF CFLAG:ARG:2406 == 5
+            PRINTL 要将塑料组装书架升级为办公铝制书架吗？需要$20000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_BOOK8
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 20000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 20000
+                    PRINTL 已将塑料组装书架升级为办公铝制书架！
+                    PRINTW 房间的ＳＭ氛围增加了10！
+                    CFLAG:ARG:2406 = 8
+                    CFLAG:ARG:2402 += 10
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_BOOK8
+            ENDIF
+        ELSEIF CFLAG:ARG:2406 == 6
+            PRINTL 要将沉香色书柜升级为浪漫转角书橱吗？需要$30000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_BOOK9
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 30000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 30000
+                    PRINTL 已将沉香色书柜升级为浪漫转角书橱！
+                    PRINTW 房间的甜蜜氛围增加了25！
+                    CFLAG:ARG:2406 = 9
+                    CFLAG:ARG:2402 += 25
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_BOOK9
+            ENDIF
+        ELSEIF CFLAG:ARG:2406 == 7
+            PRINTL 要将镂空镶边书架升级为艺术玻璃书橱吗？需要$30000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_BOOK10
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 30000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 30000
+                    PRINTL 已将镂空镶边书架升级为艺术玻璃书橱！
+                    PRINTW 房间的工口氛围增加了25！
+                    CFLAG:ARG:2406 = 10
+                    CFLAG:ARG:2402 += 25
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_BOOK10
+            ENDIF
+        ELSEIF CFLAG:ARG:2406 == 8
+            PRINTL 要将办公铝制书架升级为精英组合书架吗？需要$30000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_BOOK11
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 30000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 30000
+                    PRINTL 已将办公铝制书架升级为精英组合书架！
+                    PRINTW 房间的ＳＭ氛围增加了25！
+                    CFLAG:ARG:2406 = 11
+                    CFLAG:ARG:2402 += 25
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_BOOK11
+            ENDIF
+        ELSEIF CFLAG:ARG:2406 == 9
+            PRINTW 书柜已升至当前最高等级，无法再提升了！
+            GOTO INPUT_JIAJU
+        ELSEIF CFLAG:ARG:2406 == 10
+            PRINTW 书柜已升至当前最高等级，无法再提升了！
+            GOTO INPUT_JIAJU
+        ELSEIF CFLAG:ARG:2406 == 11
+            PRINTW 书柜已升至当前最高等级，无法再提升了！
+            GOTO INPUT_JIAJU
+        ENDIF
+    ELSEIF RESULT == 3
+        IF CFLAG:ARG:2407 == 0
+            PRINTL 要购入劣质板凳吗？需要$4000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_SOFA1
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 4000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 4000
+                    PRINTW 已购入劣质板凳！现在可以在房间里舒适地休息了
+                    CFLAG:ARG:2412 += 1
+                    CFLAG:ARG:2407 = 1
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_SOFA1
+            ENDIF
+        ELSEIF CFLAG:ARG:2407 == 1
+            PRINTL 要将劣质板凳升级为野餐椅吗？需要$7000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_SOFA2
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 7000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 7000
+                    PRINTW 已将劣质板凳升级为野餐椅！
+                    CFLAG:ARG:2407 = 2
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_SOFA2
+            ENDIF
+        ELSEIF CFLAG:ARG:2407 == 2
+            IF !TALENT:ARG:3 && !TALENT:ARG:4 && !TALENT:ARG:5 && !TALENT:ARG:6 && !TALENT:ARG:7 && !TALENT:ARG:8
+                PRINTFORMW 无法再提升等级，需要%CALLNAME:ARG%陷落后才能继续升级
+                GOTO INPUT_JIAJU
+            ELSEIF TALENT:ARG:3 || TALENT:ARG:6
+                PRINTL 要将野餐椅升级为藤制沙发吗？需要$10000
+                PRINTL [0]是
+                PRINTL [1]否
+                $INPUT_JIAJU_SOFA3
+                INPUT
+                IF RESULT == 0
+                    IF MONEY < 10000
+                        PRINTL
+                        PRINTFORML 余额不足……
+                        PRINTW
+                        GOTO INPUT_JIAJU
+                    ELSE
+                        MONEY -= 10000
+                        PRINTL 已将野餐椅升级为藤制沙发！
+                        PRINTW 房间的甜蜜氛围增加了10！
+                        CFLAG:ARG:2407 = 3
+                        CFLAG:ARG:2401 = 1
+                        CFLAG:ARG:2402 += 10
+                        GOTO INPUT_HUDONG2
+                    ENDIF
+                ELSEIF RESULT == 1
+                    GOTO INPUT_JIAJU
+                ELSE
+                    GOTO INPUT_JIAJU_SOFA3
+                ENDIF
+            ELSEIF TALENT:ARG:4 || TALENT:ARG:7
+                PRINTL 要将野餐椅升级为折叠沙发吗？需要$10000
+                PRINTL [0]是
+                PRINTL [1]否
+                $INPUT_JIAJU_SOFA4
+                INPUT
+                IF RESULT == 0
+                    IF MONEY < 10000
+                        PRINTL
+                        PRINTFORML 余额不足……
+                        PRINTW
+                        GOTO INPUT_JIAJU
+                    ELSE
+                        MONEY -= 10000
+                        PRINTL 已将野餐椅升级为折叠沙发！
+                        PRINTW 房间的工口氛围增加了10！
+                        CFLAG:ARG:2407 = 4
+                        CFLAG:ARG:2401 = 2
+                        CFLAG:ARG:2402 += 10
+                        GOTO INPUT_HUDONG2
+                    ENDIF
+                ELSEIF RESULT == 1
+                    GOTO INPUT_JIAJU
+                ELSE
+                    GOTO INPUT_JIAJU_SOFA4
+                ENDIF
+            ELSEIF TALENT:ARG:5 || TALENT:ARG:8
+                PRINTL 要将野餐椅升级为铝制双人椅吗？需要$10000
+                PRINTL [0]是
+                PRINTL [1]否
+                $INPUT_JIAJU_SOFA5
+                INPUT
+                IF RESULT == 0
+                    IF MONEY < 10000
+                        PRINTL
+                        PRINTFORML 余额不足……
+                        PRINTW
+                        GOTO INPUT_JIAJU
+                    ELSE
+                        MONEY -= 10000
+                        PRINTL 已将野餐椅升级为铝制双人椅！
+                        PRINTW 房间的ＳＭ氛围增加了10！
+                        CFLAG:ARG:2407 = 5
+                        CFLAG:ARG:2401 = 3
+                        CFLAG:ARG:2402 += 10
+                        GOTO INPUT_HUDONG2
+                    ENDIF
+                ELSEIF RESULT == 1
+                    GOTO INPUT_JIAJU
+                ELSE
+                    GOTO INPUT_JIAJU_SOFA5
+                ENDIF
+            ENDIF
+        ELSEIF CFLAG:ARG:2407 == 3
+            PRINTL 要将藤制沙发升级为组合布艺沙发吗？需要$25000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_SOFA6
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 25000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 25000
+                    PRINTL 已将藤制沙发升级为组合布艺沙发！
+                    PRINTW 房间的甜蜜氛围增加了20！
+                    CFLAG:ARG:2407 = 6
+                    CFLAG:ARG:2402 += 20
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_SOFA6
+            ENDIF
+        ELSEIF CFLAG:ARG:2407 == 4
+            PRINTL 要将折叠沙发升级为真皮沙发吗？需要$25000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_SOFA7
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 25000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 25000
+                    PRINTL 已将折叠沙发升级为真皮沙发！
+                    PRINTW 房间的工口氛围增加了20！
+                    CFLAG:ARG:2407 = 7
+                    CFLAG:ARG:2402 += 20
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_SOFA7
+            ENDIF
+        ELSEIF CFLAG:ARG:2407 == 5
+            PRINTL 要将铝制双人椅升级为曲木沙发吗？需要$25000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_SOFA8
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 25000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 25000
+                    PRINTL 已将铝制双人椅升级为曲木沙发！
+                    PRINTW 房间的ＳＭ氛围增加了20！
+                    CFLAG:ARG:2407 = 8
+                    CFLAG:ARG:2402 += 20
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_SOFA8
+            ENDIF
+        ELSEIF CFLAG:ARG:2407 == 6
+            PRINTL 要将组合布艺沙发升级为华丽绿植吊椅吗？需要$50000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_SOFA9
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 50000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 50000
+                    PRINTL 已将组合布艺沙发升级为华丽绿植吊椅！
+                    PRINTW 房间的甜蜜氛围增加了30！
+                    CFLAG:ARG:2407 = 9
+                    CFLAG:ARG:2402 += 30
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_SOFA9
+            ENDIF
+        ELSEIF CFLAG:ARG:2407 == 7
+            PRINTL 要将真皮沙发升级为双人按摩沙发吗？需要$50000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_SOFA10
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 50000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 50000
+                    PRINTL 已将真皮沙发升级为双人按摩沙发！
+                    PRINTW 房间的工口氛围增加了30！
+                    CFLAG:ARG:2407 = 10
+                    CFLAG:ARG:2402 += 30
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_SOFA10
+            ENDIF
+        ELSEIF CFLAG:ARG:2407 == 8
+            PRINTL 要将曲木沙发升级为智能悬空椅吗？需要$50000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_SOFA11
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 50000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 50000
+                    PRINTL 已将曲木沙发升级为智能悬空椅！
+                    PRINTW 房间的ＳＭ氛围增加了30！
+                    CFLAG:ARG:2407 = 11
+                    CFLAG:ARG:2402 += 30
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_SOFA11
+            ENDIF
+        ELSEIF CFLAG:ARG:2407 == 9
+            PRINTW 沙发已升至当前最高等级，无法再提升了！
+            GOTO INPUT_JIAJU
+        ELSEIF CFLAG:ARG:2407 == 10
+            PRINTW 沙发已升至当前最高等级，无法再提升了！
+            GOTO INPUT_JIAJU
+        ELSEIF CFLAG:ARG:2407 == 11
+            PRINTW 沙发已升至当前最高等级，无法再提升了！
+            GOTO INPUT_JIAJU
+        ENDIF
+    ELSEIF RESULT == 4
+        IF CFLAG:ARG:2408 == 0
+            PRINTL 要购入大型纸箱吗？需要$4000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_CLOTHES1
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 4000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 4000
+                    PRINTW 已购入大型纸箱！现在可以在房间里放衣服了
+                    CFLAG:ARG:2412 += 1
+                    CFLAG:ARG:2408 = 1
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_CLOTHES1
+            ENDIF
+        ELSEIF CFLAG:ARG:2408 == 1
+            PRINTL 要将大型纸箱升级为组合塑料箱吗？需要$8000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_CLOTHES2
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 8000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 8000
+                    PRINTW 已将大型纸箱升级为组合塑料箱！
+                    CFLAG:ARG:2408 = 2
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_CLOTHES2
+            ENDIF
+        ELSEIF CFLAG:ARG:2408 == 2
+            IF !TALENT:ARG:3 && !TALENT:ARG:4 && !TALENT:ARG:5 && !TALENT:ARG:6 && !TALENT:ARG:7 && !TALENT:ARG:8
+                PRINTFORMW 无法再提升等级，需要%CALLNAME:ARG%陷落后才能继续升级
+                GOTO INPUT_JIAJU
+            ELSEIF TALENT:ARG:3 || TALENT:ARG:6
+                PRINTL 要将组合塑料箱升级为推拉门衣柜吗？需要$15000
+                PRINTL [0]是
+                PRINTL [1]否
+                $INPUT_JIAJU_CLOTHES3
+                INPUT
+                IF RESULT == 0
+                    IF MONEY < 15000
+                        PRINTL
+                        PRINTFORML 余额不足……
+                        PRINTW
+                        GOTO INPUT_JIAJU
+                    ELSE
+                        MONEY -= 15000
+                        PRINTL 已将组合塑料箱升级为推拉门衣柜！
+                        PRINTW 房间的甜蜜氛围增加了20！
+                        CFLAG:ARG:2408 = 3
+                        CFLAG:ARG:2401 = 1
+                        CFLAG:ARG:2402 += 20
+                        GOTO INPUT_HUDONG2
+                    ENDIF
+                ELSEIF RESULT == 1
+                    GOTO INPUT_JIAJU
+                ELSE
+                    GOTO INPUT_JIAJU_CLOTHES3
+                ENDIF
+            ELSEIF TALENT:ARG:4 || TALENT:ARG:7
+                PRINTL 要将组合塑料箱升级为玻璃门衣柜吗？需要$15000
+                PRINTL [0]是
+                PRINTL [1]否
+                $INPUT_JIAJU_CLOTHES4
+                INPUT
+                IF RESULT == 0
+                    IF MONEY < 15000
+                        PRINTL
+                        PRINTFORML 余额不足……
+                        PRINTW
+                        GOTO INPUT_JIAJU
+                    ELSE
+                        MONEY -= 15000
+                        PRINTL 已将组合塑料箱升级为玻璃门衣柜！
+                        PRINTW 房间的工口氛围增加了20！
+                        CFLAG:ARG:2408 = 4
+                        CFLAG:ARG:2401 = 2
+                        CFLAG:ARG:2402 += 20
+                        GOTO INPUT_HUDONG2
+                    ENDIF
+                ELSEIF RESULT == 1
+                    GOTO INPUT_JIAJU
+                ELSE
+                    GOTO INPUT_JIAJU_CLOTHES4
+                ENDIF
+            ELSEIF TALENT:ARG:5 || TALENT:ARG:8
+                PRINTL 要将组合塑料箱升级为平开门衣柜吗？需要$15000
+                PRINTL [0]是
+                PRINTL [1]否
+                $INPUT_JIAJU_CLOTHES5
+                INPUT
+                IF RESULT == 0
+                    IF MONEY < 15000
+                        PRINTL
+                        PRINTFORML 余额不足……
+                        PRINTW
+                        GOTO INPUT_JIAJU
+                    ELSE
+                        MONEY -= 15000
+                        PRINTL 已将组合塑料箱升级为平开门衣柜！
+                        PRINTW 房间的ＳＭ氛围增加了20！
+                        CFLAG:ARG:2408 = 5
+                        CFLAG:ARG:2401 = 3
+                        CFLAG:ARG:2402 += 20
+                        GOTO INPUT_HUDONG2
+                    ENDIF
+                ELSEIF RESULT == 1
+                    GOTO INPUT_JIAJU
+                ELSE
+                    GOTO INPUT_JIAJU_CLOTHES5
+                ENDIF
+            ENDIF
+        ELSEIF CFLAG:ARG:2408 == 3
+            PRINTL 要将推拉门衣柜升级为挂帘式换衣间吗？需要$60000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_CLOTHES6
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 60000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 60000
+                    PRINTL 已将推拉门衣柜升级为挂帘式换衣间！
+                    PRINTW 房间的甜蜜氛围增加了35！
+                    CFLAG:ARG:2408 = 6
+                    CFLAG:ARG:2402 += 35
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_CLOTHES6
+            ENDIF
+        ELSEIF CFLAG:ARG:2408 == 4
+            PRINTL 要将玻璃门衣柜升级为透明挂帘换衣间吗？需要$60000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_CLOTHES7
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 60000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 60000
+                    PRINTL 已将玻璃门衣柜升级为透明挂帘换衣间！
+                    PRINTW 房间的工口氛围增加了35！
+                    CFLAG:ARG:2408 = 7
+                    CFLAG:ARG:2402 += 35
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_CLOTHES7
+            ENDIF
+        ELSEIF CFLAG:ARG:2408 == 5
+            PRINTL 要将平开门衣柜升级为接顶多层衣柜吗？需要$60000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_CLOTHES8
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 60000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 60000
+                    PRINTL 已将平开门衣柜升级为接顶多层衣柜！
+                    PRINTW 房间的ＳＭ氛围增加了35！
+                    CFLAG:ARG:2408 = 8
+                    CFLAG:ARG:2402 += 35
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_CLOTHES8
+            ENDIF
+        ELSEIF CFLAG:ARG:2408 == 6
+            PRINTL 要将挂帘式换衣间升级为华丽豪华衣帽间吗？需要$110000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_CLOTHES9
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 110000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 110000
+                    PRINTL 已将挂帘式换衣间升级为华丽豪华衣帽间！
+                    PRINTW 房间的甜蜜氛围增加了50！
+                    CFLAG:ARG:2408 = 9
+                    CFLAG:ARG:2402 += 50
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_CLOTHES9
+            ENDIF
+        ELSEIF CFLAG:ARG:2408 == 7
+            PRINTL 要将透明挂帘换衣间升级为开放式衣帽间吗？需要$110000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_CLOTHES10
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 110000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 110000
+                    PRINTL 已将透明挂帘换衣间升级为开放式衣帽间！
+                    PRINTW 房间的工口氛围增加了50！
+                    CFLAG:ARG:2408 = 10
+                    CFLAG:ARG:2402 += 50
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_CLOTHES10
+            ENDIF
+        ELSEIF CFLAG:ARG:2408 == 8
+            PRINTL 要将接顶多层衣柜升级为胶囊衣柜吗？需要$110000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_CLOTHES11
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 110000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 110000
+                    PRINTL 已将接顶多层衣柜升级为胶囊衣柜！
+                    PRINTW 房间的ＳＭ氛围增加了50！
+                    CFLAG:ARG:2408 = 11
+                    CFLAG:ARG:2402 += 50
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_CLOTHES11
+            ENDIF
+        ELSEIF CFLAG:ARG:2408 == 9
+            PRINTW 衣柜已升至当前最高等级，无法再提升了！
+            GOTO INPUT_JIAJU
+        ELSEIF CFLAG:ARG:2408 == 10
+            PRINTW 衣柜已升至当前最高等级，无法再提升了！
+            GOTO INPUT_JIAJU
+        ELSEIF CFLAG:ARG:2408 == 11
+            PRINTW 衣柜已升至当前最高等级，无法再提升了！
+            GOTO INPUT_JIAJU
+        ENDIF
+    ELSEIF RESULT == 5
+        IF CFLAG:ARG:2409 == 0
+            PRINTL 要购入简陋陈列台吗？需要$2000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_ZHANSHI1
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 2000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 2000
+                    PRINTW 已购入简陋陈列台！现在可以在房间里展示物件了
+                    CFLAG:ARG:2412 += 1
+                    CFLAG:ARG:2409 = 1
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_ZHANSHI1
+            ENDIF
+        ELSEIF CFLAG:ARG:2409 == 1
+            PRINTL 要将简陋陈列台升级为超市货棚吗？需要$4000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_ZHANSHI2
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 4000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 4000
+                    PRINTW 已将简陋陈列台升级为超市货棚！
+                    CFLAG:ARG:2409 = 2
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_ZHANSHI2
+            ENDIF
+        ELSEIF CFLAG:ARG:2409 == 2
+            IF !TALENT:ARG:3 && !TALENT:ARG:4 && !TALENT:ARG:5 && !TALENT:ARG:6 && !TALENT:ARG:7 && !TALENT:ARG:8
+                PRINTFORMW 无法再提升等级，需要%CALLNAME:ARG%陷落后才能继续升级
+                GOTO INPUT_JIAJU
+            ELSEIF TALENT:ARG:3 || TALENT:ARG:6
+                PRINTL 要将超市货棚升级为塑料展示柜吗？需要$6000
+                PRINTL [0]是
+                PRINTL [1]否
+                $INPUT_JIAJU_ZHANSHI3
+                INPUT
+                IF RESULT == 0
+                    IF MONEY < 6000
+                        PRINTL
+                        PRINTFORML 余额不足……
+                        PRINTW
+                        GOTO INPUT_JIAJU
+                    ELSE
+                        MONEY -= 6000
+                        PRINTL 已将超市货棚升级为塑料展示柜！
+                        PRINTW 房间的甜蜜氛围增加了5！
+                        CFLAG:ARG:2409 = 3
+                        CFLAG:ARG:2401 = 1
+                        CFLAG:ARG:2402 += 5
+                        GOTO INPUT_HUDONG2
+                    ENDIF
+                ELSEIF RESULT == 1
+                    GOTO INPUT_JIAJU
+                ELSE
+                    GOTO INPUT_JIAJU_ZHANSHI3
+                ENDIF
+            ELSEIF TALENT:ARG:4 || TALENT:ARG:7
+                PRINTL 要将超市货棚升级为玻璃门衣柜吗？需要$6000
+                PRINTL [0]是
+                PRINTL [1]否
+                $INPUT_JIAJU_ZHANSHI4
+                INPUT
+                IF RESULT == 0
+                    IF MONEY < 6000
+                        PRINTL
+                        PRINTFORML 余额不足……
+                        PRINTW
+                        GOTO INPUT_JIAJU
+                    ELSE
+                        MONEY -= 6000
+                        PRINTL 已将超市货棚升级为玻璃门衣柜！
+                        PRINTW 房间的工口氛围增加了5！
+                        CFLAG:ARG:2409 = 4
+                        CFLAG:ARG:2401 = 2
+                        CFLAG:ARG:2402 += 5
+                        GOTO INPUT_HUDONG2
+                    ENDIF
+                ELSEIF RESULT == 1
+                    GOTO INPUT_JIAJU
+                ELSE
+                    GOTO INPUT_JIAJU_ZHANSHI4
+                ENDIF
+            ELSEIF TALENT:ARG:5 || TALENT:ARG:8
+                PRINTL 要将超市货棚升级为铝制展示柜吗？需要$6000
+                PRINTL [0]是
+                PRINTL [1]否
+                $INPUT_JIAJU_ZHANSHI5
+                INPUT
+                IF RESULT == 0
+                    IF MONEY < 6000
+                        PRINTL
+                        PRINTFORML 余额不足……
+                        PRINTW
+                        GOTO INPUT_JIAJU
+                    ELSE
+                        MONEY -= 6000
+                        PRINTL 已将超市货棚升级为铝制展示柜！
+                        PRINTW 房间的ＳＭ氛围增加了5！
+                        CFLAG:ARG:2409 = 5
+                        CFLAG:ARG:2401 = 3
+                        CFLAG:ARG:2402 += 5
+                        GOTO INPUT_HUDONG2
+                    ENDIF
+                ELSEIF RESULT == 1
+                    GOTO INPUT_JIAJU
+                ELSE
+                    GOTO INPUT_JIAJU_ZHANSHI5
+                ENDIF
+            ENDIF
+        ELSEIF CFLAG:ARG:2409 == 3
+            PRINTL 要将塑料展示柜升级为挂壁式展示柜吗？需要$10000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_ZHANSHI6
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 10000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 10000
+                    PRINTL 已将塑料展示柜升级为挂壁式展示柜！
+                    PRINTW 房间的甜蜜氛围增加了10！
+                    CFLAG:ARG:2409 = 6
+                    CFLAG:ARG:2402 += 10
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_ZHANSHI6
+            ENDIF
+        ELSEIF CFLAG:ARG:2409 == 4
+            PRINTL 要将玻璃门衣柜升级为滑轮展示柜吗？需要$10000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_ZHANSHI7
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 10000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 10000
+                    PRINTL 已将玻璃门衣柜升级为滑轮展示柜！
+                    PRINTW 房间的工口氛围增加了10！
+                    CFLAG:ARG:2409 = 7
+                    CFLAG:ARG:2402 += 10
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_ZHANSHI7
+            ENDIF
+        ELSEIF CFLAG:ARG:2409 == 5
+            PRINTL 要将铝制展示柜升级为吊顶式展示柜吗？需要$10000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_ZHANSHI8
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 10000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 10000
+                    PRINTL 已将铝制展示柜升级为吊顶式展示柜！
+                    PRINTW 房间的ＳＭ氛围增加了10！
+                    CFLAG:ARG:2409 = 8
+                    CFLAG:ARG:2402 += 10
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_ZHANSHI8
+            ENDIF
+        ELSEIF CFLAG:ARG:2409 == 6
+            PRINTL 要将挂壁式展示柜升级为转角展示柜吗？需要$30000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_ZHANSHI9
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 30000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 30000
+                    PRINTL 已将挂壁式展示柜升级为转角展示柜！
+                    PRINTW 房间的甜蜜氛围增加了20！
+                    CFLAG:ARG:2409 = 9
+                    CFLAG:ARG:2402 += 20
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_ZHANSHI9
+            ENDIF
+        ELSEIF CFLAG:ARG:2409 == 7
+            PRINTL 要将滑轮展示柜升级为玻璃展示柜吗？需要$30000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_ZHANSHI10
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 30000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 30000
+                    PRINTL 已将滑轮展示柜升级为玻璃展示柜！
+                    PRINTW 房间的工口氛围增加了20！
+                    CFLAG:ARG:2409 = 10
+                    CFLAG:ARG:2402 += 20
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_ZHANSHI10
+            ENDIF
+        ELSEIF CFLAG:ARG:2409 == 8
+            PRINTL 要将吊顶式展示柜升级为弧形展示柜吗？需要$30000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_ZHANSHI11
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 30000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 30000
+                    PRINTL 已将吊顶式展示柜升级为弧形展示柜！
+                    PRINTW 房间的ＳＭ氛围增加了20！
+                    CFLAG:ARG:2409 = 11
+                    CFLAG:ARG:2402 += 20
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_ZHANSHI11
+            ENDIF
+        ELSEIF CFLAG:ARG:2409 == 9
+            PRINTW 展示柜已升至当前最高等级，无法再提升了！
+            GOTO INPUT_JIAJU
+        ELSEIF CFLAG:ARG:2409 == 10
+            PRINTW 展示柜已升至当前最高等级，无法再提升了！
+            GOTO INPUT_JIAJU
+        ELSEIF CFLAG:ARG:2409 == 11
+            PRINTW 展示柜已升至当前最高等级，无法再提升了！
+            GOTO INPUT_JIAJU
+        ENDIF
+    ;床
+    ELSEIF RESULT == 6
+        IF CFLAG:ARG:2410 == 0
+            PRINTL 要将稻草席升级为廉价单人床吗？需要$8000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_BED1
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 8000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 8000
+                    PRINTW 已将稻草席升级为廉价单人床！
+                    CFLAG:ARG:2410 = 1
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_BED1
+            ENDIF
+        ELSEIF CFLAG:ARG:2410 == 1
+            PRINTL 要将廉价单人床升级为行军床吗？需要$15000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_BED2
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 15000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 15000
+                    PRINTW 已将廉价单人床升级为行军床！
+                    CFLAG:ARG:2410 = 2
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_BED2
+            ENDIF
+        ELSEIF CFLAG:ARG:2410 == 2
+            IF !TALENT:ARG:3 && !TALENT:ARG:4 && !TALENT:ARG:5 && !TALENT:ARG:6 && !TALENT:ARG:7 && !TALENT:ARG:8
+                PRINTFORMW 无法再提升等级，需要%CALLNAME:ARG%陷落后才能继续升级
+                GOTO INPUT_JIAJU
+            ELSEIF TALENT:ARG:3 || TALENT:ARG:6
+                PRINTL 要将行军床升级为柔软席梦思吗？需要$30000
+                PRINTL [0]是
+                PRINTL [1]否
+                $INPUT_JIAJU_BED3
+                INPUT
+                IF RESULT == 0
+                    IF MONEY < 30000
+                        PRINTL
+                        PRINTFORML 余额不足……
+                        PRINTW
+                        GOTO INPUT_JIAJU
+                    ELSE
+                        MONEY -= 30000
+                        PRINTL 已将行军床升级为柔软席梦思！
+                        PRINTW 房间的甜蜜氛围增加了10！
+                        CFLAG:ARG:2410 = 3
+                        CFLAG:ARG:2401 = 1
+                        CFLAG:ARG:2402 += 10
+                        GOTO INPUT_HUDONG2
+                    ENDIF
+                ELSEIF RESULT == 1
+                    GOTO INPUT_JIAJU
+                ELSE
+                    GOTO INPUT_JIAJU_BED3
+                ENDIF
+            ELSEIF TALENT:ARG:4 || TALENT:ARG:7
+                PRINTL 要将行军床升级为清凉气垫床吗？需要$30000
+                PRINTL [0]是
+                PRINTL [1]否
+                $INPUT_JIAJU_BED4
+                INPUT
+                IF RESULT == 0
+                    IF MONEY < 30000
+                        PRINTL
+                        PRINTFORML 余额不足……
+                        PRINTW
+                        GOTO INPUT_JIAJU
+                    ELSE
+                        MONEY -= 30000
+                        PRINTL 已将行军床升级为清凉气垫床！
+                        PRINTW 房间的工口氛围增加了10！
+                        CFLAG:ARG:2410 = 4
+                        CFLAG:ARG:2401 = 2
+                        CFLAG:ARG:2402 += 10
+                        GOTO INPUT_HUDONG2
+                    ENDIF
+                ELSEIF RESULT == 1
+                    GOTO INPUT_JIAJU
+                ELSE
+                    GOTO INPUT_JIAJU_BED4
+                ENDIF
+            ELSEIF TALENT:ARG:5 || TALENT:ARG:8
+                PRINTL 要将行军床升级为尼龙吊床吗？需要$30000
+                PRINTL [0]是
+                PRINTL [1]否
+                $INPUT_JIAJU_BED5
+                INPUT
+                IF RESULT == 0
+                    IF MONEY < 30000
+                        PRINTL
+                        PRINTFORML 余额不足……
+                        PRINTW
+                        GOTO INPUT_JIAJU
+                    ELSE
+                        MONEY -= 30000
+                        PRINTL 已将行军床升级为尼龙吊床！
+                        PRINTW 房间的ＳＭ氛围增加了10！
+                        CFLAG:ARG:2410 = 5
+                        CFLAG:ARG:2401 = 3
+                        CFLAG:ARG:2402 += 10
+                        GOTO INPUT_HUDONG2
+                    ENDIF
+                ELSEIF RESULT == 1
+                    GOTO INPUT_JIAJU
+                ELSE
+                    GOTO INPUT_JIAJU_BED5
+                ENDIF
+            ENDIF
+        ELSEIF CFLAG:ARG:2410 == 3
+            PRINTL 要将柔软席梦思升级为自热地台床吗？需要$75000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_BED6
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 75000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 75000
+                    PRINTL 已将柔软席梦思升级为自热地台床！
+                    PRINTW 房间的甜蜜氛围增加了25！
+                    CFLAG:ARG:2410 = 6
+                    CFLAG:ARG:2402 += 25
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_BED6
+            ENDIF
+        ELSEIF CFLAG:ARG:2410 == 4
+            PRINTL 要将清凉气垫床升级为情趣水床吗？需要$75000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_BED7
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 75000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 75000
+                    PRINTL 已将清凉气垫床升级为情趣水床！
+                    PRINTW 房间的工口氛围增加了25！
+                    CFLAG:ARG:2410 = 7
+                    CFLAG:ARG:2402 += 25
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_BED7
+            ENDIF
+        ELSEIF CFLAG:ARG:2410 == 5
+            PRINTL 要将尼龙吊床升级为远足帐篷床吗？需要$75000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_BED8
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 75000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 75000
+                    PRINTL 已将尼龙吊床升级为远足帐篷床！
+                    PRINTW 房间的ＳＭ氛围增加了25！
+                    CFLAG:ARG:2410 = 8
+                    CFLAG:ARG:2402 += 25
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_BED8
+            ENDIF
+        ELSEIF CFLAG:ARG:2410 == 6
+            PRINTL 要将自热地台床升级为实木榻榻米吗？需要$150000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_BED9
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 150000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 150000
+                    PRINTL 已将自热地台床升级为实木榻榻米！
+                    PRINTW 房间的甜蜜氛围增加了40！
+                    CFLAG:ARG:2410 = 9
+                    CFLAG:ARG:2402 += 40
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_BED9
+            ENDIF
+        ELSEIF CFLAG:ARG:2410 == 7
+            PRINTL 要将情趣水床升级为旋转木马床吗？需要$150000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_BED10
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 150000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 150000
+                    PRINTL 已将情趣水床升级为旋转木马床！
+                    PRINTW 房间的工口氛围增加了40！
+                    CFLAG:ARG:2410 = 10
+                    CFLAG:ARG:2402 += 40
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_BED10
+            ENDIF
+        ELSEIF CFLAG:ARG:2410 == 8
+            PRINTL 要将远足帐篷床升级为智能电子床吗？需要$150000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_BED11
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 150000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 150000
+                    PRINTL 已将远足帐篷床升级为智能电子床！
+                    PRINTW 房间的ＳＭ氛围增加了40！
+                    CFLAG:ARG:2410 = 11
+                    CFLAG:ARG:2402 += 40
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_BED11
+            ENDIF
+        ELSEIF CFLAG:ARG:2410 == 9
+            PRINTW 床具已升至当前最高等级，无法再提升了！
+            GOTO INPUT_JIAJU
+        ELSEIF CFLAG:ARG:2410 == 10
+            PRINTW 床具已升至当前最高等级，无法再提升了！
+            GOTO INPUT_JIAJU
+        ELSEIF CFLAG:ARG:2410 == 11
+            PRINTW 床具已升至当前最高等级，无法再提升了！
+            GOTO INPUT_JIAJU
+        ENDIF
+    ;灯具
+    ELSEIF RESULT == 7
+        IF CFLAG:ARG:2411 == 0
+            PRINTL 要将蜡烛升级为廉价灯泡吗？需要$3000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_DENG1
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 3000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 3000
+                    PRINTW 已将灯具升级为廉价灯泡！
+                    CFLAG:ARG:2411 = 1
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_DENG1
+            ENDIF
+        ELSEIF CFLAG:ARG:2411 == 1
+            PRINTL 要将廉价灯泡升级为二手落地灯吗？需要$5000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_DENG2
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 5000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 5000
+                    PRINTW 已将廉价灯泡升级为二手落地灯！
+                    CFLAG:ARG:2411 = 2
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_DENG2
+            ENDIF
+        ELSEIF CFLAG:ARG:2411 == 2
+            IF !TALENT:ARG:3 && !TALENT:ARG:4 && !TALENT:ARG:5 && !TALENT:ARG:6 && !TALENT:ARG:7 && !TALENT:ARG:8
+                PRINTFORMW 无法再提升等级，需要%CALLNAME:ARG%陷落后才能继续升级
+                GOTO INPUT_JIAJU
+            ELSEIF TALENT:ARG:3 || TALENT:ARG:6
+                PRINTL 要将二手落地灯升级为蓝蔷薇落地灯吗？需要$10000
+                PRINTL [0]是
+                PRINTL [1]否
+                $INPUT_JIAJU_DENG3
+                INPUT
+                IF RESULT == 0
+                    IF MONEY < 10000
+                        PRINTL
+                        PRINTFORML 余额不足……
+                        PRINTW
+                        GOTO INPUT_JIAJU
+                    ELSE
+                        MONEY -= 10000
+                        PRINTL 已将二手落地灯升级为蓝蔷薇落地灯！
+                        PRINTW 房间的甜蜜氛围增加了5！
+                        CFLAG:ARG:2411 = 3
+                        CFLAG:ARG:2401 = 1
+                        CFLAG:ARG:2402 += 5
+                        GOTO INPUT_HUDONG2
+                    ENDIF
+                ELSEIF RESULT == 1
+                    GOTO INPUT_JIAJU
+                ELSE
+                    GOTO INPUT_JIAJU_DENG3
+                ENDIF
+            ELSEIF TALENT:ARG:4 || TALENT:ARG:7
+                PRINTL 要将二手落地灯升级为紫罗兰落地灯吗？需要$10000
+                PRINTL [0]是
+                PRINTL [1]否
+                $INPUT_JIAJU_DENG4
+                INPUT
+                IF RESULT == 0
+                    IF MONEY < 10000
+                        PRINTL
+                        PRINTFORML 余额不足……
+                        PRINTW
+                        GOTO INPUT_JIAJU
+                    ELSE
+                        MONEY -= 10000
+                        PRINTL 已将二手落地灯升级为紫罗兰落地灯！
+                        PRINTW 房间的工口氛围增加了5！
+                        CFLAG:ARG:2411 = 4
+                        CFLAG:ARG:2401 = 2
+                        CFLAG:ARG:2402 += 5
+                        GOTO INPUT_HUDONG2
+                    ENDIF
+                ELSEIF RESULT == 1
+                    GOTO INPUT_JIAJU
+                ELSE
+                    GOTO INPUT_JIAJU_DENG4
+                ENDIF
+            ELSEIF TALENT:ARG:5 || TALENT:ARG:8
+                PRINTL 要将二手落地灯升级为鸢尾草落地灯吗？需要$10000
+                PRINTL [0]是
+                PRINTL [1]否
+                $INPUT_JIAJU_DENG5
+                INPUT
+                IF RESULT == 0
+                    IF MONEY < 10000
+                        PRINTL
+                        PRINTFORML 余额不足……
+                        PRINTW
+                        GOTO INPUT_JIAJU
+                    ELSE
+                        MONEY -= 10000
+                        PRINTL 已将二手落地灯升级为鸢尾草落地灯！
+                        PRINTW 房间的ＳＭ氛围增加了5！
+                        CFLAG:ARG:2411 = 5
+                        CFLAG:ARG:2401 = 3
+                        CFLAG:ARG:2402 += 5
+                        GOTO INPUT_HUDONG2
+                    ENDIF
+                ELSEIF RESULT == 1
+                    GOTO INPUT_JIAJU
+                ELSE
+                    GOTO INPUT_JIAJU_DENG5
+                ENDIF
+            ENDIF
+        ELSEIF CFLAG:ARG:2411 == 3
+            PRINTL 要将蓝蔷薇落地灯升级为雪花球落地灯吗？需要$25000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_DENG6
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 25000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 25000
+                    PRINTL 已将蓝蔷薇落地灯升级为雪花球落地灯！
+                    PRINTW 房间的甜蜜氛围增加了15！
+                    CFLAG:ARG:2411 = 6
+                    CFLAG:ARG:2402 += 15
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_DENG6
+            ENDIF
+        ELSEIF CFLAG:ARG:2411 == 4
+            PRINTL 要将紫罗兰落地灯升级为香氛落地灯吗？需要$25000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_DENG7
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 25000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 25000
+                    PRINTL 已将紫罗兰落地灯升级为香氛落地灯！
+                    PRINTW 房间的工口氛围增加了15！
+                    CFLAG:ARG:2411 = 7
+                    CFLAG:ARG:2402 += 15
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_DENG7
+            ENDIF
+        ELSEIF CFLAG:ARG:2411 == 5
+            PRINTL 要将鸢尾草落地灯升级为精准报时落地灯吗？需要$25000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_DENG8
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 25000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 25000
+                    PRINTL 已将鸢尾草落地灯升级为精准报时落地灯！
+                    PRINTW 房间的ＳＭ氛围增加了15！
+                    CFLAG:ARG:2411 = 8
+                    CFLAG:ARG:2402 += 15
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_DENG8
+            ENDIF
+        ELSEIF CFLAG:ARG:2411 == 6
+            PRINTL 要将雪花球落地灯升级为八音盒落地灯吗？需要$50000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_DENG9
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 50000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 50000
+                    PRINTL 已将雪花球落地灯升级为八音盒落地灯！
+                    PRINTW 房间的甜蜜氛围增加了25！
+                    CFLAG:ARG:2411 = 9
+                    CFLAG:ARG:2402 += 25
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_DENG9
+            ENDIF
+        ELSEIF CFLAG:ARG:2411 == 7
+            PRINTL 要将香氛落地灯升级为迷迭香落地灯吗？需要$50000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_DENG10
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 50000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 50000
+                    PRINTL 已将香氛落地灯升级为迷迭香落地灯！
+                    PRINTW 房间的工口氛围增加了25！
+                    CFLAG:ARG:2411 = 10
+                    CFLAG:ARG:2402 += 25
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_DENG10
+            ENDIF
+        ELSEIF CFLAG:ARG:2411 == 8
+            PRINTL 要将精准报时落地灯升级为豪华典雅落地灯吗？需要$50000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_JIAJU_DENG11
+            INPUT
+            IF RESULT == 0
+                IF MONEY < 50000
+                    PRINTL
+                    PRINTFORML 余额不足……
+                    PRINTW
+                    GOTO INPUT_JIAJU
+                ELSE
+                    MONEY -= 50000
+                    PRINTL 已将精准报时落地灯升级为豪华典雅落地灯！
+                    PRINTW 房间的ＳＭ氛围增加了25！
+                    CFLAG:ARG:2411 = 11
+                    CFLAG:ARG:2402 += 25
+                    GOTO INPUT_HUDONG2
+                ENDIF
+            ELSEIF RESULT == 1
+                GOTO INPUT_JIAJU
+            ELSE
+                GOTO INPUT_JIAJU_DENG11
+            ENDIF
+        ELSEIF CFLAG:ARG:2411 == 9
+            PRINTW 灯具已升至当前最高等级，无法再提升了！
+            GOTO INPUT_JIAJU
+        ELSEIF CFLAG:ARG:2411 == 10
+            PRINTW 灯具已升至当前最高等级，无法再提升了！
+            GOTO INPUT_JIAJU
+        ELSEIF CFLAG:ARG:2411 == 11
+            PRINTW 灯具已升至当前最高等级，无法再提升了！
+            GOTO INPUT_JIAJU
+        ENDIF
+	 ;Ａ片机上盒
+	ELSEIF RESULT == 8
+	        PRINTL 要装上能看有色节目的机上盒吗？需要$10000
+            PRINTL [0]是
+            PRINTL [1]否
+            $INPUT_A
+            INPUT
+            IF RESULT == 0
+				MONEY -= 10000
+                PRINTL 已经加装Ａ片机上盒！花费了$10000
+                PRINTW 房间的氛围增加了25！
+                CFLAG:ARG:2420 = 1
+                CFLAG:ARG:2402 += 25
+                GOTO INPUT_HUDONG2
+			ELSE
+				GOTO INPUT_JIAJU
+			ENDIF
+    ELSEIF RESULT == 0
+        GOTO INPUT_HUDONG2
+    ELSE
+        GOTO INPUT_JIAJU2
+    ENDIF
+ELSEIF RESULT == 100
+    CFLAG:ARG:2404 = 0
+    CFLAG:ARG:2413 = 0
+    IF CFLAG:ARG:2415 >= 3
+        SIF !TIME
+            PRINTFORMW 从%CALLNAME:ARG%的房间里出来时，天色已经变了
+        SIF TIME
+            PRINTFORMW 从%CALLNAME:ARG%的房间里出来时，夜已经深了
+        FLAG:0 = 1
+        BEGIN TURNEND
+        RETURN 1
+    ENDIF
+    RETURN 0
+ELSEIF RESULT == 900
+	CALL 房间催眠控制(ARG)
+ELSEIF RESULT == 901
+    PRINTFORMW 解除了%CALLNAME:ARG%的催眠状态了！
+	CFLAG:ARG:7000 = 0
+	CALL 催眠解除(ARG)
+    GOTO INPUT_HUDONG2
+ELSE
+    GOTO INPUT_LOOP
+ENDIF
+
+@CHARA_ROOM_SHOW(ARG)
+DRAWLINE
+PRINTFORM  □ %CALLNAME:ARG%的房间 □    当前氛围种类：
+SIF CFLAG:ARG:2401 == 0
+    PRINTFORML （暂无）
+SIF CFLAG:ARG:2401 == 1
+    PRINTFORML 甜蜜氛围  当前氛围数值：{CFLAG:ARG:2402}
+SIF CFLAG:ARG:2401 == 2
+    PRINTFORML 工口氛围  当前氛围数值：{CFLAG:ARG:2402}
+SIF CFLAG:ARG:2401 == 3
+    PRINTFORML ＳＭ氛围  当前氛围数值：{CFLAG:ARG:2402}
+PRINTL
+PRINTL  █━═━━━━━━━━█
+IF CFLAG:ARG:2405 > 0
+    PRINTL  ┃┌──┐　◥〓◤　¤┃
+ELSE
+    PRINTL  ┃┌──┐　　　　　¤┃
+ENDIF
+PRINTL  ┃└──┘　　　　　　┃
+IF CFLAG:ARG:2406 > 0 && CFLAG:ARG:2407 > 0
+    PRINTL  ┠┐　　　　┌─┐　　┃
+ELSEIF CFLAG:ARG:2406 > 0 && CFLAG:ARG:2407 == 0
+    PRINTL  ┠┐　　　　　　　　　┃
+ELSEIF CFLAG:ARG:2406 == 0 && CFLAG:ARG:2407 > 0
+    PRINTL  ┃　　　　　┌─┐　　┃
+ELSE
+    PRINTL  ┃　　　　　　　　　　┃
+ENDIF
+IF CFLAG:ARG:2406 > 0 && CFLAG:ARG:2407 > 0
+    PRINTL  ┃║　　　　└┴┘　　┃
+ELSEIF CFLAG:ARG:2406 > 0 && CFLAG:ARG:2407 == 0
+    PRINTL  ┃║　　　　　　　　　┃
+ELSEIF CFLAG:ARG:2406 == 0 && CFLAG:ARG:2407 > 0
+    PRINTL  ┃　　　　　└┴┘　　┃
+ELSE
+    PRINTL  ┃　　　　　　　　　　┃
+ENDIF
+IF CFLAG:ARG:2406 > 0
+    PRINTL  ┠┘　　　　　　　　　┃
+ELSE
+    PRINTL  ┃　　　　　　　　　　┃
+ENDIF
+IF CFLAG:ARG:2408 > 0 && CFLAG:ARG:2409 > 0
+    PRINTL  ┃┌══┐　　　　≡≡┃
+ELSEIF CFLAG:ARG:2408 > 0 && CFLAG:ARG:2409 == 0
+    PRINTL  ┃┌══┐　　　　　　┃
+ELSEIF CFLAG:ARG:2408 == 0 && CFLAG:ARG:2409 > 0
+    PRINTL  ┃　　　　　　　　≡≡┃
+ELSE
+    PRINTL  ┃　　　　　　　　　　┃
+ENDIF
+IF CFLAG:ARG:2408 > 0
+    IF CFLAG:ARG:2404 == 0
+        PRINTL  █┷━━┷┫　┣━━━█
+    ELSE
+        PRINTL  █┷━━┷╋━╋━━━█
+    ENDIF
+ELSE
+     IF CFLAG:ARG:2404 == 0
+         PRINTL  █━━━━┫　┣━━━█
+     ELSE
+         PRINTL  █━━━━╋━╋━━━█
+     ENDIF
+ENDIF
+
+@ROOM_TIME
+PRINTL
+PRINTW 之后，离开了房间…
+FLAG:0 = 1
+BEGIN TURNEND
+RETURN 1
+
+@DOOR_OPEN
+CFLAG:C:2404 = 0
+PRINTL
+PRINTFORMW %CALLNAME:C%的房门解锁了
+
+@GO_BACK
+CFLAG:A:2414 = 0
+REPEAT CHARANUM
+    IF CFLAG:COUNT:(NO:A+3000) == 1
+        CFLAG:COUNT:(NO:A+3000) = 0
+        B = COUNT
+        PRINTL
+        PRINTFORMW %CALLNAME:A%从%CALLNAME:B%那儿回自己的房间了
+    ENDIF
+REND
+
+
+@GO_BACK2
+IF CFLAG:E:2404 == 1
+    CFLAG:E:2404 = 0
+ELSEIF CFLAG:E:2414 == 1
+    C = 0
+    REPEAT CHARANUM
+        SIF CFLAG:COUNT:(NO:E+3000) == 1
+            C = COUNT
+    REND
+    CFLAG:E:2414 = 0
+    CFLAG:C:(NO:E+3000) = 0
+    CFLAG:C:2404 = 0
+ENDIF
+
+
+@灯具(ARG)
+#FUNCTIONS
+        IF CFLAG:ARG:2411 == 0
+            RETURNF "蜡烛"
+        ELSEIF CFLAG:ARG:2411 == 1
+             RETURNF "灯泡"
+        ELSEIF CFLAG:ARG:2411 == 2
+             RETURNF "二手落地灯"
+        ELSEIF CFLAG:ARG:2411 == 3
+             RETURNF "蓝蔷薇落地灯"
+        ELSEIF CFLAG:ARG:2411 == 4
+             RETURNF "紫罗兰落地灯"
+        ELSEIF CFLAG:ARG:2411 == 5
+             RETURNF "鸢尾草落地灯"
+        ELSEIF CFLAG:ARG:2411 == 6
+             RETURNF "雪花球落地灯"
+        ELSEIF CFLAG:ARG:2411 == 7
+             RETURNF "香氛落地灯"
+        ELSEIF CFLAG:ARG:2411 == 8
+             RETURNF "精准报时落地灯"
+        ELSEIF CFLAG:ARG:2411 == 9
+             RETURNF "八音盒落地灯"
+        ELSEIF CFLAG:ARG:2411 == 10
+             RETURNF "迷迭香落地灯"
+        ELSEIF CFLAG:ARG:2411 == 11
+             RETURNF "豪华典雅落地灯"
+        ENDIF
+;--------------------------------------------------------
+@电视(ARG)
+#FUNCTIONS
+    IF CFLAG:ARG:2405 == 1
+         RETURNF "黑白电视机"
+    ELSEIF CFLAG:ARG:2405 == 2
+         RETURNF "等离子电视机"
+    ELSEIF CFLAG:ARG:2405 == 3
+         RETURNF "液晶电视机"
+    ELSEIF CFLAG:ARG:2405 == 4
+         RETURNF "防水电视机"
+    ELSEIF CFLAG:ARG:2405 == 5
+         RETURNF "监控电视机"
+    ELSEIF CFLAG:ARG:2405 == 6
+         RETURNF "挂壁式电视"
+    ELSEIF CFLAG:ARG:2405 == 7
+         RETURNF "嵌入式电视"
+    ELSEIF CFLAG:ARG:2405 == 8
+         RETURNF "曲面全景电视"
+    ELSEIF CFLAG:ARG:2405 == 9
+         RETURNF "4D放映机"
+    ELSEIF CFLAG:ARG:2405 == 10
+         RETURNF "镜面放映机"
+    ELSEIF CFLAG:ARG:2405 == 11
+         RETURNF "全视投影仪"
+	ELSE
+		RETURNF "没有电视"
+    ENDIF
+;--------------------------------------------------------
+@床舖(ARG)
+#FUNCTIONS
+        IF CFLAG:ARG:2410 == 0
+             RETURNF "稻草席"
+        ELSEIF CFLAG:ARG:2410 == 1
+             RETURNF "廉价单人床"
+        ELSEIF CFLAG:ARG:2410 == 2
+             RETURNF "行军床"
+        ELSEIF CFLAG:ARG:2410 == 3
+             RETURNF "席梦思"
+        ELSEIF CFLAG:ARG:2410 == 4
+             RETURNF "清凉气垫床"
+        ELSEIF CFLAG:ARG:2410 == 5
+             RETURNF "尼龙吊床"
+        ELSEIF CFLAG:ARG:2410 == 6
+             RETURNF "自热地台床"
+        ELSEIF CFLAG:ARG:2410 == 7
+             RETURNF "情趣水床"
+        ELSEIF CFLAG:ARG:2410 == 8
+             RETURNF "远足帐篷床"
+        ELSEIF CFLAG:ARG:2410 == 9
+             RETURNF "实木榻榻米"
+        ELSEIF CFLAG:ARG:2410 == 10
+             RETURNF "旋转木马床"
+        ELSEIF CFLAG:ARG:2410 == 11
+             RETURNF "智能电子床"
+		ENDIF
+;--------------------------------------------------------
+@书架(ARG)
+#FUNCTIONS
+        IF CFLAG:ARG:2406 == 1
+             RETURNF "纸箱"
+        ELSEIF CFLAG:ARG:2406 == 2
+             RETURNF "简易书架"
+        ELSEIF CFLAG:ARG:2406 == 3
+             RETURNF "原木挂式书架"
+        ELSEIF CFLAG:ARG:2406 == 4
+             RETURNF "可活动折叠书架"
+        ELSEIF CFLAG:ARG:2406 == 5
+             RETURNF "塑料组装书架"
+        ELSEIF CFLAG:ARG:2406 == 6
+             RETURNF "沉香色书柜"
+        ELSEIF CFLAG:ARG:2406 == 7
+             RETURNF "镂空镶边书架"
+        ELSEIF CFLAG:ARG:2406 == 8
+             RETURNF "办公铝制书架"
+        ELSEIF CFLAG:ARG:2406 == 9
+             RETURNF "浪漫转角书橱"
+        ELSEIF CFLAG:ARG:2406 == 10
+             RETURNF "艺术玻璃书橱"
+        ELSEIF CFLAG:ARG:2406 == 11
+             RETURNF "精英组合书架"
+		ELSE
+			 RETURNF "没有书架"
+        ENDIF		
+;--------------------------------------------------------
+@沙发(ARG)
+#FUNCTIONS		
+		 IF CFLAG:ARG:2407 == 1
+             RETURNF "劣质板凳"
+        ELSEIF CFLAG:ARG:2407 == 2
+             RETURNF "野餐椅"
+        ELSEIF CFLAG:ARG:2407 == 3
+             RETURNF "藤制沙发"
+        ELSEIF CFLAG:ARG:2407 == 4
+             RETURNF "折叠沙发"
+        ELSEIF CFLAG:ARG:2407 == 5
+             RETURNF "铝制双人椅"
+        ELSEIF CFLAG:ARG:2407 == 6
+             RETURNF "组合布艺沙发"
+        ELSEIF CFLAG:ARG:2407 == 7
+             RETURNF "真皮沙发"
+        ELSEIF CFLAG:ARG:2407 == 8
+             RETURNF "曲木沙发"
+        ELSEIF CFLAG:ARG:2407 == 9
+             RETURNF "华丽绿植吊椅"
+        ELSEIF CFLAG:ARG:2407 == 10
+             RETURNF "双人按摩沙发"
+        ELSEIF CFLAG:ARG:2407 == 11
+             RETURNF "智能悬空椅"
+		ELSE
+			 RETURNF "没有座椅"
+        ENDIF
+;--------------------------------------------------------	
+@衣柜(ARG)
+#FUNCTIONS	
+        IF CFLAG:ARG:2408 == 1
+             RETURNF "大型纸箱"
+        ELSEIF CFLAG:ARG:2408 == 2
+             RETURNF "组合塑料箱"
+        ELSEIF CFLAG:ARG:2408 == 3
+             RETURNF "推拉门衣柜"
+        ELSEIF CFLAG:ARG:2408 == 4
+             RETURNF "玻璃门衣柜"
+        ELSEIF CFLAG:ARG:2408 == 5
+             RETURNF "平开门衣柜"
+        ELSEIF CFLAG:ARG:2408 == 6
+             RETURNF "挂帘式换衣间"
+        ELSEIF CFLAG:ARG:2408 == 7
+             RETURNF "透明挂帘换衣间"
+        ELSEIF CFLAG:ARG:2408 == 8
+             RETURNF "接顶多层衣柜"
+        ELSEIF CFLAG:ARG:2408 == 9
+             RETURNF "豪华衣帽间"
+        ELSEIF CFLAG:ARG:2408 == 10
+             RETURNF "开放式衣帽间"
+        ELSEIF CFLAG:ARG:2408 == 11
+             RETURNF "胶囊衣柜"
+		ELSE
+			 RETURNF "没有衣柜"
+        ENDIF		
+;--------------------------------------------------------	
+@展示柜(ARG)
+#FUNCTIONS			
+            IF CFLAG:ARG:2409 == 1
+                 RETURNF "简陋陈列台"
+            ELSEIF CFLAG:ARG:2409 == 2
+                 RETURNF "超市货棚"
+            ELSEIF CFLAG:ARG:2409 == 3
+                 RETURNF "塑料展示柜"
+            ELSEIF CFLAG:ARG:2409 == 4
+                 RETURNF "合成板展示柜"
+            ELSEIF CFLAG:ARG:2409 == 5
+                 RETURNF "铝制展示柜"
+            ELSEIF CFLAG:ARG:2409 == 6
+                 RETURNF "挂壁式展示柜"
+            ELSEIF CFLAG:ARG:2409 == 7
+                 RETURNF "滑轮展示柜"
+            ELSEIF CFLAG:ARG:2409 == 8
+                 RETURNF "吊顶式展示柜"
+            ELSEIF CFLAG:ARG:2409 == 9
+                 RETURNF "转角展示柜"
+            ELSEIF CFLAG:ARG:2409 == 10
+                 RETURNF "玻璃展示柜"
+            ELSEIF CFLAG:ARG:2409 == 11
+                 RETURNF "弧形展示柜"
+			ELSE
+			     RETURNF "没有展示柜"
+            ENDIF	
+@行动结束(ARG)
+

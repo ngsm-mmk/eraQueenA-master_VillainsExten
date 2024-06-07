@@ -1,0 +1,291 @@
+﻿;-------------------------------------------------
+;约会に行く
+;特殊指令
+;-------------------------------------------------
+@COM195
+PRINTL 去约会
+STR:0 = 去约会
+
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 200
+LOSEBASE:1 += 50
+
+SOURCE:情爱 = 200
+SOURCE:达成感 = 300
+SOURCE:恭顺 = 300
+;ストレス減少
+CFLAG:TARGET:10 -= 3
+
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+PRINTFORML %EXPNAME:23%＋10
+EXP:23 += 10
+
+;依赖度ベクトル
+TFLAG:33 = 4
+
+;依赖度補正値(恋慕で3、相亲相爱で5）
+IF TALENT:3 && ASSIPLAY == 0
+	TFLAG:30 += 3
+ELSEIF TALENT:6 && ASSIPLAY == 0
+	TFLAG:30 += 5
+ENDIF
+
+
+RETURN 1
+
+@DATE_PLACE(ARG)
+#FUNCTIONS
+STR:5 = 
+SELECTCASE RAND:38
+	CASE 0
+		STR:5 = 在公园悠闲地散了步
+		RETURNF "公园"
+	CASE 1
+		STR:5 = 欣赏了艺术作品
+		RETURNF "美术馆"
+	CASE 2
+		STR:5 = 欣赏了古典音乐演唱会
+		RETURNF "演唱会大厅"
+	CASE 3
+		STR:5 = 拍了灵异照片，“目击”了各种各样的事物
+		RETURNF "心灵摄影"
+	CASE 4
+		STR:5 = 参观了感兴趣的展览
+		RETURNF "博物馆"
+	CASE 5
+		STR:5 = 观摩了面包的制作过程
+		RETURNF "面包工厂"
+	CASE 6
+		STR:5 = 乘坐了所有尖叫系的游玩设施
+		RETURNF "游乐园"
+	CASE 7
+		STR:5 = 和决斗家决斗了
+		RETURNF "世界的尽头"
+	CASE 8
+		STR:5 = 一起在教堂祈祷、模拟了二人的婚礼
+		RETURNF "教堂"
+	CASE 9
+		IF FLAG:80 == 7 || FLAG:80 == 8
+			STR:5 = 尽情地游泳，在海滩上打了排球
+		ELSE
+			STR:5 = 散步钓鱼，尽情享受了海边的风光
+		ENDIF
+		RETURNF "海边"
+	CASE 10
+		STR:5 = 尽情地Shopping了一番
+		RETURNF "购物中心"
+	CASE 11
+		STR:5 = 玩了泰山的游戏
+		RETURNF "原始丛林"
+	CASE 12
+		STR:5 = 在保龄球场挥洒了汗水
+		RETURNF "保龄球场"
+	CASE 13
+		STR:5 = 观看了体育比赛
+		RETURNF "体育场"
+	CASE 14
+		STR:5 = 见证了几亿年前的星辉
+		RETURNF "天象馆"
+	CASE 15
+		STR:5 = 和女仆玩了猜拳
+		RETURNF "女仆咖啡厅"
+	CASE 16
+		STR:5 = 故意按响铃铛捉弄了执事
+		RETURNF "执事咖啡厅"
+	CASE 17
+		STR:5 = 在树海里迷路了
+		RETURNF "森林"
+	CASE 18
+		STR:5 = 和猴子对视，还给长颈鹿喂了食
+		RETURNF "动物园"
+	CASE 19
+		STR:5 = 不约而同感到身体里的负离子被植物们吸收了
+		RETURNF "植物园"
+	CASE 20
+		STR:5 = 摸了摸海星，还观看了海豚的表演
+		RETURNF "水族馆"
+	CASE 21
+		IF !RAND:3
+			STR:5 = 观看了爱情电影
+		ELSEIF !RAND:2
+			STR:5 = 观看了动作片
+		ELSE
+			STR:5 = 观看了喜剧电影
+		ENDIF
+		RETURNF "电影院"
+	CASE 22
+		STR:5 = 观赏了戏剧
+		RETURNF "剧场"
+	CASE 23
+		STR:5 = 唱了双人情歌
+		RETURNF "卡拉OK"
+	CASE 24
+		STR:5 = 吃了许多甜食，把肚子填满了
+		RETURNF "蛋糕自助餐厅"
+	CASE 25
+		IF FLAG:80 == 12 || FLAG:80 == 1
+			STR:5 = 滑了雪
+		ELSE
+			STR:5 = 爬了山
+		ENDIF
+		RETURNF "山道"
+	CASE 26
+		STR:5 = 品尝了太空食品，还走了太空步
+		RETURNF "宇宙"
+	CASE 27
+		STR:5 = 玩了刺激的“游戏”，和调教的时候没什么区别
+		RETURNF "秘密俱乐部"
+	CASE 28
+		STR:5 = 激烈地对战，把摇杆和按钮弄得啪啪作响
+		RETURNF "游戏中心"
+	CASE 29
+		STR:5 = 享受了美味的中华料理
+		RETURNF "中华街"
+	CASE 30
+		STR:5 = 给奶牛挤了牛奶，还被羊驼吐了口水
+		RETURNF "牧场"
+	CASE 31
+		STR:5 = 唱了重金属摇滚乐
+		RETURNF "LIVE录音棚"
+	CASE 32
+		STR:5 = 互相泼水，先后从滑梯上滑了下去
+		RETURNF "温水游泳池"
+	CASE 33
+		STR:5 = 握着钓竿，各自发呆
+		RETURNF "钓鱼场"
+	CASE 34
+		STR:5 = 在商铺间边走边吃，打量着周围的人群
+		RETURNF "祭典"
+	CASE 35
+		STR:5 = 在小瀑布旁尽情地大笑
+		RETURNF "林中湖泊"
+	CASE 36
+		STR:5 = 一会儿扮作小狗，一会儿学着猫叫，还拿冻干喂了猫咪
+		RETURNF "猫咖"
+	CASEELSE
+		STR:5 = 编织了花环，沉浸在童话般的氛围中
+		RETURNF "花园"
+ENDSELECT
+
+@DATE_PLACE_LIKE(ARG)
+#FUNCTION
+LOCALS = %STR:6%
+LOCAL = 0
+;のんびり系
+IF LOCALS == "公园" || LOCALS == "美术馆" || LOCALS == "演唱会大厅" || LOCALS == "博物馆" || LOCALS == "教堂" || (LOCALS == "海" && (FLAG:80 != 7 && FLAG:80 != 8)) || LOCALS == "天象馆" || LOCALS == "剧场" || LOCALS == "牧场" || LOCALS == "钓鱼场" || LOCALS == "林中湖泊" || LOCALS == "钓鱼场"
+	SIF TALENT:胆怯 || TALENT:老实 || TALENT:缺乏感情 || TALENT:悲观 || TALENT:文系 || TALENT:喜欢读书 || CFLAG:600 == 2 || CFLAG:600 == 8 || CFLAG:600 == 13
+		LOCAL += 1
+	SIF TALENT:喜欢运动 || TALENT:性好奇 || ((TALENT:幼稚 || TALENT:幼儿／幼儿退行) && !TALENT:老实) || CFLAG:600 == 1
+		LOCAL -= 2
+ENDIF
+;にぎやか系
+IF LOCALS == "游乐园" || LOCALS == "山" || (LOCALS == "海" && (FLAG:80 == 7 || FLAG:80 == 8)) || LOCALS == "购物中心" || LOCALS == "保龄球场" || LOCALS == "体育场" || LOCALS == "卡拉OK" || LOCALS == "蛋糕自助餐" || LOCALS == "游戏中心" || LOCALS == "中华街" || LOCALS == "LIVE录音棚" || LOCALS == "温水游泳池" || LOCALS == "祭典"
+	SIF TALENT:喜欢运动 || TALENT:喜欢引人注目 || TALENT:性好奇 || CFLAG:600 == 1 || CFLAG:600 == 4
+		LOCAL += 1
+	SIF TALENT:胆怯 || TALENT:老实 || TALENT:缺乏感情 || TALENT:悲观 || TALENT:文系 || TALENT:喜欢读书 || CFLAG:600 == 8
+		LOCAL -= 2
+ENDIF
+;奇妙系
+IF LOCALS == "心灵摄影" || LOCALS == "面包工厂" || LOCALS == "世界的尽头" || LOCALS == "女仆咖啡厅" || LOCALS == "执事咖啡厅" || LOCALS == "宇宙" || LOCALS == "秘密俱乐部"
+	SIF TALENT:性好奇 || TALENT:性倒错 || ((TALENT:幼稚 || TALENT:幼儿／幼儿退行) && !TALENT:老实) || TALENT:异常 || CFLAG:600 == 9 || CFLAG:600 == 12 || CFLAG:600 == 13
+		LOCAL += 1
+	SIF TALENT:无动于衷 || (TALENT:性保守 && LOCALS != "面包工厂") || CFLAG:600 == 3
+		LOCAL -= 2
+ENDIF
+
+;生き物系
+IF LOCALS == "原始丛林" || LOCALS == "森林" || LOCALS == "动物园" || LOCALS == "植物园" || LOCALS == "水族馆" || LOCALS == "牧场" || LOCALS == "林中湖泊" || LOCALS == "猫咖" || LOCALS == "花园"
+	SIF TALENT:理系 || TALENT:机器人 || TALENT:美术属性 || TALENT:喜欢花草 || TALENT:兽耳 == 1
+		LOCAL += 1
+	SIF TALENT:污臭敏感 || TALENT:机械迷
+		LOCAL -= 1
+ENDIF
+;映画
+IF LOCALS == "电影院" && STR:5 == "观看了爱情电影"
+	SIF TALENT:老实 || TALENT:美术属性 || TALENT:直率 || TALENT:害羞 || TALENT:自我奉献 || TALENT:文系 || TALENT:容易上瘾 || CFLAG:600 == 2 || CFLAG:600 == 4
+		LOCAL += 2
+	SIF TALENT:否定快感 || TALENT:讨厌女人 || TALENT:自大 || TALENT:理系 || TALENT:幼稚 || TALENT:幼儿／幼儿退行 || TALENT:贞操淡漠 || TALENT:无动于衷
+		LOCAL -= 2
+ELSEIF LOCALS == "电影院" && STR:5 == "观看了动作片"
+	SIF TALENT:喜欢运动 || TALENT:性好奇 || TALENT:幼稚 || TALENT:幼儿／幼儿退行 || TALENT:接受快感 || CFLAG:600 == 1
+		LOCAL += 2
+	SIF TALENT:胆怯 || TALENT:老实 || TALENT:缺乏感情 || TALENT:悲观 || TALENT:文系
+		LOCAL -= 2
+ELSEIF LOCALS == "电影院" && STR:5 == "观看了喜剧电影"
+	SIF TALENT:性好奇 || TALENT:乐观 || ((TALENT:幼稚 || TALENT:幼儿／幼儿退行) && !TALENT:老实) || CFLAG:600 == 4 || CFLAG:600 == 11
+		LOCAL += 2
+	SIF TALENT:无动于衷 || TALENT:缺乏感情 || TALENT:性保守 || TALENT:高傲 || CFLAG:600 == 3
+		LOCAL -= 2
+ENDIF
+SIF TALENT:无动于衷
+	LOCAL -= 1
+SIF TALENT:性好奇
+	LOCAL += 1
+SIF TALENT:日光浴 && !TIME
+	LOCAL += 1
+SIF TALENT:月光浴 && TIME
+	LOCAL += 1
+
+SIF LOCALS == "猫咖" && (TALENT:猫舌 || TALENT:兽耳)
+	LOCAL += 2
+
+SIF (TALENT:机器人 || TALENT:机械迷) && (LOCALS == "面包工厂" || LOCALS == "宇宙")
+	LOCAL += 1
+SIF TALENT:喜欢运动 && (LOCALS == "公园" || (LOCALS == "海" && (FLAG:80 == 7 || FLAG:80 == 8)) || LOCALS == "保龄球场" || LOCALS == "山" || LOCALS == "体育场" || LOCALS == "温水游泳池")
+	LOCAL += 1
+SIF CSTR:11 == "游泳" && (LOCALS == "温水游泳池" || (LOCALS == "海" && (FLAG:80 == 7 || FLAG:80 == 8)))
+	LOCAL += 2
+SIF TALENT:美术属性 && (LOCALS == "美术馆" || LOCALS == "剧场" || LOCALS == "博物馆")
+	LOCAL += 3
+SIF TALENT:音乐属性 && (LOCALS == "演唱会大厅" || LOCALS == "LIVE录音棚")
+	LOCAL += 2
+SIF TALENT:魔法／占卜属性 && (LOCALS == "心灵摄影" || LOCALS == "天象馆" || LOCALS == "宇宙")
+	LOCAL += 2
+SIF TALENT:化学属性 && LOCALS == "博物馆"
+	LOCAL += 2
+SIF TALENT:理系 && (LOCALS == "宇宙" || LOCALS == "面包工厂" || LOCALS == "游戏中心")
+	LOCAL += 2
+SIF TALENT:文系 && (LOCALS == "剧场" || LOCALS == "博物馆" || LOCALS == "电影院")
+	LOCAL += 2
+SIF TALENT:喜欢花草 && (LOCALS == "公园" || LOCALS == "原始丛林" || LOCALS == "森林" || LOCALS == "植物园" || LOCALS == "牧场" || LOCALS == "林中湖泊" || LOCALS == "花园")
+	LOCAL += 2
+SIF (TALENT:擅长裁缝 || TALENT:喜欢扫除 || TALENT:母性) && LOCALS == "购物中心"
+	LOCAL += 2
+SIF TALENT:信仰虔诚 && LOCALS == "教堂"
+	LOCAL += 4
+SIF TALENT:擅长歌唱 && LOCALS == "卡拉OK"
+	LOCAL += 4
+SIF TALENT:擅长歌唱 && LOCALS == "LIVE录音棚"
+	LOCAL += 2
+SIF LOCALS == "游乐园" && (TALENT:乐观 || TALENT:幼稚 || TALENT:幼儿／幼儿退行)
+	LOCAL += 2
+SIF LOCALS == "世界的尽头" && (CSTR:11 == "格斗技" || CSTR:11 == "武术" || CSTR:11 == "古武术" || CSTR:11 == "剑道" || CSTR:11 == "柔道" || CSTR:11 == "相扑" || CSTR:11 == "空手道" || CSTR:11 == "合气道" || CSTR:11 == "拳法" || CSTR:11 == "中国功夫")
+	LOCAL += 3
+SIF LOCALS == "森林" && TALENT:悲观
+	LOCAL += 3
+SIF LOCALS == "蛋糕自助餐" && (TALENT:幼稚 || TALENT:幼儿／幼儿退行 || TALENT:擅长料理)
+	LOCAL += 2
+SIF LOCALS == "秘密俱乐部" && (TALENT:性倒错 || TALENT:异常 || ABL:露出癖 >= 5 || ABL:欲望 >= 5)
+	LOCAL += 2
+SIF LOCALS == "中华街" && TALENT:中国风
+	LOCAL += 4
+
+SIF (TALENT:信仰虔诚 || TALENT:胆怯) && LOCALS == "心灵摄影"
+	LOCAL -= 3
+SIF LOCALS == "游乐园" && (TALENT:胆怯 || TALENT:大叔)
+	LOCAL -= 2
+SIF LOCALS == "女仆咖啡厅" && TALENT:讨厌女人
+	LOCAL -= 2
+SIF LOCALS == "执事咖啡厅" && TALENT:讨厌男人
+	LOCAL -= 2
+SIF (LOCALS == "牧场" || LOCALS == "动物园") && TALENT:污臭敏感
+	LOCAL -= 2
+
+RETURNF LOCAL

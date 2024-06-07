@@ -1,0 +1,605 @@
+﻿@RELATIONS_WATCH(ARG, ARGS:1)
+#DIM L_INPUT
+#DIM L_I
+#DIM L_PAGE
+#DIM L_CNT_DATA
+#DIM L_CNT_PRINT
+#DIM L_PREV
+#DIM L_NEXT
+#DIMS L_ERR_MSG
+
+L_INPUT = 0
+L_I = 0
+L_PAGE = ARG:0
+L_CNT_DATA = 0
+L_CNT_PRINT = 0
+
+; キャラ総数
+L_CNT_DATA = CHARANUM
+
+; キャラ表示数/P
+L_CNT_PRINT = 20
+
+L_ERR_MSG = %ARGS:1%
+
+SIF !INRANGE(L_PAGE, 0, L_CNT_DATA / L_CNT_PRINT)
+	L_PAGE = 0
+
+
+$PRINT_LIST
+REDRAW 0
+CALL KAIGYO
+DRAWLINE
+PRINTFORML 要查看谁的人际关系？ ＜page.{L_PAGE+1}/{L_CNT_DATA / 20 +1}＞ (共{L_CNT_DATA}人)
+DRAWLINE
+
+L_I = 0
+WHILE 1
+
+	;SET:開始値
+	SIF L_I < (L_PAGE * L_CNT_PRINT)
+		L_I = (L_PAGE * L_CNT_PRINT)
+
+	;ページ範囲外
+	SIF L_I >= ( (L_PAGE + 1) * L_CNT_PRINT)
+		BREAK
+
+	;- 最大キャラ数超過
+	IF L_I >= L_CNT_DATA
+		;空行
+		PRINTL
+
+	ELSE
+		PRINTFORM [%TOSTR(L_I),3%]
+		CALL VAR_PRINT_LIST_NAME(L_I)
+		PRINTL
+	ENDIF
+
+	L_I += 1
+
+WEND
+
+
+L_PREV = (L_PAGE <= 0) ? 0 # 1
+L_NEXT = ( L_PAGE >= (L_CNT_DATA / L_CNT_PRINT) ) ? 0 # 1
+
+DRAWLINE
+PRINTFORMLC \@(!L_PREV) ? %" " * 16% # [199]上一页\@
+PRINTLC [200] 返回
+PRINTFORMLC \@(!L_NEXT) ? %" " * 16% # [201]下一页\@
+SIF STRLENS(L_ERR_MSG)
+	REUSELASTLINE （%L_ERR_MSG%）
+
+REDRAW 1
+
+$INPUT_LOOP3
+INPUT
+L_INPUT = RESULT
+L_ERR_MSG=
+
+SELECTCASE L_INPUT
+	CASE 200
+        RETURN 0
+    CASE 0
+	    DRAWLINE
+        FOR LOCAL, 1, CHARANUM
+            ;成长前の子供除外
+            SIF CFLAG:LOCAL:119
+                CONTINUE
+            PRINTFORM 　%CALLNAME:LOCAL% → %CALLNAME:MASTER% ：
+            A = LOCAL
+            CALL FEELING_TO_MASTER
+        NEXT
+        PRINTW
+        RESTART
+    CASE 0 TO L_CNT_DATA -1
+        DRAWLINE
+        PRINTFORM 　%CALLNAME:RESULT% → %CALLNAME:MASTER% ：
+        A = RESULT
+        LOCAL = RESULT
+        CALL FEELING_TO_MASTER
+        FOR LOCAL:1, 1, CHARANUM
+            ;成长前の子供除外
+            SIF CFLAG:(LOCAL:1):119
+                CONTINUE
+            ;本人除外
+            SIF LOCAL:1 == LOCAL
+                CONTINUE
+            A = LOCAL
+            B = LOCAL:1
+            ;特殊な设定が無い限り、大体奴隶と奴隶の互いに对する相性は同じなのでその場合は省略形で
+            IF RELATION:A:(NO:B) == RELATION:B:(NO:A) && !((CFLAG:A:1 != CFLAG:B:1 && (CFLAG:A:1 == 3 || CFLAG:B:1 == 3)) || (RELATIONS2(A, B) >= 1 && RELATIONS2(A, B) <= 3) || (TALENT:A:崩溃 != TALENT:B:崩溃 && (TALENT:A:崩溃 || TALENT:B:崩溃)) || (CFLAG:A:(NO:B + 2000) != 29 && CFLAG:B:(NO:A + 2000) != 29 && (CFLAG:A:(NO:B + 2000) == 22 || CFLAG:B:(NO:A + 2000) == 22)) ||(((RELATION:A:(NO:B) <= 90 && TALENT:A:嫉妒) != (RELATION:B:(NO:A) <= 90 && TALENT:B:嫉妒)) && ((RELATION:A:(NO:B) <= 90 && TALENT:A:嫉妒) || (RELATION:B:(NO:A) <= 90 && TALENT:B:嫉妒))) || (((RELATION:A:(NO:B) < 180 && TALENT:A:病娇) != (RELATION:B:(NO:A) < 180 && TALENT:B:病娇)) && ((RELATION:A:(NO:B) < 180 && TALENT:A:病娇) || (RELATION:B:(NO:A) < 180 && TALENT:B:病娇))) || (KANRAKU(A) == 2 && ABL:A:同性倾向 >= 3 && CFLAG:B:(NO:A + 1199) >= 200 && CFLAG:B:(NO:A + 1199) > CFLAG:A:(NO:B + 1199) && RELATION:A:(NO:B) >= 100 && CFLAG:A:(NO:B + 2000) != 29 && CFLAG:A:(NO:B + 2000) != 22) || (KANRAKU(A) == 2 && ABL:A:同性倾向 >= 3 && CFLAG:A:(NO:B + 1199) >= 200 && CFLAG:A:(NO:B + 1199) > CFLAG:B:(NO:A + 1199) && RELATION:A:(NO:B) >= 100 && CFLAG:A:(NO:B + 2000) != 29 && CFLAG:A:(NO:B + 2000) != 22 && CFLAG:B:1 != 3))
+                PRINTFORM 　%CALLNAME:LOCAL% ←→ %CALLNAME:(LOCAL:1)% ({RELATION:A:(NO:B) - 100})：
+                CALL FEELING_TO_SLAVE
+            ELSE
+                PRINTFORM 　%CALLNAME:LOCAL% → %CALLNAME:(LOCAL:1)% ({RELATION:LOCAL:(NO:(LOCAL:1)) - 100})：
+                CALL FEELING_TO_SLAVE
+                PRINTFORM 　%CALLNAME:(LOCAL:1)% → %CALLNAME:LOCAL% ({RELATION:(LOCAL:1):(NO:LOCAL) - 100})：
+                A = LOCAL:1
+                B = LOCAL
+                CALL FEELING_TO_SLAVE
+            ENDIF
+        NEXT
+        PRINTW
+        RESTART
+	;上一页　　
+	CASE 199
+		SIF !L_PREV
+			GOTO ERROR
+		L_PAGE -= 1
+	;下一页　　
+	CASE 201
+		SIF !L_NEXT
+			GOTO ERROR
+		L_PAGE += 1
+	;- 其他
+	CASEELSE
+		$ERROR
+		;INPUTエラー対応
+		CALL C_INPUT_ERROR
+		GOTO INPUT_LOOP3
+ENDSELECT
+GOTO PRINT_LIST
+
+@FEELING_TO_SLAVE
+IF TALENT:A:崩溃
+	PRINTL ……
+;親子、家族
+ELSEIF RELATIONS2(A, B) >= 1 && RELATIONS2(A, B) <= 3
+	IF RELATION:A:(NO:B) < 180 && TALENT:A:病娇 && CFLAG:B:1 != 3
+		PRINTL 别来烦我别来烦我别来烦我别来烦我…
+	ELSEIF RELATION:A:(NO:B) <= 120 && TALENT:A:嫉妒 && CFLAG:B:1 != 3 && RELATIONS2(A, B) != 2
+		PRINTFORML 从%MASTERNAME:A%身边滚开！
+	ELSE
+		IF TALENT:B:娼妇
+			PRINT 人尽可夫的
+		ELSEIF TALENT:B:淫乱
+			PRINT 不知检点的
+		ELSEIF ABL:B:受虐属性 >= 5 && ABL:B:受虐属性 <= 7 && ABL:B:受虐属性 > ABL:B:嗜虐属性 && !RAND:3
+			PRINT 受虐狂的
+		ELSEIF ABL:B:受虐属性 >= 8 && ABL:B:受虐属性 > ABL:B:嗜虐属性 && !RAND:2
+			PRINT 超级抖M的
+		ELSEIF ABL:B:嗜虐属性 >= 5 && ABL:B:嗜虐属性 <= 7 && ABL:B:嗜虐属性 > ABL:B:受虐属性 && !RAND:3
+			PRINT 施虐狂的
+		ELSEIF ABL:B:嗜虐属性 >= 8 && ABL:B:嗜虐属性 > ABL:B:受虐属性 && !RAND:2
+			PRINT 超级抖Ｓ的
+		ELSEIF TALENT:B:傲娇 && !RAND:3
+			PRINT 傲娇的
+		ELSEIF TALENT:B:自大 && (CFLAG:A:(NO:B + 2000) == 2 || CFLAG:A:(NO:B + 2000) == 4 || CFLAG:A:(NO:B + 2000) == 7 || CFLAG:A:(NO:B + 2000) == 8) && !RAND:3
+			;弟、妹、息子、娘の場合
+			PRINT 狂妄自大的
+		ENDIF
+		IF RELATION:A:(NO:B) >= 180
+			PRINT 至爱的
+		ELSEIF RELATION:A:(NO:B) >= 160
+			PRINT 最喜欢的
+		ELSEIF RELATION:A:(NO:B) >= 140
+			PRINT 自满的
+		ELSEIF RELATION:A:(NO:B) >= 120
+			PRINT 美好的
+		ELSEIF RELATION:A:(NO:B) <= 20
+			PRINT 垃圾的
+		ELSEIF RELATION:A:(NO:B) <= 40
+			PRINT 最讨厌的
+		ELSEIF RELATION:A:(NO:B) <= 60
+			PRINT 恶心的
+		ELSEIF RELATION:A:(NO:B) <= 80
+			PRINT 奇怪的
+		ELSE
+			PRINT 不熟的
+		ENDIF
+		IF CFLAG:A:(NO:B + 2000) == 1
+			PRINTL 哥哥
+		ELSEIF CFLAG:A:(NO:B + 2000) == 2
+			PRINTL 弟弟
+		ELSEIF CFLAG:A:(NO:B + 2000) == 3
+			PRINTL 姐姐
+		ELSEIF CFLAG:A:(NO:B + 2000) == 4
+			PRINTL 妹妹
+		ELSEIF CFLAG:A:(NO:B + 2000) == 5
+			PRINTL 父亲
+		ELSEIF CFLAG:A:(NO:B + 2000) == 6
+			PRINTL 母亲
+		ELSEIF CFLAG:A:(NO:B + 2000) == 7
+			PRINTL 儿子
+		ELSEIF CFLAG:A:(NO:B + 2000) == 8
+			PRINTL 女儿
+		ELSE
+			PRINTL 家人
+		ENDIF
+	ENDIF
+;A→B恋人
+ELSEIF CFLAG:A:(NO:B + 2000) == 22 || CFLAG:A:(NO:B + 2000) == 29
+	IF TALENT:A:病娇 && RELATION:A:(NO:B) < 120
+		PRINTL 别来烦我别来烦我别来烦我别来烦我…
+	ELSEIF RELATION:A:(NO:B) >= 180
+		PRINTL 命运之人
+	ELSEIF RELATION:A:(NO:B) >= 160
+		PRINTL 满满溢出的爱！
+	ELSEIF RELATION:A:(NO:B) >= 140
+		PRINTL 最喜欢的人
+	ELSEIF RELATION:A:(NO:B) >= 120
+		PRINTL 喜欢
+	ELSEIF RELATION:A:(NO:B) >= 110
+		PRINTL 大概算喜欢
+	ELSEIF RELATION:A:(NO:B) <= 20
+		PRINTL 臭虫‥
+	ELSEIF RELATION:A:(NO:B) <= 40
+		PRINTL 最讨厌的人
+	ELSEIF RELATION:A:(NO:B) <= 60
+		PRINTL 讨厌
+	ELSEIF RELATION:A:(NO:B) <= 80
+		PRINTL 总觉得让人生气
+	ELSEIF RELATION:A:(NO:B) <= 90
+		PRINTL 不想再看见
+	ELSE
+		PRINTL 已经搞不懂了
+	ENDIF
+;Aが淫乱なホモでBを开始调教经验が多い 相性が100以上
+ELSEIF KANRAKU(A) == 2 && ABL:A:同性倾向 >= 3 && CFLAG:B:(NO:A + 1199) >= 200 && CFLAG:B:(NO:A + 1199) > CFLAG:A:(NO:B + 1199) && RELATION:A:(NO:B) >= 100
+	IF RELATION:A:(NO:B) >= 180
+		PRINTL 脱光！脱光！脱光光！
+	ELSEIF RELATION:A:(NO:B) >= 170
+		PRINTL 哈啊❤…来做吧…
+	ELSEIF RELATION:A:(NO:B) >= 160
+		PRINTL 想要了
+	ELSEIF RELATION:A:(NO:B) >= 150
+		PRINTL 做吧…
+	ELSEIF RELATION:A:(NO:B) >= 140
+		PRINTL 身体相性不错
+	ELSEIF RELATION:A:(NO:B) >= 130
+		PRINTL 不来一发吗？
+	ELSEIF RELATION:A:(NO:B) >= 120
+		PRINTL 让人想歪
+	ELSEIF RELATION:A:(NO:B) >= 110
+		PRINTL 总感觉色色的
+	ELSE
+		PRINTL 熟悉的炮友
+	ENDIF
+;Aが淫乱なホモでBに调教される经验が多い 相性が100以上、Bは見習いではない
+ELSEIF KANRAKU(A) == 2 && ABL:A:同性倾向 >= 3 && CFLAG:A:(NO:B + 1199) >= 200 && CFLAG:A:(NO:B + 1199) > CFLAG:B:(NO:A + 1199) && RELATION:A:(NO:B) >= 100 && CFLAG:B:1 != 3
+	IF RELATION:A:(NO:B) >= 180
+		PRINTL 什么时候都行！来啪啪啪吧！
+	ELSEIF RELATION:A:(NO:B) >= 170
+		PRINTL 哈啊哈啊…
+	ELSEIF RELATION:A:(NO:B) >= 160
+		PRINTL 想做了
+	ELSEIF RELATION:A:(NO:B) >= 150
+		IF TALENT:B:短小 || TALENT:B:孩童尺寸|| (!MALE(B) && (TALENT:B:贫乳 || TALENT:B:绝壁))
+			PRINTL 还真是…短小啊…
+		ELSE
+			PRINTL 还真是…雄伟啊…
+		ENDIF
+	ELSEIF RELATION:A:(NO:B) >= 140 && MALE(B)
+		PRINTL 哦哦！我可以
+	ELSEIF RELATION:A:(NO:B) >= 130
+		PRINTL 也还不坏
+	ELSEIF RELATION:A:(NO:B) >= 120
+		PRINTL 让人想歪
+	ELSEIF RELATION:A:(NO:B) >= 110
+		PRINTL 真是不错的身体
+	ELSE
+		PRINTL 熟悉的炮友
+	ENDIF
+ELSEIF CFLAG:A:1 == 3 && CFLAG:B:1 != 3
+;見習い→奴隶
+	IF RELATION:A:(NO:B) >= 180
+		PRINTL 最棒的奴隶
+	ELSEIF RELATION:A:(NO:B) >= 160
+		PRINTL 优秀的奴隶
+	ELSEIF RELATION:A:(NO:B) >= 140
+		PRINTL 捧场的奴隶
+	ELSEIF RELATION:A:(NO:B) >= 120
+		PRINTL 不错的奴隶
+	ELSEIF RELATION:A:(NO:B) >= 110
+		PRINTL 一般般的奴隶
+	ELSEIF RELATION:A:(NO:B) >= 105
+		PRINTL 有调教价值
+	ELSEIF RELATION:A:(NO:B) <= 20
+		PRINTL 垃圾
+	ELSEIF RELATION:A:(NO:B) <= 40
+		PRINTL 生理不适
+	ELSEIF RELATION:A:(NO:B) <= 60
+		PRINTL 不太想调教的奴隶…
+	ELSEIF RELATION:A:(NO:B) <= 80
+		PRINTL 恶心的奴隶
+	ELSEIF RELATION:A:(NO:B) <= 90
+		PRINTL 不太熟的奴隶
+	ELSEIF RELATION:A:(NO:B) <= 95
+		PRINTL 没什么兴趣
+	ELSE
+		PRINTL 感觉一般的奴隶
+	ENDIF
+;奴隶→見習い
+ELSEIF CFLAG:B:1 == 3 && CFLAG:A:1 != 3
+	;Bに调教される经验がある
+	IF CFLAG:A:(NO:B + 1199) >= 50
+		IF RELATION:A:(NO:B) < 180 && TALENT:A:病娇 && MALE(B)
+			PRINTL 别来烦我别来烦我别来烦我别来烦我…
+		ELSEIF RELATION:A:(NO:B) == 100
+			PRINTL 毫不介意
+		ELSEIF RELATION:A:(NO:B) >= 180
+			PRINTL 绝对服从
+		ELSEIF RELATION:A:(NO:B) >= 160
+			PRINTL 另一位主人
+		ELSEIF RELATION:A:(NO:B) >= 140
+			PRINTL 很高兴为您服务
+		ELSEIF RELATION:A:(NO:B) >= 120
+			PRINTL 很棒的调教师
+		ELSEIF RELATION:A:(NO:B) >= 110
+			PRINTL 还需要努力
+		ELSEIF RELATION:A:(NO:B) >= 105
+			PRINTL 也不讨厌就是了
+		ELSEIF RELATION:A:(NO:B) <= 90 && TALENT:A:嫉妒 && MALE(B)
+			PRINTFORML 从%MASTERNAME:A%身边滚开！
+		ELSEIF RELATION:A:(NO:B) <= 20
+			PRINTL 臭虫‥
+		ELSEIF RELATION:A:(NO:B) <= 40
+			PRINTL 命中注定的敌人
+		ELSEIF RELATION:A:(NO:B) <= 60
+			PRINTL 讨厌
+		ELSEIF RELATION:A:(NO:B) <= 80
+			PRINTL 看到就生气
+		ELSEIF RELATION:A:(NO:B) <= 95
+			PRINTL 没兴趣
+		ELSEIF RELATION:A:(NO:B) <= 90
+			PRINTL 不想靠近
+		ELSE
+			PRINTL 不太熟
+		ENDIF
+	;Bに调教される经验が少ない
+	ELSE
+		IF RELATION:A:(NO:B) == 100 && !CFLAG:A:(799 + NO:B)
+			;面識ない場合
+			PRINTL 这人谁？
+		ELSEIF RELATION:A:(NO:B) < 180 && TALENT:A:病娇 && MALE(B)
+			PRINTL 别来烦我别来烦我别来烦我别来烦我…
+		ELSEIF RELATION:A:(NO:B) == 100
+			PRINTL 毫不介意
+		ELSEIF RELATION:A:(NO:B) >= 180
+			PRINTL 值得托付性命的存在
+		ELSEIF RELATION:A:(NO:B) >= 160
+			PRINTL 唯一的挚友
+		ELSEIF RELATION:A:(NO:B) >= 140
+			PRINTL 心之友
+		ELSEIF RELATION:A:(NO:B) >= 120
+			PRINTL 朋友
+		ELSEIF RELATION:A:(NO:B) >= 110
+			PRINTL 好像不是坏人
+		ELSEIF RELATION:A:(NO:B) >= 105
+			PRINTL 算不上讨厌
+		ELSEIF RELATION:A:(NO:B) <= 90 && TALENT:A:嫉妒 && MALE(B)
+			PRINTFORML 从%MASTERNAME:A%身边滚开！
+		ELSEIF RELATION:A:(NO:B) <= 20
+			PRINTL 臭虫‥
+		ELSEIF RELATION:A:(NO:B) <= 40
+			PRINTL 命中注定的敌人
+		ELSEIF RELATION:A:(NO:B) <= 60
+			PRINTL 讨厌
+		ELSEIF RELATION:A:(NO:B) <= 80
+			PRINTL 看到就生气
+		ELSEIF RELATION:A:(NO:B) <= 90
+			PRINTL 不想接近
+		ELSEIF RELATION:A:(NO:B) <= 95
+			PRINTL 没兴趣
+		ELSE
+			PRINTL 不太熟
+		ENDIF
+	ENDIF
+;家族でも恋人でもない異性でもないホモでもない場合
+ELSE
+	IF RELATION:A:(NO:B) == 100 && !CFLAG:A:(799 + NO:B)
+		;面識ない場合
+		PRINTL 这人谁？
+	ELSEIF RELATION:A:(NO:B) < 180 && TALENT:A:病娇
+		PRINTL 别来烦我别来烦我别来烦我别来烦我…
+	ELSEIF RELATION:A:(NO:B) == 100
+		PRINTL 毫不介意
+	ELSEIF RELATION:A:(NO:B) >= 180
+		PRINTL 值得托付性命的存在
+	ELSEIF RELATION:A:(NO:B) >= 160
+		PRINTL 唯一的挚友
+	ELSEIF RELATION:A:(NO:B) >= 140
+		PRINTL 心之友
+	ELSEIF RELATION:A:(NO:B) >= 120
+		PRINTL 朋友
+	ELSEIF RELATION:A:(NO:B) >= 110
+		PRINTL 像个好人？
+	ELSEIF RELATION:A:(NO:B) >= 105
+		PRINTL 有点在意
+	ELSEIF RELATION:A:(NO:B) <= 90 && TALENT:A:嫉妒
+		PRINTFORML 从%MASTERNAME:A%身边滚开！
+	ELSEIF RELATION:A:(NO:B) <= 20
+		PRINTL 臭虫‥
+	ELSEIF RELATION:A:(NO:B) <= 40
+		PRINTL 命中注定的敌人
+	ELSEIF RELATION:A:(NO:B) <= 60
+		PRINTL 讨厌
+	ELSEIF RELATION:A:(NO:B) <= 80
+		PRINTL 看到就生气
+	ELSEIF RELATION:A:(NO:B) <= 90
+		PRINTL 不想接近
+	ELSEIF RELATION:A:(NO:B) <= 95
+		PRINTL 没兴趣
+	ELSE
+		PRINTL 不太熟
+	ENDIF
+ENDIF
+@FEELING_TO_MASTER
+;最優先な状態
+IF TALENT:A:崩溃
+	PRINTFORML ……	
+;家族の場合
+ELSEIF RELATIONS2(A, MASTER) >= 1 && RELATIONS2(A, MASTER) <= 3
+		B = MASTER
+		IF ABL:B:受虐属性 >= 5 && ABL:B:受虐属性 <= 7 && ABL:B:受虐属性 > ABL:B:嗜虐属性 && !RAND:3
+			PRINT 受虐狂的
+		ELSEIF ABL:B:受虐属性 >= 8 && ABL:B:受虐属性 > ABL:B:嗜虐属性 && !RAND:2
+			PRINT 超级抖Ｍ的
+		ELSEIF ABL:B:嗜虐属性 >= 5 && ABL:B:嗜虐属性 <= 7 && ABL:B:嗜虐属性 > ABL:B:受虐属性 && !RAND:3
+			PRINT 施虐狂的
+		ELSEIF ABL:B:嗜虐属性 >= 8 && ABL:B:嗜虐属性 > ABL:B:受虐属性 && !RAND:2
+			PRINT 超级抖Ｓ的
+		ENDIF
+		IF KANRAKU(A) == 1 && EXP:A:爱情经验 >= 1000
+			PRINT 至爱的
+		ELSEIF (KANRAKU(A) == 1 && EXP:A:爱情经验 >= 700) || (KANRAKU(A) == 2 && EXP:A:绝顶经验 >= 1000) || (KANRAKU(A) == 3 && EXP:A:痛苦快乐经验 >= 700)
+			PRINT 最喜欢的
+		ELSEIF (KANRAKU(A) == 1 && EXP:A:爱情经验 >= 400) || (KANRAKU(A) == 2 && EXP:A:绝顶经验 >= 500) || (KANRAKU(A) == 3 && EXP:A:痛苦快乐经验 >= 400)
+			PRINT 自满的
+		ELSEIF (KANRAKU(A) == 1 && EXP:A:爱情经验 >= 200) || (KANRAKU(A) == 2 && EXP:A:绝顶经验 >= 200) || (KANRAKU(A) == 3 && EXP:A:痛苦快乐经验 >= 200)
+			PRINT 美好的
+		ELSEIF KANRAKU(A) == 0 && MARK:A:反抗刻印 == 3 && MARK:A:屈服刻印 < 2 && ABL:A:顺从 <= 2
+			PRINT 垃圾的
+		ELSEIF KANRAKU(A) == 0 && MARK:A:屈服刻印 - MARK:A:反抗刻印 < 0
+			PRINT 最讨厌的
+		ELSEIF KANRAKU(A) == 0 && MARK:A:屈服刻印 - MARK:A:反抗刻印 < 2
+			PRINT 恶心的
+		ELSEIF KANRAKU(A) == 0
+			PRINT 奇怪的
+		ELSE
+			PRINT 不熟的
+		ENDIF
+                                IF TALENT:MASTER:男性 || TALENT:MASTER:双性
+                                                IF CFLAG:A:(NO:B + 2000) == 3
+			                PRINTL 哥哥
+		                ELSEIF CFLAG:A:(NO:B + 2000) == 4
+			                PRINTL 弟弟
+		                ELSEIF CFLAG:A:(NO:B + 2000) == 1
+			                PRINTL 哥哥
+		                ELSEIF CFLAG:A:(NO:B + 2000) == 2
+			                PRINTL 弟弟
+		                ELSEIF (CFLAG:A:(NO:B + 2000) == 5 || CFLAG:A:(NO:B + 2000) == 6) && MALE(B)
+			                PRINTL 父亲
+		                ELSEIF (CFLAG:A:(NO:B + 2000) == 5 || CFLAG:A:(NO:B + 2000) == 6) && !MALE(B)
+			                PRINTL 父亲
+		                ELSEIF CFLAG:A:(NO:B + 2000) == 7
+			                PRINTL 儿子
+		                ELSEIF CFLAG:A:(NO:B + 2000) == 8
+		                	PRINTL 儿子
+		                ELSE
+		                	PRINTL 家人
+		                ENDIF
+                                ELSE
+		                IF CFLAG:A:(NO:B + 2000) == 1
+			                PRINTL 姐姐
+	                	ELSEIF CFLAG:A:(NO:B + 2000) == 2
+		                	PRINTL 妹妹
+		                ELSEIF CFLAG:A:(NO:B + 2000) == 3
+		                	PRINTL 姐姐
+		                ELSEIF CFLAG:A:(NO:B + 2000) == 4
+		                	PRINTL 妹妹
+		                ELSEIF (CFLAG:A:(NO:B + 2000) == 5 || CFLAG:A:(NO:B + 2000) == 6) && MALE(B)
+			                PRINTL 母亲
+		                ELSEIF (CFLAG:A:(NO:B + 2000) == 5 || CFLAG:A:(NO:B + 2000) == 6) && !MALE(B)
+		                	PRINTL 母亲
+		                ELSEIF CFLAG:A:(NO:B + 2000) == 7
+		                	PRINTL 女儿
+	                	ELSEIF CFLAG:A:(NO:B + 2000) == 8
+		                	PRINTL 女儿
+	                	ELSE
+			                PRINTL 家人
+		                ENDIF
+                                ENDIF
+;見習いの場合（非家族）
+ELSEIF CFLAG:A:1 == 3
+	IF (ABL:A:嗜虐属性 - ABL:A:受虐属性 >= 4 && ABL:A:受虐属性 >= 1) || (ABL:A:受虐属性 - ABL:A:嗜虐属性 >= 4 && ABL:A:嗜虐属性 >= 1)
+		PRINTL 总是下讨厌的指令
+	ELSEIF (ABL:A:嗜虐属性 - ABL:A:受虐属性 >= 3 && ABL:A:受虐属性 >= 1) || (ABL:A:受虐属性 - ABL:A:嗜虐属性 >= 3 && ABL:A:嗜虐属性 >= 1)
+		PRINTL 不太合拍
+	ELSEIF (ABL:A:嗜虐属性 - ABL:A:受虐属性 >= 2 && ABL:A:受虐属性 >= 3) || (ABL:A:受虐属性 - ABL:A:嗜虐属性 >= 2 && ABL:A:嗜虐属性 >= 3)
+		PRINTL 只是个懦弱的人
+	ELSEIF (ABL:A:嗜虐属性 - ABL:A:受虐属性 >= 2 && ABL:A:受虐属性 >= 2) || (ABL:A:受虐属性 - ABL:A:嗜虐属性 >= 2 && ABL:A:嗜虐属性 >= 2)
+		PRINTL 也没什么大不了的
+	ELSEIF (ABL:A:嗜虐属性 - ABL:A:受虐属性 >= 2 && ABL:A:受虐属性 >= 1) || (ABL:A:受虐属性 - ABL:A:嗜虐属性 >= 2 && ABL:A:嗜虐属性 >= 1)
+		PRINTL 什么啊？
+	ELSEIF EXP:A:调教经验 >= 700
+		PRINTL 最棒的老师
+	ELSEIF EXP:A:调教经验 >= 500
+		PRINTL 老师！
+	ELSEIF EXP:A:调教经验 >= 300
+		PRINTL 目标
+	ELSEIF EXP:A:调教经验 >= 100
+		PRINTL 总觉得好厉害啊？
+	ELSE
+		PRINTL 不太熟
+	ENDIF
+ELSE
+	IF TALENT:A:病娇
+		PRINTFORML 永 远 在 一 起 吧 …
+	ELSEIF MARK:A:反抗刻印 == 3 && MARK:A:屈服刻印 < 2 && ABL:A:顺从 <= 2
+		PRINTFORML 人中败类…
+	ELSEIF MARK:A:屈服刻印 - MARK:A:反抗刻印 < 0
+		PRINTFORML 讨厌
+	;そこそこ優先な状態
+	ELSEIF (TALENT:MASTER:男性 || TALENT:MASTER:双性) && ABL:A:同性倾向 < 2 && !RAND:2 && (KANRAKU(A) || CFLAG:A:700)
+		PRINTFORML 男人的话果然还是…
+	ELSEIF TALENT:MASTER:扶她 && ABL:A:同性倾向 < 2 && !RAND:2 && (KANRAKU(A) || CFLAG:A:700)
+		PRINTFORML 为什么会有鸡〇…！？
+	ELSEIF TALENT:A:胸部星人 && (TALENT:MASTER:巨乳 || TALENT:MASTER:爆乳) && !RAND:2
+		PRINTFORML 巨乳、巨乳！
+	ELSEIF TALENT:A:童贞 && KANRAKU(A) >= 1 && !TALENT:A:幼稚 && !RAND:2
+		PRINTFORML 想要童贞毕业
+	;たまになる状態
+	ELSEIF TALENT:MASTER:铁壁的Ｗ城门 && KANRAKU(A) == 2 && !RAND:3
+		PRINTFORML 铜墙铁壁
+	ELSEIF KANRAKU(A) == 1 && TALENT:MASTER:正太控 && !TALENT:A:幼稚 && !RAND:3
+		PRINTFORML 喜欢小男孩吗…
+	ELSEIF KANRAKU(A) == 1 && TALENT:MASTER:肌肉控 && !TALENT:A:幼稚 && !RAND:3
+		PRINTFORML 喜欢肌肉男吗…
+	ELSEIF KANRAKU(A) == 1 && TALENT:MASTER:人外控 && !TALENT:A:幼稚 && !RAND:3
+		PRINTFORML 喜欢非人类吗…
+	ELSEIF KANRAKU(A) == 1 && TALENT:MASTER:眼镜控 && !TALENT:A:幼稚 && !RAND:3
+		PRINTFORML 喜欢眼镜男吗…
+	ELSEIF TALENT:MASTER:处女守护者 && MARK:A:反抗刻印 == 0 && !TALENT:A:幼稚 && TALENT:A:大人 && !RAND:3
+		PRINTFORML 不会吧…还是处女…？
+	ELSEIF TALENT:MASTER:爆乳 && MARK:A:反抗刻印 == 0 && !RAND:4
+		PRINTFORML 巨乳‥
+	ELSEIF TALENT:MASTER:上级调教师 && MARK:A:反抗刻印 == 0 && !RAND:5
+		PRINTFORML 厉害的调教师
+	ELSEIF TALENT:MASTER:超级抖Ｓ && MARK:A:反抗刻印 == 0 && !RAND:4
+		PRINTFORML 抖Ｓ！
+	ELSEIF (TALENT:MASTER:超级抖Ｍ || TALENT:MASTER:究极抖Ｍ调教师) && KANRAKU(A) >= 1 && !RAND:3
+		PRINTFORML 竟然是个抖Ｍ！
+	ELSEIF ABL:A:受虐属性 >= 5 && ABL:A:受虐属性 <= 7 && ABL:A:受虐属性 > ABL:A:嗜虐属性 && ABL:MASTER:嗜虐属性 > ABL:MASTER:受虐属性 && !RAND:5
+		PRINTFORML 大力虐待我吧！
+	ELSEIF ABL:A:受虐属性 >= 8 && ABL:A:受虐属性 > ABL:A:嗜虐属性 && ABL:MASTER:嗜虐属性 == 10 && !RAND:3
+		PRINTFORML 踩我、踩我！还要、还要！
+	ELSEIF ABL:A:嗜虐属性 >= 3 && ABL:A:嗜虐属性 > ABL:A:受虐属性 && ABL:MASTER:受虐属性 >= 3 && !RAND:3
+		PRINTFORML 不继续虐待我吗？
+	ELSEIF TALENT:A:相亲相爱 && TALENT:A:嫉妒
+		PRINTFORML 无论如何想要独占，不会让给任何人
+	ELSEIF TALENT:A:恋慕 && TALENT:A:嫉妒
+		PRINTFORML 拜托了，只看着我一人吧！
+	ELSEIF TALENT:A:相亲相爱 && !RAND:2
+		PRINTFORML 除了你看不见任何人
+	ELSEIF TALENT:A:相亲相爱
+		PRINTFORML ＬＯＶＥ
+	ELSEIF TALENT:A:恋慕 && !RAND:2
+		PRINTFORML 喜欢
+	ELSEIF TALENT:A:恋慕
+		PRINTFORML 想要深入了解
+	ELSEIF TALENT:A:娼妇 && !RAND:2
+		PRINTFORML 来做色色的事吧
+	ELSEIF TALENT:A:娼妇
+		PRINTFORML Ｈ……
+	ELSEIF TALENT:A:淫乱 && !RAND:2
+		PRINTFORML 接下来会对我做些什么呢？
+	ELSEIF TALENT:A:淫乱
+		PRINTFORML 心砰砰跳❤
+	ELSEIF TALENT:A:隶属 && !RAND:2
+		PRINTFORML 绝对服从
+	ELSEIF TALENT:A:隶属
+		PRINTFORML %CSTR:A:0%是属于%CSTR:A:3%的
+	ELSEIF TALENT:A:服从 && !RAND:2
+		PRINTFORML 无法违抗
+	ELSEIF TALENT:A:服从
+		PRINTFORML %CSTR:A:3%
+	ELSEIF MARK:A:屈服刻印 == 3 && TALENT:A:傲娇
+		PRINTFORML 没、没什么…
+	ELSEIF MARK:A:屈服刻印 == 3
+		PRINTFORML 难道%CSTR:A:0%已经…
+	ELSE
+		PRINTFORML 不太熟
+	ENDIF
+ENDIF

@@ -1,0 +1,1000 @@
+﻿@SLAVE_RANDOM
+
+PRINTL
+PRINTL
+PRINTL
+PRINTL 让工作人员调查是否有对应的目标。
+PRINTW 
+PRINTL 　　　・
+PRINTL 　　　・
+PRINTL 　　　・
+PRINTL 
+PRINTW 过了一会儿，收到了这样的数据。
+PRINTL 
+
+$INPUT_LOOP_RANDOMDOREI
+FLAG:8 += 1
+ADDCHARA FLAG:8
+;現在の调教对象を記録
+M = TARGET
+K = CHARANUM - 1
+TARGET = K
+
+;随机で名前を決める
+CALL SLAVE_NAME_RANDOM
+NAME = %RESULTS%
+CALLNAME = %RESULTS%
+CSTR:5 = %RESULTS%
+
+LOCAL = RAND:10
+IF LOCAL < 1
+	TALENT:幼稚 = 1
+ELSEIF LOCAL < 4
+ELSEIF LOCAL < 8
+	TALENT:大人 = 1
+ELSE
+	TALENT:大人 = 1
+	TALENT:大叔 = 1
+ENDIF
+
+;一人称決め
+IF TALENT:幼稚
+	SELECTCASE RAND:4
+		CASE 1
+			CSTR:0 = 人家
+		CASEELSE
+			CSTR:0 = 我
+	ENDSELECT
+ELSEIF TALENT:大人
+	LOCAL = RAND:16
+	IF LOCAL < 4
+		CSTR:0 = 在下
+	ELSE
+		CSTR:0 = 我
+	ENDIF
+ELSE
+		CSTR:0 = 我
+ENDIF
+
+
+
+;素質自動決め系统へ
+CALL SLAVE_RANDOM_AUTO_TALENT
+
+
+; 性格決め　年齢層によって制限
+IF TALENT:幼稚
+	SELECTCASE RAND:9
+		CASE 1 , 3 , 5
+			;PRINT 开朗・元气型
+			CFLAG:600 = 1
+			TALENT:老实 = 0
+			TALENT:缺乏感情 = 0
+			TALENT:无动于衷 = 0
+			TALENT:悲观 = 0
+		CASE 2
+			;PRINT 稳重・温柔型
+			CFLAG:600 = 2
+			TALENT:反抗 = 0
+			TALENT:傲娇 = 0
+			TALENT:自大 = 0
+		CASE 4
+			;PRINT 别扭傲娇型
+			CFLAG:600 = 5
+			TALENT:傲娇 = 1
+			TALENT:直率 = 0
+		CASE 6
+			;PRINT 阴暗・无口・冷漠型
+			CFLAG:600 = 8
+			TALENT:无动于衷 = 1
+			TALENT:性好奇 = 0
+			TALENT:缺乏感情 = 1
+		CASE 7
+			;PRINT 任性爱撒娇型
+			CFLAG:600 = 10
+			TALENT:自制力 = 0
+			TALENT:缺乏感情 = 0
+		CASE 8
+			;PRINT 天然・电波型
+			CFLAG:600 = 13
+		CASEELSE
+			;PRINT 直率纯真型
+			CFLAG:600 = 11
+			TALENT:直率 = 1
+			TALENT:反抗 = 0
+			TALENT:自大 = 0
+			TALENT:傲娇 = 0
+	ENDSELECT
+ELSEIF TALENT:大人 && TALENT:大叔
+	SELECTCASE RAND:11
+		CASE 1
+			;PRINT 蛮不讲理・精英型
+			CFLAG:600 = 9
+		CASE 2
+			;PRINT 稳重・温柔型
+			CFLAG:600 = 2
+			TALENT:反抗 = 0
+			TALENT:傲娇 = 0
+			TALENT:自大 = 0
+		CASE 3
+			;PRINT 认真・固执型
+			CFLAG:600 = 3
+			TALENT:性保守 = 1
+		CASE 4
+			;PRINT 花花公子型
+			CFLAG:600 = 4
+			TALENT:反抗 = 0
+			TALENT:自大 = 0
+			TALENT:讨厌女人 = 0
+		CASE 5
+			;PRINT 别扭傲娇型
+			CFLAG:600 = 5
+			TALENT:傲娇 = 1
+			TALENT:直率 = 0
+		CASE 6
+			;PRINT 目中无人・高傲型
+			CFLAG:600 = 6
+			TALENT:高傲 = 1
+			TALENT:自卑 = 0
+			TALENT:直率 = 0
+		CASE 7
+			;PRINT 举止温和・腹黑型
+			CFLAG:600 = 7
+			TALENT:直率 = 0
+		CASE 8
+			;PRINT 阴暗・无口・冷漠型
+			CFLAG:600 = 8
+			TALENT:无动于衷 = 1
+			TALENT:性好奇 = 0
+			TALENT:缺乏感情 = 1
+		CASE 9
+			;PRINT 痞气・油嘴滑舌型
+			CFLAG:600 = 66
+			TALENT:性好奇 = 1
+			TALENT:不知羞耻 = 1
+		CASE 10
+			;PRINT 心机・白莲花型
+			CFLAG:600 = 67
+			TALENT:魅惑 = 1
+			TALENT:美人 = 1
+			TALENT:胆怯 = 0
+		CASEELSE
+			;PRINT 天然・电波型
+			CFLAG:600 = 13
+	ENDSELECT
+ELSEIF TALENT:大人
+	SELECTCASE RAND:14
+		CASE 1
+			;PRINT 开朗・元气型
+			CFLAG:600 = 1
+			TALENT:老实 = 0
+			TALENT:缺乏感情 = 0
+			TALENT:无动于衷 = 0
+			TALENT:悲观 = 0
+		CASE 2
+			;PRINT 稳重・温柔型
+			CFLAG:600 = 2
+			TALENT:反抗 = 0
+			TALENT:傲娇 = 0
+			TALENT:自大 = 0
+		CASE 3
+			;PRINT 认真・固执型
+			CFLAG:600 = 3
+			TALENT:性保守 = 1
+		CASE 4
+			;PRINT 花花公子型
+			CFLAG:600 = 4
+			TALENT:反抗 = 0
+			TALENT:自大 = 0
+			TALENT:讨厌女人 = 0
+		CASE 5
+			;PRINT 别扭傲娇型
+			CFLAG:600 = 5
+			TALENT:傲娇 = 1
+			TALENT:直率 = 0
+		CASE 6
+			;PRINT 目中无人・高傲型
+			CFLAG:600 = 6
+			TALENT:高傲 = 1
+			TALENT:自卑 = 0
+			TALENT:直率 = 0
+		CASE 7
+			;PRINT 举止温和・腹黑型
+			CFLAG:600 = 7
+			TALENT:直率 = 0
+		CASE 8
+			;PRINT 阴暗・无口・冷漠型
+			CFLAG:600 = 8
+			TALENT:无动于衷 = 1
+			TALENT:性好奇 = 0
+			TALENT:缺乏感情 = 1
+		CASE 9
+			;PRINT 蛮不讲理・精英型
+			CFLAG:600 = 9
+		CASE 10
+			;PRINT 无常识・自恋型
+			CFLAG:600 = 12
+			TALENT:喜欢引人注目 = 1
+			TALENT:自卑 = 0
+		CASE 11
+			;PRINT 痞气・油嘴滑舌型
+			CFLAG:600 = 66
+			TALENT:性好奇 = 1
+			TALENT:不知羞耻 = 1
+		CASE 12
+			;PRINT 心机・白莲花型
+			CFLAG:600 = 67
+			TALENT:魅惑 = 1
+			TALENT:美人 = 1
+			TALENT:胆怯 = 0
+		CASE 13
+			;PRINT 创伤・自暴自弃型
+			CFLAG:600 = 68
+			TALENT:胆怯 = 1
+			TALENT:弱点 = 1
+			TALENT:刚强 = 0
+			TALENT:抵抗 = 0
+			TALENT:反抗 = 0
+			TALENT:高傲 = 0
+			TALENT:自大 = 0
+			TALENT:烙印 = 1
+			ABL:0 = 3
+			EXP:21 = RAND:10 + 5
+		CASEELSE
+			;PRINT 天然・电波型
+			CFLAG:600 = 13
+	ENDSELECT
+ELSE
+	SELECTCASE RAND:15
+		CASE 1
+			;PRINT 开朗・元气型
+			CFLAG:600 = 1
+			TALENT:老实 = 0
+			TALENT:缺乏感情 = 0
+			TALENT:无动于衷 = 0
+			TALENT:悲观 = 0
+		CASE 2
+			;PRINT 稳重・温柔型
+			CFLAG:600 = 2
+			TALENT:反抗 = 0
+			TALENT:傲娇 = 0
+			TALENT:自大 = 0
+		CASE 3
+			;PRINT 认真・固执型
+			CFLAG:600 = 3
+			TALENT:性保守 = 1
+		CASE 4
+			;PRINT 花花公子型
+			CFLAG:600 = 4
+			TALENT:反抗 = 0
+			TALENT:自大 = 0
+			TALENT:讨厌女人 = 0
+		CASE 5
+			;PRINT 别扭傲娇型
+			CFLAG:600 = 5
+			TALENT:傲娇 = 1
+			TALENT:直率 = 0
+		CASE 6
+			;PRINT 目中无人・高傲型
+			CFLAG:600 = 6
+			TALENT:高傲 = 1
+			TALENT:自卑 = 0
+			TALENT:直率 = 0
+		CASE 7
+			;PRINT 举止温和・腹黑型
+			CFLAG:600 = 7
+			TALENT:直率 = 0
+		CASE 8
+			;PRINT 阴暗・无口・冷漠型
+			CFLAG:600 = 8
+			TALENT:无动于衷 = 1
+			TALENT:性好奇 = 0
+			TALENT:缺乏感情 = 1
+		CASE 9
+			;PRINT 蛮不讲理・精英型
+			CFLAG:600 = 9
+		CASE 10
+			;PRINT 任性爱撒娇型
+			CFLAG:600 = 10
+			TALENT:自制力 = 0
+			TALENT:缺乏感情 = 0
+		CASE 11
+			;PRINT 无常识・自恋型
+			CFLAG:600 = 12
+			TALENT:喜欢引人注目 = 1
+			TALENT:自卑 = 0
+		CASE 12
+			;PRINT 痞气・油嘴滑舌型
+			CFLAG:600 = 66
+			TALENT:性好奇 = 1
+			TALENT:不知羞耻 = 1
+		CASE 13
+			;PRINT 心机・白莲花型
+			CFLAG:600 = 67
+			TALENT:魅惑 = 1
+			TALENT:美人 = 1
+			TALENT:胆怯 = 0
+		CASE 14
+			;PRINT 创伤・自暴自弃型
+			CFLAG:600 = 68
+			TALENT:胆怯 = 1
+			TALENT:弱点 = 1
+			TALENT:刚强 = 0
+			TALENT:抵抗 = 0
+			TALENT:反抗 = 0
+			TALENT:高傲 = 0
+			TALENT:自大 = 0
+			TALENT:烙印 = 1
+			ABL:0 = 3
+			EXP:21 = RAND:10 + 5
+		CASEELSE
+			;PRINT 天然・电波型
+			CFLAG:600 = 13
+	ENDSELECT
+ENDIF
+
+
+
+;一人称と素質によって、二人称、呼び方決め
+;ショタの場合
+IF TALENT:幼稚
+	IF TALENT:自大 || TALENT:反抗 || CFLAG:600 != 68
+		CSTR:1 = 你这家伙
+		MASTERNAME = %CSTR:MASTER:5%
+	ELSEIF TALENT:老实 || TALENT:缺乏感情
+		CSTR:1 = 您
+		MASTERNAME = %CSTR:MASTER:5%
+	ELSE
+		CSTR:1 = 您
+		MASTERNAME = %CSTR:MASTER:5%大人
+	ENDIF
+;大叔の場合
+ELSEIF TALENT:大人 && TALENT:大叔
+	IF TALENT:直率 || TALENT:老实 || TALENT:自卑 || TALENT:性保守 || CSTR:0 == "吾辈" || CSTR:0 == "在下"
+		CSTR:1 = 阁下
+	ELSE
+		CSTR:1 = 您
+	ENDIF
+	IF !RAND:6 && CSTR:1 == "阁下" && (CFLAG:600 == 2 || CFLAG:600 == 3 || CFLAG:600 == 7 || CFLAG:600 == 9 || CFLAG:600 == 13)
+		MASTERNAME = %CSTR:MASTER:4%桑
+	;ナンパタイプ
+	ELSEIF CFLAG:600 == 4 && CSTR:1 != "阁下"
+		MASTERNAME = %CSTR:MASTER:5%大人
+	;特定の性格タイプでは1/4の確率で君付けする
+	ELSEIF !RAND:3 && CSTR:1 == "阁下" && (CFLAG:600 == 2 || CFLAG:600 == 3 || CFLAG:600 == 7 || CFLAG:600 == 9)
+		MASTERNAME = %CSTR:MASTER:4%君
+	ELSE
+		MASTERNAME = %CSTR:MASTER:4%
+	ENDIF
+;成人男性の場合
+ELSEIF TALENT:大人
+	IF TALENT:直率 || TALENT:老实 || TALENT:自卑 || TALENT:性保守
+		CSTR:1 = 您
+	ELSEIF !RAND:3 && (CFLAG:600 == 2 || CFLAG:600 == 3 || CFLAG:600 == 7 || CFLAG:600 == 9 || CFLAG:600 == 13)
+		CSTR:1 = 你
+	ELSEIF CSTR:0 == "我" || CSTR:0 == "在下"
+		CSTR:1 = 您
+	ELSE
+		CSTR:1 = 你
+	ENDIF
+	IF !RAND:4 && (CSTR:1 == "我" || CSTR:1 == "你") && (CFLAG:600 == 2 || CFLAG:600 == 3 || CFLAG:600 == 7 || CFLAG:600 == 9 || CFLAG:600 == 13)
+		MASTERNAME = %CSTR:MASTER:4%桑
+	;ナンパタイプ
+	ELSEIF CFLAG:600 == 4 && CSTR:1 != "你" && CSTR:1 != "您"
+		MASTERNAME = %CSTR:MASTER:5%
+	;特定の性格タイプでは1/2の確率で君付けする
+	ELSEIF !RAND:2 && (CFLAG:600 == 3 || CFLAG:600 == 9 || CFLAG:600 == 12) && CSTR:1 != "您"
+		MASTERNAME = %CSTR:MASTER:4%君
+	ELSE
+		MASTERNAME = %CSTR:MASTER:4%
+	ENDIF
+;少年の場合
+ELSE
+	IF TALENT:自大 || TALENT:反抗 || CFLAG:600 != 68
+		CSTR:1 = 你丫
+		SIF !RAND:2
+			CSTR:1 = 你这混蛋
+	ELSEIF TALENT:直率 || TALENT:老实 || TALENT:自卑 || TALENT:性保守
+		CSTR:1 = 您
+		SIF !RAND:3
+			CSTR:1 = 你
+	ELSEIF !RAND:3 && (CFLAG:600 == 2 || CFLAG:600 == 3 || CFLAG:600 == 7 || CFLAG:600 == 9 || CFLAG:600 == 13)
+		CSTR:1 = 你
+	ELSEIF CSTR:0 == "俺" || CSTR:0 == "人家"
+		CSTR:1 = 你
+		SIF !RAND:3
+			CSTR:1 = 您
+	ELSE
+		CSTR:1 = 你
+	ENDIF
+	IF !RAND:4 && (CSTR:1 == "我" || CSTR:1 == "您") && (CFLAG:600 == 2 || CFLAG:600 == 3 || CFLAG:600 == 7 || CFLAG:600 == 9 || CFLAG:600 == 13)
+		MASTERNAME = %CSTR:MASTER:4%
+	;ナンパタイプ
+	ELSEIF CFLAG:600 == 4 && CSTR:1 != "您" && CSTR:1 != "你"
+		MASTERNAME = %CSTR:MASTER:5%
+	;特定の性格タイプでは1/3の確率で君付けする
+	ELSEIF !RAND:3 && (CFLAG:600 == 3 || CFLAG:600 == 9 || CFLAG:600 == 12) && CSTR:1 != "您" && CSTR:1 != "你"
+		MASTERNAME = %CSTR:MASTER:4%君
+	ELSE
+		MASTERNAME = %CSTR:MASTER:4%
+	ENDIF
+ENDIF
+
+CSTR:2 = %CSTR:1%
+CSTR:3 = 主人
+
+
+;一人称、二人称や素質によって、基本口調をきめる
+;ショタの場合
+IF TALENT:幼稚
+	IF (CSTR:0 == "我" || CSTR:0 == "俺") && CSTR:1 == "大人"
+		CFLAG:601 = 2
+	ELSEIF CSTR:1 == "你" || CSTR:0 == "人家" || CSTR:0 == "我"
+		CFLAG:601 = 1
+	ELSE
+		CFLAG:601 = 0
+	ENDIF
+;大叔の場合
+ELSEIF TALENT:大人 && TALENT:大叔
+	IF (CSTR:0 == "俺" || CSTR:0 == "吾辈") && CSTR:1 == "你丫"
+		CFLAG:601 = 0
+		CFLAG:616 = 1
+	ELSEIF CSTR:1 == "你"
+		CFLAG:601 = 0
+	ELSEIF CSTR:0 == "我" && RAND:2
+		CFLAG:601 = 2
+	ELSE
+		CFLAG:601 = 1
+	ENDIF
+;成人男性の場合
+ELSEIF TALENT:大人
+	IF CSTR:1 == "你"
+		CFLAG:601 = 2
+		SIF !RAND:3
+			CFLAG:601 = 1
+	ELSEIF CSTR:1 == "您"
+		CFLAG:601 = 0
+	ELSEIF CSTR:0 == "我" || CSTR:0 == "俺" || CSTR:0 == "吾辈"
+		CFLAG:601 = 0
+		CFLAG:616 = 1
+		IF !RAND:4 && CSTR:0 == "我"
+			CFLAG:601 = 2
+			CFLAG:616 = 0
+		ENDIF
+	ELSE
+		CFLAG:601 = 1
+		SIF !RAND:8
+			CFLAG:601 = 2
+	ENDIF
+;少年の場合
+ELSE
+	IF CSTR:1 == "您"
+		CFLAG:601 = 2
+	ELSEIF CSTR:1 == "我" && (CSTR:0 == "俺" || CSTR:0 == "在下")
+		CFLAG:601 = 0
+		CFLAG:616 = 1
+	ELSEIF CSTR:1 == "你这混蛋" && !RAND:3
+		CFLAG:601 = 2
+	ELSEIF (CSTR:0 == "我" || CSTR:0 == "人家")
+		CFLAG:601 = 1
+	ELSE
+		CFLAG:601 = 0
+	ENDIF
+ENDIF
+
+;-----------------------------------------------------------
+;外見特徴や性格属性
+SIF !RAND:6
+	TALENT:长发 = 1
+SIF !RAND:5
+	TALENT:眼镜 = 1
+SIF (CFLAG:600 == 3 || CFLAG:600 == 9) && !RAND:2
+	TALENT:眼镜 = 1
+IF !RAND:5
+	TALENT:白肤 = 1
+ELSEIF !RAND:5
+	TALENT:黑皮 = 1
+ENDIF
+SIF !RAND:6 && CFLAG:600 != 1 && !TALENT:幼稚
+	TALENT:美人 = 1
+SIF CFLAG:600 == 12 && !RAND:2
+	TALENT:美人 = 1
+SIF !TALENT:大人 && !RAND:10
+	TALENT:伪娘 = 1
+	
+IF !RAND:4
+	TALENT:喜欢运动 = 1
+ELSEIF !RAND:4
+	TALENT:喜欢读书 = 1
+ENDIF
+
+SELECTCASE RAND:10
+	CASE 0 , 1 , 2
+		SIF !RAND:2
+			TALENT:喜欢读书 = 1
+		TALENT:文系 = 1
+		IF !RAND:2
+			TALENT:美术属性 = 1
+		ELSE
+			TALENT:音乐属性 = 1
+		ENDIF
+	CASE 3
+		TALENT:理系 = 1
+		IF !RAND:2
+			TALENT:机械迷 = 1
+		ELSE
+			TALENT:化学属性 = 1
+		ENDIF
+	CASE 4
+		TALENT:喜欢花草 = 1
+ENDSELECT
+
+IF !RAND:8
+	TALENT:喜欢扫除 = 1
+	TALENT:污臭敏感 = 1
+	TALENT:污臭钝感 = 0
+	TALENT:脏污无视 = 0
+ENDIF
+
+SIF (CFLAG:600 == 3 || CFLAG:600 == 9) && !RAND:2
+	TALENT:说教癖 = 1
+
+SIF !RAND:7 && CFLAG:600 != 7
+	TALENT:冒冒失失 = 1
+SIF !RAND:6
+	TALENT:绅士 = 1
+SIF !RAND:7
+	TALENT:嫉妒心 = 1
+SIF TALENT:嫉妒心 && !RAND:3
+	TALENT:情绪不安定 = 1
+
+IF TALENT:喜欢运动
+	SELECTCASE RAND:9
+		CASE 1
+			CSTR:11 = 网球
+		CASE 2
+			CSTR:11 = 篮球
+		CASE 3
+			CSTR:11 = 足球
+		CASE 4
+			CSTR:11 = 芭蕾
+		CASE 5
+			CSTR:11 = 棒球
+		CASE 6
+			CSTR:11 = 柔道
+		CASE 7
+			CSTR:11 = 空手道
+		CASE 8
+			CSTR:11 = 弓道
+	ENDSELECT
+ENDIF
+IF TALENT:美术属性 && !TALENT:幼稚
+	SELECTCASE RAND:6
+		CASE 1
+			CSTR:12 = 绘画
+		CASE 2
+			CSTR:12 = 雕刻
+		CASE 3
+			CSTR:12 = 书法
+		CASE 4
+			CSTR:12 = 摄影
+			ABL:摄影技能 = 2
+			EXP:摄影经验 = 20
+		CASE 5
+			CSTR:12 = 漫画
+	ENDSELECT
+ENDIF
+
+IF TALENT:音乐属性
+	IF !RAND:2
+		TALENT:擅长歌唱 = 1
+		EXP:歌唱经验 = 20
+		ABL:歌唱技能 = 2
+	ENDIF
+	SELECTCASE RAND:4
+		CASE 1
+			CSTR:13 = 钢琴
+		CASE 2
+			CSTR:13 = 吉他
+		CASE 3
+			CSTR:13 = 小提琴
+		CASEELSE
+			TALENT:擅长歌唱 = 1
+			EXP:歌唱经验 = 50
+			ABL:歌唱技能 = 3
+	ENDSELECT
+ENDIF
+;相性の初期値
+REPEAT CHARANUM
+	RELATION:(NO:COUNT) = 100
+	RELATION:COUNT:(NO:TARGET) = 100
+REND
+
+;-----------------------------------------------------------
+;非エスパーモード用の素質決め
+SIF TFLAG:166
+	CALL SLAVE_CUSTOM_RANDOM_TALENT
+;-----------------------------------------------------------
+;後処理部分
+;-----------------------------------------------------------
+
+
+;堅物､腹黒､傲娇､高慢､反抗､刚强､高傲→[抵抗]が付く
+SIF CFLAG:600 == 3 || CFLAG:600 == 7 || CFLAG:600 == 5 || CFLAG:600 == 6 || TALENT:11 || TALENT:12 || TALENT:15
+	TALENT:抵抗 = 1
+SIF TALENT:擅长料理
+	ABL:料理技能 = 2
+SIF TALENT:男女通吃 && ABL:同性倾向 == 0
+	ABL:同性倾向 = 1
+	
+;性に对する興味
+IF (TALENT:无动于衷 && TALENT:缺乏感情) || CFLAG:600 == 11 || TALENT:幼稚
+	ABL:欲望 = 0
+	ABL:Ｃ感觉= 0
+ELSE
+	EXP:射精经验 += 5
+	EXP:自慰经验 += 10
+	ABL:欲望 = 1
+	ABL:Ｃ感觉= 1
+ENDIF
+SIF TALENT:性好奇
+	EXP:自慰经验 += 2
+SIF TALENT:不知羞耻
+	EXP:自慰经验 += 2
+IF TALENT:容易自慰
+	EXP:射精经验 += 25
+	EXP:自慰经验 += 30
+ENDIF
+;童贞でない場合、性交经验+5、射精经验+5､自慰经验+5
+IF TALENT:童贞 == 0
+	EXP:性交经验 += 5
+	EXP:射精经验 += 5
+	EXP:自慰经验 += 5
+	ABL:欲望 = 1
+	ABL:技巧 = 1
+	ABL:Ｃ感觉= 1
+ENDIF
+IF TALENT:自制力 || TALENT:性保守 || TALENT:难以越过的底线 || TALENT:性压抑 || TALENT:否定快感
+	ABL:欲望 = 0
+ENDIF
+
+SIF TALENT:化学属性
+	TALENT:调和知识 = 1
+
+
+
+;------
+;随机奴隶用
+SIF TALENT:喜欢引人注目
+	TALENT:老实 = 0
+SIF TALENT:直率
+	TALENT:傲娇 = 0
+SIF TALENT:贞操重视 || TALENT:抵抗 || TALENT:害羞 || TALENT:傲娇 || TALENT:反抗
+	TALENT:性开放 = 0
+SIF TALENT:自大 || TALENT:反抗
+	TALENT:直率 = 0
+SIF !TALENT:幼稚
+	TALENT:漏尿癖 = 0
+;------
+
+
+
+;初期体力最大値調整
+IF TALENT:耐痛
+	MAXBASE:0 += 100
+	BASE:0 += 100
+ENDIF
+IF TALENT:高大体型
+	MAXBASE:0 += 200
+	BASE:0 += 200
+ENDIF
+IF TALENT:日光浴
+	MAXBASE:0 += 100
+	BASE:0 += 100
+ENDIF
+IF TALENT:喜欢运动
+	MAXBASE:0 += 100
+	BASE:0 += 100
+ENDIF
+IF TALENT:吸血鬼
+	MAXBASE:0 -= 100
+	BASE:0 -= 100
+ENDIF
+IF TALENT:矮小体型
+	MAXBASE:0 -= 100
+	BASE:0 -= 100
+ENDIF
+IF TALENT:月光浴
+	MAXBASE:0 -= 100
+	BASE:0 -= 100
+ENDIF
+
+;初期气力最大値調整
+IF TALENT:胆怯
+	MAXBASE:1 -= 100
+	BASE:1 -= 100
+ENDIF
+IF TALENT:自卑
+	MAXBASE:1 -= 100
+	BASE:1 -= 100
+ENDIF
+IF TALENT:性压抑
+	MAXBASE:1 -= 100
+	BASE:1 -= 100
+ENDIF
+IF TALENT:怕痛
+	MAXBASE:1 -= 100
+	BASE:1 -= 100
+ENDIF
+IF TALENT:容易自慰
+	MAXBASE:1 -= 100
+	BASE:1 -= 100
+ENDIF
+IF TALENT:容易上瘾
+	MAXBASE:1 -= 100
+	BASE:1 -= 100
+ENDIF
+
+;困难度
+LOCAL = DEFFICULTY(TARGET)
+IF LOCAL > 400
+	CSTR:10 = G
+ELSEIF LOCAL > 100
+	CSTR:10 = F
+ELSEIF LOCAL > -200
+	CSTR:10 = E
+ELSEIF LOCAL > -400
+	CSTR:10 = D
+ELSEIF LOCAL > -800
+	CSTR:10 = C
+ELSEIF LOCAL > -2000
+	CSTR:10 = B
+ELSEIF LOCAL > -3000
+	CSTR:10 = A
+ELSE
+	CSTR:10 = S
+ENDIF
+
+;拉致の困难度
+Y = 2000
+;捕獲が難しくなる要素
+SIF TALENT:高大体型
+	Y += 100
+SIF TALENT:学得快
+	Y += 100
+SIF TALENT:耐痛
+	Y += 100
+SIF TALENT:抵抗
+	Y += 200
+SIF TALENT:大人
+	Y += 100
+SIF TALENT:喜欢运动
+	Y += 100
+;捕獲が易しくなる要素
+SIF TALENT:矮小体型
+	Y -= 100
+SIF TALENT:怕痛
+	Y -= 100
+SIF TALENT:性好奇
+	Y -= 100
+SIF TALENT:直率
+	Y -= 100
+SIF TALENT:老实
+	Y -= 100
+SIF TALENT:胆怯
+	Y -= 100
+;最高値と最低値の制限
+SIF Y > 2500
+	Y = 2500
+SIF Y < 1500
+	Y = 1500
+SIF TALENT:烙印
+	Y /= 2
+T = TARGET
+PRINTL ----------------------------------------------------------------
+PRINTFORML 【%NAME%】
+PRINTFORML 调教难度：%CSTR:10%　　　委托费：${Y}
+SIF FLAG:1503 == 0
+    CALL CHARA_FACE2
+IF TALENT:美人 && TALENT:眼镜
+	PRINT 戴着眼镜
+	IF !TALENT:伪娘 && !TALENT:长发 && !TALENT:白肤 && !TALENT:黑皮 && !TALENT:矮小体型 && !TALENT:高大体型
+		PRINT 斯文的
+	ELSE
+		PRINT 中性的
+	ENDIF
+ELSEIF TALENT:美人
+	PRINT 具有雌雄莫辩外表的
+ELSEIF TALENT:眼镜
+	PRINT 戴着眼镜的
+ENDIF
+SIF TALENT:伪娘
+	PRINT 外表像女性的
+SIF TALENT:长发
+	PRINT 长发
+
+IF TALENT:矮小体型 && !TALENT:白肤 && !TALENT:黑皮
+	PRINT 矮小的
+ELSEIF TALENT:矮小体型
+	PRINT 矮小的
+ELSEIF TALENT:高大体型 && !TALENT:白肤 && !TALENT:黑皮
+	PRINT 高大的
+ELSEIF TALENT:高大体型
+	PRINT 高大的
+ENDIF
+SIF TALENT:白肤
+	PRINT 白肤的
+SIF TALENT:黑皮
+	PRINT 黑皮的
+IF TALENT:幼稚
+	PRINTL 男孩儿
+ELSEIF TALENT:大人 && TALENT:大叔
+	PRINTL 中年
+ELSEIF TALENT:大人
+	PRINTL 青年
+ELSE
+	PRINTL 少年
+ENDIF
+PRINTL
+PRINT □ 性格：
+	SELECTCASE CFLAG:600
+		CASE 1
+			PRINTL 开朗・元气型
+		CASE 2
+			PRINTL 稳重・温柔型
+		CASE 3
+			PRINTL 认真・固执型
+		CASE 4
+			PRINTL 花花公子型
+		CASE 5
+			PRINTL 别扭傲娇型
+		CASE 6
+			PRINTL 目中无人・高傲型
+		CASE 7
+			PRINTL 举止温和・腹黑型
+		CASE 8
+			PRINTL 阴暗・无口・冷漠型
+		CASE 9
+			PRINTL 蛮不讲理・精英型
+		CASE 10
+			PRINTL 任性爱撒娇型
+		CASE 11
+			PRINTL 直率纯真型
+		CASE 12
+			PRINTL 无常识・自恋型
+		CASE 13
+			PRINTL 天然・电波型
+		CASE 66
+			PRINTL 痞气・油嘴滑舌型
+		CASE 67
+			PRINTL 心机・白莲花型
+	ENDSELECT
+
+PRINTL
+PRINTL □ 素质
+CALL SHOW_INFO_TALENT
+PRINTL
+PRINTFORML □ 备注：
+PRINTFORML 一人称：%CSTR:0%　　　二人称：%CSTR:1%
+
+LOCAL = 0
+IF TALENT:喜欢运动
+	PRINT 喜欢运动
+	LOCAL += 1
+ELSEIF TALENT:喜欢读书
+	PRINT 喜欢读书的室内派
+	LOCAL += 1
+ENDIF
+IF CSTR:11 != ""
+	SIF LOCAL
+		PRINT 、
+	PRINTFORM 有%CSTR:11%特长
+	LOCAL += 1
+ENDIF
+
+IF TALENT:美术属性
+	SIF LOCAL
+		PRINT 、
+	IF CSTR:12 == "漫画"
+		PRINTFORM 喜欢画漫画
+	ELSEIF CSTR:12 != ""
+		PRINTFORM 精通%CSTR:12%
+	ELSE
+		PRINTFORM 有艺术气质
+	ENDIF
+	LOCAL += 1
+ENDIF
+IF TALENT:音乐属性
+	SIF LOCAL
+		PRINT 、
+	IF CSTR:13 != ""
+		PRINTFORM 擅长%CSTR:13%
+	ELSE
+		PRINTFORM 唱歌很好听
+	ENDIF
+	LOCAL += 1
+ENDIF
+IF TALENT:理系
+	SIF LOCAL
+		PRINT 、
+	SIF TALENT:机械迷
+		PRINT 喜欢研究机械
+	SIF TALENT:化学属性
+		PRINT 喜欢鼓捣化学实验
+	LOCAL += 1
+ENDIF
+IF TALENT:喜欢花草
+	SIF LOCAL
+		PRINT 、
+	PRINT 兴趣是园艺
+	LOCAL += 1
+ENDIF
+IF TALENT:喜欢扫除
+	SIF LOCAL
+		PRINT 、
+	PRINT 有洁癖
+	LOCAL += 1
+ENDIF
+IF TALENT:冒冒失失
+	SIF LOCAL
+		PRINT 、
+	PRINT 有冒失的一面
+	LOCAL += 1
+ENDIF
+IF TALENT:绅士
+	SIF LOCAL
+		PRINT 、
+	PRINT 对女性很绅士
+	LOCAL += 1
+ENDIF
+IF TALENT:嫉妒心
+	SIF LOCAL
+		PRINT 、
+	PRINT 嫉妒心很重
+	LOCAL += 1
+ENDIF
+PRINTL
+PRINTL ----------------------------------------------------------------
+PRINTL
+PRINTFORML [0] 就决定是%NAME%了
+PRINTL
+PRINTL [1] 选择其他目标
+PRINTL 
+PRINTL [2] --放弃奴隶采购--
+$INPUT_LOOP_SARAU
+INPUT
+SIF RESULT != 0 && RESULT != 1 && RESULT != 2
+	GOTO INPUT_LOOP_SARAU
+IF RESULT == 1
+    CALL KAIGYO
+	PRINTL 
+	PRINTL 紧接着收到了这样的资料
+	PRINTL 
+	TARGET = M
+	DELCHARA K
+	FLAG:8 -= 1
+	GOTO INPUT_LOOP_RANDOMDOREI
+ENDIF
+IF RESULT == 2
+	TARGET = M
+	DELCHARA K
+	FLAG:8 -= 1
+	RETURN 0
+ENDIF
+
+MONEY -= Y
+PRINTL 　　　　　　・
+PRINTL 　　　　　　・
+PRINTL 　　　　　　・
+PRINTL 多谢您的惠顾。
+PRINTFORMW 我们立即将%NAME%抓来送往您的居所。
+PRINTL 　　　　　　・
+PRINTL 　　　　　　・
+PRINTW 　　　　　　・
+PRINTFORMW ―― %NAME%被绑架到房间里了 ――
+
+CSTR:93 = 暂无。
+
+CFLAG:111 = -1
+CFLAG:1000 = -1
+CFLAG:1001 = -1

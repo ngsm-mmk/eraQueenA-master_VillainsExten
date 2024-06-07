@@ -1,0 +1,92 @@
+﻿@嫉妒打断
+#DIM 候補, 100
+#DIM 候補数
+#DIM 對象
+VARSET 候補
+VARSET 候補数
+VARSET LOCAL, -1
+SIF 嫉妒開關 == 1
+	RETURN 0	
+FOR LOCAL, 0, CHARANUM
+	IF TALENT:(LOCAL):嫉妒 && !CFLAG:LOCAL:12 && !TALENT:(LOCAL):育儿中  && !TALENT:(LOCAL):崩溃 && !CFLAG:2404 && !CFLAG:2414 && LOCAL != MASTER  && LOCAL != TARGET && KANRAKU(LOCAL) && BASE:(LOCAL):0 >= 800 
+		候補:LOCAL = RAND:1000
+		候補数 ++
+	ENDIF
+NEXT
+SIF 候補数 <= 0
+	RETURN 0
+對象 = FINDELEMENT(候補, MAXARRAY(候補))
+	PRINTFORML 当%PLAYER_NAME()%正准备调教%CALLNAME%的时候
+	PRINTFORM 不知为何%CALLNAME:對象%
+	IF  NO == 200
+		PRINTFORML 带着意味深长的笑容走过来
+	ELSEIF TALENT:胆怯 ||  TALENT:自卑
+		PRINTFORML 战战兢兢地走过来
+	ELSEIF TALENT:刚强 ||  TALENT:自制力  ||  TALENT:难以越过的底线
+		PRINTFORML 皱着眉头走了过来
+	ELSEIF TALENT:直率 ||  TALENT:高傲  ||  TALENT:自大 || TALENT:傲娇
+		PRINTFORML 气冲冲地跑过来了
+	ELSEIF TALENT:无动于衷 ||  TALENT:缺乏感情
+		PRINTFORML 面无表情地走过来了
+	ELSE
+		PRINTFORML 似乎很不高兴地走了过来
+	ENDIF
+	PRINTFORML 询问着%PLAYER_NAME()%到底是比较喜欢调教%CALLNAME%还是自己
+	PRINTFORML 该选谁呢？
+	PRINTFORML [ 1] %CALLNAME%
+	PRINTFORML [ 2] %CALLNAME:對象%
+	PRINTL
+	INPUT
+	IF RESULT == 1
+		PRINTFORML %PLAYER_NAME()%依然坚持要调教的对象是%CALLNAME%
+		PRINTFORM %CALLNAME:對象%
+		IF  NO == 200
+			PRINTFORML 似乎有点惊讶地抬了抬眉毛
+			PRINTFORM 看了%PLAYER_NAME()%一眼摇摇头後，
+		ELSEIF TALENT:胆怯 ||  TALENT:自卑
+			PRINTFORML 似乎要当场哭出来那样
+			PRINTFORM 先是哽咽地道歉，然後
+		ELSEIF TALENT:刚强 ||  TALENT:自制力  ||  TALENT:难以越过的底线
+			PRINTFORML 似乎无法理解似地将眉头皱得更紧
+			PRINTFORM 然後叹了口气，
+		ELSEIF TALENT:直率 ||  TALENT:高傲  ||  TALENT:自大 || TALENT:傲娇
+			PRINTFORML 瞪大眼睛，似乎不敢相信自己竟然输给了%CALLNAME%
+			PRINTFORM 狠狠地瞪了%CALLNAME%一眼後，
+		ELSEIF TALENT:无动于衷 ||  TALENT:缺乏感情
+			PRINTFORML 先是愣了一下，然後才意识到自己输给了%CALLNAME%
+			PRINTFORM 默默打量着%CALLNAME%一会後，
+		ELSE
+			PRINTFORML 露了出失望的表情，没想到自己输给了%CALLNAME%
+			PRINTFORM 然後就垂头丧气地
+		ENDIF
+		PRINTFORMW 转身离去了……
+		PRINTFORMW %CALLNAME:對象%和%CALLNAME%的关系恶化了
+			RELATION:TARGET:(NO:對象) /= 4
+			RELATION:TARGET:(NO:對象) *= 3
+			RELATION:對象:(NO:TARGET) /= 3
+			RELATION:對象:(NO:TARGET) *= 2
+	ELSE
+		PRINTFORML %PLAYER_NAME()%像是很无奈地叹了口气，选择了%CALLNAME:對象%
+		PRINTFORM	得到想要的回答之後，%CALLNAME:對象%
+		IF  NO == 200
+			PRINTFORML 微微压抑着那忍不住上扬的嘴角
+		ELSEIF TALENT:胆怯 ||  TALENT:自卑
+			PRINTFORML 露出惊喜的表情
+		ELSEIF TALENT:刚强 ||  TALENT:自制力  ||  TALENT:难以越过的底线
+			PRINTFORML 满意地点点头之後
+		ELSEIF TALENT:直率 ||  TALENT:高傲  ||  TALENT:自大 || TALENT:傲娇
+			PRINTFORML 满意地扬起了下巴
+		ELSEIF TALENT:无动于衷 ||  TALENT:缺乏感情
+			PRINTFORML 似乎觉得理所当然似地
+		ELSE
+			PRINTFORML 开心地眯起了眼睛
+		ENDIF	
+		PRINTFORMW 搂着%PLAYER_NAME()%的手腕，代替了本来要调教的%CALLNAME%走进了房间……
+		PRINTFORMW %CALLNAME:對象%和%CALLNAME%的关系恶化了
+			RELATION:TARGET:(NO:對象) /= 3
+			RELATION:TARGET:(NO:對象) *= 2
+			RELATION:對象:(NO:TARGET) /= 4
+			RELATION:對象:(NO:TARGET) *= 3
+		TARGET = 對象
+	ENDIF
+	

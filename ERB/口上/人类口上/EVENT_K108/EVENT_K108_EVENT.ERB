@@ -1,0 +1,413 @@
+﻿;-------------------------------------------------
+;イベント口上集 CFLAG 261～299を使用
+;-------------------------------------------------
+@KOJO_MESSAGE_EVENT_K8
+;書きかえたい場所の「（基本の地の文を显示）」を消して変えてもいいです
+;表示される基本の地の文はEVENT_M_EVENT.ERB、を参照して下さい
+;TFLAG:13に入ってる数字イコール@EVENT_MESSAGE_XXのXXです。
+;まだテンプレが無いイベントの口上を書く場合は最初に　IF TFLAG:13 == XX　というように書いてください
+
+;-------------------------------------------------
+;调教後百合プ雷
+;-------------------------------------------------
+IF TFLAG:13 == 4
+
+	;贞操对和服腰带あり
+	IF TEQUIP:2 == 5
+		;PRINTFORML 
+	ELSE
+		;初めて
+		IF CFLAG:264 == 0
+			;PRINTFORMW 
+			;CFLAG:264 = 1
+		;それ以外
+		ELSEIF CFLAG:264 < 1 || FLAG:7 == 2
+			;PRINTFORMW 
+			;CFLAG:264 = 1
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;强精神药の反動
+;-------------------------------------------------
+IF TFLAG:13 == 6
+
+	IF CFLAG:266 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:266 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;调教後搾乳
+;-------------------------------------------------
+IF TFLAG:13 == 7
+
+	IF CFLAG:267 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:267 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;调教後自慰
+;-------------------------------------------------
+IF TFLAG:13 == 8
+
+	;贞操对和服腰带あり
+	IF TEQUIP:2 == 5
+		;PRINTFORML 
+	ELSE
+		IF CFLAG:268 < 1 || FLAG:7 == 2
+			;PRINTFORMW 
+			;CFLAG:268 = 1
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;黄色のキャンディ使用時
+;-------------------------------------------------
+IF TFLAG:13 == 10
+
+	IF CFLAG:270 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:270 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;怀孕発覚時
+;-------------------------------------------------
+IF TFLAG:13 == 11
+	SIF CFLAG:271 >= 1 && FLAG:7 != 2
+		RETURN 0
+
+	;PRINTFORMW 
+	;CFLAG:271 = 1
+ENDIF
+
+;-------------------------------------------------
+;分娩時
+;-------------------------------------------------
+IF TFLAG:13 == 12
+
+	IF CFLAG:272 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:272 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;育児室
+;-------------------------------------------------
+IF TFLAG:13 == 13
+
+	;分娩前
+	IF TALENT:153
+		IF CFLAG:273 < 1 || FLAG:7 == 2
+			;PRINTFORMW 
+			;CFLAG:273 = 1
+		ENDIF
+	;分娩後
+	ELSE
+		IF CFLAG:273 < 3 || FLAG:7 == 2
+			;PRINTFORMW 
+			;CFLAG:273 = 3
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;親離れ時
+;-------------------------------------------------
+IF TFLAG:13 == 14
+
+	IF CFLAG:274 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:274 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;拍卖時
+;-------------------------------------------------
+IF TFLAG:13 == 18
+    PRINTL
+    PRINTL
+    PRINTL
+	;反抗刻印Lv3
+	IF MARK:3 == 3
+		PRINTFORMW 「真是痛快，痛快啊……」
+		PRINTFORMW %CALLNAME:TARGET%低声咒骂着，被商人带走了
+	;それ以外
+	ELSE
+		IF TALENT:病娇
+		    PRINTFORMW 得知自己已被拍卖，%CALLNAME:TARGET%露出一个扭曲的笑容
+            PRINTFORMW 「%CSTR:0%这种人，早点死了才好…是吗？」
+            PRINTFORML 「没有%CSTR:0%，就不会有人天天烦着%CSTR:2%，
+            PRINTFORMW   将%CSTR:2%视为自己的所有物，每天都阴森森地窥视%CSTR:2%的行踪」
+            PRINTFORMW 「不过%CSTR:0%现在这副丑陋的姿态，应该很好地取悦了%CSTR:2%吧，%MASTERNAME%？」
+            PRINTFORMW 「%CSTR:0%从最开始就看出来了，%CSTR:2%和%CSTR:0%是同类」
+            PRINTFORMW 「都是只能活在黑暗的世界，不能见到阳光的族群」
+            PRINTFORMW 「%MASTERNAME%，我们是天生一对啊？」
+            PRINTFORMW 「将这样的%CSTR:0%赶走，%CSTR:2%就是孤身一人了，这样也无所谓吗？」
+            PRINTFORML %PLAYER_NAME()%没有回答，也不想回答%CALLNAME:TARGET%的这个问题
+            PRINTFORMW \@ MALE(TARGET) ? 他 # 她 \@已经是卖出去的货物了
+            PRINTFORMW 面对%PLAYER_NAME()%的沉默，%CALLNAME:TARGET%眼中的光渐渐退去
+            PRINTFORMW 不发一语的\@ MALE(TARGET) ? 他 # 她 \@被商人带走了
+            PRINTFORML ………………
+            PRINTFORML …………
+            PRINTFORMW ……
+            PRINTFORMW 数月后，开始断断续续地收到一些奇怪的无名包裹
+            PRINTFORMW 一开始只是头发，衣服的碎片，完整的指甲盖之类
+            PRINTFORML 后面就演变为角度诡异，光照晦暗的照片，
+            PRINTFORMW 以及被打扮得像%PLAYER_NAME()%的没有四肢的玩偶等让人不舒服的东西
+            PRINTFORMW 到最后，是一盒空白包装的录像带
+            PRINTFORML 虽然心里有个声音在叫嚣着绝对不能打开它
+            PRINTFORMW 但手还是不由自主地动起来拆开了包装
+            PRINTFORMW 录像开始播放，和以前拍过的那些差不多，是主角为奴隶的色情影片
+            PRINTFORMW 开场是一个很像自己的人的自我介绍，那副畏畏缩缩的模样令%PLAYER_NAME()%不适
+            PRINTFORMW 随后，许久不见的%CALLNAME:TARGET%出现了
+            PRINTFORMW 比以前看上去还要病态阴沉，浑身充满了可怕的气场
+            PRINTFORMW \@ MALE(TARGET) ? 他 # 她 \@对那名奴隶做起了以前%PLAYER_NAME()%对\@ MALE(TARGET) ? 他 # 她 \@做的那些事
+            PRINTFORMW 奴隶被折磨得半死，跪在地上一个劲儿求饶，可是%CALLNAME:TARGET%并没有停手
+            PRINTFORMW 「不够像…不够！没有人可以代替%MASTERNAME%，没有人……你这冒牌货！」
+            PRINTFORML %CALLNAME:TARGET%不知从哪里取出一把电锯，随后——
+            PRINTFORMW 血沫横飞，皮肉四散，小小的拘禁室变成了人间地狱
+            PRINTFORMW %PLAYER_NAME()%快要忍不住吐出来，但却无法将眼睛从屏幕上移开，因为……
+            PRINTFORMW %CALLNAME:TARGET%悲伤地哭泣着，用连自己都没有见过的表情哭泣着
+            PRINTFORMW 眼泪混着\@ MALE(TARGET) ? 他 # 她 \@脸上沾到的血液没入衣领，最终落到了看不见的地方
+            PRINTFORMW 把奴隶的尸体肢解切割，分别保存后，%CALLNAME:TARGET%凑近了镜头
+            PRINTFORMW 那双变得昏暗浑浊的眼睛，一动不动地注视着屏幕外的%PLAYER_NAME()%
+            PRINTFORMW 「%MASTERNAME%……还不够哦，接下来，是%CSTR:2%了哦？」
+            PRINTFORMW 录像，结束了
+        ELSEIF TALENT:幼稚
+            IF TALENT:恋慕 || TALENT:相亲相爱
+                PRINTFORMW 「明明喜欢着%MASTERNAME%…」
+            ELSEIF TALENT:淫乱 || TALENT:娼妇
+                PRINTFORMW 「做爱…喜欢…」
+                PRINTFORMW 「%MASTERNAME%也…喜欢…」
+                PRINTFORMW 「……再见」
+            ELSEIF TALENT:服从 || TALENT:隶属
+                PRINTFORMW 「为什么…？」
+            ELSE
+                PRINTFORMW 「%MASTERNAME%…？」
+            ENDIF
+            PRINTFORMW %CALLNAME:TARGET%回过头看了眼%PLAYER_NAME()%，像懵懂的小兽一样跟着商人离开了
+        ELSEIF TALENT:崩溃 || TALENT:疯癫
+        	PRINTFORMW 「%CSTR:0%真的好恨%CSTR:2%啊，%MASTERNAME%…」
+        	PRINTFORMW 「是%CSTR:2%告诉%CSTR:0%，%CSTR:0%的存在是有价值的，而现在又将%CSTR:0%抛弃了」
+        	PRINTFORMW 「那是不是意味着%CSTR:0%又变回一文不值的废物了呢？」
+        	PRINTFORMW 「如果从来不曾出生……」
+        	PRINTFORMW %CALLNAME:TARGET%面无表情地流着泪，被商人带走了
+        ELSEIF TALENT:恋慕 || TALENT:相亲相爱
+            PRINTFORMW 得知自己已被拍卖，%CALLNAME:TARGET%身形一晃，几欲摔倒
+            PRINTFORMW %CALLNAME:MASTER%又重复了一次，这次%CALLNAME:TARGET%总算是听清楚了
+            PRINTFORMW \@ MALE(TARGET) ? 他 # 她 \@在沉默了大半晌后，冷不防地问了一句——
+            PRINTFORMW 「看着%CSTR:0%这幅狼狈的姿态，很痛快吗？」
+            PRINTFORMW 「很可笑吧，会…喜欢上调教自己的人……怎么想都是变态吧？」
+            PRINTFORMW 「每天跟\@ MALE(TARGET) ? 女人似的 # 真正的女人似的 \@巴巴等待着临幸，为随便一句敷衍的情话高兴大半天…」
+            PRINTFORMW 「何其丑陋、扭曲的身姿，令人作呕不是吗？哈、哈哈……」
+            PRINTFORMW 「像%CSTR:0%这样的家伙，明明只要一味粗暴对待就可以了，根本没有必要温柔」
+            PRINTFORMW 「让%CSTR:0%痛痛快快地恨%CSTR:1%不是更好吗……%MASTERNAME%！」
+            PRINTFORMW 「现在这样子，就连纯粹的恨都做不到，甚至还抱有愚蠢的期待…这种滋味，%CSTR:1%永远不会懂吧」
+            PRINTFORMW 「哈哈、哈哈哈……」
+            PRINTFORMW %CALLNAME:TARGET%笑得嗓音嘶哑，眼泪不断从\@ MALE(TARGET) ? 他 # 她 \@眼眶滑落
+            PRINTFORMW 的确……非常滑稽狼狈
+            PRINTFORMW %CALLNAME:MASTER%在心中叹息着，将%CALLNAME:TARGET%推向商人那边，转头离开了
+            PRINTFORMW 不知为何，不想看到%CALLNAME:TARGET%现在的表情……
+        ELSEIF TALENT:服从 || TALENT:隶属
+            PRINTFORMW %CALLNAME:TARGET%身形颤抖，眼圈通红，却什么也没说
+            PRINTFORMW 那双一见到%PLAYER_NAME()%就焕发出光彩的眼眸，此刻被复杂的情绪满满占据
+            PRINTFORML 还记得%CALLNAME:TARGET%刚来时总是死气沉沉不苟言笑的模样
+            PRINTFORMW 现在看来，原来已经发生了这么大的变化
+            PRINTFORML 「……」
+            PRINTFORMW 回过神来，正好看见%CALLNAME:TARGET%无声地动了动唇
+            PRINTFORML 那一刻，\@ MALE(TARGET) ? 他 # 她 \@眼中的神采消失了，宛如这段时间的记忆全部清空了一般
+            PRINTFORMW \@ MALE(TARGET) ? 他 # 她 \@又变回了以前那个阴暗的，缩在壳里的人
+            PRINTFORMW 最终%CALLNAME:TARGET%沉默地跟随商人离开了
+            PRINTFORMW 这一次，没有再回头
+        ELSEIF TALENT:淫乱 || TALENT:娼妇
+            PRINTFORMW 「反正%CSTR:0%就是这样，能对随便一个生物张开大腿的存在…」
+            PRINTFORMW 「怎么样，你们也要试试吗？」
+            PRINTFORMW 像是自暴自弃一般，%CALLNAME:TARGET%撩开了自己的衣服
+            PRINTFORMW 商人的眼中闪现过暧昧的光，急不可耐地拉着%CALLNAME:TARGET%上车了……
+        ELSE
+            PRINTFORMW 「%MASTERNAME%，%CSTR:1%最大的罪，就是活在这世上吧？」
+            PRINTFORMW %CALLNAME:TARGET%冷笑着跟上了商人一行
+        ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;ビデオ拍卖時
+;-------------------------------------------------
+IF TFLAG:13 == 19
+
+	IF CFLAG:278 < 1 || FLAG:7 == 2
+		;PRINTFORMW 
+		;CFLAG:278 = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;衣服变更時 CFLAG:283（を適当に適用） 
+;T:A = Y　　　　着脱する衣服を限定する時
+;A = X　　　　　着脱部位全体を示す時
+;TEQUIP:A = Y　 今何を着ているか（着てない場合は0）
+;を組み合わせます。分かりにくくてスマン。
+;-------------------------------------------------
+IF TFLAG:13 == 25
+
+	;脱がしたときの口上
+	IF  Y == 0 && CFLAG:283 == 0 || FLAG:7 == 2
+		;贞操带取下
+		IF A == 2 && T:2 == 5
+			;PRINTFORMW 
+		;贞操带以外の下着取下
+		ELSEIF A == 2
+			;PRINTFORMW 
+		ENDIF
+		;CFLAG:283 = 1
+	;着せた時の口上
+	ELSEIF CFLAG:283 < 2 || FLAG:7 == 2
+		;女装：男性キャラ
+		IF (TALENT:137 || TALENT:140) && (T:1 == 4 || T:1 == 6 || T:2 == 1 || T:2 == 4 || T:2 == 6 || T:3 == 1 || T:3 == 2 || T:4 == 1 || T:4 == 6 || T:6 == 2 || T:6 == 3 || T:6 == 4 || T:6 == 6 || T:6 == 9 || T:6 == 10 || T:9 == 9)
+			;PRINTFORML 
+		ENDIF
+		;贞操带施錠
+		IF T:2 == 5
+			;PRINTFORML 
+		ENDIF
+		;CFLAG:283 = 2
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;朝料理イベント時 CFLAG:284 を、使用できるように確保してみる
+;書きかえたい場所の「」を消してごっそり変えてもいいかも
+;表示される基本の地の文はEVENT_M.ERBを参照にして下さい
+;-------------------------------------------------
+IF TFLAG:13 == 26
+	;最初から弁当を食べる時
+	IF K == 1
+
+		PRINTFORM 
+	;売るのをやめて食べる時
+	ELSEIF K == 2
+
+		PRINTFORM 
+	;主人が弁当を作るとき
+	ELSEIF K == 3
+
+		PRINTFORM 
+	;食後の運動(性的な意味で)直前
+	ELSEIF K == 4
+
+		PRINTFORM 
+	;毒を盛られた
+	ELSEIF K == 5
+
+		PRINTFORM 
+	;毒を見抜いたので弱みを握るイベント（相性のいい子に食べさせるver）
+	ELSEIF K == 6
+
+		PRINTFORM 
+	;毒を見抜いたので弱みを握るイベント（問い詰めるver）
+	ELSEIF K == 7
+
+		PRINTFORM 
+	;毒殺された
+	ELSEIF K == 8
+
+		PRINTFORM 
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;@KOJO_MESSAGE_ENDING関係
+;-------------------------------------------------
+;-------------------------------------------------
+;条件设定
+;-------------------------------------------------
+@EVENTTURNEND
+#LATER
+SIF TARGET < 0
+	RETURN 0
+;キャラ性格が8でないと駄目
+SIF CFLAG:600 != 8
+	RETURN 0
+;特殊ハーレムエンド用条件判定構文
+;XX内に条件とするキャラの性格タイプ番号を入れてXXXにキャラ数を入れると、好きな組み合わせのハーレムエンドを设定できる
+;ハーレムエンドの条件を満たしたとき、ここの特殊ハーレムエンドの条件も満たしている場合、ハーレムエンドから派生する
+;A = 0
+;B = 0
+;REPEAT CHARANUM
+;	IF NO:COUNT == XX || NO:COUNT == XX || NO:COUNT == XX || NO:COUNT == XX || NO:COUNT == XX
+;		SIF TALENT:COUNT:6 || TALENT:COUNT:7 || TALENT:COUNT:8
+;			A += 1
+;		SIF TALENT:COUNT:3 || TALENT:COUNT:4 || TALENT:COUNT:5 || TALENT:COUNT:6 || TALENT:COUNT:7 || TALENT:COUNT:8
+;			B += 1
+;	ENDIF
+;REND
+;SIF A && A+B >= XXX
+;	CFLAG:21 = 2
+;単体エンド用分岐フラグ、単体エンドのある进阶素质のみコメントアウトを解除する
+;SIF TALENT:相亲相爱
+;	CFLAG:21 = 1
+;SIF TALENT:娼妇
+;	CFLAG:21 = 1
+;SIF TALENT:隶属
+;	CFLAG:21 = 1
+;-------------------------------------------------
+;エンド本文
+;-------------------------------------------------
+@KOJO_MESSAGE_ENDING_K8
+;恋慕単体エンド
+;IF TALENT:相亲相爱 && CFLAG:21 == 1
+	;DRAWLINE
+	;PRINTFORMW …………
+	;PRINTFORMW ………
+	;PRINTFORMW ……
+	;PRINTFORMW 
+
+	;PRINTFORMW 
+	;PRINTFORMW 　　　　　　　　―― Ending No.111A (○○エンド)
+;淫乱単体エンド
+;ELSEIF TALENT:娼妇 && CFLAG:21 == 1
+	;DRAWLINE
+	;PRINTFORMW …………
+	;PRINTFORMW ………
+	;PRINTFORMW ……
+	;PRINTFORMW 
+
+	;PRINTFORMW 
+	;PRINTFORMW 　　　　　　　　―― Ending No.111B (○○エンド)
+;服从単体エンド
+;ELSEIF TALENT:隶属 && CFLAG:21 == 1
+	;DRAWLINE
+	;PRINTFORMW …………
+	;PRINTFORMW ………
+	;PRINTFORMW ……
+	;PRINTFORMW 
+
+	;PRINTFORMW 
+	;PRINTFORMW 　　　　　　　　―― Ending No.111C (○○エンド)
+;ENDIF
+
+;特殊ハーレムエンド
+;IF CFLAG:21 == 2
+	;DRAWLINE
+	;PRINTFORMW …………
+	;PRINTFORMW ………
+	;PRINTFORMW ……
+	;PRINTFORMW 
+
+	;PRINTFORMW 
+	;PRINTFORMW 　　　　　　　　―― Ending No.2X2 (○○エンド)
+;ENDIF
+
+;CALL GAME_CONTINUE
+;RETURN 0

@@ -1,0 +1,357 @@
+﻿@LUNCH_JUDGE
+TFLAG:14 = 0
+
+;この条件だと屋敷の中に仲の良い奴隶がいたら毒盛らないになってしまい、弱点握りイベントの仲の良い奴隶呼び出しが発生しない
+;とりあえず主人との相性が良ければ毒盛らないに变更しておいたけど本来の意図と違ったらゴメン
+;REPEAT CHARANUM
+;	;MASTERは除外
+;	SIF COUNT == 0
+;		CONTINUE
+;	;労役中などこの場にいないなら除外
+;	SIF CFLAG:COUNT:12 >= 1
+;		CONTINUE
+;	A = NO:COUNT
+;	SIF RELATION:A > 100
+;		B = COUNT
+;REND
+;IF B > 0
+
+A = NO:MASTER
+IF RELATION:A > 100
+	CALL LUNCH_SALE
+ELSE
+	IF (TALENT:3 == 0 && TALENT:6 == 0) && (MARK:3 >= 2 || ABL:0 < 5)
+		IF TALENT:55 && TALENT:37 == 0
+			IF RAND:2 == 0
+				CALL 中毒ED_LUNCH
+			ELSE
+				CALL LUNCH_SALE
+			ENDIF
+		ELSEIF (TALENT:11 || TALENT:34) && TALENT:37 == 0
+			IF RAND:3 == 0
+				CALL 中毒ED_LUNCH
+			ELSE
+				CALL LUNCH_SALE
+			ENDIF
+		ELSEIF TALENT:55 == 0 && TALENT:37
+			IF RAND:6 == 0
+				CALL 中毒ED_LUNCH
+			ELSE
+				CALL LUNCH_SALE
+			ENDIF
+		ELSE
+			IF RAND:4 == 0
+				CALL 中毒ED_LUNCH
+			ELSE
+				CALL LUNCH_SALE
+			ENDIF
+		ENDIF
+	ELSE
+		CALL LUNCH_SALE
+	ENDIF
+ENDIF
+
+RETURN 0
+@中毒ED_LUNCH
+;奴隶に弁当を作らせて売るオプション。
+;-------------------------------------------------
+;K = 料理の種類
+;L = 毒の種類
+;M = 毒の見抜きにくさ補正
+;N = 見破り補正
+;O = 学习之珠増加量
+;P = 固有料理の種類、乱数処理用
+;-------------------------------------------------
+K = RAND:16
+L = RAND:7
+M = 0
+N = 0
+
+;ABL:技巧をみる
+IF ABL:2 == 0
+	M = 1
+ELSE
+	M = ABL:2 + 1
+ENDIF
+
+;ABL:料理技能をみる
+IF ABL:12 == 0
+	TIMES M , 1.00
+ELSEIF ABL:12 == 1
+	TIMES M , 1.10
+ELSEIF ABL:12 == 2
+	TIMES M , 1.20
+ELSEIF ABL:12 == 3
+	TIMES M , 1.30
+ELSEIF ABL:12 == 4
+	TIMES M , 1.40
+ELSE
+	TIMES M , 1.50
+ENDIF
+
+;EXP:調理经验をみる
+IF EXP:61 < EXPLV:1
+	TIMES M , 1.00
+ELSEIF EXP:61 < EXPLV:2
+	TIMES M , 1.20
+ELSEIF EXP:61 < EXPLV:3
+	TIMES M , 1.40
+ELSEIF EXP:61 < EXPLV:4
+	TIMES M , 1.60
+ELSEIF EXP:61 < EXPLV:5
+	TIMES M , 1.80
+ELSE
+	TIMES M , 2.00
+ENDIF
+
+IF CFLAG:2404 == 1
+    PRINTL
+    PRINTFORML 房间里的%CALLNAME%被叫出来了
+    PRINTW
+    CFLAG:2404 = 0
+ELSEIF CFLAG:2414 == 1
+    C = 0
+    REPEAT CHARANUM
+        SIF CFLAG:COUNT:(NO:TARGET+3000) == 1
+            C = COUNT
+    REND
+    PRINTL
+    PRINTFORML 在%CALLNAME:C%房间里的%CALLNAME%被叫出来了
+    PRINTW
+    CFLAG:2414 = 0
+    CFLAG:C:(NO:TARGET+3000) = 0
+    CFLAG:C:2404 = 0
+ENDIF
+
+PRINTL      ･
+PRINTL      ･
+PRINTL      ･
+PRINTL      !
+PRINTW
+SIF CFLAG:TARGET:7022
+PRINTFORML 赤身裸体仅穿一条雪白围裙的%CALLNAME:TARGET%，在厨房忙碌着 
+PRINTFORM %CALLNAME:TARGET%下厨做了一些
+IF K == 0
+	PRINTL 饭团
+	M += 12
+ELSEIF K == 1 || K == 15
+	PRINT 咖喱
+	M += 10
+ELSEIF K == 2 || K == 14
+	PRINT 炖菜
+	M += 8
+ELSEIF K == 3 || K == 13
+	PRINT 点心
+	M += 6
+ELSEIF K == 4 || K == 12
+	PRINT 面包
+	M += 6
+ELSEIF K == 5 || K == 11
+	PRINT 沙拉
+	M += 4
+ELSEIF K == 6 || K == 10
+	PRINT 便当
+	M += 4
+ELSE
+	PRINT 汤
+	M += 2
+ENDIF
+M += RAND:4
+
+SIF TALENT:MASTER:55
+	TIMES M , 2.00
+SIF TALENT:MASTER:56
+	TIMES M , 2.00
+
+SIF MARK:3
+	M *= MARK:3
+SIF MARK:2
+	M /= MARK:2
+SIF ABL:6
+	M -= ABL:6
+SIF ABL:0
+	M -= ABL:0
+
+SIF M <= 4
+	M = 4
+
+PRINTFORMW 。
+PRINTL      ･
+PRINTL      ･
+PRINTL      ･
+PRINTL 
+PRINTL 好吧……毕竟是难得的作品。
+PRINTW 就心怀敬意地领受吧……
+;调和知识、药物抗性持ちまたは一定確率で引っかからない
+IF (!TALENT:MASTER:56 && !TALENT:MASTER:55 && RAND:M > 2) || (!TALENT:MASTER:5 && RAND:M > 4) || RAND:M > 6
+	K = 5
+	TFLAG:13 = 26
+	CALL KOJO_MESSAGE_EVENT
+	PRINTL …
+	PRINTL ……
+	PRINTL …………。
+	;禁断的知识ロスト
+	IF L == 0 && TALENT:MASTER:144
+		PRINTFORMW %CALLNAME:PLAYER%失去了【禁断的知识】
+		TALENT:MASTER:144 = 0
+	;施虐狂消滅
+	ELSEIF L == 1 && TALENT:MASTER:83
+		PRINTFORMW %CALLNAME:PLAYER%失去了【施虐狂】
+		TALENT:MASTER:83 = 0
+	;早泄消滅
+	ELSEIF L == 2 && TALENT:MASTER:152
+		PRINTFORMW %CALLNAME:PLAYER%失去了【绝伦】
+		TALENT:MASTER:152 = 0
+	;脏污无视消滅
+	ELSEIF L == 3 && TALENT:MASTER:64
+		PRINTFORMW %CALLNAME:PLAYER%失去了【脏污无视】
+		TALENT:MASTER:64 = 0
+	;疯癫付加
+	ELSEIF L == 4 && TALENT:MASTER:141 == 0
+		PRINTFORMW %CALLNAME:PLAYER%变成【疯癫】状态了
+		TALENT:MASTER:141 = 1
+	;魅力減少
+	ELSEIF L == 5 && FLAG:30 > 0
+		IF FLAG:30 >= 5
+			PRINTFORMW %CALLNAME:PLAYER%的魅力下降了
+			;FLAG:30 = 4
+			IF TALENT:MASTER:94
+				PRINTFORMW %CALLNAME:PLAYER%失去了【谜之魅力】
+				TALENT:MASTER:94 = 0
+			ENDIF
+		ELSE
+			PRINTFORMW %CALLNAME:PLAYER%的魅力下降了
+			;FLAG:30 -= 1
+		ENDIF
+	;技巧減少
+	ELSEIF L == 6 && ABL:MASTER:2 > 0
+		PRINTFORMW %CALLNAME:PLAYER%的技巧下降了
+		ABL:MASTER:2 -= 1 + RAND:2
+		SIF ABL:MASTER:2 < 0
+			ABL:MASTER:2 = 0
+	;体力減少
+	ELSE
+		PRINTFORM %CALLNAME:PLAYER%消耗了
+		SIF K >= 4
+			PRINT 大量
+		PRINTW 体力
+		BASE:MASTER:0 -= 200 * (M/3)
+	ENDIF
+	BASE:MASTER:0 -= 75 * (RAND:5 + 1)
+ELSE
+	PRINTL      ･
+	PRINTL      ･
+	PRINTL      ･
+	PRINTL      !
+	PRINTFORMW %PLAYER_NAME()%看出食物里被下毒了
+	;弱点を握るイベント発生判定用
+	B = 0
+	C = 0
+	REPEAT CHARANUM
+		;MASTERは除外
+		SIF COUNT == MASTER
+			CONTINUE
+		;労役中などこの場にいないなら除外
+		SIF CFLAG:COUNT:12 >= 1
+			CONTINUE
+		;助手可能、顺从Lv4以上、屈服刻印Lv3、弱点、恋慕系素質のどれかを持っている必要がある
+		SIF ABL:COUNT:0 < 4 && MARK:COUNT:2 < 3 && TALENT:COUNT:37 == 0 && TALENT:COUNT:85 == 0 && TALENT:COUNT:86 == 0 && TALENT:COUNT:88 == 0 && TALENT:COUNT:89 == 0
+			CONTINUE
+		;上の条件を満たすキャラを奴隶の中からピックアップし、调教对象との相性を見比べる
+		;ここで调教对象と相性のいいキャラがピックアップされ、2/3の確率で
+		;(鬼畜な主人によって)调教对象の毒入り料理を食べさせるように仕向けられる
+		A = NO:COUNT
+		SIF RELATION:A < 100
+			CONTINUE
+		IF RELATION:A > RELATION:B && (C == 0 || RAND:3 > 0)
+			B = NO:COUNT
+			C = COUNT
+		ENDIF
+	REND
+	IF C > 0 && RAND:3 > 0
+		K = 6
+		TFLAG:13 = 26
+		CALL KOJO_MESSAGE_EVENT
+
+		M += 12
+		IF TALENT:37 == 0
+			IF RAND:3 == 0
+				PRINTFORMW 成功掌握了%NAME:TARGET%的【弱点】。
+				TALENT:37 = 1
+				TIMES M , 2.00
+			ENDIF
+		ENDIF
+		JUEL:6 += M*8
+		PRINTFORML %PALAMNAME:7%之珠＋{M*8}
+		SIF TALENT:10
+			M *= 2
+		SIF TALENT:25
+			M -= 5
+		SIF TALENT:26
+			M += 10
+		SIF TALENT:22
+			M /= 2
+		SIF M <= 0
+			M = 0
+		IF M > 0
+			PRINTFORML %PALAMNAME:11%之珠(%PALAMNAME:100%之珠)＋{M*30}
+			JUEL:100 += M*30
+		ENDIF
+	ELSE
+		K = 7
+		TFLAG:13 = 26
+		CALL KOJO_MESSAGE_EVENT
+
+		JUEL:6 += M*5
+		PRINTFORML %PALAMNAME:7%之珠＋{M*5}
+		SIF TALENT:10
+			M *= 2
+		SIF TALENT:25
+			M -= 5
+		SIF TALENT:26
+			M += 10
+		SIF TALENT:22
+			M /= 2
+		SIF M <= 0
+			M = 0
+		IF M > 0
+			PRINTFORML %PALAMNAME:11%之珠(%PALAMNAME:100%之珠)＋{M*20}
+			JUEL:100 += M*20
+		ENDIF
+	ENDIF
+ENDIF
+
+
+P = ABL:12
+JUEL:7 += L * (P+1) * 4
+PRINTFORML %PALAMNAME:8%之珠＋{L*(P+1)*4}
+O = ABL:12 + (1 + RAND:5)
+PRINTFORML %EXPNAME:61% ＋{O}
+EXP:61 += O
+WAIT
+
+IF BASE:MASTER:0 <= 0 || (K == 5 && (TALENT:疯癫 || (FLAG:5 == 9 && ABL:MASTER:受虐属性 > 1) || (TALENT:施虐狂 && RAND:2 == 0)))
+	CALL ENDING_中毒ED
+ELSEIF K == 5 && TALENT:病娇 && !RAND:2
+	CALL ENDING_中毒ED
+ENDIF
+
+;休憩フラグを立てる
+FLAG:0 = 1
+BEGIN TURNEND
+RETURN 1
+
+;毒殺エンド
+@ENDING_中毒ED
+DRAWLINE
+SIF BASE:MASTER:0 <= 0
+	PRINTFORMW ―――%CALLNAME:PLAYER%的体力耗尽了―――
+PRINTL …………
+PRINTL ………
+PRINTL ……
+
+K = 8
+TFLAG:13 = 26
+CALL KOJO_MESSAGE_EVENT
+
+QUIT

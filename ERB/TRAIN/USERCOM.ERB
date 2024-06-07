@@ -1,0 +1,1048 @@
+﻿@SHOW_USERCOM
+;---------------------------------------
+;追加功能：FLAG:1501用于控制颜色开关
+;---------------------------------------
+A = 0
+Z = 0
+resetcolor
+DRAWLINE
+PRINTC 能力显示(奴隶)[800]
+CALL CHECK_NEWLINE
+PRINTC 污物显示[801]
+CALL CHECK_NEWLINE
+B = 11
+D = 0
+REPEAT 50
+	C = B+COUNT
+	;眼罩、口塞球、媚薬、利尿剂、摄像机、新妻PLAY、羞耻PLAY、强精神药使用時は除く
+	SIF C == 18
+		CONTINUE
+	SIF C == 20
+		CONTINUE
+	SIF C == 26
+		CONTINUE
+	SIF C == 27
+		CONTINUE
+	SIF C == 28
+		CONTINUE
+	SIF C == 30
+		CONTINUE
+	SIF C == 33
+		CONTINUE
+	SIF C == 34
+		CONTINUE
+	SIF TEQUIP:C
+		D = 1
+REND
+IF D == 0
+	PRINTC 着衣设定[802]
+	CALL CHECK_NEWLINE
+ENDIF
+IF ASSIPLAY
+	PRINTC 能力显示(助手)[803]
+	CALL CHECK_NEWLINE
+ELSE
+	PRINTC 能力显示(主人)[803]
+	CALL CHECK_NEWLINE
+ENDIF
+;IF (TALENT:PLAYER:137 || TALENT:PLAYER:139 || TALENT:PLAYER:140) || (TALENT:137 || TALENT:139 || TALENT:140)
+IF PENIS(PLAYER) || (!ASSIPLAY && ASSI > 0 && PENIS(ASSI))
+	IF ITEM:45 > 0
+		PRINTC 避孕套设定[804]
+		CALL CHECK_NEWLINE
+	ENDIF
+	PRINTC 自动射精设置[805]
+	CALL CHECK_NEWLINE
+ENDIF
+
+PRINTC 命令显示设置[807]
+CALL CHECK_NEWLINE
+
+IF FLAG:84 & 8
+    resetcolor
+    setcolor 100,100,100
+ELSE
+    IF FLAG:1501 == 1
+        resetcolor
+    ELSE
+        resetcolor
+        setcolor 252,161,244
+    ENDIF
+ENDIF
+PRINTC 性交系过滤[808]
+CALL CHECK_NEWLINE
+
+IF FLAG:84 & 32 || FLAG:84 & 128 || FLAG:84 & 256 || FLAG:84 & 1024
+    resetcolor
+    setcolor 100,100,100
+ELSE
+    IF FLAG:1501 == 1
+        resetcolor
+    ELSE
+        resetcolor
+        setcolor 073,125,255
+    ENDIF
+ENDIF
+PRINTC ＳＭ/严调/逆调系过滤[809]
+CALL CHECK_NEWLINE
+
+IF FLAG:84 & 4 || FLAG:84 & 512 || FLAG:84 & 2048
+    resetcolor
+    setcolor 100,100,100
+ELSE
+    IF FLAG:1501 == 1
+        resetcolor
+    ELSE
+        resetcolor
+        setcolor 161,252,188
+    ENDIF
+ENDIF
+PRINTC 道具/特殊/助手系过滤[810]
+CALL CHECK_NEWLINE
+
+resetcolor
+IF ASSI >= 0
+	IF ASSIPLAY && TEQUIP:25 == 0
+		PRINTC 换主人调教[900]
+		CALL CHECK_NEWLINE
+	ELSEIF TEQUIP:25 == 0 && TEQUIP:49 == 0 && TEQUIP:44 == 0 && TEQUIP:45 == 0 && TEQUIP:46 == 0 && TEQUIP:47 == 0 && TEQUIP:48 == 0
+		PRINTC 换助手调教[900]
+		CALL CHECK_NEWLINE
+	ENDIF
+ENDIF
+
+PRINTC 登入调教菜单[990]
+CALL CHECK_NEWLINE
+PRINTC 显示调教菜单[991]
+CALL CHECK_NEWLINE
+PRINTC 实行调教菜单[992]
+CALL CHECK_NEWLINE
+PRINTC 调教结束[999]
+
+
+
+
+IF PREVCOM >= 0
+	PRINTL 
+	PRINT ＜上次调教指令∶
+	PRINTS STR:0
+	SIF TFLAG:50
+		PRINT (助手)
+	PRINTL ＞
+ENDIF
+
+@USERCOM
+IF RESULT == 801
+	CALL STAIN_INFO
+	RETURN 1
+ELSEIF RESULT == 800
+	T = TARGET
+	CALL SHOW_INFO
+	PRINTL ----------------------------------------------------------------
+	PRINTW
+	CALL SHOW_EQUIP
+	RETURN 1
+ELSEIF RESULT == 802 && D == 0
+	CALL CLOTHES_CHANGE
+	RETURN 1
+ELSEIF RESULT == 804 && ((TALENT:PLAYER:137 || TALENT:PLAYER:139 || TALENT:PLAYER:140) || (TALENT:137 || TALENT:139 || TALENT:140)) && ITEM:45 > 0
+	CALL CONDOM_SETTING
+	RETURN 1
+ELSEIF RESULT == 805 && ((TALENT:PLAYER:137 || TALENT:PLAYER:139 || TALENT:PLAYER:140) || (TALENT:137 || TALENT:139 || TALENT:140))
+	CALL SAMENPLACE_SETTING
+	RETURN 1
+ELSEIF RESULT == 803
+	PRINTSL NAME:PLAYER
+	T = PLAYER
+	CALL SHOW_INFO
+	WAIT
+	RETURN 1
+ELSEIF RESULT == 807
+	CALL COMMAND_CONTROL
+	RETURN 1
+ELSEIF RESULT == 808
+    IF FLAG:84 & 8
+        FLAG:84 -= 8
+        CLEARBIT FLAG:95 ,0
+        CLEARBIT FLAG:95 ,1
+    ELSE
+        FLAG:84 |= 8
+        SETBIT FLAG:95 ,0
+        SETBIT FLAG:95 ,1
+        Z = 1
+    ENDIF
+ELSEIF RESULT == 809
+    IF FLAG:84 & 32 || FLAG:84 & 128 || FLAG:84 & 256 || FLAG:84 & 1024
+        FLAG:84 &= 607
+    ELSE
+        FLAG:84 |= 1440
+    ENDIF
+    Z = 1
+ELSEIF RESULT == 810
+    IF FLAG:84 & 4 || FLAG:84 & 512 || FLAG:84 & 2048
+        FLAG:84 &= 1467
+    ELSE
+        FLAG:84 |= 2628
+    ENDIF
+    Z = 1
+ELSEIF RESULT == 900 && ASSI >= 0 && TEQUIP:25 == 0 && TEQUIP:49 == 0 && TEQUIP:44 == 0 && TEQUIP:45 == 0 && TEQUIP:46 == 0 && TEQUIP:47 == 0 && TEQUIP:48 == 0
+	IF ASSIPLAY
+		ASSIPLAY = 0
+		PLAYER = MASTER
+	ELSE
+		ASSIPLAY = 1
+		PLAYER = ASSI
+	ENDIF
+	;女主人→男奴隶调教指令の表示調整
+	IF !MALE(PLAYER) && TALENT:男性
+		TFLAG:54 = 1
+	ELSE
+		TFLAG:54 = 0
+	ENDIF
+	RETURN 1
+ELSEIF RESULT == 990
+	CALL COMSEQ_REGISTER
+	RETURN 1
+ELSEIF RESULT == 991 
+	DRAWLINE
+	CALL COMSEQ_SHOW
+	DRAWLINE
+	WAIT
+	RETURN 1
+ELSEIF RESULT == 992 
+	CALL COMSEQ_TRAIN
+ELSEIF RESULT == 999
+    ;化形、体型素质返还
+    SIF CFLAG:620 == 1
+        TALENT:羽翅 = 1
+    SIF CFLAG:621 == 1
+        TALENT:骨翅 = 1
+    SIF CFLAG:622 == 1
+        TALENT:蝠翼 = 1
+    SIF CFLAG:623 == 1
+        TALENT:虫翼 = 1
+    SIF CFLAG:624 == 1
+        TALENT:鱼尾 = 1
+    SIF CFLAG:625 == 1
+        TALENT:蛇尾 = 1
+    SIF CFLAG:626 == 1
+        TALENT:手爪 = 1
+    SIF CFLAG:627 == 1
+        TALENT:足爪 = 1
+    SIF CFLAG:628 == 1
+        TALENT:多足 = 1
+    SIF CFLAG:629 == 1
+        TALENT:触手 = 1
+    SIF CFLAG:630 == 1
+        TALENT:马身 = 1
+    SIF CFLAG:631 == 1
+        TALENT:小人体型 = 1
+    SIF CFLAG:632 == 1
+        TALENT:巨大体型 = 1
+    SIF CFLAG:633 == 1
+        TALENT:无形体 = 1
+    CFLAG:620 = 0
+    CFLAG:621 = 0
+    CFLAG:622 = 0
+    CFLAG:623 = 0
+    CFLAG:624 = 0
+    CFLAG:625 = 0
+    CFLAG:626 = 0
+    CFLAG:627 = 0
+    CFLAG:628 = 0
+    CFLAG:629 = 0
+    CFLAG:630 = 0
+    CFLAG:631 = 0
+    CFLAG:632 = 0
+    CFLAG:633 = 0
+    IF ASSIPLAY
+        ;化形、体型素质返还
+        SIF CFLAG:ASSI:620 == 1
+            TALENT:ASSI:羽翅 = 1
+        SIF CFLAG:ASSI:621 == 1
+            TALENT:ASSI:骨翅 = 1
+        SIF CFLAG:ASSI:622 == 1
+            TALENT:ASSI:蝠翼 = 1
+        SIF CFLAG:ASSI:623 == 1
+            TALENT:ASSI:虫翼 = 1
+        SIF CFLAG:ASSI:624 == 1
+            TALENT:ASSI:鱼尾 = 1
+        SIF CFLAG:ASSI:625 == 1
+            TALENT:ASSI:蛇尾 = 1
+        SIF CFLAG:ASSI:626 == 1
+            TALENT:ASSI:手爪 = 1
+        SIF CFLAG:ASSI:627 == 1
+            TALENT:ASSI:足爪 = 1
+        SIF CFLAG:ASSI:628 == 1
+            TALENT:ASSI:多足 = 1
+        SIF CFLAG:ASSI:629 == 1
+            TALENT:ASSI:触手 = 1
+        SIF CFLAG:ASSI:630 == 1
+            TALENT:ASSI:马身 = 1
+        SIF CFLAG:ASSI:631 == 1
+            TALENT:ASSI:小人体型 = 1
+        SIF CFLAG:ASSI:632 == 1
+            TALENT:ASSI:巨大体型 = 1
+        SIF CFLAG:ASSI:633 == 1
+            TALENT:ASSI:无形体 = 1
+        CFLAG:ASSI:620 = 0
+        CFLAG:ASSI:621 = 0
+        CFLAG:ASSI:622 = 0
+        CFLAG:ASSI:623 = 0
+        CFLAG:ASSI:624 = 0
+        CFLAG:ASSI:625 = 0
+        CFLAG:ASSI:626 = 0
+        CFLAG:ASSI:627 = 0
+        CFLAG:ASSI:628 = 0
+        CFLAG:ASSI:629 = 0
+        CFLAG:ASSI:630 = 0
+        CFLAG:ASSI:631 = 0
+        CFLAG:ASSI:632 = 0
+        CFLAG:ASSI:633 = 0
+    ENDIF
+	BEGIN AFTERTRAIN
+	RETURN 1
+ENDIF
+RETURN 0
+
+@SHOW_EQUIP
+T = TARGET
+CALL SHOW_INFO_JUEL
+IF PREVCOM >= 0
+	PRINT 上次调教指令∶
+	PRINTS STR:0
+	SIF TFLAG:50
+		PRINT (助手)
+	PRINTL 
+ENDIF
+;Omega發情期
+SIF 發情期 && TALENT:164
+	PRINTL [发情中]
+SIF TEQUIP:26
+	PRINTL [媚药效果生效中]
+SIF TEQUIP:27
+	PRINTL [利尿剂效果生效中]
+IF TEQUIP:34 == 1
+	PRINTL [强精神药抵抗中]
+ELSEIF TEQUIP:34 > 1
+	PRINTL [强精神药效果生效中]
+ENDIF
+
+SIF TEQUIP:28
+	PRINTFORML [视频拍摄中({TFLAG:70 - 1}/10)]
+SIF TEQUIP:29
+	PRINTL [野外PLAY中]
+SIF TEQUIP:30
+	PRINTL [羞耻PLAY中]
+SIF TEQUIP:31
+	PRINTL [浴室PLAY中]
+SIF TEQUIP:33
+	PRINTL [新妻PLAY中]
+SIF TEQUIP:25
+	PRINTL [触手调教中]
+
+IF TEQUIP:13
+	IF TEQUIP:25
+		IF TEQUIP:13 == 3
+			PRINT [触手玩弄子宫中]
+		ELSEIF TEQUIP:13 == 2
+			PRINT [触手玩弄Ｇ点中]
+		ELSE
+			PRINT [触手插入中]
+		ENDIF
+	ELSE
+			PRINT [自慰棒装备中]
+	ENDIF	
+ENDIF
+
+IF TEQUIP:14 && TEQUIP:25
+	PRINTL [触手肛门插入中]
+ELSEIF TEQUIP:14
+	PRINTL [肛塞装备中]
+ENDIF
+
+IF TEQUIP:11 && TEQUIP:25
+	PRINTL [触手蹂躏阴蒂中]
+ELSEIF TEQUIP:11
+	PRINTL [阴蒂夹装备中]
+ENDIF
+
+IF TEQUIP:16 && TEQUIP:25
+	PRINTL [触手蹂躏胸部中]
+ELSEIF TEQUIP:16
+	PRINTL [振动乳头夹装备中]
+ENDIF
+IF TEQUIP:17 && TEQUIP:25
+	PRINTL [触手挤奶中]
+ELSEIF TEQUIP:17
+	PRINTL [挤奶器装备中]
+ENDIF
+SIF TEQUIP:24
+	PRINTL [乳房电极装备中]
+
+IF TEQUIP:12 && TEQUIP:25
+	PRINTL [触手玩弄阴茎中]
+ELSEIF TEQUIP:12
+	PRINTL [飞机杯装备中]
+ENDIF
+
+IF TEQUIP:32
+	PRINTL [淋浴使用中]
+ENDIF
+
+IF TEQUIP:19 && TEQUIP:25
+	PRINTL [触手紧缚中]
+ELSEIF TEQUIP:19
+	PRINTL [绳子紧缚中]
+ENDIF
+
+IF TEQUIP:21 && TEQUIP:25
+	PRINTL [触手灌肠中]
+ELSEIF TEQUIP:21
+	PRINTL [灌肠＋肛塞装备中]
+ENDIF
+
+SIF TEQUIP:36
+	PRINTL [触手凌辱口腔中]
+
+SIF TEQUIP:18
+	PRINTL [眼罩装备中]
+SIF TEQUIP:20
+	PRINTL [口塞球装备中]
+SIF TEQUIP:15
+	PRINTL [后庭拉珠装备中]
+SIF TEQUIP:22
+	PRINTL [扩张气球装备中]
+SIF TEQUIP:23
+	PRINTL [肛门电极装备中]
+SIF TEQUIP:37
+	PRINT [射精抑制中]
+IF TEQUIP:38 && TEQUIP:25
+	PRINT [触手尿道插入中]
+ELSEIF TEQUIP:38
+	PRINT [导尿管装备中]
+ENDIF
+SIF TEQUIP:39
+	PRINT [尿道气球装备中]
+SIF TEQUIP:40
+	PRINT [触手乳腺插入中]
+IF TEQUIP:41 && TEQUIP:42
+	PRINT [触手两穴产卵中]
+ELSEIF TEQUIP:41
+	PRINT [触手阴道产卵中]
+ELSEIF TEQUIP:42
+	PRINT [触手直肠产卵中]
+ENDIF
+SIF TEQUIP:43
+	PRINT [触手強制回复中]
+SIF TEQUIP:44
+	PRINT [助手胸爱抚中]
+SIF TEQUIP:45
+	PRINT [助手手指插入中]
+SIF TEQUIP:46
+	PRINT [助手肛门爱抚中]
+SIF TEQUIP:47
+	PRINT [助手插入中]
+SIF TEQUIP:48
+	PRINT [助手肛门插入中]
+SIF TEQUIP:49 == 1
+	PRINT [助手阴蒂爱抚中]
+SIF TEQUIP:49 == 2
+	PRINT [助手阴茎爱抚中]
+SIF TEQUIP:51
+	PRINT [尾巴插入中]
+SIF TEQUIP:52
+	PRINT [尾巴A插入中]
+SIF TEQUIP:60
+	PRINT [逆推PLAY中]
+SIF EX:0
+	PRINTFORM Ｃ绝顶:{EX:0}回　
+SIF EX:1
+	PRINTFORM Ｖ绝顶:{EX:1}回　
+SIF EX:2
+	PRINTFORM Ａ绝顶:{EX:2}回　
+SIF EX:3
+	PRINTFORM Ｂ绝顶:{EX:3}回　
+SIF EX:4
+	PRINTFORM 　喷乳:{EX:4}回　
+SIF EX:5
+	PRINTFORM 　射精:{EX:5}回　
+SIF EX:0 || EX:1 || EX:2 || EX:3 || EX:4 || EX:5
+	PRINTL 
+WAIT
+
+@CONDOM_SETTING
+A = 0
+B = 0
+C = 0
+T = 0
+PRINTL 请选择进行避孕套设定的对象
+PRINTL  
+REPEAT 3
+	IF (TALENT:MASTER:137 || TALENT:MASTER:139 || TALENT:MASTER:140) && A == 0
+		PRINTFORM [{COUNT}] %CALLNAME:MASTER%
+		IF TEQUIP:MASTER:35 && (FLAG:98 & 4)
+			PRINTL (已穿戴、常备)
+		ELSEIF TEQUIP:MASTER:35
+			PRINTL (已穿戴)
+		ELSE
+			PRINTL (未穿戴)
+		ENDIF
+			A = 1
+	ELSEIF ASSI >= 0
+		IF (TALENT:ASSI:137 || TALENT:ASSI:139 || TALENT:ASSI:140) && B == 0
+			PRINTFORM [{COUNT}] %CALLNAME:ASSI%
+			IF TEQUIP:ASSI:35 && (FLAG:98 & 2)
+				PRINTL (已穿戴、常备)
+			ELSEIF TEQUIP:ASSI:35
+				PRINTL (已穿戴)
+			ELSE
+				PRINTL (未穿戴)
+			ENDIF
+			B = 1
+		ENDIF
+	ELSEIF (TALENT:137 || TALENT:139 || TALENT:140) && C == 0
+		PRINTFORM [{COUNT}] %CALLNAME:TARGET%
+		IF TEQUIP:TARGET:35 && (FLAG:98 & 1)
+			PRINTL (已穿戴、常备)
+		ELSEIF TEQUIP:TARGET:35
+			PRINTL (已穿戴)
+		ELSE
+			PRINTL (未穿戴)
+		ENDIF
+			C = 1
+	ENDIF
+REND
+PRINTL [100]返回
+$INPUT_LOOP
+INPUT
+IF RESULT == 0
+	IF A == 1
+		T = MASTER
+	ELSEIF B == 1
+		T = ASSI
+	ELSEIF C == 1
+		T = TARGET
+	ENDIF
+ELSEIF RESULT == 1
+	IF B == 1
+		T = ASSI
+	ELSEIF C == 1
+		T = TARGET
+	ENDIF
+ELSEIF RESULT == 2
+	T = TARGET
+ELSEIF RESULT == 100
+	RETURN 0
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+
+PRINTL 请进行避孕套的设定
+PRINTL  
+	PRINTFORM 设定对象：%CALLNAME:T%
+	IF TEQUIP:T:35
+		PRINT (已穿戴
+		IF (T == MASTER && (FLAG:98 & 4)) || (T == ASSI && (FLAG:98 & 2)) || (T == TARGET && (FLAG:98 & 1))
+			PRINTL 、常备)
+		ELSE
+			PRINTL )
+		ENDIF
+	ELSE
+		PRINTL (未穿戴)
+	ENDIF
+PRINTL [0]  总是戴避孕套
+PRINTL [1]  戴上避孕套
+PRINTL [2]  取下避孕套
+PRINTL [100]返回
+
+$INPUT_LOOP_2
+INPUT
+IF RESULT == 0
+	IF TEQUIP:T:35 == 0
+		ITEM:45 -= 1
+		TEQUIP:T:35 = 1
+	ENDIF
+	SIF T == MASTER
+		FLAG:98 |= 4
+	SIF T == ASSI
+		FLAG:98 |= 2
+	SIF T == TARGET
+		FLAG:98 |= 1
+	PRINTFORMW 让%CALLNAME:T%总是戴着避孕套
+ELSEIF RESULT == 1
+	IF TEQUIP:T:35 == 0
+		PRINTFORMW %CALLNAME:T%戴上了避孕套
+		ITEM:45 -= 1
+		TEQUIP:T:35 = 1
+	ELSEIF (T == MASTER && (FLAG:98 & 4)) || (T == ASSI && (FLAG:98 & 2)) || (T == TARGET && (FLAG:98 & 1))
+		PRINTFORMW 让%CALLNAME:T%总是不戴避孕套
+		SIF T == MASTER
+			FLAG:98 &= 3
+		SIF T == ASSI
+			FLAG:98 &= 5
+		SIF T == TARGET
+			FLAG:98 &= 6
+	ELSE
+		PRINTFORMW %CALLNAME:T%已经戴着避孕套了
+	ENDIF
+ELSEIF RESULT == 2
+	PRINTFORMW %CALLNAME:T%脱下了避孕套
+	SIF T == MASTER
+		FLAG:98 &= 3
+	SIF T == ASSI
+		FLAG:98 &= 5
+	SIF T == TARGET
+		FLAG:98 &= 6
+ELSEIF RESULT == 100
+	RETURN 0
+ELSE
+	GOTO INPUT_LOOP_2
+ENDIF
+
+
+@COMMAND_CONTROL
+$CONTROL
+DRAWLINE
+DRAWLINE
+
+PRINTL
+IF FLAG:1501 == 1
+    resetcolor
+ELSE
+    resetcolor
+    setcolor 254,183,191
+ENDIF
+PRINT [ 0]　爱抚系
+IF FLAG:84 & 1
+	PRINT				・・・・×
+ELSE
+	PRINT				・・・・○
+ENDIF
+
+PRINTL
+resetcolor
+PRINT [ 1]　日常系
+IF FLAG:84 & 2
+	PRINT				・・・・×
+ELSE
+	PRINT				・・・・○
+ENDIF
+PRINTL
+IF FLAG:1501 == 1
+    resetcolor
+ELSE
+    resetcolor
+    setcolor 161,252,188
+ENDIF
+PRINT [ 2]　道具系
+IF FLAG:84 & 4
+	PRINT				・・・・×
+ELSE
+	PRINT				・・・・○
+ENDIF
+PRINTL
+IF FLAG:1501 == 1
+    resetcolor
+ELSE
+    resetcolor
+    setcolor 221,225,210
+ENDIF
+PRINT [ 3]　性交系
+IF FLAG:84 & 8
+	PRINT				・・・・×
+ELSE
+	PRINT				・・・・○
+ENDIF
+PRINTL
+IF FLAG:1501 == 1
+    resetcolor
+ELSE
+    resetcolor
+    setcolor 252,161,244
+ENDIF
+PRINT [14]　阴道系
+IF GETBIT(FLAG:95, 0)
+	PRINT				・・・・×
+ELSE
+	PRINT				・・・・○
+ENDIF
+PRINTL
+IF FLAG:1501 == 1
+    resetcolor
+ELSE
+    resetcolor
+    setcolor 186,161,252
+ENDIF
+PRINT [15]　肛交系
+IF GETBIT(FLAG:95, 1)
+	PRINT				・・・・×
+ELSE
+	PRINT				・・・・○
+ENDIF
+PRINTL
+IF FLAG:1501 == 1
+    resetcolor
+ELSE
+    resetcolor
+    setcolor 252,210,161
+ENDIF
+PRINT [ 4]　侍奉系
+IF FLAG:84 & 16
+	PRINT				・・・・×
+ELSE
+	PRINT				・・・・○
+ENDIF
+PRINTL
+IF FLAG:1501 == 1
+    resetcolor
+ELSE
+    resetcolor
+    setcolor 130,183,228
+ENDIF
+PRINT [ 5]　ＳＭ系
+IF FLAG:84 & 32
+	PRINT				・・・・×
+ELSE
+	PRINT				・・・・○
+ENDIF
+PRINTL
+IF FLAG:1501 == 1
+    resetcolor
+ELSE
+    resetcolor
+    setcolor 073,125,255
+ENDIF
+PRINT [ 7]　严厉调教系
+IF FLAG:84 & 128
+	PRINT			・・・・×
+ELSE
+	PRINT			・・・・○
+ENDIF
+PRINTL
+IF FLAG:1501 == 1
+    resetcolor
+ELSE
+    resetcolor
+    setcolor 139,254,255
+ENDIF
+PRINT [ 8]　触手系
+IF FLAG:84 & 256
+	PRINT				・・・・×
+ELSE
+	PRINT				・・・・○
+ENDIF
+PRINTL
+IF FLAG:1501 == 1
+    resetcolor
+ELSE
+    resetcolor
+    setcolor 200,252,090
+ENDIF
+PRINT [ 9]　特殊系
+IF FLAG:84 & 512
+	PRINT				・・・・×
+ELSE
+	PRINT				・・・・○
+ENDIF
+PRINTL
+IF FLAG:1501 == 1
+    resetcolor
+ELSE
+    resetcolor
+    setcolor 252,147,090
+ENDIF
+PRINT [10]　逆调教系
+IF FLAG:84 & 1024
+	PRINT				・・・・×
+ELSE
+	PRINT				・・・・○
+ENDIF
+PRINTL
+IF FLAG:1501 == 1
+    resetcolor
+ELSE
+    resetcolor
+    setcolor 231,096,155
+ENDIF
+PRINT [11]　助手命令系
+IF FLAG:84 & 2048
+	PRINT			・・・・×
+ELSE
+	PRINT			・・・・○
+ENDIF
+PRINTL
+IF FLAG:1501 == 1
+    resetcolor
+ELSE
+    resetcolor
+    setcolor 255,073,108
+ENDIF
+PRINT [12]　重口系
+IF FLAG:84 & 4096
+	PRINT				・・・・×
+ELSE
+	PRINT				・・・・○
+ENDIF
+PRINTL 
+PRINTL 
+resetcolor
+SIF FLAG:84 != 8191
+	PRINTL [20]　全部关闭
+SIF FLAG:84 & 8191
+	PRINTL [25]　全部打开
+SIF (FLAG:84 & 32) == 0 || (FLAG:84 & 128) == 0 || (FLAG:84 & 256) == 0 || (FLAG:84 & 1024) == 0
+	PRINTL [30]　ＳＭ/严厉调教/触手/逆调教系关闭
+SIF FLAG:84 & 1440
+	PRINTL [35]　ＳＭ/严厉调教/触手/逆调教系打开
+SIF (FLAG:84 & 4) == 0 || (FLAG:84 & 512) == 0 || (FLAG:84 & 2048) == 0
+	PRINTL [40]　道具使用/特殊/助手命令系关闭
+SIF FLAG:84 & 2628
+	PRINTL [45]　道具使用/特殊/助手命令系打开
+PRINTL 
+PRINTL [90]　当前设定反选
+SIF FLAG:1501 == 0
+	PRINTL [50]　关闭颜色区分功能
+SIF FLAG:1501 == 1
+	PRINTL [55]　开启颜色区分功能
+PRINTL [100] 返回
+
+$INPUT_LOOP
+;Z = 0
+INPUT
+IF RESULT >= 0 && RESULT <= 15
+	IF RESULT == 0
+		PRINT 爱抚
+		IF FLAG:84 & 1
+			FLAG:84 -= 1
+		ELSE
+			FLAG:84 |= 1
+			Z = 1
+		ENDIF
+	ELSEIF RESULT == 1
+		PRINT 日常
+		IF FLAG:84 & 2
+			FLAG:84 -= 2
+		ELSE
+			FLAG:84 |= 2
+			Z = 1
+		ENDIF
+	ELSEIF RESULT == 2
+		PRINT 道具使用
+		IF FLAG:84 & 4
+			FLAG:84 -= 4
+		ELSE
+			FLAG:84 |= 4
+			Z = 1
+		ENDIF
+	ELSEIF RESULT == 3
+		PRINT 性交
+		IF FLAG:84 & 8
+			FLAG:84 -= 8
+			CLEARBIT FLAG:95 ,0
+			CLEARBIT FLAG:95 ,1
+		ELSE
+			FLAG:84 |= 8
+			SETBIT FLAG:95 ,0
+			SETBIT FLAG:95 ,1
+			Z = 1
+		ENDIF
+	ELSEIF RESULT == 4
+		PRINT 侍奉
+		IF FLAG:84 & 16
+			FLAG:84 -= 16
+		ELSE
+			FLAG:84 |= 16
+			Z = 1
+		ENDIF
+	ELSEIF RESULT == 5
+		PRINT ＳＭ
+		IF FLAG:84 & 32
+			FLAG:84 -= 32
+		ELSE
+			FLAG:84 |= 32
+			Z = 1
+		ENDIF
+	ELSEIF RESULT == 7
+		PRINT 严厉调教
+		IF FLAG:84 & 128
+			FLAG:84 -= 128
+		ELSE
+			FLAG:84 |= 128
+			Z = 1
+		ENDIF
+	ELSEIF RESULT == 8
+		PRINT 触手
+		IF FLAG:84 & 256
+			FLAG:84 -= 256
+		ELSE
+			FLAG:84 |= 256
+			Z = 1
+		ENDIF
+	ELSEIF RESULT == 9
+		PRINT 特殊
+		IF FLAG:84 & 512
+			FLAG:84 -= 512
+		ELSE
+			FLAG:84 |= 512
+			Z = 1
+		ENDIF
+	ELSEIF RESULT == 10
+		PRINT 逆调教
+		IF FLAG:84 & 1024
+			FLAG:84 -= 1024
+		ELSE
+			FLAG:84 |= 1024
+			Z = 1
+		ENDIF
+	ELSEIF RESULT == 11
+		PRINT 助手命令
+		IF FLAG:84 & 2048
+			FLAG:84 -= 2048
+		ELSE
+			FLAG:84 |= 2048
+			Z = 1
+		ENDIF
+	ELSEIF RESULT == 12
+		PRINT 重口
+		IF FLAG:84 & 4096
+			FLAG:84 -= 4096
+		ELSE
+			FLAG:84 |= 4096
+			Z = 1
+		ENDIF
+	ELSEIF RESULT == 14
+		PRINT 阴道
+		IF GETBIT(FLAG:95, 0)
+			CLEARBIT FLAG:95 ,0
+		ELSE
+			SETBIT FLAG:95 ,0
+			Z = 1
+		ENDIF
+	ELSEIF RESULT == 15
+		PRINT 后庭
+		IF GETBIT(FLAG:95, 1)
+			CLEARBIT FLAG:95 ,1
+		ELSE
+			SETBIT FLAG:95 ,1
+			Z = 1
+		ENDIF
+	ENDIF
+	SIF Z == 0
+		PRINTL 系指令全部显示
+	SIF Z == 1
+		PRINTL 系指令限制显示
+	GOTO CONTROL
+ELSEIF RESULT == 20
+	PRINTL 隐藏全部指令
+	FLAG:84 = 8191
+	SETBIT FLAG:95 ,0
+	SETBIT FLAG:95 ,1
+	GOTO CONTROL
+ELSEIF RESULT == 25
+	PRINTL 显示全部指令
+	FLAG:84 = 0
+	CLEARBIT FLAG:95 ,0
+	CLEARBIT FLAG:95 ,1
+	GOTO CONTROL
+ELSEIF RESULT == 30
+	PRINTL ＳＭ/严厉调教/触手/逆调教系指令隐藏显示
+			FLAG:84 |= 1440
+	GOTO CONTROL
+ELSEIF RESULT == 35
+	PRINTL ＳＭ/严厉调教/触手/逆调教系指令启用显示
+			FLAG:84 &= 607
+	GOTO CONTROL
+ELSEIF RESULT == 40
+	PRINTL 道具使用/特殊/助手命令系指令隐藏显示
+			FLAG:84 |= 2628
+	GOTO CONTROL
+ELSEIF RESULT == 45
+	PRINTL 道具使用/特殊/助手命令系指令启用显示
+			FLAG:84 &= 1467
+	GOTO CONTROL
+ELSEIF RESULT == 50
+    FLAG:1501 = 1
+    GOTO CONTROL
+ELSEIF RESULT == 55
+    FLAG:1501 = 0
+    GOTO CONTROL
+ELSEIF RESULT == 90
+	PRINTL 显示设定调换
+		IF FLAG:84 & 1
+			FLAG:84 -= 1
+		ELSE
+			FLAG:84 |= 1
+		ENDIF
+		IF FLAG:84 & 2
+			FLAG:84 -= 2
+		ELSE
+			FLAG:84 |= 2
+		ENDIF
+		IF FLAG:84 & 4
+			FLAG:84 -= 4
+		ELSE
+			FLAG:84 |= 4
+		ENDIF
+		IF FLAG:84 & 8
+			FLAG:84 -= 8
+		ELSE
+			FLAG:84 |= 8
+		ENDIF
+		IF FLAG:84 & 16
+			FLAG:84 -= 16
+		ELSE
+			FLAG:84 |= 16
+		ENDIF
+		IF FLAG:84 & 32
+			FLAG:84 -= 32
+		ELSE
+			FLAG:84 |= 32
+		ENDIF
+		IF FLAG:84 & 128
+			FLAG:84 -= 128
+		ELSE
+			FLAG:84 |= 128
+		ENDIF
+		IF FLAG:84 & 256
+			FLAG:84 -= 256
+		ELSE
+			FLAG:84 |= 256
+		ENDIF
+		IF FLAG:84 & 512
+			FLAG:84 -= 512
+		ELSE
+			FLAG:84 |= 512
+		ENDIF
+		IF FLAG:84 & 1024
+			FLAG:84 -= 1024
+		ELSE
+			FLAG:84 |= 1024
+		ENDIF
+		IF FLAG:84 & 2048
+			FLAG:84 -= 2048
+		ELSE
+			FLAG:84 |= 2048
+		ENDIF
+		IF FLAG:84 & 4096
+			FLAG:84 -= 4096
+		ELSE
+			FLAG:84 |= 4096
+		ENDIF
+		INVERTBIT FLAG:95 ,0
+		INVERTBIT FLAG:95 ,1
+	GOTO CONTROL
+ELSEIF RESULT == 100
+	RETURN 0
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+
+
+@CHECK_NEWLINE
+Z += 1
+IF Z == 3
+	PRINTL 
+	Z = 0
+ENDIF
+

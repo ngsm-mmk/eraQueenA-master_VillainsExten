@@ -1,0 +1,4824 @@
+﻿@EVENT_KX_COM_COMMON
+;-------------------------------------------------
+;调教指令の汎用口上、地の文の後に来るもの
+;-------------------------------------------------
+IF SELECTCOM == 0 && TEQUIP:触手 == 0
+	;今回は汎用状況説明文を表示させたくない場合：共通の地の文を呼び出す前にTFLAG:52 = 1と付け加える
+	;痛くて感じる余裕が無い（AかVに装着系がある）&受虐狂ではない、未陷落、反抗2以上
+	IF D == 1 && C:4 <= 2 && !TALENT:受虐狂 && ABL:受虐属性 < 3 && !KANRAKU(TARGET) && MARK:反抗刻印 > 1 && !RAND:3
+		IF !RAND:6
+		    PRINTFORM 「…请不要…碰%CSTR:0%…比起那个…快…拔…出去…！
+		ELSEIF !RAND:5
+		    PRINTFORM 「…别碰%CSTR:0%…而且…拔…拔出去…！
+		ELSEIF !RAND:4
+		    PRINTFORM 「…不要…碰%CSTR:0%…！比起那个…拔…快拔出去…！
+		ELSEIF !RAND:3
+		    PRINTFORM 「…请别…那样…拔…拔出去…！
+		ELSEIF !RAND:2
+		    PRINTFORM 「…别…别碰…！快点…呜…拔出去…！
+		ELSE
+		    PRINTFORM 「…住手…哈啊…快…拔出去…！
+		ENDIF
+		PRINTL
+		PRINT 　
+		CALL PANT_VOICE2()
+		PRINTL ｣
+		RETURN 0
+	;三箇所以上绝顶寸前、未陷落
+	ELSEIF C:4 == 4 && D == 0 && !KANRAKU(TARGET) && !RAND:2
+		;元気、軟派
+		IF CFLAG:600 == 1 || CFLAG:600 == 4
+			IF CFLAG:603
+				PRINTFORM 「等、等等…这么弄的话…受不…！
+			ELSE
+				PRINTFORM 「等、住手…这么弄…会…！
+			ENDIF
+		ELSEIF TALENT:反抗 || CFLAG:600 == 6
+			PRINTFORM 「咕、像…这样弄的话…可恶…！
+		ELSE
+			PRINTFORM 「不、不要…住手…呜…！
+		ENDIF
+		CALL PANT_VOICE2()
+		PRINTFORML ｣
+	 	RETURN 0
+	;T:300 == 1：今回の调教で初めて
+	ELSEIF T:300 == 1 && D < 2
+		;初めてこの指令を選んだ時＆全体感度がまだ低く、痛くない＆未陷落
+		IF CFLAG:300 == 0 && C:4 <= 1 && D == 0 && !KANRAKU(TARGET)
+			;元気、わがままタイプ　反抗刻印2未満
+			IF (CFLAG:600 == 1 || CFLAG:600 == 10) && MARK:反抗刻印 < 3
+				IF !RAND:3
+					PRINTFORML 「什、什么啊…那种触碰方式、好下流…！」
+				ELSEIF !RAND:2
+					PRINTFORML 「什、什么啊…不要动手动脚的、好讨厌的感觉…！」
+				ELSE
+					IF !RAND:4
+						PRINTFORML 「什、什么啊…那种摸法…真恶心…！」
+					ELSEIF !RAND:3
+						PRINTFORML 「什、什么啊…那种下流的手法…！」
+					ELSEIF !RAND:2
+						PRINTFORML 「什、什么啊…那种触碰方式…真够恶心的…！」
+					ELSE
+						PRINTFORML 「什、什么啊…不要动手动脚…超、下流的…！」
+					ENDIF
+				ENDIF
+			;軟派、ナルシー50%、不思議子50%　反抗刻印无
+			ELSEIF (CFLAG:600 == 4 || (CFLAG:600 == 12 && !RAND:2) || (CFLAG:600 == 13 && !RAND:2)) && !MARK:反抗刻印
+                PRINTFORM 「
+				SIF CFLAG:600 == 4
+					PRINTFORM 真、
+				PRINTFORM 真是有够
+				IF !RAND:4
+					PRINTFORM 工口的…手法呢…
+				ELSEIF !RAND:3
+					PRINTFORM 色情…的手法呢…
+				ELSEIF !RAND:2
+					PRINTFORM 下流的…手法呢…
+				ELSE
+					PRINTFORM 淫乱…啊…的手法呢…
+				ENDIF
+				IF (CFLAG:600 == 4 || CFLAG:600 == 12) && !MALE(PLAYER) && !TALENT:讨厌女人
+					IF !RAND:4
+						IF !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && (TALENT:胆怯 || TALENT:绅士 || TALENT:美人)
+							PRINTFORML 在这方面积极的女性…%CSTR:0%并不讨厌哦？」
+						ELSE
+							PRINTFORML %CSTR:0%并不讨厌…积极的女性哦？」
+						ENDIF
+					ELSEIF !RAND:3
+						PRINTFORML 其实…%CSTR:0%、并不讨厌积极的女性哦？」
+					ELSEIF !RAND:2
+						PRINTFORML 积极的女性、%CSTR:0%并不反感哦？」
+					ELSE
+						PRINTFORML 积极的女性…也还、可以接受哦？」
+					ENDIF
+				ELSE
+					PRINTFORML 」
+				ENDIF
+			;ショタ、不思議子　反抗刻印无 口交、阴茎爱抚されたことがない 胸爱抚
+			ELSEIF (CFLAG:600 == 11 || CFLAG:600 == 13) && !MARK:反抗刻印 && CFLAG:302 == 0 && T:302 <= 1 && CFLAG:307 == 0 && T:307 <= 1 && CFLAG:308 == 0 && T:308 <= 1 && CFLAG:313 == 0 && T:313 <= 1
+				IF !RAND:5
+					PRINTFORML 「%CSTR:1%在摸哪里？…嗯啊、很痒啊…」
+				ELSEIF !RAND:4
+					PRINTFORML 「这是在做什么？…嗯啊、很痒啊…」
+				ELSEIF !RAND:3
+					PRINTFORML 「干、干嘛？…嗯、呜…好痒…」
+				ELSEIF !RAND:2
+					PRINTFORML 「干、干什么？…这种、方式…好痒…」
+				ELSE
+					PRINTFORML 「%CSTR:1%在摸什么？…嗯、哈啊…好痒…」
+				ENDIF
+			;反抗強いもしくは俺様タイプ　温和や幼稚ではない
+			ELSEIF ((MARK:反抗刻印 >= 2 && MARK:屈服刻印 <= 2) || CFLAG:600 == 6 || TALENT:反抗) && CFLAG:600 != 2 && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && !ASSIPLAY
+				IF !RAND:5
+					PRINTFORML 「感觉很恶心啊，不要再摸来摸去了！」
+				ELSEIF !RAND:4
+					PRINTFORML 「很恶心啊，不要摸来摸去了！！」
+				ELSEIF !RAND:3
+					PRINTFORML 「好恶心，把%CSTR:1%的手拿开！！」
+				ELSEIF !RAND:2
+					PRINTFORML 「把%CSTR:1%那恶心的手拿开！」
+				ELSE
+					PRINTFORML 「好恶心…拿开%CSTR:1%的手！」
+				ENDIF
+			ELSE
+				IF !RAND:3
+					PRINTFORML 「怎、怎么了？　为什么要用那种奇怪的方式触摸…」
+				ELSEIF !RAND:2
+					PRINTFORML 「什、干什么啊？请不要这样…」
+				ELSE
+					IF !RAND:3
+						PRINTFORML 「这、这是在干什么？　动手动脚的…」
+					ELSEIF !RAND:2
+						PRINTFORML 「%CSTR:1%到底想做什么？　用这种毛毛的方式碰%CSTR:0%」
+					ELSE
+						PRINTFORML 「什、什么啊？不要用这么奇怪方式摸%CSTR:0%…」
+					ENDIF
+				ENDIF
+			ENDIF
+			;専用の台詞を書いて、汎用喘ぎを表示させたくない場合、台詞の最後にRETURN 0を付ける
+			RETURN 0
+		;もう選んだことあるが、今回の调教では初めてこの指令を選んだ時　＋未陷落
+		ELSEIF !KANRAKU(TARGET)
+			IF C:4 == 1 || (C:4 == 2 && ((PALAM_COMPARE(0) && C:0 > 0) || ((PALAM:3 + UP:3) >= (PALAM:1 + UP:1) && (PALAM:3 + UP:3) >= (PALAM:2 + UP:2) && (PALAM:3 + UP:3) >= (PALAM:0 + UP:0) && C:3 > 0))) && D == 0
+				;殆どか、あまり感じていない､反抗刻印 < 3　屈服刻印 < 3
+				IF (PALAM:0 + UP:0) < 500 && (PALAM:0 + UP:0) < 500 && MARK:反抗刻印 < 3 && MARK:屈服刻印 < 3
+					;俺様、腹黒、わがまま
+					IF !RAND:2 && (CFLAG:600 == 6 || CFLAG:600 == 7 || CFLAG:600 == 10)
+						IF !RAND:5
+							PRINTFORML 「这么想摸的话，就随%CSTR:1%高兴吧？」
+						ELSEIF !RAND:4
+							PRINTFORML 「这么想摸的话，就摸个痛快吧」
+						ELSEIF !RAND:3
+							PRINTFORML 「随%CSTR:1%怎么摸咯…」
+						ELSEIF !RAND:2
+							PRINTFORML 「反正都是要摸，就随%CSTR:1%高兴吧…」
+						ELSE
+							PRINTFORML 「如果%CSTR:1%能从这种行为获得快乐的话…」
+						ENDIF
+					;俺様、腹黒、理屈
+					ELSEIF CFLAG:600 == 6 || CFLAG:600 == 7 || CFLAG:600 == 9
+						IF !RAND:3
+							PRINTFORML 「难道乐在其中吗？真可悲呢…」
+						ELSEIF !RAND:2
+							PRINTFORML 「从这种行为中获得快乐了吗？真是可怜…」
+						ELSE
+							PRINTFORML 「在这种行为里得到快乐还真是令人同情呢…」
+						ENDIF
+					;ショタ、不思議
+					ELSEIF CFLAG:600 == 11 || CFLAG:600 == 13
+                        IF !RAND:3
+                            PRINTFORML 「唔～嗯…喂，这样摸很有趣吗？…%CSTR:0%只觉得痒哦，真无聊耶…」
+                        ELSEIF !RAND:2
+                            PRINTFORML 「唔～嗯…喂，这样摸很好玩吗？…除了痒什么都感觉不到，好没趣…」
+                        ELSE
+                            PRINTFORML 「唔～嗯…这种行为到底有什么乐趣呢？…完全搞不懂%CSTR:1%耶…」
+                        ENDIF
+					;元気、温和、軟派　50%
+					ELSEIF !RAND:2 && (CFLAG:600 == 1 || CFLAG:600 == 2 || CFLAG:600 == 4)
+						IF !RAND:3
+							PRINTFORML 「别再这样摸了好吗…」
+						ELSEIF !RAND:2
+							PRINTFORML 「能够住手吗…」
+						ELSE
+							PRINTFORML 「不要再这样摸了好吗…」
+						ENDIF
+					ELSE
+						IF !RAND:6
+							PRINTFORML 「…即使%CSTR:0%说不要…也是没用吧…」
+						ELSEIF !RAND:5
+							PRINTFORML 「…即使%CSTR:0%说别摸了…%CSTR:1%也不会停手吧…」
+						ELSEIF !RAND:4
+							PRINTFORML 「…即使让%CSTR:1%停手…也是毫无意义…」
+						ELSEIF !RAND:3
+							PRINTFORML 「…就算叫%CSTR:1%住手…也是没用的吧」
+						ELSEIF !RAND:2
+							PRINTFORML 「…就算让%CSTR:1%别摸了…%CSTR:1%也不会住手吧？」
+						ELSE
+							PRINTFORML 「…即使说不要…也没有意义吗…」
+						ENDIF
+					ENDIF
+					RETURN 0
+				ENDIF
+			ENDIF
+		ENDIF
+	;今回の调教で二回目以降、未陷落
+	ELSEIF !KANRAKU(TARGET) && (FLAG:7 == 2 || !RAND:2) && D < 2
+		IF C:4 == 1 || (C:4 == 2 && ((PALAM_COMPARE(0) && C:0 > 0) || ((PALAM:3 + UP:3) >= (PALAM:1 + UP:1) && (PALAM:3 + UP:3) >= (PALAM:2 + UP:2) && (PALAM:3 + UP:3) >= (PALAM:0 + UP:0) && C:3 > 0))) && D == 0
+			;殆どか、あまり感じていない､反抗刻印 < 3　屈服刻印 < 3
+			IF (PALAM:0 + UP:0) < 500 && (PALAM:0 + UP:0) < 500 && MARK:反抗刻印 < 3 && MARK:屈服刻印 < 3
+				;RETURN 0
+			;Cで少し感じ始めたか、感じてきている
+			ELSEIF ((PALAM:0 + UP:0) >= 500 && (PALAM:0 + UP:0) < 3000) && (PALAM:0 + UP:0) >= (PALAM:3 + UP:3)
+				IF MARK:反抗刻印 < 3 && MARK:屈服刻印 < 3
+					IF !RAND:3
+						PRINTFORML 「请、请不要这样…再这样下去…那里、会…！」
+					ELSEIF !RAND:2
+						PRINTFORML 「别、别再摸了…再、再这样下去…那里会…！」
+					ELSE
+						IF !RAND:3
+							PRINTFORML 「不…不要这样…再、再这样下去…那边……啊…！」
+						ELSEIF !RAND:2
+							PRINTFORML 「别再、摸了…会变得…奇怪…嗯…！」
+						ELSE
+							PRINTFORML 「再这样摸下去的话…啊啊…啊…！」
+						ENDIF
+					ENDIF
+					RETURN 0
+				ELSEIF MARK:反抗刻印 >= 2 && MARK:屈服刻印 < 3 && !ASSIPLAY
+					IF !RAND:3
+						PRINTFORM 「到此为…止…不要再…！
+					ELSEIF !RAND:2
+						PRINTFORM 「够了…别再…！
+					ELSE
+						PRINTFORM 「不要再…摸了…！
+					ENDIF
+					CALL PANT_VOICE2()
+					PRINTFORML ｣
+					RETURN 0
+				ENDIF
+			;Cで感じている
+			ELSEIF (PALAM:0 + UP:0) >= 3000 && (PALAM:0 + UP:0) >= (PALAM:3 + UP:3) && !ASSIPLAY
+				IF MARK:反抗刻印 == 3 && !ASSIPLAY
+					IF CFLAG:600 == 11 || TALENT:幼稚 || TALENT:幼儿／幼儿退行
+						IF !RAND:4
+							PRINTFORML 「好、好奇怪…%CSTR:0%不要变成这样！…都是%CSTR:1%…
+						ELSEIF !RAND:3
+							PRINTFORML 「%CSTR:0%、%CSTR:0%没有变成坏孩子…！…不是、%CSTR:0%的错…
+						ELSEIF !RAND:2
+							PRINTFORML 「%CSTR:0%根本不想变成这样…都是%CSTR:1%…
+						ELSE
+							PRINTFORML 「%CSTR:0%不想这样的啊…！…为什么…
+						ENDIF
+					ELSE
+						IF !RAND:4
+							PRINTFORML 「这样、仅仅是生理现象！…像%CSTR:1%这样的人…
+						ELSEIF !RAND:3
+							PRINTFORML 「这、仅仅只是生理现象而已！…才不是因为%CSTR:1%…
+						ELSEIF !RAND:2
+							PRINTFORML 「不过是生理现象而已！…可别太…呜…
+						ELSE
+							PRINTFORML 「这样的、仅仅是生理现象呀！…呜…都是%CSTR:1%…
+						ENDIF
+					ENDIF
+					PRINT 　
+					CALL PANT_VOICE2()
+					PRINTFORML ｣
+					RETURN 0
+				ELSEIF CFLAG:600 != 11 && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行
+					IF TALENT:反抗 || TALENT:自大 || TALENT:傲娇 || CFLAG:600 == 6 || CFLAG:600 == 7
+						IF !RAND:2 && !ASSIPLAY
+							PRINTFORM 「啊、%CSTR:1%别…别碰啊…！
+						ELSE
+							IF !RAND:3
+								PRINTFORM 「那里被这样摸的话，谁都会…
+							ELSEIF !RAND:2
+								PRINTFORM 「那里被这样摸的话，谁都会…
+							ELSE
+								PRINTFORM 「那里被这样摸的话，不管是谁都…
+							ENDIF
+						ENDIF
+					ELSE
+						IF !RAND:2
+							PRINTFORM 「别…再这样下去的话、已经…
+						ELSE
+							IF CFLAG:600 == 1 || CFLAG:600 == 4 || CFLAG:612
+								IF !RAND:2
+									PRINTFORM 「不行了…
+								ELSE
+									PRINTFORM 「不、不行了…
+								ENDIF
+							ELSE
+								PRINTFORM 「不要…
+							ENDIF
+							PRINTFORM 像这样的话…要、要去…
+						ENDIF
+					ENDIF
+					CALL PANT_VOICE2()
+					PRINTFORML ｣
+					RETURN 0
+				ENDIF
+			;Bで少し感じ始めたか、感じてきている
+			ELSEIF  (PALAM:3 + UP:3) >= 500 && (PALAM:3 + UP:3) < 3000
+				IF MARK:反抗刻印 == 3 && !ASSIPLAY
+					IF !RAND:3
+						PRINTFORML 「拜托、请住手吧…！」
+					ELSEIF !RAND:2
+						PRINTFORML 「不是叫%CSTR:1%不要再摸了吗！」
+					ELSE
+						IF !RAND:4
+							PRINTFORML 「别再摸了！」
+						ELSEIF !RAND:3
+							PRINTFORML 「不是叫%CSTR:1%、住手吗！」
+						ELSEIF !RAND:2
+							PRINTFORML 「都说了快住手，%CSTR:1%这…混蛋！」
+						ELSE
+							PRINTFORML 「所以说…住手啊！」
+						ENDIF
+					ENDIF
+					RETURN 0
+				ELSEIF !MARK:反抗刻印 && MARK:屈服刻印 < 3
+					IF !RAND:3
+						PRINTFORML 「…呜…很痒啊！请不要这样…」
+					ELSEIF !RAND:2
+						PRINTFORML 「呜…很痒啊！别这样！」
+					ELSE
+						IF !RAND:3
+							PRINTFORML 「呜…很痒啊！住手…」
+						ELSEIF !RAND:2
+							PRINTFORML 「…哈…呜、别再…！很痒啊…」
+						ELSE
+							PRINTFORML 「…呜…好痒！不要…」
+						ENDIF
+					ENDIF
+					RETURN 0
+				ENDIF
+			;Bで感じている
+			ELSE
+				IF MARK:反抗刻印 == 3
+					IF !RAND:3 && TALENT:男性
+						PRINTFORM 「男人的胸会有感觉什么的、
+						IF !RAND:2
+							PRINTFORML 根本不可能！」
+						ELSE
+							PRINTFORML …真是有够荒唐…！」
+						ENDIF
+					ELSEIF !RAND:2
+						PRINTFORML 「胸那里、…并没有感觉到什么…！」
+					ELSE
+						PRINTFORML 「胸、胸什么的根本、…一点感觉也没有！」
+					ENDIF
+					RETURN 0
+				ELSE
+					IF !RAND:4
+						PRINTFORM 「唔嗯…怎么会…胸部竟然…！
+					ELSEIF !RAND:3
+						PRINTFORM 「唔呜…胸部…！
+					ELSEIF !RAND:2
+						PRINTFORM 「不会吧…这算什么…胸部竟然…！
+					ELSE
+						PRINTFORM 「不可能…一定是错觉…胸部…！
+					ENDIF
+					CALL PANT_VOICE2()
+					PRINTFORML ｣
+					RETURN 0
+				ENDIF
+			ENDIF
+		;Ｃだけ绝顶寸前
+		ELSEIF C:0 == 4 && C:1 < 4 && C:2 < 4 && C:3 < 4 && D == 0
+			IF MARK:反抗刻印 >= 2 && MARK:屈服刻印 < 3 && !ASSIPLAY
+				IF !RAND:3
+					PRINTFORM 「不、不要！…请把手拿开…
+				ELSEIF !RAND:2
+					PRINTFORM 「不要…！…快住手…
+				ELSE
+					IF !RAND:4
+						PRINTFORM 「可恶！…快把手拿开…！
+					ELSEIF !RAND:3
+						PRINTFORM 「好、好恶心…！…把手放开…！
+					ELSEIF !RAND:2
+						PRINTFORM 「不…不要…！…快松手…！
+					ELSE
+						PRINTFORM 「%CSTR:0%讨厌那样…快松手…！
+					ENDIF
+				ENDIF
+				CALL PANT_VOICE2()
+				PRINTFORML ｣
+				RETURN 0
+			ELSE
+				IF CFLAG:601 == 3
+					PRINTFORM 「不好、已经…！
+				ELSEIF CFLAG:601 == 4
+					PRINTFORM 「不行了、快要…！
+				ELSE
+					PRINTFORM 「不、不行了…已经…！
+				ENDIF
+				CALL PANT_VOICE2()
+				PRINTFORML ｣
+				RETURN 0
+			ENDIF
+		ENDIF
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;2,口交
+;-------------------------------------------------
+IF SELECTCOM == 2 && D < 2
+	;今回は汎用状況説明文を表示させたくない場合：共通の地の文を呼び出す前にTFLAG:52 = 1と付け加える
+	IF T:302 == 1
+		;初めてこの指令を選んだ時＆感度がまだ低く、痛くない＆未陷落
+		IF CFLAG:302 == 0 && C:4 <= 1 && D == 0 && !KANRAKU(TARGET)
+			;50％、元気、わがままタイプ　反抗刻印2未満
+			IF !RAND:2 && (CFLAG:600 == 1 || CFLAG:600 == 10) && MARK:反抗刻印 < 3
+				IF !RAND:3
+					IF !RAND:2
+						PRINTFORML 「呜啊！？　不要舔那里啊！｣
+					ELSE
+						PRINTFORML 「呜咿—！？　不、不要舔那种地方！｣
+					ENDIF
+				ELSEIF !RAND:2
+					PRINTFORML 「呜哇！？　不可以舔…那种地方！｣
+				ELSE
+					IF !RAND:3
+						PRINTFORML 「呜啊！？　不要舔那种地方！｣
+					ELSEIF !RAND:2
+						PRINTFORML 「呜嗯！？　别舔那种地方！｣
+					ELSE
+						PRINTFORML 「呜啊！？　别舔那、那种地方！｣
+					ENDIF
+				ENDIF
+			;元気、わがまま、ショタタイプ、
+			ELSEIF (CFLAG:600 == 1 || CFLAG:600 == 10 || CFLAG:600 == 11) && MARK:反抗刻印 < 3
+				IF !RAND:3
+					PRINTFORML 「等等、啊…呀！？不要这样子舔那里啊！｣
+				ELSEIF !RAND:2
+					PRINTFORML 「等等…啊、呀！？那个地方、别、别这样舔…！｣
+				ELSE
+					IF !RAND:3
+						PRINTFORML 「等等、啊呀！？那个地方、别、别这样舔…！｣
+					ELSEIF !RAND:2
+						PRINTFORML 「等…哇啊！？　不要这样舔那种地方！｣
+					ELSE
+						PRINTFORML 「呜、哇啊！？　像这样舔那里什么的…不要…！｣
+					ENDIF
+				ENDIF
+			;軟派タイプ50％
+			ELSEIF CFLAG:600 == 4 && MARK:反抗刻印 < 3 && !RAND:2
+				IF !RAND:3
+					PRINTFORML 「等、等等…！算了，被这样服务也不错…｣
+				ELSEIF !RAND:2
+					PRINTFORML 「等、等等、算了…被这样服务也挺好！｣
+				ELSE
+					PRINTFORML 「等、都说了等一下…算了，随%CSTR:1%喜欢吧！」
+				ENDIF
+			;ショタタイプ、不思議タイプ、幼稚
+			ELSEIF (CFLAG:600 == 11 || CFLAG:600 == 13 || TALENT:幼稚 || TALENT:幼儿／幼儿退行) && MARK:反抗刻印 < 2
+				IF !RAND:4
+					IF CFLAG:610
+						PRINTFORML 「为什么要舔那种地方？　一点也不好吃哦？｣
+					ELSE
+						PRINTFORML 「为什么要舔那里呢？　完全不好吃吧？｣
+					ENDIF
+				ELSEIF !RAND:3
+					PRINTFORML 「为什么要舔那里？　难道其实很美味吗？｣
+				ELSEIF !RAND:2
+					PRINTFORML 「舔那里的原因是？　一点也不好吃哦？｣
+				ELSE
+					IF !RAND:3
+						PRINTFORML 「舔那种地方没什么意思吧？　因为完全不美味嘛？｣
+					ELSEIF !RAND:2
+						PRINTFORML 「为什么要舔那种地方？　难道其实很美味吗？｣
+					ELSE
+						PRINTFORML 「舔那种地方的原因是？　很好吃吗？｣
+					ENDIF
+				ENDIF
+			;胆怯、乐观、温和ﾀｲﾌﾟ、軟派ﾀｲﾌﾟ　
+			ELSEIF MARK:反抗刻印 < 2 && (TALENT:胆怯 || TALENT:乐观 || CFLAG:600 == 2 || CFLAG:600 == 4) && !TALENT:反抗 && !TALENT:自大 && !TALENT:缺乏感情 && CFLAG:600 != 6 && CFLAG:600 != 8
+				IF !RAND:3
+					PRINTFORML 「等等…别、该不会就这样咬下去吧？
+					PRINTFORML 　拜托了，请住手吧…｣
+				ELSEIF !RAND:2
+					PRINTFORML 「等等，可别这样咬下去啊…！ 会很痛的啊…」
+				ELSE
+					IF !RAND:4
+						PRINTFORML 「呜啊…不、不会这样咬下去吧？求%CSTR:1%了，不要这样…」
+					ELSEIF !RAND:3
+						PRINTFORML 「等等！不、不会这样咬下去吧？　拜托，不要这样…」
+					ELSEIF !RAND:2
+						PRINTFORML 「等等…别、不会这样咬下去吧？这真的不行，求%CSTR:1%了…」
+					ELSE
+						PRINTFORML 「等等，可别这样咬下去啊…！ 拜托了，请住手吧…」
+					ENDIF
+				ENDIF
+			ELSE
+				IF !RAND:5
+					PRINTFORML 「…呜…那个地方…请不要舔…｣
+				ELSEIF !RAND:4
+					PRINTFORML 「…呜…别舔…那种地方…啊…｣
+				ELSEIF !RAND:3
+					PRINTFORML 「…不…不要舔…那里…」
+				ELSEIF !RAND:2
+					PRINTFORML 「…不…不要舔…那种地方…」
+				ELSE
+					PRINTFORML 「…呜…别舔那里…啊…」
+				ENDIF
+			ENDIF
+			;専用の台詞を書いて、汎用喘ぎを表示させたくない場合、台詞の最後にRETURN 0を付ける
+			RETURN 0
+		;もう選んだことあるが、今回の调教では初めてこの指令を選んだ時
+		ELSE
+			;Ｃ系用　現在のパラで口上を分岐する
+			;痛くて感じる余裕が無い&受虐狂ではない
+			IF D >= 1 && C:4 <= 2 && TALENT:84 != 1 && ABL:9 < 3
+			;Ｃ責めメインの時
+			ELSEIF C:4 == 1 || (C:4 == 2 && PALAM_COMPARE(0) && C:0 > 0) && D == 0
+				;奴隶が男で、调教者の技巧が3以上のテ接吻ト（tmtmを弄る地の文が出る）
+				IF TALENT:140 && ABL:PLAYER:2 >= 3
+					;Ｃ責めメインの時　ショタタイプ、幼稚（幼儿／幼儿退行）　
+					IF MARK:反抗刻印 < 2 && MARK:屈服刻印 < 3 && (CFLAG:600 == 11 || TALENT:幼稚 || TALENT:幼儿／幼儿退行)
+						IF !RAND:3
+							PRINTFORML 「呀！不、不要这样…那里被这样弄…！很恶心啊…｣
+						ELSEIF !RAND:2
+							PRINTFORML 「呀啊！别、这样…那里被这样弄…！很讨厌的感觉…｣
+						ELSE
+							IF !RAND:2
+								PRINTFORML 「噫！不、不要…不要碰那种地方…！好恶心…｣
+							ELSE
+								PRINTFORML 「呀啊！不、不要…那里被这样弄…！好讨厌…｣
+							ENDIF
+						ENDIF
+						RETURN 0
+					ENDIF
+				;敬語ではない、反抗なキャラ
+				ELSEIF MARK:反抗刻印 > 2 && ((TALENT:反抗 && CFLAG:600 == 8) || CFLAG:600 == 6) && CFLAG:601 != 2
+					PRINTFORM 「…给%CSTR:0%记着…一定会杀了%CSTR:1%…
+					CALL PANT_VOICE2()
+					PRINTL ｣
+					RETURN 0
+				;紳士そうなキャラ（？）非子供　未陷落
+				ELSEIF MARK:屈服刻印 < 3 && !ASSIPLAY && (TALENT:贞操重视 || TALENT:性保守 || (CFLAG:601 == 2 && TALENT:绅士)) && CFLAG:600 != 11 && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行
+					IF !MALE(PLAYER) && !TALENT:讨厌女人
+                        IF !RAND:3
+                            PRINTFORML 「淑女不应该、做这么…不堪的事…｣
+                        ELSEIF !RAND:2
+                            PRINTFORML 「身为女性的话、就…就别做这么…不堪的事情…｣
+                        ELSE
+                            IF !RAND:3
+                                PRINTFORML 「身为女性、请…请不要做这么…不堪的事情…｣
+                            ELSEIF !RAND:2
+                                PRINTFORML 「身为女性的话、就别做、这么…不堪的事情…｣
+                            ELSE
+                                PRINTFORML 「作为女性…做这种事…是有失淑女礼仪的…」
+                            ENDIF
+                        ENDIF
+                    ELSEIF MALE(PLAYER) && TALENT:讨厌男人
+                        IF !RAND:3
+                            PRINTFORML 「对同性…做这种事…到底有什么意义…｣
+                        ELSEIF !RAND:2
+                            PRINTFORML 「请不要做这种…有违绅士礼仪…的行为…｣
+                        ELSE
+                            PRINTFORML 「这是为世所不容…的…行为…」
+                        ENDIF
+					RETURN 0
+					ENDIF
+				ENDIF
+			;Ｃだけ绝顶寸前
+			ELSEIF C:0 == 4 && C:1 < 4 && C:2 < 4 && C:3 < 4 && D == 0
+			ENDIF
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF !RAND:2 || FLAG:7 == 2
+		;Ｃ責めメインの時
+		IF C:4 == 1 || (C:4 == 2 && PALAM_COMPARE(0) && C:0 > 0) && D == 0
+			;殆どか、あまり感じていない
+			IF (PALAM:0 + UP:0) < 500
+				;未陷落、反抗も強くない時
+				IF !KANRAKU(TARGET) && MARK:反抗刻印 < 2 && (TALENT:无动于衷 || TALENT:缺乏感情)
+					PRINTFORML 「…就、就算一直舔那种地方…嗯…也没有…」
+					RETURN 0
+				ENDIF
+			ENDIF
+		ENDIF
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;4,舔肛
+;-------------------------------------------------
+IF SELECTCOM == 4 && D < 2
+	;今回は汎用状況説明文を表示させたくない場合：共通の地の文を呼び出す前にTFLAG:52 = 1と付け加える
+	IF T:304 == 1
+		;初めてこの指令を選んだ時＆感度がまだ低く、痛くない＆未陷落
+		IF CFLAG:304 == 0 && C:4 <= 1 && D == 0 && !KANRAKU(TARGET)
+			;幼稚、胆怯、ショタ、温和、
+			IF (TALENT:幼稚 || TALENT:胆怯 || CFLAG:600 == 2 || CFLAG:600 == 11) && MARK:反抗刻印 < 3
+				IF !RAND:3
+					PRINTFORML 「欸、那个地方、呜…不、请不要这样，很恶心啊…」
+				ELSEIF !RAND:2
+					PRINTFORML 「欸、那个地方、呜…别、别这样…好恶心…」
+				ELSE
+					PRINTFORML 「欸、那个地方好脏、呜…别、别舔…」
+				ENDIF
+				RETURN 0
+			;真面目そうなキャラ
+			ELSEIF !ASSIPLAY && MARK:屈服刻印 < 3 && (TALENT:贞操重视 || TALENT:性保守 || CFLAG:600 == 3 || (CFLAG:601 == 2 && TALENT:绅士)) && CFLAG:600 != 11 && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && !TALENT:缺乏感情
+				IF !RAND:4
+					PRINTFORML 「！？　呜、没、没搞错吧！？　居然舔、那个地方…！」
+				ELSEIF !RAND:3
+					PRINTFORML 「！？　呜、认、认真的吗！？　居然舔、那种地方…！」
+				ELSEIF !RAND:2
+					PRINTFORML 「！？　哈、哈啊…？%CSTR:1%、开玩笑的吧！？　竟然舔那种肮脏的地方…！」
+				ELSE
+					PRINTFORML 「！？　喂，等等、%CSTR:1%、来真的吗！？　那么脏的地方都舔得下去…！」
+				ENDIF
+				RETURN 0
+			;自大、俺様、腹黒
+			ELSEIF (TALENT:自大 || CFLAG:600 == 6 || CFLAG:600 == 7) && MARK:屈服刻印 < 3
+				IF !RAND:5
+					;もっと丁寧な敬語で喋りそうなキャラ
+					IF !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && CFLAG:600 != 10 && CFLAG:600 != 11 && (TALENT:胆怯 || ((TALENT:绅士 || TALENT:美人) && CFLAG:600 != 1)) && !TALENT:缺乏感情 && !ASSIPLAY
+						PRINTFORML 「居然喜欢舔屁股…真不愧是变态\@ MALE(PLAYER) ? 痴汉 # 痴女 \@、果然是这样没错…」
+					ELSE
+						PRINTFORML 「竟然舔那种地方舔得津津有味…%CSTR:1%这变态\@ MALE(PLAYER) ? # 痴女 \@、%CSTR:0%的判断果然没错…」
+					ENDIF
+				ELSEIF !RAND:4
+					PRINTFORML 「居然喜欢舔后面…真不愧是变态\@ MALE(PLAYER) ? 痴汉 # 痴女 \@、果然是这样没错…」
+				ELSEIF !RAND:3
+					PRINTFORML 「舔那种地方也能津津有味吗…%CSTR:1%这变态\@ MALE(PLAYER) ? # 痴女 \@、%CSTR:0%的判断果然没错…」
+				ELSEIF !RAND:2
+					PRINTFORML 「竟然舔那种地方舔得津津有味…%CSTR:1%这变态\@ MALE(PLAYER) ? # 痴女 \@、%CSTR:0%的判断果然没错…」
+				ELSE
+					PRINTFORML 「居然喜欢舔后面…不愧是变态\@ MALE(PLAYER) ? 痴汉 # 痴女 \@、果然是这样没错…」
+				ENDIF
+				RETURN 0
+			ENDIF
+		;もう選んだことあるが、今回の调教では初めてこの指令を選んだ時
+		ELSE
+			;舔肛用　現在のパラで口上を分岐する
+			;痛くて感じる余裕が無い&受虐狂ではない
+			IF D >= 1 && C:4 <= 2 && TALENT:84 != 1 && ABL:9 < 3
+			;Ａ責めメインの時
+			ELSEIF C:4 == 1 || (C:4 == 2 && (PALAM:2 + UP:2) >= (PALAM:1 + UP:1) && (PALAM:2 + UP:2) >= (PALAM:3 + UP:3) && (PALAM:2 + UP:2) >= (PALAM:0 + UP:0) && C:2 > 0) && D <= 1
+				;殆どか、あまり感じていない
+				IF (PALAM:2 + UP:2) < 500
+					;未屈服、非子供、非不思議子
+					IF MARK:屈服刻印 < 3 && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && CFLAG:600 != 11 && CFLAG:600 != 13
+						IF !RAND:3
+							IF !RAND:2
+								PRINTFORML 「真是无法理解的变态嗜好…｣
+							ELSE
+								PRINTFORML 「真是不可理喻的变态嗜好…｣
+							ENDIF
+						ELSEIF !RAND:2
+							PRINTFORML 「…这到底是什么变态的嗜好｣
+						ELSE
+							PRINTFORML 「真是无法理解的变态嗜好…让人浑身不适…｣
+						ENDIF
+						RETURN 0
+					ENDIF
+				;少し感じ始めたか、感じてきている
+				ELSEIF (PALAM:2 + UP:2) < 3000
+				;感じている
+				ELSE
+				ENDIF
+			;Ａだけ绝顶寸前
+			ELSEIF C:2 == 4 && C:1 < 4 && C:3 < 4 && C:0 < 4 && D == 0
+				IF KANRAKU(TARGET) != 2
+					IF !RAND:2
+						PRINTFORM 「再、再这样、舔下去的话…！
+					ELSE
+						PRINTFORM 「再、再这样舔的话、会…！
+					ENDIF
+					CALL PANT_VOICE2()
+					PRINTFORML ｣
+					RETURN 0
+				ENDIF
+			ENDIF
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF T:304 < 3 || FLAG:7 == 2
+		;舔肛用　現在のパラで口上を分岐する
+		;痛くて感じる余裕が無い&受虐狂ではない
+		IF D >= 1 && C:4 <= 2 && TALENT:84 != 1 && ABL:9 < 3
+		;Ａ責めメインの時
+		ELSEIF C:4 == 1 || (C:4 == 2 && (PALAM:2 + UP:2) >= (PALAM:1 + UP:1) && (PALAM:2 + UP:2) >= (PALAM:3 + UP:3) && (PALAM:2 + UP:2) >= (PALAM:0 + UP:0) && C:2 > 0) && D <= 1
+		;Ａだけ绝顶寸前
+		ELSEIF C:2 == 4 && C:1 < 4 && C:3 < 4 && C:0 < 4 && D == 0
+			IF KANRAKU(TARGET) != 2
+				IF !RAND:2
+					PRINTFORM 「不、不能再、舔下去了…！
+				ELSE
+					PRINTFORM 「不、不行，更深的地方…！
+				ENDIF
+				CALL PANT_VOICE2()
+				PRINTFORML ｣
+				RETURN 0
+			ENDIF
+		ENDIF
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;5,肛门爱抚
+;-------------------------------------------------
+IF SELECTCOM == 5 && !TEQUIP:触手
+	;今回は汎用状況説明文を表示させたくない場合：共通の地の文を呼び出す前にTFLAG:52 = 1と付け加える
+	IF T:305 == 1
+		;初めてこの指令を選んだ
+		IF CFLAG:304 == 0 && C:4 <= 1 && D == 0 && !KANRAKU(TARGET) && TALENT:后庭处子
+			;幼稚、胆怯、ショタ、温和、
+			IF (TALENT:幼稚 || TALENT:胆怯 || CFLAG:600 == 2 || CFLAG:600 == 11) && MARK:反抗刻印 < 3
+				IF !RAND:4
+					PRINTFORML 「呜、呜…很、痛啊…好难受…请、请不要这样…！」
+				ELSEIF !RAND:3
+					PRINTFORML 「呜、呜…很、痛…很讨厌…别、别这样啊…！」
+				ELSEIF !RAND:2
+					PRINTFORML 「呜、呜…好、痛啊…很恶心啊…不、不要这样…！」
+				ELSE
+					PRINTFORML 「呜、呜…好、痛啊…好难受…不、不要…！」
+				ENDIF
+				RETURN 0
+			;真面目そうなキャラ
+			ELSEIF MARK:屈服刻印 < 3 && (TALENT:贞操重视 || TALENT:性保守 || CFLAG:600 == 3 || (CFLAG:601 == 2 && TALENT:绅士)) && CFLAG:600 != 11 && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && !TALENT:缺乏感情
+				IF !RAND:4
+					PRINTFORML 「呜…不要把手指…插进、那个地方啊…啊！」
+				ELSEIF !RAND:3
+					PRINTFORML 「呜…那个地方、手…指、拔出去…啊！」
+				ELSEIF !RAND:2
+					PRINTFORML 「呜…不要把…手指插进、那种地方…！」
+				ELSE
+					PRINTFORML 「呜…那个地方、快把手指、拔出…去…！」
+				ENDIF
+				RETURN 0
+			;自大、俺様、腹黒
+			ELSEIF !ASSIPLAY && (TALENT:自大 || CFLAG:600 == 6 || CFLAG:600 == 7) && MARK:屈服刻印 < 3
+				IF !RAND:6
+					;もっと丁寧そうなキャラ
+					IF !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && CFLAG:600 != 10 && CFLAG:600 != 11 && (TALENT:胆怯 || ((TALENT:绅士 || TALENT:美人) && CFLAG:600 != 1)) && !TALENT:缺乏感情
+						PRINTFORML 「痛！好痛……呜啊、这是、在做什么？快拔出去…！」
+					ELSE
+						PRINTFORML 「咿！好痛……呜、%CSTR:1%、到底想干嘛！快抽出去！」
+					ENDIF
+				ELSEIF !RAND:5
+					PRINTFORML 「呜！很痛啊……可恶！这是在干什么！别碰那种地方！」
+				ELSEIF !RAND:4
+					PRINTFORML 「呜！好痛…可恶！到底想做什么…！不准再碰了！」
+				ELSEIF !RAND:3
+					PRINTFORML 「咿！好痛……呜、%CSTR:1%到底想做什么！…快拔出去！」
+				ELSEIF !RAND:2
+					PRINTFORML 「痛！好痛……呜、%CSTR:1%这是、在做什么？…把%CSTR:1%的手拿远点！」
+				ELSE
+					PRINTFORML 「呜！很痛啊……可恶！这是在干什么！…把%CSTR:1%的手拿远点！」
+				ENDIF
+				RETURN 0
+			;感度がまだ低く＆未陷落＆非子供、非不思議子
+			ELSEIF C:4 <= 1 && !KANRAKU(TARGET) && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && CFLAG:600 != 11 && CFLAG:600 != 13
+				IF !RAND:3
+					IF !RAND:2
+						PRINTFORML 「呜！…别、别这样摸…！」
+					ELSE
+						;もっと丁寧な敬語で喋りそうなキャラ
+						IF CFLAG:600 != 10 && (TALENT:胆怯 || ((TALENT:绅士 || TALENT:美人) && CFLAG:600 != 1))
+							PRINTFORML 「呜！…那里…不要、那里不是用来摸的啊…！」
+						ELSE
+							PRINTFORML 「呜！…那个…地方、不是用来摸的啊…！」
+						ENDIF
+					ENDIF
+				ELSEIF !RAND:2
+					PRINTFORML 「呜！…不要摸、那种地方…！」
+				ELSE
+					PRINTFORML 「呜！…那个、地方、别碰…！」
+				ENDIF
+				RETURN 0
+			ENDIF
+		;もう選んだことあるが、今回の调教では初めてこの指令を選んだ時
+		ELSE
+			;Ａ系用　現在のパラで口上を分岐する
+			;Ａ以外のところが痛くて感じる余裕が無い&受虐狂ではない
+			IF D >= 1 && C:4 <= 2 && TALENT:84 != 1 && ABL:9 < 3 && D:1 == 0
+			;Ａ責めメインの時
+			ELSEIF C:4 == 1 || (C:4 == 2 && (PALAM:2 + UP:2) >= (PALAM:1 + UP:1) && (PALAM:2 + UP:2) >= (PALAM:3 + UP:3) && (PALAM:2 + UP:2) >= (PALAM:0 + UP:0) && C:2 > 0) && D <= 1
+				;幼稚、胆怯、ショタ、温和、非服从
+				IF (PALAM:2 + UP:2) < 500 && D:1 && (TALENT:幼稚 || TALENT:胆怯 || CFLAG:600 == 2 || CFLAG:600 == 11) && MARK:反抗刻印 < 3 && KANRAKU(TARGET) != 3
+					IF !RAND:4
+						PRINTFORML 「呜、…痛、好痛啊…很难受啊…不要这样了…！」
+					ELSEIF !RAND:3
+						PRINTFORML 「呜、呜…痛、好痛啊…好难受啊…别、别再弄了…！」
+					ELSEIF !RAND:2
+						PRINTFORML 「咕、呜…好、好痛…一点都不舒服…不要了、不…！」
+					ELSE
+						PRINTFORML 「咕、呜…好、好痛…好难受…不、不要弄了…！」
+					ENDIF
+					RETURN 0
+				;非助手プ雷、主人女奴隶男、感度高くない、自大、俺様、腹黒　　未屈服
+				ELSEIF !ASSIPLAY && !MALE(PLAYER) && MALE(TARGET) && (PALAM:2 + UP:2) < 6000 && (TALENT:自大 || CFLAG:600 == 6 || CFLAG:600 == 7) && MARK:屈服刻印 < 2 && !TALENT:缺乏感情 && CFLAG:600 != 8
+					IF !RAND:7
+						PRINTFORML 「…可恶、玩男性的屁股…很愉快吗、真是个变态女…！」
+					ELSEIF !RAND:6
+						PRINTFORML 「…唔、啊…玩弄男人的屁股…就那么乐在其中吗…真是个变态女…！」
+					ELSEIF !RAND:5
+						PRINTFORML 「…唔、啊…玩弄男人的屁股…就那么乐在其中吗…%CSTR:1%这变态女…！」
+					ELSEIF !RAND:4
+						PRINTFORML 「…可恶、玩男性的屁股…很愉快吗、%CSTR:1%这变态女…！」
+					ELSEIF !RAND:3
+						PRINTFORML 「…从、玩弄男人的屁股里…得到乐趣…真是个变态女呢…！」
+					ELSEIF !RAND:2
+						PRINTFORML 「…从、玩弄男人的屁股里…得到乐趣…%CSTR:1%这变态痴女…！」
+					ELSE
+						PRINTFORML 「…玩弄男人的屁股…这种恶心的嗜好…很配%CSTR:1%这变态痴女呢…！」
+					ENDIF
+					RETURN 0
+				ENDIF
+			;Ａだけ绝顶寸前
+			ELSEIF C:2 == 4 && C:1 < 4 && C:3 < 4 && C:0 < 4 && D == 0
+			ENDIF
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF T:305 < 3 || FLAG:7 == 2
+		;Ａ系用　現在のパラで口上を分岐する
+		;Ａ以外のところが痛くて感じる余裕が無い&受虐狂ではない
+		IF D >= 1 && C:4 <= 2 && TALENT:84 != 1 && ABL:9 < 3 && D:1 == 0
+		;Ａ責めメインの時
+		ELSEIF C:4 == 1 || (C:4 == 2 && (PALAM:2 + UP:2) >= (PALAM:1 + UP:1) && (PALAM:2 + UP:2) >= (PALAM:3 + UP:3) && (PALAM:2 + UP:2) >= (PALAM:0 + UP:0) && C:2 > 0) && D <= 1
+			;Aが痛い　未陷落
+			IF D:1 && !KANRAKU(TARGET) && C:4 <= 1
+				;非子供、非不思議子、非温和、非胆怯
+				IF !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && CFLAG:600 != 11 && CFLAG:600 != 13 && !TALENT:胆怯
+					IF !RAND:4
+						PRINTFORML 「…不要再动了…%CSTR:0%都说了、啊？…呜…！
+						PRINTFORML 　这样…是不对的…到底、听见了没…%CSTR:1%别…」
+					ELSEIF !RAND:3
+						PRINTFORML 「…住手…叫%CSTR:1%住手…听见%CSTR:0%说的了吗？…呜…！
+						PRINTFORML 　果然…和%CSTR:1%合不来…根本就、不听人…说什么…」
+					ELSEIF !RAND:2
+						PRINTFORML 「…不是都说了…不要再、再做这种事了吗？…呜…！
+						PRINTFORML 　果然…和%CSTR:1%合不来…根本就、不听人话…」
+					ELSE
+						PRINTFORML 「…叫%CSTR:1%住手…完全就听不到吧？…呜…！
+						PRINTFORML 　这种事…根本就…喂、%CSTR:1%到底…有没有在听啊…」
+					ENDIF
+				ELSE
+					IF !RAND:3
+						PRINTFORML 「…明明这么…痛、却…！｣
+					ELSEIF !RAND:2
+						PRINTFORML 「…明明这么…痛、但…啊…！｣
+					ELSE
+						PRINTFORML 「…明明这么…痛、但是…却…！｣
+					ENDIF
+				ENDIF
+				RETURN 0
+			ENDIF
+		;Ａだけ绝顶寸前
+		ELSEIF C:2 == 4 && C:1 < 4 && C:3 < 4 && C:0 < 4 && D == 0
+		ENDIF
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;7,玩弄乳头
+;-------------------------------------------------
+IF SELECTCOM == 7 && D < 2
+	IF T:307 == 1
+		;初めて
+		IF CFLAG:307 == 0 && C:4 <= 1 && D == 0 && !KANRAKU(TARGET)
+			;真面目そうなキャラ
+			IF !ASSIPLAY && MALE(TARGET) && MARK:屈服刻印 < 3 && (TALENT:贞操重视 || TALENT:性保守 || CFLAG:600 == 3 || (CFLAG:601 == 2 && TALENT:绅士)) && CFLAG:600 != 11 && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && !TALENT:缺乏感情 && ABL:同性倾向 < 3
+				IF !RAND:5
+					PRINTFORML 「喂！…有没有搞错啊？%CSTR:0%可是男的！」
+				ELSEIF !RAND:4
+					PRINTFORML 「喂！…%CSTR:1%弄错对象了吧？%CSTR:0%可是男人！」
+				ELSEIF !RAND:3
+					PRINTFORML 「喂！…就算%CSTR:1%弄那种地方、身为男性的%CSTR:0%也不会有任何感觉的！」
+				ELSEIF !RAND:2
+					PRINTFORML 「喂！…%CSTR:1%一定是搞错了什么吧，%CSTR:0%是货真价实的男性！」
+				ELSE
+					PRINTFORML 「唔…！…%CSTR:1%在开玩笑吧…？触摸男性的那种地方…到底有什么意义」
+				ENDIF
+				RETURN 0
+			ENDIF
+		;RETURN 0
+		;今回の调教で初めて
+		ELSE
+			;Ｂ系用　現在のパラで口上を分岐する
+			;痛くて感じる余裕が無い&受虐狂ではない
+			IF D >= 1 && C:4 <= 2 && TALENT:84 != 1 && ABL:9 < 3
+			;Ｂ責めメインの時
+			ELSEIF C:4 == 1 || (C:4 == 2 && (PALAM:3 + UP:3) >= (PALAM:1 + UP:1) && (PALAM:3 + UP:3) >= (PALAM:2 + UP:2) && (PALAM:3 + UP:3) >= (PALAM:0 + UP:0) && C:3 > 0) && D == 0
+				;少し感じ始めたか、感じてきている　結構屈服、未陷落
+				IF !KANRAKU(TARGET) && (PALAM:3 + UP:3) < 3000 && MARK:屈服刻印 > 1  && MARK:屈服刻印 > MARK:反抗刻印 
+					IF !RAND:4
+						PRINTFORM 「啊…请轻一点…
+					ELSEIF !RAND:3
+						PRINTFORM 「请…温柔一点…
+					ELSEIF !RAND:2
+						PRINTFORM 「呜…不想被弄痛…
+					ELSE
+						PRINTFORM 「啊…请不要弄得太痛…
+					ENDIF
+					CALL PANT_VOICE2(1)
+					PRINTL 」
+					RETURN 0
+				ENDIF
+			;Ｂだけ绝顶寸前
+			ELSEIF C:3 == 4 && C:1 < 4 && C:2 < 4 && C:0 < 4 && D == 0
+			ENDIF
+		ENDIF
+	;二回目以降
+	ELSEIF T:307 < 3 || FLAG:7 == 2
+		;Ｂ系用　現在のパラで口上を分岐する
+		;痛くて感じる余裕が無い&受虐狂ではない
+		IF D >= 1 && C:4 <= 2 && TALENT:84 != 1 && ABL:9 < 3
+		;Ｂ責めメインの時
+		ELSEIF C:4 == 1 || (C:4 == 2 && (PALAM:3 + UP:3) >= (PALAM:1 + UP:1) && (PALAM:3 + UP:3) >= (PALAM:2 + UP:2) && (PALAM:3 + UP:3) >= (PALAM:0 + UP:0) && C:3 > 0) && D == 0
+		;Ｂだけ绝顶寸前
+		ELSEIF C:3 == 4 && C:1 < 4 && C:2 < 4 && C:0 < 4 && D == 0
+		ENDIF
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;8,胸爱抚
+;-------------------------------------------------
+IF SELECTCOM == 8 && TEQUIP:触手 == 0 && D < 2
+	IF T:308 == 1
+		;初めて
+		IF CFLAG:308 == 0 && C:4 <= 1 && D == 0
+			;そんなに感じてない 反抗強いもしくは俺様タイプ　温和や幼稚ではない
+			IF (PALAM:3 + UP:3) < 3000 && MARK:反抗刻印 >= 2 && MARK:屈服刻印 <= 2 && (MARK:反抗刻印 == 3 || CFLAG:600 == 6 || TALENT:反抗) && CFLAG:600 != 2 && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && !ASSIPLAY
+				IF !RAND:4
+					PRINTFORML 「别用那种恶心巴拉的方式摸来摸去！」
+				ELSEIF !RAND:3
+					PRINTFORML 「%CSTR:1%到底想做什么，别摸来摸去！」
+				ELSEIF !RAND:2
+					PRINTFORML 「别用那么恶心的摸法！」
+				ELSE
+					PRINTFORML 「太恶心了…好恶心！」
+				ENDIF
+				RETURN 0
+			ENDIF
+		;今回の调教で初めて
+		ELSE
+			IF C:4 == 1 || (C:4 == 2 && (PALAM:3 + UP:3) >= (PALAM:1 + UP:1) && (PALAM:3 + UP:3) >= (PALAM:2 + UP:2) && (PALAM:3 + UP:3) >= (PALAM:0 + UP:0) && C:3 > 0) && D == 0
+				;そんなに感じてない 反抗強いもしくは俺様タイプ　温和や幼稚ではない
+				IF (PALAM:3 + UP:3) < 3000 && MARK:反抗刻印 >= 2 && MARK:屈服刻印 <= 2 && (MARK:反抗刻印 == 3 || CFLAG:600 == 6 || TALENT:反抗) && CFLAG:600 != 2 && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && !ASSIPLAY
+					IF !RAND:4
+						PRINTFORML 「别用这种恶心人的方式碰%CSTR:0%！」
+					ELSEIF !RAND:3
+						PRINTFORML 「别用那种恶心的手法摸%CSTR:0%！」
+					ELSEIF !RAND:2
+						PRINTFORML 「浑身都起鸡皮疙瘩了…放手…！」
+					ELSE
+						PRINTFORML 「太恶心了，离%CSTR:0%远点！」
+					ENDIF
+					RETURN 0
+				;B感覚高くない、そんなに感じてない　屈服も反抗も高くない
+				ELSEIF ABL:Ｂ感觉 < 2 && (PALAM:3 + UP:3) < 3000 && MALE(TARGET) && MARK:屈服刻印 < 3 && MARK:反抗刻印 < 3 && ABL:同性倾向 < 3
+					;ショタ、不思議子　反抗刻印无
+					IF (CFLAG:600 == 11 || CFLAG:600 == 13 || TALENT:幼稚) && !MARK:反抗刻印
+						IF !RAND:4
+							PRINTFORML 「…这样摸%CSTR:0%的胸部很开心吗…？」
+						ELSEIF !RAND:3
+							PRINTFORML 「…这样摸%CSTR:0%的胸部有什么开心的…？」
+						ELSEIF !RAND:2
+							PRINTFORML 「…这样抚摸%CSTR:0%的胸部会觉得开心吗…？」
+						ELSE
+							PRINTFORML 「…这样抚摸%CSTR:0%的胸部难道很开心吗…？」
+						ENDIF
+					ELSE
+						IF !RAND:4
+							PRINTFORML 「…摸着男性的胸部有什么开心的？」
+						ELSEIF CFLAG:601 == 3
+							PRINTFORML 「…抚摸男性的胸部到底有什么开心的？」
+						ELSEIF !RAND:3
+							PRINTFORML 「…抚摸男性的胸部就这么有趣吗？」
+						ELSEIF !RAND:2
+							PRINTFORML 「…男人平坦的胸部…很好玩吗？」
+						ELSE
+							PRINTFORML 「…男人的胸部也没什么好玩的吧？」
+						ENDIF
+					ENDIF
+					RETURN 0
+				ENDIF
+			;Ｂだけ绝顶寸前
+			ELSEIF C:3 == 4 && C:1 < 4 && C:2 < 4 && C:0 < 4 && D == 0
+				;RETURN 0
+			ENDIF
+		ENDIF
+	;二回目以降
+	ELSEIF T:308 < 3 || FLAG:7 == 2
+		IF C:4 == 1 || (C:4 == 2 && (PALAM:3 + UP:3) >= (PALAM:1 + UP:1) && (PALAM:3 + UP:3) >= (PALAM:2 + UP:2) && (PALAM:3 + UP:3) >= (PALAM:0 + UP:0) && C:3 > 0) && D == 0
+		;Ｂだけ绝顶寸前
+		ELSEIF C:3 == 4 && C:1 < 4 && C:2 < 4 && C:0 < 4 && D == 0
+			;RETURN 0
+		ENDIF
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;11,自慰
+;-------------------------------------------------
+IF SELECTCOM == 11 && D < 2
+	;地の文@MESSAGE_COM11で追加の文章がある場合は、ここの汎用口上は使わないほうがいい。
+	IF TEQUIP:13 && TEQUIP:14 && ABL:4 >= 5 && ABL:5 >= 5 && ABL:3 >= 5 && ABL:6 >= 5 && PALAM:6 >= PALAMLV:4
+	ELSEIF TEQUIP:13 && ABL:4 >= 5 && ABL:3 >= 5 && ABL:6 >= 5 && PALAM:6 >= PALAMLV:4
+	ELSEIF TEQUIP:14 && ABL:5 >= 5 && ABL:3 >= 5 && ABL:6 >= 5 && PALAM:6 >= PALAMLV:4
+	ELSEIF ABL:15 >= 3 && ABL:3 >= 5 && ABL:6 >= 5 && PALAM:6 >= PALAMLV:4 && !RAND:2
+	ELSE
+		;今回の调教で初めて、绝顶寸前ではない
+		IF T:311 == 1 && C:4 <= 2 && C:0 < 4
+			;恋慕、傲娇　主人调教中　50％
+			IF TALENT:傲娇 && KANRAKU(TARGET) == 1 && !ASSIPLAY && !RAND:2 && ABL:露出癖 <= 2
+				IF !RAND:3
+					PRINTFORML 「让%CSTR:0%自己…自慰什么的……就、就算%CSTR:1%这么说…呜…」
+				ELSEIF !RAND:2
+					PRINTFORML 「就算、强迫%CSTR:0%……但、自…自慰…果然还是…」
+				ELSE
+					PRINTFORML 「自己做、怎么可能啊……就、就算%CSTR:1%这么说也…办不到…」
+				ENDIF
+				RETURN 0
+			;反抗无　非淫乱　害羞　非缺乏感情
+			ELSEIF !MARK:反抗刻印 && KANRAKU(TARGET) != 2 && !TALENT:缺乏感情 && TALENT:害羞 && ABL:露出癖 <= 2
+				IF !RAND:4
+					PRINTFORML 「果然、这样还是…太害羞了…请、请不要这样盯着%CSTR:0%…」
+				ELSEIF !RAND:3
+					PRINTFORML 「果然、这个样子…太丢人了…别、别这样盯着看…」
+				ELSEIF !RAND:2
+					PRINTFORML 「别、别那样盯着看…不要看%CSTR:0%…的这幅姿态…拜托了…」
+				ELSE
+					IF !RAND:4
+						PRINTFORML 「这样、果然…很奇怪啊…不、不要那样看着%CSTR:0%…呜…」
+					ELSEIF !RAND:3
+						PRINTFORML 「不行、这样实在是…太丢人了…别、别看…拜托…」
+					ELSEIF !RAND:2
+						PRINTFORML 「果然、这样还是…太害羞了…不要看%CSTR:0%…拜托…」
+					ELSE
+						PRINTFORML 「别、别那样盯着…太丢人了…好、好羞耻…」
+					ENDIF
+				ENDIF
+				RETURN 0
+			;真面目そうなキャラ、反抗无　非淫乱　非子供、非缺乏感情　露出癖1以下　
+			ELSEIF !MARK:反抗刻印 && KANRAKU(TARGET) != 2 && ABL:露出癖 <= 1 && (TALENT:贞操重视 || TALENT:性保守 || CFLAG:600 == 3) && CFLAG:600 != 11 && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && !TALENT:缺乏感情
+				IF !RAND:6
+					PRINTFORML 「…这副不由自主、沉溺于欲望的姿态…
+				ELSEIF !RAND:5
+					PRINTFORML 「…这副主动兴奋起来、沉溺于快感的样子…
+				ELSEIF !RAND:4
+					PRINTFORML 「…像、这样不由自主抚慰起自己的模样…
+				ELSEIF !RAND:3
+					PRINTFORML 「…为什么会、停不下来…这、
+				ELSEIF !RAND:2
+					PRINTFORML 「…一定是…哪里弄错了…为什么%CSTR:0%会…
+				ELSE
+					PRINTFORML 「…%CSTR:0%并没有忠实于…快感…但是手…停不下来…
+				ENDIF
+				PRINTFORML 　真是、毕生之耻辱…」
+				RETURN 0
+			;快Cパラ高くない　反抗无　屈服2以上　非淫乱　露出癖1以下　
+			ELSEIF C:0 < 3 && !MARK:反抗刻印 && MARK:屈服刻印 >= 2 && KANRAKU(TARGET) != 2 && ABL:露出癖 <= 1
+				IF !RAND:2
+					IF !RAND:4
+						IF !RAND:2
+							PRINTFORML 「像、像这样被盯着看，根本没办法…做不到的…｣
+						ELSE
+							PRINTFORML 「不行…只要一想到被、被视线盯着…就没办法…」
+						ENDIF
+					ELSEIF !RAND:3
+						PRINTFORML 「做不到、%CSTR:0%做不到在有人看着的情况下…呜…｣
+					ELSEIF !RAND:2
+						PRINTFORML 「果然是、不行的…有人的话…根本…｣
+					ELSE
+						PRINTFORML 「不行的…因为有人在场，所以…%CSTR:0%、做不到…｣
+					ENDIF
+				ELSE
+					IF !RAND:4
+						PRINTFORML 「…别这样…这样一直…盯着看…」
+					ELSEIF !RAND:3
+						PRINTFORML 「…请不要这样…这样一直…盯着%CSTR:0%…」
+					ELSEIF !RAND:2
+						PRINTFORML 「…不、不要…别看%CSTR:0%…」
+					ELSE
+						PRINTFORML 「…别看…不要看%CSTR:0%现在的样子…」
+					ENDIF
+				ENDIF
+				RETURN 0
+			ENDIF
+		ELSEIF T:311 > 1 || FLAG:7 == 2
+			;陷落済み　露出癖　3以上　ある程度感じている
+			IF KANRAKU(TARGET) && ABL:露出癖 >= 3 && !RAND:3 && C:0 > 1
+				;恋慕陷落
+				IF KANRAKU(TARGET) == 1 && !RAND:2 && !ASSIPLAY
+					IF !RAND:4
+						PRINTFORML 「哈、嗯…看啊、%MASTERNAME%…请一直看着%CSTR:0%现在的模样…」
+					ELSEIF !RAND:3
+						PRINTFORML 「哈啊…%MASTERNAME%…请看着、现在的%CSTR:0%…」
+					ELSEIF !RAND:2
+						PRINTFORML 「哈啊…%MASTERNAME%…请看、看着%CSTR:0%吧…永远…」
+					ELSE
+						PRINTFORML 「哈、嗯…%MASTERNAME%…看吧、看着%CSTR:0%的这幅姿态…视线不要移开…」
+					ENDIF
+				;服从陷落
+				ELSEIF KANRAKU(TARGET) == 3 && !RAND:2 && !ASSIPLAY
+					IF !RAND:4
+						PRINTFORML 「嗯、啊…%CSTR:3%…请更多、更多地注视着%CSTR:0%…」
+					ELSEIF !RAND:3
+						PRINTFORML 「哈、啊…%CSTR:3%…请看着、现在的%CSTR:0%…」
+					ELSEIF !RAND:2
+						PRINTFORML 「哈、嗯…%CSTR:0%是%CSTR:3%的东西，所以…请尽情地看着…」
+					ELSE
+						PRINTFORML 「嗯、啊…%CSTR:3%…还请…一直看着%CSTR:0%的样子…」
+					ENDIF
+				ELSE
+					IF !RAND:4
+						PRINTFORML 「哈啊…请再、多停留一会儿吧…%CSTR:3%的视线…」
+					ELSEIF !RAND:3
+						PRINTFORML 「嗯、唔…请一直看着…更多地注视着吧…这样的…%CSTR:0%…」
+					ELSEIF !RAND:2
+						PRINTFORML 「哈、嗯…再多看一点也、没有关系…」
+					ELSE
+						PRINTFORML 「啊、嗯…想要…更多的视线…」
+					ENDIF
+				ENDIF
+				RETURN 0
+			ENDIF
+		ENDIF
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;13,阴茎爱抚
+;-------------------------------------------------
+IF SELECTCOM == 13 && D < 2
+	IF T:313 == 1
+		;初めて&感度がまだ低く、痛いものが付いてない&未陷落
+		IF CFLAG:313 == 0 && C:4 <= 1 && D == 0 && !KANRAKU(TARGET)
+			;元気、わがままタイプ　反抗も屈服も低い　まだ口交されたことがない
+			IF (CFLAG:600 == 1 || CFLAG:600 == 10) && MARK:反抗刻印 < 3 && MARK:屈服刻印 < 2 && T:302 == 0 && CFLAG:302 == 0
+				IF !RAND:3
+					PRINTFORML 「喂、等等…%CSTR:1%在摸哪啊！？…快住手！」
+				ELSEIF !RAND:2
+					PRINTFORML 「喂、那种东西怎么可以…随便摸呢！？别这样！」
+				ELSE
+					IF !RAND:3
+						PRINTFORML 「突、突然就碰这种地方！？　禁止！」
+					ELSEIF !RAND:2
+						PRINTFORML 「到底在想什么啊？　不许再摸了！」
+					ELSE
+						PRINTFORML 「喂、这触感…不、不行！　不可以碰这种地方！」
+					ENDIF
+				ENDIF
+				RETURN 0
+			;軟派、ナルシー、不思議子　反抗刻印无　屈服无
+			ELSEIF (CFLAG:600 == 4 || CFLAG:600 == 12 || CFLAG:600 == 13) && !MARK:反抗刻印 && !MARK:屈服刻印
+				IF CFLAG:600 != 13
+					PRINT 「真、
+				ENDIF
+				IF !RAND:4
+					PRINTFORML 真的很大胆…呢…」
+				ELSEIF !RAND:3
+					PRINTFORML 真的很…大胆耶…」
+				ELSEIF !RAND:2
+					PRINTFORML 不愧是%CSTR:1%…足够大胆呢…」
+				ELSE
+					PRINTFORML 真不愧是…竟然做这种大胆的动作…」
+				ENDIF
+				RETURN 0
+			;反抗強いもしくは俺様タイプ　温和や子供ではない
+			ELSEIF ((MARK:反抗刻印 >= 2 && MARK:反抗刻印 > MARK:屈服刻印) || CFLAG:600 == 6 || TALENT:反抗) && CFLAG:600 != 2 && CFLAG:600 != 11 && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && !ASSIPLAY
+				IF MALE(PLAYER)
+					LOCALS = 痴汉
+				ELSE
+					LOCALS = 痴女
+				ENDIF
+				IF !RAND:4
+					PRINTFORML 「…不要随便摸来摸去的、%CSTR:1%这变态！」
+				ELSEIF !RAND:3
+					PRINTFORML 「…到底在摸哪儿啊、变态%LOCALS%」
+				ELSEIF !RAND:2
+					PRINTFORML 「…别摸不该摸的地方、变态%LOCALS%！」
+				ELSE
+					PRINTFORML 「…不要摸那里、变态%LOCALS%！」
+				ENDIF
+				RETURN 0
+			ENDIF
+		;今回の调教で初めて
+		ELSE
+			IF C:4 == 1 || (C:4 == 2 && PALAM_COMPARE(0) && C:0 > 0) && D == 0
+				;殆どか、あまり感じていない
+				;IF (PALAM:0 + UP:0) < 500
+				;	;RETURN 0
+				;少し感じ始めたか、感じてきている
+				IF (PALAM:0 + UP:0) < 3000
+					;反抗強い　温和や子供ではない
+					IF MARK:反抗刻印 >= 2 && MARK:反抗刻印 > MARK:屈服刻印 && CFLAG:600 != 2 && CFLAG:600 != 11 && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && !ASSIPLAY
+						IF MALE(PLAYER)
+							LOCALS = 痴汉
+						ELSE
+							LOCALS = 痴女
+						ENDIF
+						IF !RAND:4
+							PRINTFORML 「…不要动手动脚的、%CSTR:1%这变态！」
+						ELSEIF !RAND:3
+							PRINTFORML 「…别随便乱摸啊、変态%LOCALS%！」
+						ELSEIF !RAND:2
+							PRINTFORML 「…别随便乱摸啊、%CSTR:1%这变态！」
+						ELSE
+							PRINTFORML 「…不要动手动脚的、変态%LOCALS%！」
+						ENDIF
+						RETURN 0
+					ENDIF
+				;感じている
+				ELSE
+					;RETURN 0
+				ENDIF
+			;Ｃだけ绝顶寸前
+			ELSEIF C:0 == 4 && C:1 < 4 && C:2 < 4 && C:3 < 4 && D == 0
+				;RETURN 0
+			ENDIF
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF (T:313 > 1 && !RAND:3) || FLAG:7 == 2
+		IF C:4 == 1 || (C:4 == 2 && PALAM_COMPARE(0) && C:0 > 0) && D == 0
+			;殆どか、あまり感じていない
+			IF (PALAM:0 + UP:0) < 500
+				;RETURN 0
+			;少し感じ始めたか、感じてきている
+			ELSEIF (PALAM:0 + UP:0) < 3000
+				;RETURN 0
+			;感じている
+			ELSE
+				;屈服刻印1以下　傲娇気味
+				IF MARK:屈服刻印 < 2 && (TALENT:傲娇 || TALENT:自大) && !TALENT:缺乏感情
+					IF !RAND:6
+						PRINTFORML 「才、才不是因为喜欢而勃起的！把、手、拿开啊！都叫%CSTR:1%拿开了！
+					ELSEIF !RAND:5
+						PRINTFORML 「完全、没有觉得舒服…勃起是因为…生理反应而已！把%CSTR:1%的手拿开…！
+					ELSEIF !RAND:4
+						PRINTFORML 「才、才不是因为喜欢而勃起的！把、手、拿开…拿开啊！
+					ELSEIF !RAND:3
+						PRINTFORML 「完、完全不舒服…这只是…生理反应…！把手、拿开…拿开啊！
+					ELSEIF !RAND:2
+						PRINTFORML 「才、才不是因为喜欢而勃起的！生理反应而已！把%CSTR:1%的手拿开…！
+					ELSE
+						PRINTFORML 「完全没有…感觉、呢！把%CSTR:1%的手拿开…！
+					ENDIF
+					PRINT 　呜…
+					CALL PANT_VOICE2()
+					PRINTL 」
+					RETURN 0
+				ENDIF
+			ENDIF
+		;Ｃだけ绝顶寸前
+		ELSEIF C:0 == 4 && C:1 < 4 && C:2 < 4 && C:3 < 4 && D == 0
+			;RETURN 0
+		ENDIF	
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;14,アナニー
+;-------------------------------------------------
+IF SELECTCOM == 14 && D < 2
+	;地の文に合わせる　（绝顶寸前ではない）
+	IF (ABL:自慰成瘾 >= 3 || ABL:Ａ感觉 >= 5) && C:2 < 4 && !RAND:4
+		IF KANRAKU(TARGET) == 1
+			IF !RAND:2
+				PRINTFORML 「哈啊…呜唔…好棒…%MASTERNAME%…%MASTERNAME%…！」
+			ELSE
+				PRINTFORML 「哈啊…呜…好舒服…%MASTERNAME%…%MASTERNAME%…啊…！」
+			ENDIF
+		ELSE
+			IF !RAND:2
+				PRINTFORM 「啊、啊！…那里…好舒服…哈啊、啊、唔！…
+			ELSE
+				PRINTFORM 「嗯、啊！…那里…好棒ﾞ！…哈、唔、嗯啊！…
+			ENDIF
+			IF !RAND:2
+				PRINT 菊花
+			ELSEIF CFLAG:606 || CFLAG:601 == 4
+				PRINT 屁股里面
+			ELSE
+				PRINT 屁股小穴
+			ENDIF
+			IF !RAND:2
+				PRINTFORML 舒服得、要升天了！…」
+			ELSE
+				PRINTFORML 超、爽的！…」
+			ENDIF
+		ENDIF
+		RETURN 0
+	ELSE
+		IF T:466 == 1  && C:2 < 3
+			;屈服不足　傲娇　反抗　自大　
+			IF MARK:反抗刻印 && MARK:屈服刻印 < 3 && (TALENT:傲娇 || TALENT:反抗 || TALENT:自大)
+				IF !RAND:3
+					PRINTFORML 「唔…与其被别人摸…不如自己…」
+				ELSEIF !RAND:2
+					PRINTFORML 「唔…与其被别人摸…还是%CSTR:0%自己…」
+				ELSE
+					PRINTFORML 「可恶…与其让别人…不如%CSTR:0%自己…」
+				ENDIF
+				RETURN 0
+			;反抗无　非淫乱　不思議子
+			ELSEIF !MARK:反抗刻印 && KANRAKU(TARGET) != 2 && CFLAG:600 == 13 && ABL:露出癖 <= 2
+				IF !RAND:2
+					PRINTFORML 「呜、这样子、看着…呜、%CSTR:0%的身体…穴口已经张开了吗…？」
+				ELSE
+					PRINTFORML 「呜、不要这样、看着…呼、%CSTR:0%的…穴眼…打开了吗…？」
+				ENDIF
+				RETURN 0
+			;反抗无　非淫乱　害羞　非缺乏感情
+			ELSEIF !MARK:反抗刻印 && KANRAKU(TARGET) != 2 && !TALENT:缺乏感情 && TALENT:害羞 && ABL:露出癖 <= 2
+				IF !RAND:4
+					PRINTFORML 「这幅姿态…好羞耻…不、不要看…」
+				ELSEIF !RAND:3
+					PRINTFORML 「这个样子…太丢脸了…请、别看好吗…」
+				ELSEIF !RAND:2
+					PRINTFORML 「这副姿态…超级丢人、的…所以、别看…」
+				ELSE
+					IF !RAND:4
+						PRINTFORML 「这幅姿态…太害羞了…请不、不要看…」
+					ELSEIF !RAND:3
+						PRINTFORML 「这个样子…好羞耻…所以、别看…」
+					ELSEIF !RAND:2
+						PRINTFORML 「这个样子…超丢人…别、不要看…」
+					ELSE
+						PRINTFORML 「这幅姿态…实在是、不堪入目…请、别看好吗…」
+					ENDIF
+				ENDIF
+				RETURN 0
+			;真面目そうなキャラ、反抗1以下　未陷落　非子供、非缺乏感情　露出癖1以下　
+			ELSEIF MARK:反抗刻印 <= 1 && !KANRAKU(TARGET) && ABL:露出癖 <= 1 && (TALENT:贞操重视 || TALENT:性保守 || CFLAG:600 == 3) && CFLAG:600 != 11 && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && !TALENT:缺乏感情
+				IF !RAND:2
+					PRINTFORML 「…这种、亲手玩弄不洁之处…的丑态…呜…！」
+				ELSE
+					PRINTFORML 「…这种、亲自玩弄…污秽之处的、丑态…呜…！」
+				ENDIF
+				RETURN 0
+			ENDIF
+		ELSEIF T:466 < 3 || FLAG:7 == 2
+		ENDIF
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;20,接吻
+;-------------------------------------------------
+IF SELECTCOM == 20
+	IF T:314 == 1
+		;初めて＆「未陷落」＆绝顶寸前ではなく、痛くない
+		IF CFLAG:314 == 0 && !KANRAKU(TARGET) && C:4 <= 2 && D == 0
+			;真面目そうなキャラ、非子供、非缺乏感情
+			IF (TALENT:贞操重视 || TALENT:性保守 || CFLAG:600 == 3) && CFLAG:600 != 11 && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && !ASSIPLAY
+				IF !RAND:4
+					PRINTFORML 「…这应该是…恋人之间才做的事吧」
+				ELSEIF !RAND:3
+					PRINTFORML 「…这不是恋人间才做的事吗…？」
+				ELSEIF !RAND:2
+					PRINTFORML 「…这不是…和喜欢的人才能做的事吗？」
+				ELSE
+					PRINTFORML 「…这是恋人间才做的事吧」
+				ENDIF
+				RETURN 0
+			;傲娇、反抗、自大　非子供、
+			ELSEIF (TALENT:傲娇 || TALENT:反抗 || TALENT:自大) && CFLAG:600 != 11 && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && (NO:TARGET < 201 || NO:TARGET > 400) && !ASSIPLAY
+				IF !RAND:5
+					PRINTFORML 「……哎、为什么要和不喜欢的人接吻…」
+				ELSEIF !RAND:4
+					PRINTFORML 「……欸、为什么要被不喜欢的人亲啊…？」
+				ELSEIF !RAND:3
+					PRINTFORML 「……唉、为什么要和不喜欢的人接吻呢…？」
+				ELSEIF !RAND:2
+					PRINTFORML 「……欸、为什么要和不喜欢的人接吻…」
+				ELSE
+					PRINTFORML 「…唉、为什么要和不喜欢的人……」
+				ENDIF
+				RETURN 0
+			ENDIF
+		;今回の调教で初めて
+		ELSE
+			;恋慕陷落　绝顶直前ではない　助手プ雷ではない
+			IF KANRAKU(TARGET) == 1 && C:4 <= 2 && !ASSIPLAY && !RAND:2
+				;わがまま、ショタ、幼稚
+				IF CFLAG:600 == 10 || CFLAG:600 == 11 || TALENT:幼稚
+					IF !RAND:5
+						PRINTFORML 「…呼啊…还想要更多更多的…甜甜的吻…！」
+					ELSEIF !RAND:4
+						PRINTFORML 「…哈啊…给%CSTR:0%更多的亲吻吧！」
+					ELSEIF !RAND:3
+						PRINTFORML 「…呼啊…还想要更多的亲吻！」
+					ELSEIF !RAND:2
+						PRINTFORML 「…哈啊…还想要更多、更多的吻！」
+					ELSE
+						PRINTFORML 「…嗯啊…给%CSTR:0%更多吧…更多的吻！」
+					ENDIF
+				;傲娇　施虐狂　俺様タイプじゃない
+				ELSEIF TALENT:傲娇 && !TALENT:施虐狂 && CFLAG:600 != 6
+					IF !RAND:5
+						PRINTFORML 「…嗯…那个、能再来一次…不、没什么…」
+					ELSEIF !RAND:4
+						PRINTFORML 「…那…那个、可以再来…不、没什么…」
+					ELSEIF !RAND:3
+						PRINTFORML 「…那…那个、可以再来…没、没什么…」
+					ELSEIF !RAND:2
+						PRINTFORML 「…能…再来一、一次吗…不、没事…」
+					ELSE
+						PRINTFORML 「…嗯…那个、能再来一次…没、没什么…」
+					ENDIF
+				;小恶魔　不思議子
+				ELSEIF TALENT:小恶魔 || CFLAG:600 == 13
+					IF !RAND:4
+						PRINTFORML 「…嗯、啊…还想要…更多的吻…不行吗？」
+					ELSEIF !RAND:3
+						PRINTFORML 「…还想要…更多的吻呢…可以吗？」
+					ELSEIF !RAND:2
+						PRINTFORML 「…嗯、啊…给%CSTR:0%更多、更多的吻吧…可以吗？」
+					ELSE
+						PRINTFORML 「…嗯、啊…还想和%CSTR:2%再来一次这样的吻…可以吧？」
+					ENDIF
+				ELSE
+					IF !RAND:2
+						PRINTFORML 「…还…还不够…嗯嗯…啾…」
+					ELSE
+						PRINTFORML 「…还、还不…够…嗯嗯…啾…」
+					ENDIF
+				ENDIF
+				RETURN 0
+			;反抗&屈服2以下　温和、堅物、冷静、理屈
+			ELSEIF !ASSIPLAY && MARK:屈服刻印 < 3 && MARK:反抗刻印 < 3 && (CFLAG:600 == 2 || CFLAG:600 == 3 || CFLAG:600 == 8 || CFLAG:600 == 9) && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行
+				IF !RAND:4
+					PRINTFORML 「…不管被吻多少次…都是…没有用的…」
+				ELSEIF !RAND:3
+					PRINTFORML 「…无论接吻多少次…都是…没有用的…」
+				ELSEIF !RAND:2
+					PRINTFORML 「…不论吻多少次…%CSTR:0%的心都是…不会动摇的…」
+				ELSE
+					PRINTFORML 「…无论接吻多少次…这颗心也…不会动摇…」
+				ENDIF
+				RETURN 0
+			ENDIF
+		ENDIF
+	;今回の调教で二回目以降
+	ELSEIF T:314 < 3 || FLAG:7 == 2
+		;未陷落、屈服2以下
+		IF !KANRAKU(TARGET) && MARK:屈服刻印 < 3
+		ENDIF
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;40,跳蛋T:325　;41,电动按摩棒T:326　　;48,乳头跳蛋T:333　
+;-------------------------------------------------
+IF SELECTCOM == 40 || SELECTCOM == 41 || SELECTCOM == 48
+	;初めてこの三つの道具のどれかを使う時　绝顶寸前ではない　
+	IF !CFLAG:325 && !CFLAG:326 && !CFLAG:333 && ((SELECTCOM == 40 && T:325 == 1) || (SELECTCOM == 41 && T:326 == 1) || (SELECTCOM == 48 && T:333 == 1)) && C:4 <= 2
+		;未屈服　真面目or俺様or理屈or反抗強い　非幼稚　
+		IF MARK:屈服刻印 < 3 && (CFLAG:600 == 3 || CFLAG:600 == 6 || CFLAG:600 == 9 || MARK:反抗刻印 > 1) && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行
+			PRINTFORM 「用…这种道具、真卑鄙…
+			CALL PANT_VOICE2()
+			PRINTL 」
+			RETURN 0
+		;ショタ
+		ELSEIF CFLAG:600 == 11 || TALENT:幼稚 || TALENT:幼儿／幼儿退行
+			PRINTFORM 「什、什么、这种？奇怪的感觉…
+			CALL PANT_VOICE2()
+			PRINTL 」
+			RETURN 0
+		ENDIF
+	;今回の调教で初めて电动按摩棒を使う時
+	ELSEIF SELECTCOM == 41 && T:326 == 1
+		;反抗2以下　淫乱、服从陷落ではない　非ショタ
+		IF MARK:反抗刻印 < 3 && KANRAKU(TARGET) <= 1 && CFLAG:600 != 11 && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行
+			IF !RAND:2
+				PRINTFORM 「别、别做这种…啊…刺激太、太强了…！
+			ELSE
+				PRINTFORM 「不、不要…刺激、太强了…！
+			ENDIF
+			CALL PANT_VOICE2()
+			PRINTL 」
+			RETURN 0
+		ENDIF
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;186,羞耻PLAY,
+;-------------------------------------------------
+IF SELECTCOM == 186 && TEQUIP:30 == 0
+	IF T:401 == 1
+		;初めて
+		IF CFLAG:401 == 0
+			;反抗无　ナルシー　恥じ薄い
+			IF !MARK:反抗刻印 && CFLAG:600 == 12 && TALENT:不知羞耻
+				IF TALENT:白肤 && TALENT:美人
+					LOCALS = 美丽的姿容
+				ELSE
+					LOCALS = 伟岸的英姿
+				ENDIF
+				IF !RAND:4
+					PRINTFORML 「…在镜子面前吗？　难、难道想让%CSTR:0%亲眼看自己这副%LOCALS%吗…」
+				ELSEIF !RAND:3
+					PRINTFORML 「…在镜子面前？　难、难道想让%CSTR:0%看自己%LOCALS%吗…」
+				ELSEIF !RAND:2
+					PRINTFORML 「…要在镜子面前做？　是、是要让%CSTR:0%看自己这副%LOCALS%吗？」
+				ELSE
+					PRINTFORML 「…要在…镜子面前吗？　是、是想让%CSTR:0%看自己%LOCALS%吗…」
+				ENDIF
+				RETURN 0
+			ENDIF
+		;今回の调教で初めて
+		ELSE
+			;陷落済み　隶属以外　ナルシー　恥じ薄い美人　全裸
+			IF KANRAKU(TARGET) && !TALENT:隶属 && CFLAG:600 == 12 && TALENT:不知羞耻 && TALENT:白肤 && TALENT:美人 && TEQUIP:6 == 0 && TEQUIP:5 == 0 && TEQUIP:4 == 0 && TEQUIP:3 == 0 && TEQUIP:2 == 0 && TEQUIP:1 == 0 && TEQUIP:0 == 0
+				IF !RAND:4
+					PRINTFORML 「这样看来、%CSTR:0%就算没穿衣服也还是相当美丽啊…」
+				ELSEIF !RAND:3
+					PRINTFORML 「这样看来、就算不穿衣服%CSTR:0%也依然完美无缺呢…」
+				ELSEIF !RAND:2
+					PRINTFORML 「这么看来、没穿衣服的%CSTR:0%还真是相当美丽呢…」
+				ELSE
+					PRINTFORML 「这么看来、即使不穿衣服，%CSTR:0%的裸体也是完美无缺呢…」
+				ENDIF
+				RETURN 0
+			;未陷落　无动于衷or悲观
+			ELSEIF !KANRAKU(TARGET) && (TALENT:无动于衷 || TALENT:悲观)
+				IF !RAND:4
+					PRINTFORML 「就算是在镜子前面…做的事情也是一样的…所以无所谓…」
+				ELSEIF !RAND:3
+					PRINTFORML 「就算在镜子面前…也没什么不同…随%CSTR:1%吧」
+				ELSEIF !RAND:2
+					PRINTFORML 「无所谓…就算在镜子面前…也是做同样的事吧…」
+				ELSE
+					PRINTFORML 「无所谓…就算是在镜子前面…做的事情也是一样的…」
+				ENDIF
+				RETURN 0
+			ENDIF
+		ENDIF
+	ENDIF
+ELSEIF SELECTCOM == 186 && TEQUIP:30 == 1
+	IF FLAG:7 >= 1
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;100,打屁股　;101,打胸部
+;-------------------------------------------------
+IF SELECTCOM == 100 || SELECTCOM == 101
+	;今回の调教で初めて
+	IF (T:364 == 1 && T:365 == 0) || (T:364 == 0 && T:365 == 1)
+		;ショタ、幼稚　非冷静　非缺乏感情
+		IF ABL:受虐属性 < 3 && (TALENT:幼稚 || CFLAG:600 == 11) && !TALENT:缺乏感情 && CFLAG:600 != 8
+			IF !RAND:5
+				PRINTFORML 「痛…好痛啊！　%CSTR:0%明明什么坏事也没做！」
+			ELSEIF !RAND:4
+				PRINTFORML 「呜、好痛…！　明明%CSTR:0%什么坏事也没做啊」
+			ELSEIF !RAND:3
+				PRINTFORML 「呜呜、好痛啊…！　明明一直都乖乖的啊…」
+			ELSEIF !RAND:2
+				PRINTFORML 「呜、好痛啊！　一直都有乖乖听话啊，为什么…」
+			ELSE
+				PRINTFORML 「呜、好痛…！　明明一直都乖乖的，为什么…」
+			ENDIF
+			RETURN 0
+		ENDIF
+	;打屁股　反抗も屈服も高くない　大人 　激しい疼痛がない　気持ちよさがあまりない
+	ELSEIF SELECTCOM == 100 && T:364 == 1 && MARK:反抗刻印 < 2 && MARK:屈服刻印 < 3 && TALENT:大人 && D != 2 && C:4 <= 1
+		IF !RAND:3
+			PRINTFORML 「呜！  都这个年纪了还被打屁股也太…」
+		ELSEIF !RAND:2
+			PRINTFORML 「呜！  都这个年纪了还被打屁股…」
+		ELSE
+			PRINTFORML 「呜！  都这个岁数了还被打屁股…」
+		ENDIF
+		RETURN 0
+	;今回の调教で二回目以降
+	ELSEIF FLAG:7 == 2 || !RAND:3
+		;激しい疼痛がない　気持ちよさがあまりない　反抗も屈服も高くない　腹黒　不思議子
+		IF D != 2 && C:4 <= 1 && MARK:反抗刻印 < 2 && MARK:屈服刻印 < 3 && (CFLAG:600 == 7 || CFLAG:600 == 13)
+			IF !RAND:4
+				PRINTFORML 「…唔…手、不酸吗…？」
+			ELSEIF !RAND:3
+				PRINTFORML 「…唔…手、不累吗…？」
+			ELSEIF !RAND:2
+				PRINTFORML 「…呜…手、不酸吗…？」
+			ELSE
+				PRINTFORML 「…呜…手、不累吗…？」
+			ENDIF
+			RETURN 0
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;102,鞭子
+;-------------------------------------------------
+IF SELECTCOM == 102
+	IF T:366 == 1
+		IF ABL:PLAYER:嗜虐属性 >= 5 && MARK:反抗刻印 && MARK:屈服刻印 < 3 && TALENT:反抗 && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && !TALENT:缺乏感情 && CFLAG:600 != 2 && CFLAG:600 != 11 && CFLAG:600 != 13
+			IF !RAND:3
+				PRINTFORML 「呜！居然这样开心地挥舞着鞭子…%CSTR:1%这…！」
+			ELSEIF !RAND:2
+				PRINTFORML 「呜！居然这样开心地挥着鞭子…%CSTR:1%这…！」
+			ELSE
+				PRINTFORML 「呜！居然这么开心地挥舞鞭子…这…！」
+			ENDIF
+			RETURN 0
+		ELSEIF MARK:反抗刻印 && MARK:屈服刻印 < 3 && (TALENT:反抗 || TALENT:高傲 || TALENT:自大 || TALENT:刚强) && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && !TALENT:缺乏感情 && CFLAG:600 != 2 && CFLAG:600 != 11 && CFLAG:600 != 13
+			IF !RAND:3
+				PRINTFORML 「呜、啊、痛！啊、呜…不、不会原谅%CSTR:1%的…」
+			ELSEIF !RAND:2
+				PRINTFORML 「呜、啊、好痛！…住手…很痛啊混蛋！」
+			ELSE
+				PRINTFORML 「呜啊、啊啊…好痛！…给%CSTR:0%住、住手…！」
+			ENDIF
+			RETURN 0
+		ELSEIF MARK:屈服刻印 < 3 && ABL:受虐属性 < 3 && !TALENT:缺乏感情 && !TALENT:性压抑 && (TALENT:怕痛 || CFLAG:600 == 10)
+			IF !RAND:6
+				PRINTFORML 「呜啊、啊…好、好痛啊！　请、请不要这样…！」
+			ELSEIF !RAND:5
+				PRINTFORML 「呀啊…好痛…不要打了…痛…快住手吧…！」
+			ELSEIF !RAND:4
+				PRINTFORML 「呜啊、呀…好、好痛的！　请、不要再做这种事了…！」
+			ELSEIF !RAND:3
+				PRINTFORML 「痛、好痛…好痛啊…呜！　不、不要打了…别打了！」
+			ELSEIF !RAND:2
+				PRINTFORML 「咕啊啊、痛、痛死了！　别、别再打了！」
+			ELSE
+				PRINTFORML 「咕啊啊、痛、痛死了！　好痛…不要打了…痛…快住手吧…！」
+			ENDIF
+			RETURN 0
+		ENDIF
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;114,金蹴り
+;-------------------------------------------------
+IF SELECTCOM == 114 && ABL:受虐属性 < 9
+	IF T:468 == 1
+		IF !RAND:6
+			PRINT 「呜哇！！！！…
+		ELSEIF !RAND:5
+			PRINT 「嗯、咕！！！！？…
+		ELSEIF !RAND:4
+			PRINT 「呜呜！！！！
+		ELSEIF !RAND:3
+			PRINT 「呜…～～～！！！！…
+		ELSEIF !RAND:2
+			PRINT 「呀！！！？…呜…啊…
+		ELSE
+			PRINT 「呜啊！！！！！？…
+		ENDIF
+		;反抗強いもしくは俺様タイプ　温和や幼稚ではない　调教者女
+		IF !MALE(PLAYER) && (MARK:反抗刻印 > 1 || CFLAG:600 == 6 || TALENT:反抗) && CFLAG:600 != 2 && CFLAG:600 != 11 && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && !ASSIPLAY
+			IF !RAND:4
+				PRINTFORML 呜、%CSTR:1%……是女的就……呜…呜啊…！！」
+			ELSEIF !RAND:3
+				PRINTFORML %CSTR:1%、%CSTR:1%这家伙……是女的就……呜…呜啊…！！」
+			ELSEIF !RAND:2
+				PRINTFORML 呜、%CSTR:1%这女人……根本不明白……呜…啊啊…！！」
+			ELSE
+				PRINTFORML 呜、仗着自己……是女人……啊…啊啊…！！」
+			ENDIF
+		ELSEIF KANRAKU(TARGET) < 3 && CFLAG:600 != 11 && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && !RAND:3
+			IF !RAND:4
+				PRINTFORML 哈、太犯规了…这样……呜…呜呜…呜……」
+			ELSEIF !RAND:3
+				PRINTFORML 哈、太过分了…啊……呜…呃呜…呜……」
+			ELSE
+				PRINTFORML 哈、犯规了…像这样……呜、呜…呃呜……」
+			ENDIF
+		ELSE
+			;恋慕か淫乱
+			IF KANRAKU(TARGET) > 0 && KANRAKU(TARGET) < 3 && !RAND:3
+				IF !RAND:5
+					PRINTFORML 别…别这样、啊……真的……要、痛死了……！！」
+				ELSEIF !RAND:4
+					PRINTFORML 别…别这样……真的……痛得、要死……！！」
+				ELSEIF !RAND:3
+					PRINTFORML 拜、托……别这样、啊……真的……痛得、要死了……！！」
+				ELSEIF !RAND:2
+					PRINTFORML 别这样…啊……真的……好痛……！！」
+				ELSE
+					PRINTFORML 别…别踢……真的……很痛的…呜啊……！！」
+				ENDIF
+			ELSEIF !RAND:3
+				PRINTL 啊……呜呜……呃啊……」
+			ELSEIF !RAND:2
+				IF !RAND:3
+					PRINTFORML ～～～……痛、痛死了…呜…啊……」
+				ELSEIF !RAND:2
+					PRINTFORML ～～～……真的……痛死了……呜……」
+				ELSE
+					PRINTFORML ～～～……要、要死了……呜……」
+				ENDIF
+			ELSEIF !RAND:2 && KANRAKU(TARGET) < 3
+				IF !RAND:2
+					PRINTFORML 呜……痛……可……恶……」
+				ELSE
+					PRINTFORML 呜…这………呜呜……」
+				ENDIF
+			ELSE
+				PRINTL ……呜、呜……呜、痛…呜……！！！」
+			ENDIF
+		ENDIF
+		RETURN 0
+	;今回の调教で二回目以降
+	ELSEIF !RAND:3
+		;反抗強いもしくは俺様タイプ　温和や幼稚ではない　调教者女
+		IF !MALE(PLAYER) && (MARK:反抗刻印 > 1 || CFLAG:600 == 6 || TALENT:反抗) && CFLAG:600 != 2 && CFLAG:600 != 11 && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && !ASSIPLAY
+			IF !RAND:6
+				PRINT 「呜啊！！！！…
+			ELSEIF !RAND:5
+				PRINT 「呜啊！！！！？…
+			ELSEIF !RAND:4
+				PRINT 「呜啊！！！！
+			ELSEIF !RAND:3
+				PRINT 「呜…～～～！！！！…
+			ELSEIF !RAND:2
+				PRINT 「呀！！！？…呜…哈、啊…
+			ELSE
+				PRINT 「呜啊！！！！！？…
+			ENDIF
+			IF !RAND:3
+				PRINTFORML 呜、%CSTR:1%……要碎、掉了？…呜……！！」
+			ELSEIF !RAND:2
+				PRINTFORML %CSTR:1%、%CSTR:1%这……要、碎了……呜……！！」
+			ELSE
+				PRINTFORML 要、%CSTR:1%……要坏、掉了…？…呜……！！」
+			ENDIF
+			RETURN 0
+		ELSEIF CFLAG:600 == 11 || TALENT:幼稚 || TALENT:幼儿／幼儿退行
+			IF !RAND:6
+				PRINT 「呜呃！！！！…
+			ELSEIF !RAND:5
+				PRINT 「嗯、咕！！！！？…
+			ELSEIF !RAND:4
+				PRINT 「咿！！！！
+			ELSEIF !RAND:3
+				PRINT 「呜…～～～！！！！…
+			ELSEIF !RAND:2
+				PRINT 「呀！！！？…呜…啊…
+			ELSE
+				PRINT 「咕啊！！！！！？…
+			ENDIF
+			IF !RAND:4
+				PRINTFORML 别、别再…啊啊、啊……睾丸…要碎了……！！」
+			ELSEIF !RAND:3
+				PRINTFORML 别这样…啊啊、啊……下面…要碎了……！！」
+			ELSEIF !RAND:2
+				PRINTFORML 住手…呜…啊、啊啊……%CSTR:0%的睾丸…要碎了……！！」
+			ELSE
+				PRINTFORML 住、手…呜…别再……%CSTR:0%的下面…要碎了……！！」
+			ENDIF
+			RETURN 0
+		ENDIF
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;120,強制舔阴
+;-------------------------------------------------
+IF SELECTCOM == 120 && D < 2
+	;今回の调教で初めて　绝顶寸前ではない
+	IF T:378 == 1 && C:4 <= 2
+		;未陷落、侍奉精神2未満
+		IF !KANRAKU(TARGET) && ABL:侍奉精神 < 2
+			IF (TALENT:反抗 || (MARK:反抗刻印 > MARK:屈服刻印)) && !ASSIPLAY
+				IF !RAND:5
+					PRINTFORML 「呜…为何要舔那么脏的地方…」
+				ELSEIF !RAND:4
+					PRINTFORML 「呜、那里…好脏啊…不想舔…」
+				ELSEIF !RAND:3
+					PRINTFORML 「呜、为什么要舔那、那么脏的地方…」
+				ELSEIF !RAND:2
+					PRINTFORML 「不、不想舔那种地方啊…好脏…」
+				ELSE
+					PRINTFORML 「不要…%CSTR:0%不想舔那种肮脏的地方…」
+				ENDIF
+				RETURN 0
+			;幼稚、非反抗　非缺乏感情
+			ELSEIF (CFLAG:600 == 11 || TALENT:幼稚 || TALENT:幼儿／幼儿退行) && !TALENT:反抗 && !TALENT:缺乏感情
+				IF !RAND:4
+					PRINTFORML 「呜呜…好奇怪的味道…」
+				ELSEIF !RAND:3
+					PRINTFORML 「呜呜…好微妙的味道…」
+				ELSEIF !RAND:2
+					PRINTFORML 「呜、感觉…味道好微妙…」
+				ELSE
+					PRINTFORML 「呜、感觉…味道好奇怪…」
+				ENDIF
+				RETURN 0
+			ENDIF
+		;恋慕陷落　侍奉精神3以上　非助手プ雷
+		ELSEIF KANRAKU(TARGET) == 1 && ABL:侍奉精神 >= 3 && !ASSIPLAY && !RAND:2
+			IF !RAND:4
+				PRINTFORML 「…%MASTERNAME%…这样感觉舒服吗…噗啾…哔啾…」
+			ELSEIF !RAND:3
+				PRINTFORML 「…%MASTERNAME%…舒服吗…嗯啾…噗啾…」
+			ELSEIF !RAND:2
+				PRINTFORML 「…%MASTERNAME%…喜、欢吗…噗啾…嗯啾…」
+			ELSE
+				PRINTFORML 「…%MASTERNAME%…感觉…怎么样…哔啾…噗啾…」
+			ENDIF
+			RETURN 0
+		;服从陷落　侍奉精神5以上　非助手プ雷
+		ELSEIF KANRAKU(TARGET) == 3 && ABL:侍奉精神 >= 5 && !ASSIPLAY && !RAND:2
+			PRINTFORML 「嗯啾…嗯啊…%CSTR:3%的小穴…嗯啾…哈啊…」
+			RETURN 0
+		ENDIF
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;123,足交
+;-------------------------------------------------
+IF SELECTCOM == 123 && D < 2
+	;今回の调教で初めて　绝顶寸前ではない　受虐属性不足
+	IF T:361 == 1 && C:4 <= 2 && ABL:受虐属性 < 3
+		;未陷落　反抗か高傲か、反抗強い　性压抑无　缺乏感情无
+		IF !KANRAKU(TARGET) && (TALENT:反抗 || TALENT:高傲 || (MARK:反抗刻印 > MARK:屈服刻印)) && !ASSIPLAY
+			IF !RAND:2 && !TALENT:性压抑 && !TALENT:缺乏感情
+				IF !RAND:9
+					PRINTFORML 「为什么要用脚来啊！真要做的话不能好好地用手吗！」
+				ELSEIF !RAND:8
+					PRINTFORML 「为什么要用脚啊！好好用手不可以吗！」
+				ELSEIF !RAND:7
+					PRINTFORML 「为什么要用脚啊！给%CSTR:0%好好用手啊！」
+				ELSEIF !RAND:6
+					PRINTFORML 「为什么要用脚来啊！真要做的话%CSTR:1%不能好好地用手吗！」
+				ELSEIF !RAND:5
+					PRINTFORML 「为什么要用脚来啊！好好用手不可以吗！」
+				ELSEIF !RAND:4
+					PRINTFORML 「为什么用脚啊！给%CSTR:0%好好用手啊！」
+				ELSEIF !RAND:3
+					PRINTFORML 「为什么要用脚来啊！一般来说都应该用手才对吧！」
+				ELSEIF !RAND:2
+					PRINTFORML 「为什么用脚啊！真要做的话%CSTR:1%不能好好地用手吗！」
+				ELSE
+					PRINTFORML 「为什么要用脚来啊！一般来说都应该用手才对吧！」
+				ENDIF
+			ELSE
+				IF !RAND:5
+					IF !RAND:2
+						PRINTFORML 「…不想被这么脏的脚弄啊…」
+					ELSE
+						PRINTFORML 「…能别用这么脏的脚弄吗…」
+					ENDIF
+				ELSEIF !RAND:4
+					PRINTFORML 「…讨厌…不想被这么脏的脚弄…」
+				ELSEIF !RAND:3
+					PRINTFORML 「…好恶心…不想被这么脏的脚弄啊…」
+				ELSEIF !RAND:2
+					PRINTFORML 「…讨厌…能别用这么脏的脚弄吗…」
+				ELSE
+					PRINTFORML 「…好恶心…能别用这么脏的脚弄吗…」
+				ENDIF
+			ENDIF
+			RETURN 0
+		;屈服>反抗　调教者施虐狂持ち（「踏みつけるように」って地の文が増える）　非服从陷落　全体的の快感がまだ強くない
+		ELSEIF MARK:屈服刻印 > MARK:反抗刻印 && TALENT:PLAYER:施虐狂 && KANRAKU(TARGET) < 3 && C:4 <= 1
+			;傲娇or俺様or反抗
+			IF CFLAG:600 == 5 || CFLAG:600 == 6 || TALENT:反抗
+				IF !RAND:7
+					PRINTFORML 「真要做的话请轻一点好吗…呜！技术真差…！」
+				ELSEIF !RAND:6
+					PRINTFORML 「真要做的话轻一点啊…呜！不要用踩的、技术真差…！」
+				ELSEIF !RAND:5
+					PRINTFORML 「真要做的话请轻一点…呜！真粗暴…！」
+				ELSEIF !RAND:4
+					PRINTFORML 「真要做的话就轻一点啊…呜！别乱踩啊、技术真差…！」
+				ELSEIF !RAND:3
+					PRINTFORML 「真要做的话就下点功夫吧…呜！别乱踩啊、真粗暴…！」
+				ELSEIF !RAND:2
+					PRINTFORML 「真要做的话就下点功夫吧…不要用踩的、技术真差…！」
+				ELSE
+					PRINTFORML 「真要做的话轻一点啊…技术真差劲…啊…！」
+				ENDIF
+				RETURN 0
+			;わがままor小恶魔or自大　非缺乏感情　非性压抑
+			ELSEIF (CFLAG:600 == 10 || TALENT:小恶魔 || TALENT:自大) && !TALENT:性压抑 && !TALENT:缺乏感情
+				IF !RAND:6
+					PRINTFORML 「呜呜、好痛！要做的话就温柔一点啊！」
+				ELSEIF !RAND:5
+					PRINTFORML 「呜呜、好痛啊！就算想做就不能温柔一点吗…？」
+				ELSEIF !RAND:4
+					PRINTFORML 「呜呜、痛死了！就不能用温柔一点的方式吗！」
+				ELSEIF !RAND:3
+					PRINTFORML 「呜呜、好痛！就不能用温柔一点的方式吗！」
+				ELSEIF !RAND:2
+					PRINTFORML 「呜呜、好痛啊！要做的话就温柔一点啊！」
+				ELSE
+					PRINTFORML 「呜呜、痛死了！就算想做就不能温柔一点吗…？」
+				ENDIF
+				RETURN 0
+			ELSEIF (ABL:受虐属性 || PALAM:快Ｃ >= 100) && !TALENT:自大 && MARK:屈服刻印 > 2
+				IF !RAND:5
+					PRINTFORML 「呜…要做的话…请稍微…温柔一点…」
+				ELSEIF !RAND:4
+					PRINTFORML 「呜…要做的话…稍微…温柔点吧…」
+				ELSEIF !RAND:3
+					PRINTFORML 「呜、请…温柔一点做…好吗…」
+				ELSEIF !RAND:2
+					PRINTFORML 「呜…稍微、温柔一点做…不行吗…」
+				ELSE
+					PRINTFORML 「呜…稍微、温柔一点…吧…」
+				ENDIF
+				RETURN 0
+			ENDIF
+		ENDIF
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;211,逆强奸
+;-------------------------------------------------
+IF SELECTCOM == 211 && D < 2
+	IF T:422 == 1
+		;初めて　
+		IF CFLAG:422 == 0 && TALENT:童贞
+			;童贞　ショタor幼稚
+			IF CFLAG:600 == 11 || TALENT:幼稚 || TALENT:幼儿／幼儿退行
+				IF !RAND:3
+					PRINTFORML 「不、不要啊、那、那里把…%PENIS_YOBIKATA(TARGET)%吃掉了…嗯啊、啊！」
+				ELSEIF !RAND:2
+					PRINTFORML 「不要、讨厌、那、那里算什么…竟然把%PENIS_YOBIKATA(TARGET)%全部吞下去…嗯啊、嗯！」
+				ELSE
+					PRINTFORML 「不、不要、那、那里把…%PENIS_YOBIKATA(TARGET)%全部吞下去…嗯啊、嗯！」
+				ENDIF
+				RETURN 0
+			;童贞 未陷落 反抗あり
+			ELSEIF !KANRAKU(TARGET) && MARK:反抗刻印 && !ASSIPLAY
+				IF !RAND:3
+					PRINTFORML 「呜…唔…这、这种第一次…真差劲…！」
+				ELSEIF !RAND:2
+					PRINTFORML 「呜…唔…这、这种初体验…太糟糕了…！」
+				ELSE
+					PRINTFORML 「呜…唔…这、这竟然就是初体验…无法接受…！」
+				ENDIF
+				RETURN 0
+			;童贞 反抗无 非淫乱非服从 非俺様タイプ 
+			ELSEIF !MARK:反抗刻印 && KANRAKU(TARGET) < 2 && CFLAG:600 != 6
+				IF CFLAG:600 == 1 || CFLAG:600 == 4
+					PRINTFORM 「等等、还…还、
+				ELSE
+					PRINTFORM 「这、这种事…
+				ENDIF
+				PRINTFORML 还没准备好…！呃啊、啊！」
+				RETURN 0
+			ENDIF
+		;今回の调教で初めて
+		ELSE
+			;未陷落 反抗強い
+			IF !KANRAKU(TARGET) && (TALENT:反抗 || TALENT:高傲 || (MARK:反抗刻印 > MARK:屈服刻印)) && !ASSIPLAY
+				IF !RAND:6
+					PRINTFORML 「呜…！不、不要动…！…快点…退…出去…呜…啊…」
+				ELSEIF !RAND:5
+					PRINTFORML 「呜…！别、别动啊…！…快点…退…出去…呜…啊…」
+				ELSEIF !RAND:4
+					PRINTFORML 「可、恶…！不、不要动…！…快点…退…出去…呜…啊…」
+				ELSEIF !RAND:3
+					PRINTFORML 「呜…！啊、别动了…！…快…退出…去、啊…呜…」
+				ELSEIF !RAND:2
+					PRINTFORML 「可恶、不要…动…！快…退出…去、啊…呜…」
+				ELSE
+					PRINTFORML 「可、恶…！别、别动啊…！…快点…退出去…呜…啊…」
+				ENDIF
+				RETURN 0
+			ENDIF
+		ENDIF
+	;今回の调教で二回目以降　　反抗強くない
+	ELSEIF (!RAND:3 || FLAG:7 == 2) && C:0 > 0 && MARK:反抗刻印 < MARK:屈服刻印 && !RAND:2
+		;前回と今回の调教者が同じで、前回の调教が逆强奸が逆正常位か后背位である場合
+		IF (PREVCOM == 211 || PREVCOM == 205 || PREVCOM == 206) && ((ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0)) && EXP:PLAYER:Ｖ经验 >= 30
+			;ショタ用
+			IF !RAND:5 && (CFLAG:600 == 11 || TALENT:幼稚 || TALENT:幼儿／幼儿退行)
+				PRINTFORM 「%CSTR:0%的%PENIS_YOBIKATA(TARGET)%被…那样吞吐的样子…！
+				CALL PANT_VOICE2(1)
+				PRINTL 」
+			;非ショタ用？　恋慕陷落　非助手プ雷　
+			ELSEIF !RAND:5 && KANRAKU(TARGET) == 1 && !ASSIPLAY && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && CFLAG:600 != 11
+				IF CFLAG:600 == 1 || CFLAG:600 == 4 || CFLAG:600 == 6 || CFLAG:600 == 10 || CFLAG:600 == 13
+					LOCALS = 好色情
+				ELSE
+					LOCALS = 好淫荡
+				ENDIF
+				PRINTFORM 「啊啊…%CSTR:2%的样子…%LOCALS%…
+				CALL PANT_VOICE2(1)
+				PRINTL 」
+			;少し余裕があるタイプ用？ 非服从陷落　非助手プ雷　性交经验50以上 余裕もってそうな性格タイプ　非幼稚
+			ELSEIF !RAND:5 && KANRAKU(TARGET) < 3 && !ASSIPLAY && EXP:性交经验 >= 50 && (CFLAG:600 == 4 || CFLAG:600 == 6 || CFLAG:600 == 7 || CFLAG:600 == 12 || CFLAG:600 == 13) && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行
+				IF !RAND:3
+					PRINTFORML 「嗯、嗯啊…呜、这也太…积极了吧…哈…啊…」
+				ELSEIF !RAND:2
+					PRINTFORML 「嗯、呜…啊…这样、太…积极了吧…哈、啊…」
+				ELSE
+					PRINTFORML 「嗯、呜…啊…这也太…积极了吧…哈…啊…」
+				ENDIF
+			;淫乱用
+			ELSEIF !RAND:8 && KANRAKU(TARGET) == 2 
+				PRINTFORML 「哈、啊啊、顶到里面了…龟头那里…超级舒服的…！！
+				PRINT 　
+				CALL PANT_VOICE2(5)
+				PRINTL 」
+			;屈服刻印3 淫乱/接受快感/情欲レベル非常に高い
+			ELSEIF !RAND:7 && MARK:屈服刻印 == 3 && (KANRAKU(TARGET) == 2 || TALENT:接受快感 || PALAM:6 > PALAMLV:6)
+				IF !RAND:2
+					PRINTFORM 「啊啊、啊…哈啊…再来、再动快一点…！
+				ELSE
+					PRINTFORM 「嗯啊、啊啊…哈啊…再…快一点…！
+				ENDIF
+				CALL PANT_VOICE2(1)
+				PRINTL 」
+			;恋慕&非助手プ雷か淫乱
+			ELSEIF !RAND:6 && ((KANRAKU(TARGET) == 1 && !ASSIPLAY) || KANRAKU(TARGET) == 2)
+				;恋慕陷落&非助手プ雷
+				IF KANRAKU(TARGET) == 1 && !ASSIPLAY
+					LOCALS = 成…%CSTR:2%的形状
+				ELSE
+					LOCALS = 得…乱七八糟
+				ENDIF
+				;丁寧な敬語で喋りそうなキャラ
+				IF CFLAG:601 == 2 && !CFLAG:610 && !CFLAG:614 && !TALENT:幼稚 && CFLAG:600 != 10 && CFLAG:600 != 11 && ((TALENT:绅士 || TALENT:美人) && CFLAG:600 != 1 && CFLAG:600 != 4)
+					PRINTFORML 「小穴…嗯、啊…这样、紧紧吸着…都变%LOCALS%…了吧…！嗯…哈啊…」
+				ELSE
+					PRINTFORML 「小穴…嗯啊…像这样紧紧吮吸…好厉害…都变%LOCALS%了吧…！嗯、哈啊…」
+				ENDIF
+			;反抗ではないキャラ
+			ELSEIF !RAND:5 && !TALENT:反抗 && CFLAG:600 != 6 && CFLAG:600 != 8
+				PRINTFORM 「…里、面、这样…蠕动着…
+				CALL PANT_VOICE2(2)
+				PRINTL 」
+			;陷落済み
+			ELSEIF !RAND:4 && KANRAKU(TARGET)
+				;恋慕陷落は「ご主人様の」无
+				IF KANRAKU(TARGET) == 1
+					LOCALS = 
+				ELSE
+					LOCALS = %CSTR:3%的
+				ENDIF
+				PRINTFORM 「啊啊、啊…摩擦…%LOCALS%内壁、在摩擦着…
+				CALL PANT_VOICE2(1)
+				PRINTL 」
+			ELSEIF !RAND:3
+				PRINTFORM 「%PENIS_YOBIKATA(TARGET)%的顶端…顶到里面了…！
+				CALL PANT_VOICE2(1)
+				PRINTL 」
+			ELSEIF !RAND:2 
+				IF !RAND:2
+					PRINTFORM 「不、不好…这么、激烈的话…嗯哈、啊！
+				ELSE
+					PRINTFORM 「不、不行…这么、激烈的话…嗯、啊啊！
+				ENDIF
+				CALL PANT_VOICE2(2)
+				PRINTL 」
+			ELSE
+				IF !RAND:5
+					PRINTFORM 「别、别这样、吸那么紧啊…啊啊！
+				ELSEIF !RAND:4
+					PRINTFORM 「别、别吸得…那么紧…啊啊！
+				ELSEIF !RAND:3
+					PRINTFORM 「别、别吸得…那么紧啊…啊、啊！
+				ELSEIF !RAND:2
+					PRINTFORM 「别像这样…吸啊…太紧了…啊啊！
+				ELSE
+					PRINTFORM 「好、好紧…吸得太紧了…啊啊！
+				ENDIF
+				CALL PANT_VOICE2(1)
+				PRINTL 」
+			ENDIF
+			RETURN 0
+		ENDIF
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;212,逆强奸肛 
+;-------------------------------------------------
+IF SELECTCOM == 212 && D < 2
+	IF T:423 == 1
+		;初めて
+		IF CFLAG:423 == 0
+			;童贞　ショタor幼稚
+			IF TALENT:童贞 && (CFLAG:600 == 11 || TALENT:幼稚 || TALENT:幼儿／幼儿退行)
+				IF !RAND:3
+					PRINTFORML 「不、不要啊、屁、屁股把…%PENIS_YOBIKATA(TARGET)%吃掉了…嗯啊、啊！」
+				ELSEIF !RAND:2
+					PRINTFORML 「不要、讨厌、屁、屁股算什么…竟然把%PENIS_YOBIKATA(TARGET)%全部吞下去…嗯啊、嗯！」
+				ELSE
+					PRINTFORML 「不、不要、屁、屁股把…%PENIS_YOBIKATA(TARGET)%全部吞下去了…嗯啊、嗯！」
+				ENDIF
+				RETURN 0
+			;童贞 未陷落 反抗あり
+			ELSEIF TALENT:童贞 && !KANRAKU(TARGET) && MARK:反抗刻印 && !ASSIPLAY
+				IF !RAND:3
+					PRINTFORML 「呜…唔…这、这种第一次…真差劲…！」
+				ELSEIF !RAND:2
+					PRINTFORML 「呜…唔…这、这种初体验…太糟糕了…！」
+				ELSE
+					PRINTFORML 「呜…唔…初、初体验竟然是后面…无法接受…！」
+				ENDIF
+				RETURN 0
+			;童贞 反抗无 非淫乱非服从 非俺様タイプ 女调教者　非缺乏感情
+			ELSEIF TALENT:童贞 && !MARK:反抗刻印 && KANRAKU(TARGET) < 2 && CFLAG:600 != 6 && !MALE(PLAYER) && !TALENT:缺乏感情
+				IF CFLAG:600 == 1 || CFLAG:600 == 4
+					PRINTFORM 「等等、还…
+				ELSE
+					PRINTFORM 「这、这种事…
+				ENDIF
+				IF !RAND:4
+					PRINTFORML %CSTR:2%、哪里搞错了吧？…那里是…！啊啊—啊！」
+				ELSEIF !RAND:3
+					PRINTFORML %CSTR:2%…搞错了吧？…那里是…！啊啊—啊！」
+				ELSEIF !RAND:2
+					PRINTFORML 还没准备好…！呃啊、啊！…哪里、搞错了吧…！」
+				ELSE
+					PRINTFORML %CSTR:2%、哪里搞错了吗？…那里是…！呃啊、啊！」
+				ENDIF
+				RETURN 0
+			ENDIF
+		;今回の调教で初めて
+		ELSE
+			;未陷落 反抗強い
+			IF !KANRAKU(TARGET) && (TALENT:反抗 || TALENT:高傲 || (MARK:反抗刻印 > MARK:屈服刻印)) && !ASSIPLAY
+				IF !RAND:6
+					PRINTFORML 「呜…！不、不要动啊…！…快点…退…出去…呜…啊…」
+				ELSEIF !RAND:5
+					PRINTFORML 「可、恶…！别、别动啊…！…快点…退出去…呜…啊…」
+				ELSEIF !RAND:4
+					PRINTFORML 「混、帐啊…！别、别动啊…！…快点…退出去…呜…啊…」
+				ELSEIF !RAND:3
+					PRINTFORML 「呜…！啊、别动了…！…快…退出…去、啊…呜…」
+				ELSEIF !RAND:2
+					PRINTFORML 「可恶、不要…动…！快…退出…去、啊…呜…」
+				ELSE
+					PRINTFORML 「混、帐啊…！不要动…！快…退出…去、啊…呜…」
+				ENDIF
+				RETURN 0
+			ENDIF
+		ENDIF
+	;今回の调教で二回目以降　逆强奸と類似
+	ELSEIF (!RAND:3 || FLAG:7 == 2) && C:0 > 0 && MARK:反抗刻印 < MARK:屈服刻印 && !RAND:2
+		IF (PREVCOM == 212 || PREVCOM == 213 || PREVCOM == 214)  && ((ASSIPLAY && TFLAG:50) || (ASSIPLAY == 0 && TFLAG:50 == 0)) && EXP:PLAYER:Ａ经验 >= 30
+			;ショタ用
+			IF !RAND:5 && (CFLAG:600 == 11 || TALENT:幼稚 || TALENT:幼儿／幼儿退行)
+				PRINTFORM 「%CSTR:0%的%PENIS_YOBIKATA(TARGET)%被%CSTR:2%的屁股…那样吞吐的样子…！
+				CALL PANT_VOICE2(1)
+				PRINTL 」
+			;非ショタ用？　恋慕陷落　非助手プ雷　
+			ELSEIF !RAND:5 && KANRAKU(TARGET) == 1 && !ASSIPLAY && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && CFLAG:600 != 11
+				IF CFLAG:600 == 1 || CFLAG:600 == 4 || CFLAG:600 == 6 || CFLAG:600 == 10 || CFLAG:600 == 13
+					LOCALS = 太色情了
+				ELSE
+					LOCALS = 太、羞耻了
+				ENDIF
+				PRINTFORM 「啊啊…%CSTR:2%的…里面、蠕动着…完全能看到…真是%LOCALS%…
+				CALL PANT_VOICE2(1)
+				PRINTL 」
+			;少し余裕があるタイプ用？ 非服从陷落　非助手プ雷　性交经验50以上 余裕もってそうな性格タイプ　非幼稚
+			ELSEIF !RAND:5 && KANRAKU(TARGET) < 3 && !ASSIPLAY && EXP:性交经验 >= 50 && (CFLAG:600 == 4 || CFLAG:600 == 6 || CFLAG:600 == 7 || CFLAG:600 == 12 || CFLAG:600 == 13) && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行
+				IF !RAND:3
+					PRINTFORML 「嗯啊…这也…太厉害了、这么紧…哈啊…啊…」
+				ELSEIF !RAND:2
+					PRINTFORML 「嗯、嗯啊…呜、这也太…厉害了吧…哈…啊…」
+				ELSE
+					PRINTFORML 「嗯、呜…啊…好、好厉害…哈、啊…」
+				ENDIF
+			;淫乱用
+			ELSEIF !RAND:5 && KANRAKU(TARGET) == 2 
+				PRINTFORML 「啊、嗯呜…顶得好深啊…龟头…超爽的…！！
+				PRINT 　
+				CALL PANT_VOICE2(5)
+				PRINTL 」
+			;屈服刻印3 淫乱/接受快感/情欲レベル非常に高い
+			ELSEIF !RAND:5 && MARK:屈服刻印 == 3 && (KANRAKU(TARGET) == 2 || TALENT:接受快感 || PALAM:6 > PALAMLV:6)
+				IF !RAND:2
+					PRINTFORM 「啊啊、啊…哈啊…再来、再动快一点…！
+				ELSE
+					PRINTFORM 「嗯啊、啊啊…哈啊…再…快一点…！
+				ENDIF
+				CALL PANT_VOICE2(1)
+				PRINTL 」
+			;恋慕&非助手プ雷か淫乱
+			ELSEIF !RAND:4 && ((KANRAKU(TARGET) == 1 && !ASSIPLAY) || KANRAKU(TARGET) == 2)
+				;丁寧な敬語で喋りそうなキャラ
+				IF !RAND:3 && (TALENT:绅士 || TALENT:美人)
+					PRINTFORML 「哈啊…那里、这么紧…唔、啊、啊啊…真是…要上瘾了…嗯啊！哈啊…」
+				ELSEIF !RAND:2
+					PRINTFORML 「那里…嗯啊…像这样紧紧吮吸…好厉害…要上瘾了…！嗯、哈啊…」
+				ELSE
+					PRINTFORML 「那里…嗯、啊…这样、紧紧吸着…会、上瘾的…！嗯…哈啊…」
+				ENDIF
+			ELSEIF !RAND:4
+				IF !RAND:5
+					PRINTFORML 「不、不要吸得…那么紧…嗯啊…！
+				ELSEIF !RAND:4
+					PRINTFORML 「别、别吸得…那么紧…嗯、啊…！
+				ELSEIF !RAND:3
+					PRINTFORML 「别、别这样、别吸得…那么紧…啊啊！
+				ELSEIF !RAND:2
+					PRINTFORM 「别像这样…吸啊…太紧了…啊啊！
+				ELSE
+					PRINTFORM 「好、好紧…吸得太紧了…啊啊！
+				ENDIF
+				CALL PANT_VOICE2(1)
+				PRINTL 」
+			;陷落済み
+			ELSEIF !RAND:4 && KANRAKU(TARGET)
+				;恋慕陷落は「ご主人様の」无
+				IF KANRAKU(TARGET) == 1
+					LOCALS = 
+				ELSE
+					LOCALS = %CSTR:3%的
+				ENDIF
+				PRINTFORM 「呼啊、啊…在摩擦着…%LOCALS%
+				IF !RAND:3 && !TALENT:绅士
+					PRINT 屁股小穴
+				ELSEIF !RAND:2 && CFLAG:600 == 2
+					PRINT 屁股
+				ELSE
+					PRINT 菊穴
+				ENDIF
+				PRINTFORM …一直像这样摩、擦…
+				CALL PANT_VOICE2(1)
+				PRINTL 」
+			ELSEIF !RAND:3
+				IF !RAND:2
+					PRINTFORM 「不、不好…这么、激烈的话…嗯哈、啊！
+				ELSE
+					PRINTFORM 「不、不行…这么、激烈的话…嗯、啊啊！
+				ENDIF
+				CALL PANT_VOICE2(2)
+				PRINTL 」
+			;相亲相爱限定
+			ELSEIF !RAND:3 && TALENT:相亲相爱 && !ASSIPLAY
+				PRINTFORM 「啊、啊啊！…喜、欢…！好棒…！
+				CALL PANT_VOICE2(1)
+				PRINTL 」
+				RETURN 0
+			ELSEIF !RAND:2 
+				PRINTFORM 「%PENIS_YOBIKATA(TARGET)%的前面…顶到、好深的地方…去了！
+				CALL PANT_VOICE2(1)
+				PRINTL 」
+			ELSE
+				PRINTFORM 「…这、这也、太深…了…
+				CALL PANT_VOICE2(2)
+				PRINTL 」
+			ENDIF
+			RETURN 0
+		ENDIF
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;肛セックル系
+;-------------------------------------------------
+;正常位肛交　SELECTCOM == 62　T:338 == 1
+;后背位肛交　SELECTCOM == 63　T:339 == 1
+;骑乘位肛交　SELECTCOM == 67　T:342 == 1
+;对面座位肛交　SELECTCOM == 70　T:345 == 1
+;背面座位肛交　SELECTCOM == 71　T:346 == 1
+;对面立位肛　SELECTCOM == 75　T:348 == 1
+;背面立位肛　SELECTCOM == 77　T:350 == 1
+;-------------------------------------------------
+IF SEXPLAY(TARGET) == 2 && D < 2
+	;今回の调教で初めて
+	IF (SELECTCOM == 62 && T:338 == 1) || (SELECTCOM == 63 && T:339 == 1) || (SELECTCOM == 67 && T:342 == 1) || (SELECTCOM == 70 && T:345 == 1) || (SELECTCOM == 71 && T:346 == 1) || (SELECTCOM == 75 && T:348 == 1) || (SELECTCOM == 77 && T:350 == 1)
+		;A做爱初めて 后庭处子で判断できる
+		IF TALENT:后庭处子
+			;骑乘位肛交　恋慕か隶属　男性　非助手プ雷 主人の处女を奪っている　非子供
+			IF SELECTCOM == 67 && (KANRAKU(TARGET) == 1 || KANRAKU(TARGET) == 3) && TALENT:男性 && !ASSIPLAY && CSTR:MASTER:20 == NAME:TARGET && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && CFLAG:600 != 11
+				IF !RAND:4
+					PRINTFORM 「就这样没有了…被
+				ELSEIF !RAND:3
+					PRINTFORM 「第一次…就这样给
+				ELSEIF !RAND:2
+					PRINTFORM 「就这样被
+				ELSE
+					PRINTFORM 「就这样给
+				ENDIF
+				IF KANRAKU(TARGET) == 1
+					PRINTFORM %CSTR:2%夺走了…
+				ELSE
+					PRINTFORM %CSTR:3%夺走了…
+				ENDIF
+				IF !RAND:4
+					PRINTFORML 明明是第一次…」
+				ELSEIF !RAND:3
+					PRINTFORML 还来啊…」
+				ELSEIF !RAND:2
+					PRINTFORML 不会…还的吧…」
+				ELSE
+					PRINTFORML 吗…呜…」
+				ENDIF
+				RETURN 0
+			;骑乘位肛交　初めて
+			ELSEIF SELECTCOM == 67
+				IF !RAND:3 && !TALENT:幼稚 && CFLAG:600 != 10 && CFLAG:600 != 11 && (TALENT:绅士 || TALENT:美人)
+					PRINTFORML 「…让%CSTR:0%自己、坐上去…动…哈啊、哈…」
+				ELSEIF !RAND:2
+					PRINTFORML 「…竟然让%CSTR:0%、自己动什么…的…哈、啊…」
+				ELSE
+					PRINTFORML 「…竟然让%CSTR:0%自己、坐上去…哈、啊啊…」
+				ENDIF
+				RETURN 0
+			;屈服>反抗 非淫乱非服从  女调教者　男奴隶　非子供
+			ELSEIF MARK:反抗刻印 < MARK:屈服刻印 && KANRAKU(TARGET) < 2 && !MALE(PLAYER) && MALE(TARGET) && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && CFLAG:600 != 11 && ABL:同性倾向 < 3
+				IF !RAND:3
+					PRINTFORML 「啊、呀、这种、样子…不要、%CSTR:0%不是女人啊…！啊…哈…嗯…唔…」
+				ELSEIF !RAND:2
+					PRINTFORML 「啊、呀、这种、样子…不要、%CSTR:0%是男的啊…！啊…哈…嗯…唔……」
+				ELSE
+					PRINTFORML 「啊、呀、这副、姿态…不要、%CSTR:0%是男的啊…！啊…哈…嗯…唔……」
+				ENDIF
+				RETURN 0
+			;反抗あり　奴隶も调教者も男　同性倾向3未満　
+			ELSEIF MARK:反抗刻印 && MALE(TARGET) && MALE(PLAYER) && ABL:同性倾向 < 3 && !ASSIPLAY
+				IF !RAND:6
+					PRINTFORML 「别、别这样…！这种东西、进不去的啊…快拔、拔出去…%CSTR:0%不是同性恋…！」
+				ELSEIF !RAND:5
+					PRINTFORML 「住、住手…！这种东西、进不去的…！拔、拔掉…%CSTR:0%才不是同性恋…！」
+				ELSEIF !RAND:4
+					PRINTFORML 「别、住手…啊！这种东西、根本进不来…的…拔、出去…%CSTR:0%不是同性恋…！」
+				ELSEIF !RAND:3
+					PRINTFORML 「别、住手…！这种东西、进不去的…！拔、出去…%CSTR:0%不是同性恋…！」
+				ELSEIF !RAND:2
+					PRINTFORML 「住、住手…！不可能进得来的…不是、做这种事的地方…！拔出去…%CSTR:0%不是同性恋…！」
+				ELSE
+					PRINTFORML 「别、这样…！进不来、的啊…！不是、做这种事的地方…！拔、出去…%CSTR:0%不是同性恋…！」
+				ENDIF
+				RETURN 0
+			;反抗あり　竿无调教者　非子供
+			ELSEIF MARK:反抗刻印 && !PENIS(PLAYER) && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && CFLAG:600 != 11
+				IF !RAND:5
+					IF !RAND:2
+						PRINTFORML 「…这、这种玩具…！到底…要怎样啊！完全…不明白…」
+					ELSE
+						PRINTFORML 「…这、这种玩具…！到底…是什么啊！完全…搞不懂啊…」
+					ENDIF
+				ELSEIF !RAND:4
+					PRINTFORML 「…这、这种玩具…！到底…要做什么…！完全…搞不懂啊…」
+				ELSEIF !RAND:3
+					PRINTFORML 「…这、这种玩具…！到底…要对%CSTR:0%…！…完全…不明白啊…」
+				ELSEIF !RAND:2
+					PRINTFORML 「…这、这种玩具…！到底…要对%CSTR:0%做什么…！完全…不明白…」
+				ELSE
+					PRINTFORML 「…这、这种玩具…！到底…要干什么…完全…搞不懂啊…」
+				ENDIF
+				RETURN 0
+			ENDIF
+		ENDIF
+		;ショタor幼稚　未陷落
+		IF !KANRAKU(TARGET) && (CFLAG:600 == 11 || TALENT:幼稚 || TALENT:幼儿／幼儿退行)
+			IF !RAND:2
+				PRINTFORM 「不、不要啊！…这样、好可怕啊…
+			ELSE
+				PRINTFORM 「好可怕…呜…不要…呜呜…
+			ENDIF
+			CALL PANT_VOICE2(2)
+			PRINTL 」
+			RETURN 0
+		;未陷落 反抗あり　骑乘位肛交じゃない
+		ELSEIF SELECTCOM != 67 && !KANRAKU(TARGET) && MARK:反抗刻印 && !ASSIPLAY
+			IF !RAND:3
+				PRINTFORML 「呜…不要…不要啊…这样…是不对的…」
+			ELSEIF !RAND:2
+				PRINTFORML 「呜…不要…这样…这是…不应该的…」
+			ELSE
+				PRINTFORML 「呜…别做…这种事啊…这样…是不对的…」
+			ENDIF
+			RETURN 0
+		ENDIF
+	;今回の调教で二回目以降　　反抗強くない
+	ELSEIF (!RAND:3 || FLAG:7 == 2) && MARK:反抗刻印 < MARK:屈服刻印 && !RAND:2
+		;疼痛がある場合 A绝顶寸前ではない
+		IF D == 1 && D:1 && C:2 > 0 && C:2 <= 3
+			IF !RAND:2
+				IF !RAND:4
+					IF !RAND:2
+						PRINTFORM 「好、好痛啊…！绝对、出血了吧…
+					ELSE
+						PRINTFORM 「痛、好痛啊…绝对、出血了啊…
+					ENDIF
+				ELSEIF !RAND:3
+					PRINTFORM 「呜、好痛…可能、出血了吧…
+				ELSEIF !RAND:2
+					PRINTFORM 「痛、好痛啊…可能…出血了也说不定…
+				ELSE
+					PRINTFORM 「好、好痛啊…！出血了吧、绝对…
+				ENDIF
+			ELSE
+				IF !RAND:2
+					PRINTFORM 「痛、好痛啊、要、裂开了…
+				ELSE
+					PRINTFORM 「好、好痛啊…！要裂了、绝对…
+				ENDIF
+			ENDIF
+			CALL PANT_VOICE2(2)
+			PRINTL 」
+			RETURN 0
+		;屈服2以上 屈服>反抗 の場合 
+		ELSEIF MARK:屈服刻印 >= 2 && MARK:屈服刻印 > MARK:反抗刻印
+			IF !RAND:7 && TALENT:害羞
+				PRINTFORM 「这样子…好羞耻啊…
+				CALL PANT_VOICE2(3)
+				PRINTL 」
+			;淫乱や服从ではない　男奴隶女调教者　A经验まだ浅い
+			ELSEIF !RAND:2 && KANRAKU(TARGET) < 2 && MALE(TARGET) && !MALE(PLAYER) && EXP:Ａ经验 < 75
+				IF !RAND:4
+					PRINTFORM 「%CSTR:0%明明是…男的、却被这样…嗯啊！…到、到底为什么…
+				ELSEIF !RAND:3
+					PRINTFORM 「%CSTR:0%明明是…男的、却被插了…嗯…！…到、到底是为什么…
+				ELSEIF !RAND:2
+					PRINTFORM 「为什么%CSTR:0%是…男的…却被插…嗯、啊！这到底…怎么回事…
+				ELSE
+					PRINTFORM 「明明%CSTR:0%是…男的…却被…嗯、嗯…！这到底…是为什么…
+				ENDIF
+				CALL PANT_VOICE2(1)
+				PRINTL 」
+			ELSEIF !RAND:7 && EXP:Ａ扩张经验 < 9
+				IF !RAND:3
+					PRINTFORM 「菊穴
+				ELSEIF !RAND:2
+					PRINTFORM 「屁股
+				ELSE
+					PRINTFORM 「尻穴
+				ENDIF
+				IF !RAND:3
+					IF !RAND:3
+						PRINTFORM 要被拓开了…
+					ELSEIF !RAND:2 && !TALENT:幼稚 && CFLAG:600 != 10 && CFLAG:600 != 11 && (TALENT:胆怯 || ((TALENT:绅士 || TALENT:美人) && CFLAG:600 != 1))
+						PRINTFORM 要被撑爆了…！
+					ELSE
+						PRINTFORM 要被撑裂了…！
+					ENDIF
+				ELSEIF !RAND:2
+					PRINTFORM 张开了…
+				ELSE
+					PRINTFORM 撑大了…
+				ENDIF
+				CALL PANT_VOICE2(2)
+				PRINTL 」
+			ELSEIF !RAND:6
+				PRINTFORM 「哈啊、哈、插进、最里面了…
+				CALL PANT_VOICE2(2)
+				PRINTL 」
+			;屈服刻印3 淫乱/接受快感/情欲レベル非常に高い
+			ELSEIF !RAND:5 && MARK:屈服刻印 == 3 && (KANRAKU(TARGET) == 2 || TALENT:接受快感 || PALAM:6 > PALAMLV:6)
+				IF !RAND:2
+					PRINTFORM 「嗯啊、啊…哈啊…还要、还不够…更深、一点…！
+				ELSE
+					PRINTFORM 「嗯啊、啊…哈啊…还、不够…再用力、一点…！
+				ENDIF
+				CALL PANT_VOICE2(1)
+				PRINTL 」
+			;恋慕&非助手プ雷か淫乱
+			ELSEIF !RAND:4 && ((KANRAKU(TARGET) == 1 && !ASSIPLAY) || KANRAKU(TARGET) == 2)
+				;丁寧な敬語で喋りそうなキャラ
+				IF !RAND:3 && !TALENT:幼稚 && CFLAG:600 != 10 && CFLAG:600 != 11 && ((TALENT:绅士 || TALENT:美人) && CFLAG:600 != 1 && CFLAG:600 != 4)
+					PRINTFORML 「啊……这种、感觉……啊啊……已经上瘾了……嗯啊！——啊啊啊啊嗯！」
+				ELSEIF !RAND:2
+					PRINTFORML 「啊……这种、感觉……啊啊……会、上瘾……嗯啊！——嗯啊啊啊啊…！」
+				ELSE
+					PRINTFORML 「啊啊…像这样、动…会…上瘾的…嗯啊！——啊啊啊啊啊…！」
+				ENDIF
+			ELSEIF !RAND:4 && PENIS(PLAYER) && !TALENT:幼稚 && !TALENT:幼儿／幼儿退行 && CFLAG:600 != 11
+				IF !RAND:5
+					PRINTFORML 「这、这样动的话、就…忍不住…啊、啊啊啊！
+				ELSEIF !RAND:4
+					PRINTFORML 「这、这样动的话、忍不住了…啊啊！
+				ELSEIF !RAND:3
+					PRINTFORML 「不、不行了…像这样动的话…啊、啊啊！
+				ELSEIF !RAND:2
+					PRINTFORM 「不行…不能再动了…要、要去…啊啊、啊…！
+				ELSE
+					PRINTFORM 「不行…不能再动了…忍不住了…啊、啊啊！
+				ENDIF
+				CALL PANT_VOICE2(1)
+				PRINTL 」
+			;陷落済み
+			ELSEIF !RAND:4 && KANRAKU(TARGET)
+				PRINTFORM 「呜啊、呃啊啊…%CSTR:0%的
+				IF !RAND:3
+					PRINT 菊穴
+				ELSEIF !RAND:2
+					PRINT 屁股
+				ELSE
+					PRINT 尻穴
+				ENDIF
+				PRINTFORM 、被这样搅动着…
+				CALL PANT_VOICE2(1)
+				PRINTL 」
+			ELSEIF !RAND:3
+				IF !RAND:2
+					PRINTFORM 「啊、不行…这么、激烈的话…嗯啊啊！
+				ELSE
+					PRINTFORM 「不、不行了…这么、激烈地动…嗯啊、啊！
+				ENDIF
+				CALL PANT_VOICE2(2)
+				PRINTL 」
+			;恋慕&非助手プ雷か淫乱
+			ELSEIF !RAND:3 && ((KANRAKU(TARGET) == 1 && !ASSIPLAY) || KANRAKU(TARGET) == 2)
+				;恋慕陷落&非助手プ雷
+				IF KANRAKU(TARGET) == 1 && PENIS(PLAYER) && !ASSIPLAY
+					LOCALS = 要变成%CSTR:2%的形状
+				ELSE
+					LOCALS = 变得乱七八糟的
+				ENDIF
+				;丁寧な敬語で喋りそうなキャラ
+				IF !TALENT:幼稚 && CFLAG:600 != 10 && CFLAG:600 != 11 && ((TALENT:绅士 || TALENT:美人) && CFLAG:600 != 1 && CFLAG:600 != 4)
+					PRINTFORML 「嗯啊…啊、身体自己、绞紧了…里面%LOCALS%了啊……嗯啊！啊啊…啊…」
+				ELSE
+					PRINTFORML 「嗯啊…啊、身体不由自主、吮吸着…里面%LOCALS%了……嗯啊！啊啊…啊…」
+				ENDIF
+			;相亲相爱限定
+			ELSEIF !RAND:3 && TALENT:相亲相爱 && !ASSIPLAY
+				PRINTFORM 「哈、啊啊！嗯呜…喜、喜欢…！喜欢%MASTERNAME%…！
+				CALL PANT_VOICE2(1)
+				PRINTL 」
+			;相亲相爱限定
+			ELSEIF !RAND:2 && TALENT:相亲相爱 && !ASSIPLAY
+				PRINTFORML 「哈…像这样…动着…唔啊、完全变成…%CSTR:2%的东西…了…嗯、嗯啊！…不够、更深一点…全部都…啊啊！」
+			ELSE
+				PRINTFORM 「里面…进到这么深…啊啊…啊…已经是…%CSTR:2%的东西…了！
+				CALL PANT_VOICE2(3)
+				PRINTL 」
+			ENDIF
+			RETURN 0
+		ENDIF
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;185,侵犯助手
+;-------------------------------------------------
+IF SELECTCOM == 185
+	IF TALENT:恋慕 || TALENT:相亲相爱
+		PRINTFORML 「不……不要这样………不想看这个……｣
+	ELSEIF TALENT:淫乱 || TALENT:娼妇
+		PRINTFORML 「唔……真好……好想一起呢……｣
+	ELSEIF TALENT:服从 || TALENT:隶属
+		PRINTFORML 「只要需要看着就好了吗…嗯…知道了…｣
+	ENDIF
+	;未屈服、非子供、非不思议子
+	IF MARK:屈服刻印 < 3 && !TALENT:幼稚 && !TALENT:150 && CFLAG:600 != 11 && CFLAG:600 != 13
+		IF !RAND:3
+			IF !RAND:2
+				PRINTFORML 「这很有趣吗？真是下流的嗜好…｣
+			ELSE
+				PRINTFORML 「这很有趣？真是下流的嗜好呢…｣
+			ENDIF
+		ELSEIF !RAND:2
+			PRINTFORML 「就这么有趣吗…真是下流的嗜好…｣
+		ELSE
+			PRINTFORML 「就这么有趣吗…非常下流的嗜好呢…｣
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;215,助手侵犯主人
+;-------------------------------------------------
+IF SELECTCOM == 215
+	IF TALENT:恋慕 || TALENT:相亲相爱
+		PRINTFORML 「不、不要………不想看这样的……｣
+	ELSEIF TALENT:淫乱 || TALENT:娼妇
+		PRINTFORML 「唔……好棒……好想加入啊……｣
+	ELSEIF TALENT:服从 || TALENT:隶属
+		PRINTFORML 「只要需要看着就好了吗…嗯…明白了…｣
+	ENDIF
+	;未屈服、非子供、非不思议子
+	IF MARK:屈服刻印 < 3 && !TALENT:幼稚 && !TALENT:150 && CFLAG:600 != 11 && CFLAG:600 != 13
+		IF !RAND:3
+			IF !RAND:2
+				PRINTFORML 「就这么喜欢让人看吗？真是变态的嗜好呢…｣
+			ELSE
+				PRINTFORML 「这么喜欢让人看着？真是变态的嗜好…｣
+			ENDIF
+		ELSEIF !RAND:2
+			PRINTFORML 「喜欢被人看着干？真是变态的嗜好啊…｣
+		ELSE
+			PRINTFORML 「喜欢让人看着做？真是变态的嗜好呢…｣
+		ENDIF
+		RETURN 0
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;195,约会に行く 汎用版
+;-------------------------------------------------
+IF SELECTCOM == 195
+	LOCAL:2 = 0
+	WAIT
+	PRINTL 那么，要去哪里呢？
+
+	;選択肢に出る约会場所を随机で決定
+	LOCALS:1 = %DATE_PLACE()%
+	STR:21 = %STR:5%
+	$DATE_PLACE2
+	LOCALS:2 = %DATE_PLACE()%
+	SIF LOCALS:2 == LOCALS:1
+		GOTO DATE_PLACE2
+	STR:22 = %STR:5%
+	$DATE_PLACE3
+	LOCALS:3 = %DATE_PLACE()%
+	SIF LOCALS:3 == LOCALS:1 || LOCALS:3 == LOCALS:2
+		GOTO DATE_PLACE3
+	STR:23 = %STR:5%
+	PRINTL
+	PRINTFORML 　[1] %LOCALS:1%
+	PRINTFORML 　[2] %LOCALS:2%
+	PRINTFORML 　[3] %LOCALS:3%
+	PRINTFORML 　[4] 让%CALLNAME%来决定
+	$DATE_PLACE_DECIDE
+	INPUT
+	SIF RESULT < 1 || RESULT > 4
+		GOTO DATE_PLACE_DECIDE
+	;约会場所決定
+	IF RESULT >= 1 && RESULT <= 3
+		LOCALS = %LOCALS:RESULT%
+		;LOCAL:2＝自己選んだフラグ
+		LOCAL:2 = 1
+		STR:5 = %STR:(20+RESULT)%
+	ELSE
+		LOCAL:1 = 0
+		$DATE_PLACE4
+		LOCALS = %DATE_PLACE()%
+		STR:6 = %LOCALS%
+		IF DATE_PLACE_LIKE() < 0 && LOCAL:1 < 10
+			LOCAL:1 += 1
+			GOTO DATE_PLACE4
+		ENDIF
+	ENDIF
+
+	PRINTL
+	PRINTL 　　　・
+	PRINTL 　　　・
+	PRINTW 　　　・
+	PRINTL
+	PRINTFORMW 和%CALLNAME%一起来到了%LOCALS%。
+	PRINTFORMW 两人%STR:5%。
+	PRINTL
+	PRINTL 　　　・
+	PRINTL 　　　・
+	PRINTW 　　　・
+	PRINTL
+	;奴隶の　場所に对する好みを計算
+	STR:6 = %LOCALS%
+	;LOCAL ：本心で好きかどうかの値
+	LOCAL = DATE_PLACE_LIKE()
+	;LOCAL:1 ：どう答えたかの値　1は好き　0は普通　-1は嫌い
+	LOCAL:1 = 0
+	;すごく好きな場所
+	IF LOCAL > 3
+		;嘘をつく確率が下がる
+		LOCAL:1 = 1
+		SIF !RAND:3
+			LOCAL:1 = 0
+		SIF !RAND:6
+			LOCAL:1 = -1
+	;好きな場所
+	ELSEIF LOCAL > 1
+		LOCAL:1 = 1
+		SIF !RAND:2
+			LOCAL:1 = 0
+		SIF !RAND:4
+			LOCAL:1 = -1
+	;すごく嫌いな場所
+	ELSEIF LOCAL < -3
+		LOCAL:1 = -1
+		SIF !RAND:3
+			LOCAL:1 = 0
+		SIF !RAND:6
+			LOCAL:1 = 1
+	;嫌いな場所
+	ELSEIF LOCAL < -1
+		LOCAL:1 = -1
+		SIF !RAND:2
+			LOCAL:1 = 0
+		SIF !RAND:4
+			LOCAL:1 = 1
+	;まあまあの場所
+	ELSE
+		LOCAL:1 = 0
+		SIF !RAND:2
+			LOCAL:1 = 1
+		SIF !RAND:2
+			LOCAL:1 = -1
+	ENDIF
+	PRINTFORM %CALLNAME%
+	;最高と答えた場合
+	IF LOCAL:1 == 1
+		IF CFLAG:600 == 1
+			PRINTFORMW 「今天的约会真是太棒了！」
+		ELSEIF CFLAG:600 == 2
+			PRINTFORMW 「今天过得很充实呢」
+		ELSEIF CFLAG:600 == 3
+			PRINTFORMW 「真是不错的一天」
+		ELSEIF CFLAG:600 == 4
+			PRINTFORMW 「和%MASTERNAME%一起还真是开心啊」
+		ELSEIF CFLAG:600 == 5
+			PRINTFORMW 「约…今天这一天挺不错的嘛」
+		ELSEIF CFLAG:600 == 6
+			PRINTFORMW 「以%MASTERNAME%的水准来说这一天安排得不错，%CSTR:0%期待着下一次」
+		ELSEIF CFLAG:600 == 7
+			PRINTFORMW 「呵呵，%CSTR:2%觉得这一天过得如何？」
+		ELSEIF CFLAG:600 == 8
+			PRINTFORMW 「今天…很棒。下次也叫上%CSTR:0%吧」
+		ELSEIF CFLAG:600 == 9
+			PRINTFORMW 「偶尔像这样一起出去也还不错」
+		ELSEIF CFLAG:600 == 10
+			PRINTFORMW 「好开心，下次也带上%CSTR:0%一起吧，好吗？」
+		ELSEIF CFLAG:600 == 11
+			PRINTFORMW 「只要是和%MASTERNAME%一起，不管做什么都很快乐」
+		ELSEIF CFLAG:600 == 12
+			PRINTFORMW 「哼哼，和%CSTR:0%一起去约会应该是一件很愉快的事吧！」
+		ELSEIF CFLAG:600 == 13
+			PRINTFORMW 「这样就结束了吗，还想和%MASTERNAME%再去一次…」
+	    ELSE
+	    	PRINTFORMW 「好棒啊，这就是约会吗？还想再来一次啊！」
+		ENDIF
+		PRINTL
+		PRINTL 　[1] 重重点头
+		PRINTL 　[2] 犹豫了一下，点点头
+		PRINTL 　[3] 摇头
+		$SAIKOUDATTA
+		INPUT
+		SIF RESULT < 1 || RESULT > 3
+			GOTO SAIKOUDATTA
+		IF RESULT == 1
+		;主人：強く同意する
+            PRINTFORM %CALLNAME%
+            IF CFLAG:600 == 1
+                PRINTFORMW 「太好了，留下了美好的回忆呢！」
+            ELSEIF CFLAG:600 == 2
+                PRINTFORMW 「%MASTERNAME%也这么认为真是太好了」
+            ELSEIF CFLAG:600 == 3
+                PRINTFORMW 「下次也邀请%CSTR:0%吧」
+            ELSEIF CFLAG:600 == 4
+                PRINTFORMW 「哼哼，两情相悦呢」
+            ELSEIF CFLAG:600 == 5
+                PRINTFORMW 「喂，可别太得意了」
+            ELSEIF CFLAG:600 == 6
+                PRINTFORMW 「%CSTR:2%这么高兴%CSTR:0%反而有点不知道怎么接…」
+            ELSEIF CFLAG:600 == 7
+                PRINTFORMW 「%CSTR:0%也这么认为呢」
+            ELSEIF CFLAG:600 == 8
+                PRINTFORMW 「…太好了」
+            ELSEIF CFLAG:600 == 9
+                PRINTFORMW 「很好，%CSTR:0%开始期待下一次了」
+            ELSEIF CFLAG:600 == 10
+                PRINTFORMW 「嘿嘿，大·满·足❤」
+            ELSEIF CFLAG:600 == 11
+                PRINTFORML 「好想独占%MASTERNAME%，24小时不分开…」
+                PRINTFORMW 小声地碎碎念着
+            ELSEIF CFLAG:600 == 12
+                PRINTFORMW 「%CSTR:0%是%CSTR:1%约会的唯一人选，记住了哦？」
+            ELSEIF CFLAG:600 == 13
+                PRINTFORMW 「嗯！约好了哦」
+            ELSE
+                PRINTFORMW 「那，下次也要选%CSTR:0%，不能去找别人哦」
+            ENDIF
+			PRINTL 
+			PRINTL 爱情经验＋5
+			SETCOLOR 192, 192, 192
+			PRINTL <达成感増加・大>
+			RESETCOLOR
+			SOURCE:达成感 += 300
+			EXP:爱情经验 += 5
+			;本音 好き→本当に好き
+			IF LOCAL > 1
+				SETCOLOR 192, 192, 192
+				SIF TALENT:MASTER:观察眼
+					PRINTW <情爱＆恭顺増加>
+				RESETCOLOR
+				SOURCE:情爱 += 100
+				SOURCE:恭顺 += 100
+			;本音 普通→気を使っている
+			ELSEIF LOCAL >= -1 && LOCAL <= 1
+				IF TALENT:MASTER:观察眼
+					PRINTL 
+					PRINTFORML ……但是，%CALLNAME%的真实想法恐怕并非如此。
+					PRINTL 
+					SETCOLOR 192, 192, 192
+					PRINTL <屈从＆郁闷増加>
+					RESETCOLOR
+				ENDIF
+				SOURCE:屈从 += 100
+				SOURCE:郁闷 += 400
+			;本音 嫌い→ものすごく気を使っている
+			ELSE 
+				IF TALENT:MASTER:观察眼
+					PRINTL 
+					PRINTFORML ……但是，%CALLNAME%的真实想法恐怕并非如此。
+					PRINTL 
+					SETCOLOR 192, 192, 192
+					PRINTL <屈从＆郁闷増加・大>
+					RESETCOLOR
+				ENDIF
+				SOURCE:屈从 += 300
+				SOURCE:郁闷 += 800
+			ENDIF
+		ELSEIF RESULT == 2
+		;主人：控えめに同意する
+            PRINTFORM %CALLNAME%
+            IF CFLAG:600 == 1
+                PRINTFORMW 「有留下美好的回忆呢」
+            ELSEIF CFLAG:600 == 2
+                PRINTFORMW 温柔地笑了
+            ELSEIF CFLAG:600 == 3
+                PRINTFORMW 「没什么事的话，%CSTR:0%先回去了」
+            ELSEIF CFLAG:600 == 4
+                PRINTFORMW 「下次还想去的话，可别忘记叫上%CSTR:0%哦」
+            ELSEIF CFLAG:600 == 5
+                PRINTFORML 「哼…」
+                PRINTFORMW 把头别过去了
+            ELSEIF CFLAG:600 == 6
+                PRINTFORML 「总比…天天做那种事有意义吧」
+                PRINTFORMW 很小声地抱怨着
+            ELSEIF CFLAG:600 == 7
+                PRINTFORMW 「%CSTR:2%有享受到，%CSTR:0%也就放心了」
+            ELSEIF CFLAG:600 == 8
+                PRINTFORMW 「…不用勉强自己赞同%CSTR:0%」
+            ELSEIF CFLAG:600 == 9
+                PRINTFORMW 「那%CSTR:0%就安心地等着了」
+            ELSEIF CFLAG:600 == 10
+                PRINTFORMW 「欸…其实并不想吗？不行哦，这种时候应该有气势地点头吧」
+            ELSEIF CFLAG:600 == 11
+                PRINTFORMW 「所以下次也带上%CSTR:0%吧，会努力满足%MASTERNAME%的要求的」
+            ELSEIF CFLAG:600 == 12
+                PRINTFORMW 「感到荣幸吧，能够和%CSTR:0%约会」
+            ELSEIF CFLAG:600 == 13
+                PRINTFORMW 「那就这么约好了」
+            ELSE
+                PRINTFORMW 「那么，应该对%CSTR:0%负责吧？因为只有恋人才能去约会啊」
+            ENDIF
+			PRINTL 
+			PRINTL 爱情经验＋3
+			SETCOLOR 192, 192, 192
+			PRINTL <达成感増加>
+			RESETCOLOR
+			SOURCE:达成感 += 100
+			EXP:爱情经验 += 3
+			PRINTL 
+			;本音 好き→本当に好き
+			IF LOCAL > 1
+			;本音 普通→気を使っている
+			ELSEIF LOCAL >= -1 && LOCAL <= 1
+				IF TALENT:MASTER:观察眼
+					PRINTFORML ……不过实际上%CALLNAME%还想要更强烈的回应吧。
+					PRINTL 
+					SETCOLOR 192, 192, 192
+					PRINTL <情爱＆恭顺増加>
+					RESETCOLOR
+				ENDIF
+				SOURCE:情爱 += 100
+				SOURCE:恭顺 += 100
+			;本音 嫌い→ものすごく気を使っている
+			ELSE 
+				IF TALENT:MASTER:观察眼
+					PRINTFORML ……但是，%CALLNAME%的真实想法恐怕并非如此。
+					PRINTL 
+					SETCOLOR 192, 192, 192
+					PRINTL <屈从＆郁闷増加>
+					RESETCOLOR
+				ENDIF
+				SOURCE:屈从 += 100
+				SOURCE:郁闷 += 400
+			ENDIF
+		ELSE
+		;主人：否定する
+            PRINTFORM %CALLNAME%
+            IF CFLAG:600 == 1
+                PRINTFORMW 「咦？抱、抱歉，%CSTR:0%是不是太得意忘形了…」
+            ELSEIF CFLAG:600 == 2
+                PRINTFORMW 「那个…%CSTR:0%说错什么了吗？」
+            ELSEIF CFLAG:600 == 3
+                PRINTFORMW 「并不这样觉得吗…」
+            ELSEIF CFLAG:600 == 4
+                PRINTFORMW 「啊咧，难道%MASTERNAME%不这么想？有点受打击呢…」
+            ELSEIF CFLAG:600 == 5
+                PRINTFORMW 「什么啊…不喜欢的话一开始就别邀请啊…」
+            ELSEIF CFLAG:600 == 6
+                PRINTFORML 「不愿意就算了，犯不着做出这种表情吧」
+                PRINTFORMW 好像有些不安
+            ELSEIF CFLAG:600 == 7
+                PRINTFORMW 「是%CSTR:0%哪里做得不好吗…」
+            ELSEIF CFLAG:600 == 8
+                PRINTFORML 「……对不起」
+                PRINTFORMW 突然开始道歉
+            ELSEIF CFLAG:600 == 9
+                PRINTFORMW 「这…为什么会摇头…」
+            ELSEIF CFLAG:600 == 10
+                PRINTFORMW 「生、生气了吗…」
+            ELSEIF CFLAG:600 == 11
+                PRINTFORML 「……」
+                PRINTFORMW 似乎受到打击了
+            ELSEIF CFLAG:600 == 12
+                PRINTFORMW 「喂…这算什么态度……」
+            ELSEIF CFLAG:600 == 13
+                PRINTFORMW 「不可以吗？好吧…」
+            ELSE
+                PRINTFORMW 「不算吗…」
+            ENDIF
+			PRINTL 
+			PRINTL 爱情经验－3
+			SETCOLOR 192, 192, 192
+			PRINTL <恐惧増加・大>
+			RESETCOLOR
+			SOURCE:恐惧 += 1500
+			EXP:爱情经验 -= 3
+			PRINTL 
+			;本音 好き→本当に好き
+			IF LOCAL > 1
+			;本音 普通→気を使っている
+			ELSEIF LOCAL >= -1 && LOCAL <= 1
+				IF TALENT:MASTER:观察眼
+					PRINTFORML ……%CALLNAME%可能是希望得到肯定的答复吧。
+					PRINTL 
+					SETCOLOR 192, 192, 192
+					PRINTL <屈从＆郁闷増加>
+					RESETCOLOR
+				ENDIF
+				SOURCE:屈从 += 100
+				SOURCE:郁闷 += 400
+			;本音 嫌い→ものすごく気を使っている
+			ELSE 
+				IF TALENT:MASTER:观察眼
+					PRINTFORML ……实际上%CALLNAME%可能同样觉得这次约会很无聊。
+					PRINTL 
+					SETCOLOR 192, 192, 192
+					PRINTL <情爱＆恭顺＆屈从＆郁闷増加>
+					RESETCOLOR
+				ENDIF
+				SOURCE:情爱 += 100
+				SOURCE:恭顺 += 100
+				SOURCE:屈从 += 100
+				SOURCE:郁闷 += 400
+			ENDIF
+		ENDIF
+	;まあまあと答えた場合
+	ELSEIF LOCAL:1 == 0
+		IF CFLAG:600 == 1
+			PRINTFORMW 「今天的约会也就那样吧…」
+		ELSEIF CFLAG:600 == 2
+			PRINTFORMW 「今天的约会感觉有些遗憾…」
+		ELSEIF CFLAG:600 == 3
+			PRINTFORMW 「今天的约会总觉得差了点什么」
+		ELSEIF CFLAG:600 == 4
+			PRINTFORMW 「今天的约会，中规中矩吧」
+		ELSEIF CFLAG:600 == 5
+			PRINTFORMW 「所谓的约会也不是那么好嘛…」
+		ELSEIF CFLAG:600 == 6
+			PRINTFORMW 「该说不愧是和%MASTERNAME%一起吗，平淡得像白开水」
+		ELSEIF CFLAG:600 == 7
+			PRINTFORMW 「好像并非是快乐的一天呢」
+		ELSEIF CFLAG:600 == 8
+			PRINTFORMW 「今天的约会……没什么」
+		ELSEIF CFLAG:600 == 9
+			PRINTFORMW 「今天的约会，不太行啊」
+		ELSEIF CFLAG:600 == 10
+			PRINTFORMW 「啊…有点失望啊，不过也不能说差」
+		ELSEIF CFLAG:600 == 11
+			PRINTFORMW 「虽然是和%MASTERNAME%一起，但今天的约会…感觉难以评价」
+		ELSEIF CFLAG:600 == 12
+			PRINTFORMW 「难以置信，这种东西会被称之为约会」
+		ELSEIF CFLAG:600 == 13
+			PRINTFORMW 「无可无不可…的感觉？」
+	    ELSE
+	        PRINTFORMW 「这就完了吗…好平淡的一天」
+		ENDIF
+		PRINTL
+		PRINTL 　[1] 同意
+		PRINTL 　[2] 这边倒是有享受到…
+		PRINTL 　[3] 不是很有趣吗？
+		$MAAMAADATTA
+		INPUT
+		SIF RESULT < 1 || RESULT > 3
+			GOTO MAAMAADATTA
+		IF RESULT == 1
+		;主人：同意する
+			PRINTFORM %CALLNAME%
+			IF CFLAG:600 == 1
+    			PRINTFORMW 叹了口气
+    		ELSEIF CFLAG:600 == 2
+    			PRINTFORMW 「下次去别的地方试试吧」
+    		ELSEIF CFLAG:600 == 3
+    			PRINTFORMW 抱着手臂不再说话
+    		ELSEIF CFLAG:600 == 4
+    			PRINTFORMW 「下次带%CSTR:2%去更有意思的地方」
+    		ELSEIF CFLAG:600 == 5
+    			PRINTFORMW 「喂，真的同意是怎么回事啊…」
+    		ELSEIF CFLAG:600 == 6
+    			PRINTFORMW 「竟然自己也同意吗…」
+    		ELSEIF CFLAG:600 == 7
+    			PRINTFORMW 「那%CSTR:0%可以期待下一次会更好吗？」
+    		ELSEIF CFLAG:600 == 8
+    			PRINTFORMW 「%CSTR:0%明明什么也没有说…」
+    		ELSEIF CFLAG:600 == 9
+    			PRINTFORMW 「看来我们持有相同的意见」
+    		ELSEIF CFLAG:600 == 10
+    			PRINTFORMW 「唉，本来相当期待的啊」
+    		ELSEIF CFLAG:600 == 11
+    			PRINTFORMW 「好遗憾啊，本来想让%MASTERNAME%开心的」
+    		ELSEIF CFLAG:600 == 12
+    			PRINTFORMW 「哼，多半是因为跟%CSTR:1%出来的缘故…反正不会是%CSTR:0%的错」
+    		ELSEIF CFLAG:600 == 13
+    			PRINTFORML 「别灰心，下次一定会有趣的」
+    			PRINTFORMW 莫名其妙地开始鼓励了
+    	    ELSE
+    	        PRINTFORMW 「约会什么的，也不是那么好玩啊」
+    		ENDIF
+			PRINTL 
+			;本音 好き→控えめに言う
+			IF LOCAL > 1
+				IF TALENT:MASTER:观察眼
+					PRINTFORML ……实际上%CALLNAME%可能觉得这次约会挺棒的。
+					PRINTL 
+					SETCOLOR 192, 192, 192
+					PRINTL <屈从＆郁闷増加>
+					RESETCOLOR
+				ENDIF
+				SOURCE:屈从 += 100
+				SOURCE:郁闷 += 400
+			;本音 普通→本当に普通
+			ELSEIF LOCAL >= -1 && LOCAL <= 1
+				SETCOLOR 192, 192, 192
+				SIF TALENT:MASTER:观察眼
+					PRINTL <情爱＆恭顺増加>
+				RESETCOLOR
+				SOURCE:情爱 += 100
+				SOURCE:恭顺 += 100
+			;本音 嫌い→気を使っている
+			ELSE 
+				IF TALENT:MASTER:观察眼
+					PRINTFORML ……实际上%CALLNAME%可能觉得这次约会非常无聊。
+					PRINTL 
+					SETCOLOR 192, 192, 192
+					PRINTL <屈从＆郁闷增加>
+					RESETCOLOR
+				ENDIF
+				SOURCE:屈从 += 100
+				SOURCE:郁闷 += 400
+			ENDIF
+		ELSEIF RESULT == 2
+		;主人：面白かったと言う
+			PRINTFORM %CALLNAME%
+			IF CFLAG:600 == 1
+    			PRINTFORML 「是、是吗？对不起哦…」
+    			PRINTFORMW 突然开始道歉了
+    		ELSEIF CFLAG:600 == 2
+    			PRINTFORMW 「嗯？那真是太好了」
+    		ELSEIF CFLAG:600 == 3
+    			PRINTFORMW 「是吗…」
+    		ELSEIF CFLAG:600 == 4
+    			PRINTFORMW 「哎？不行啊，这样就满足也太逊了」
+    		ELSEIF CFLAG:600 == 5
+    			PRINTFORMW 「竟然说有享受到…%CSTR:2%的要求也太低了吧」
+    		ELSEIF CFLAG:600 == 6
+    			PRINTFORMW 「…我们是不一样的」
+    		ELSEIF CFLAG:600 == 7
+    			PRINTFORMW 「哦？那还真是…」
+    		ELSEIF CFLAG:600 == 8
+    			PRINTFORMW 「那不是挺好的吗？」
+    		ELSEIF CFLAG:600 == 9
+    			PRINTFORMW 「嘁…」
+    		ELSEIF CFLAG:600 == 10
+    			PRINTFORMW 「不会吧？…哎，认真的？」
+    		ELSEIF CFLAG:600 == 11
+    			PRINTFORML 「真的吗？%MASTERNAME%觉得好的话，那%CSTR:0%也一样！」
+    			PRINTFORMW 立刻改口了
+    		ELSEIF CFLAG:600 == 12
+    			PRINTFORMW 「哈啊？%CSTR:1%的眼光真不是一般的差，说真的哦？」
+    		ELSEIF CFLAG:600 == 13
+    			PRINTFORML 「难道是%CSTR:0%的问题吗…」
+    			PRINTFORMW 好像自我怀疑了
+    		ELSE
+    			PRINTFORML 「是吗…那%CSTR:0%再努力适应一下吧」
+    			PRINTFORMW 似乎认为是自己的问题
+    		ENDIF
+			PRINTL 
+			PRINTL 爱情经验＋3
+			SETCOLOR 192, 192, 192
+			PRINTL <达成感増加>
+			RESETCOLOR
+			SOURCE:达成感 += 100
+			EXP:爱情经验 += 3
+			PRINTL 
+			;本音 好き→控えめに言う
+			IF LOCAL > 1
+				IF TALENT:MASTER:观察眼
+					PRINTFORML ……实际上%CALLNAME%可能同样觉得这次约会还不错。
+					PRINTL 
+					SETCOLOR 192, 192, 192
+					PRINTL <情爱＆恭顺増加>
+					RESETCOLOR
+				ENDIF
+				SOURCE:情爱 += 100
+				SOURCE:恭顺 += 100
+			;本音 普通→本当に普通
+			ELSEIF LOCAL >= -1 && LOCAL <= 1
+			;本音 嫌い→気を使っている
+			ELSE 
+				IF TALENT:MASTER:观察眼
+					PRINTFORML ……实际上%CALLNAME%可能觉得这次约会非常无聊。
+					PRINTL 
+					SETCOLOR 192, 192, 192
+					PRINTL <屈从＆郁闷増加>
+					RESETCOLOR
+				ENDIF
+				SOURCE:屈从 += 100
+				SOURCE:郁闷 += 400
+			ENDIF
+		ELSE
+		;主人：面白くなかったと言う
+			PRINTFORM %CALLNAME%
+			IF CFLAG:600 == 1
+    			PRINTFORML 「欸、欸——？！抱歉！」
+    			PRINTFORMW 突然开始道歉了
+    		ELSEIF CFLAG:600 == 2
+    			PRINTFORMW 「是、是这样吗…？」
+    		ELSEIF CFLAG:600 == 3
+    			PRINTFORML 「%CSTR:2%竟然那么想吗…！」
+    			PRINTFORMW 罕见地震惊了
+    		ELSEIF CFLAG:600 == 4
+    			PRINTFORMW 「开玩笑吧，这样也能满足…？！啊，不，没什么…」
+    		ELSEIF CFLAG:600 == 5
+    			PRINTFORMW 「…好吧，看来我们的看法不太一样」
+    		ELSEIF CFLAG:600 == 6
+    			PRINTFORMW 「无法达成共识呢」
+    		ELSEIF CFLAG:600 == 7
+    			PRINTFORMW 「哦？%CSTR:2%觉得有趣的话，那也不错」
+    		ELSEIF CFLAG:600 == 8
+    			PRINTFORMW 「嗯…算是吧……」
+    		ELSEIF CFLAG:600 == 9
+    			PRINTFORMW 「突然不知道回什么好…」
+    		ELSEIF CFLAG:600 == 10
+    			PRINTFORMW 「原来这样也能算有趣啊…%MASTERNAME%太好糊弄了啦」
+    		ELSEIF CFLAG:600 == 11
+    			PRINTFORMW 「是吗？看到%MASTERNAME%满足的样子，%CSTR:0%好像也开心起来了」
+    		ELSEIF CFLAG:600 == 12
+    			PRINTFORMW 「竟然说有趣…真是不可理喻啊，%CSTR:1%这家伙」
+    		ELSEIF CFLAG:600 == 13
+    			PRINTFORMW 「哪里？哪里有趣？」
+    		ELSE
+    			PRINTFORML 「…好，%CSTR:0%会努力适应的！」
+    			PRINTFORMW 似乎认为是自己的问题
+    		ENDIF
+			PRINTL 
+			SETCOLOR 192, 192, 192
+			PRINTL <恐惧増加>
+			RESETCOLOR
+			SOURCE:恐惧 += 1000
+			PRINTL 
+			;本音 好き→控えめに言う
+			IF LOCAL > 1
+				IF TALENT:MASTER:观察眼
+					PRINTFORML ……实际上%CALLNAME%大概觉得这次约会非常无聊。
+					PRINTL 
+					SETCOLOR 192, 192, 192
+					PRINTL <屈从＆郁闷増加>
+					RESETCOLOR
+				ENDIF
+				SOURCE:屈从 += 100
+				SOURCE:郁闷 += 400
+			;本音 普通→本当に普通
+			ELSEIF LOCAL >= -1 && LOCAL <= 1
+			;本音 嫌い→気を使っている
+			ELSE 
+				IF TALENT:MASTER:观察眼
+					PRINTFORML ……实际上%CALLNAME%可能同样觉得这次约会还不错。
+					PRINTL 
+					SETCOLOR 192, 192, 192
+					PRINTL <情爱＆恭顺増加>
+					RESETCOLOR
+				ENDIF
+				SOURCE:情爱 += 100
+				SOURCE:恭顺 += 100
+			ENDIF
+		ENDIF
+	;つまらなかったと答えた場合
+	ELSE
+		IF CFLAG:600 == 1
+			PRINTFORMW 「今天的约会真没意思，好失望啊」
+		ELSEIF CFLAG:600 == 2
+			PRINTFORMW 「今天的约会有些…咳咳」
+		ELSEIF CFLAG:600 == 3
+			PRINTFORMW 「不及格——这就是%CSTR:0%的评价」
+		ELSEIF CFLAG:600 == 4
+			PRINTFORMW 「不行，完全不行，一点也不有趣」
+		ELSEIF CFLAG:600 == 5
+			PRINTFORMW 「这算什么…今天完全浪费了啊」
+		ELSEIF CFLAG:600 == 6
+			PRINTFORMW 「如果这都能算约会的话……算了」
+		ELSEIF CFLAG:600 == 7
+			PRINTFORMW 「呵呵，这样不能称之为约会吧」
+		ELSEIF CFLAG:600 == 8
+			PRINTFORMW 「说实话，感到失望了」
+		ELSEIF CFLAG:600 == 9
+			PRINTFORMW 「再多来几次%CSTR:0%可受不了」
+		ELSEIF CFLAG:600 == 10
+			PRINTFORMW 「唔唔，浪费了时间啊」
+		ELSEIF CFLAG:600 == 11
+			PRINTFORMW 「还是想去更有意思的地方啊」
+		ELSEIF CFLAG:600 == 12
+			PRINTFORMW 「糟糕，下品，差劲。以前追求%CSTR:0%的人也不少，像%CSTR:1%这么不上道的还是独一份」
+		ELSEIF CFLAG:600 == 13
+			PRINTFORMW 「没意思，不想有下次了」
+		ELSE
+            PRINTFORMW 「还不如待在家里呢…」
+		ENDIF
+		PRINTL
+		PRINTL 　[1] 强烈同意
+		PRINTL 　[2] 犹豫了一下表示同意
+		PRINTL 　[3] 明明很有趣啊……
+		$DAMEDATTA
+		INPUT
+		SIF RESULT < 1 || RESULT > 3
+			GOTO DAMEDATTA
+		IF RESULT == 1
+		;主人：強く同意する
+			PRINTFORM %CALLNAME%
+			IF CFLAG:600 == 1
+    			PRINTFORMW 「果然，%MASTERNAME%也是这么想的」
+    		ELSEIF CFLAG:600 == 2
+    			PRINTFORMW 「下次一起去更有意思的地方吧」
+    		ELSEIF CFLAG:600 == 3
+    			PRINTFORMW 「唉，举步维艰啊」
+    		ELSEIF CFLAG:600 == 4
+    			PRINTFORML 「所以果然还是应该换个地方么…」
+    			PRINTFORMW 好像认真地思考了起来
+    		ELSEIF CFLAG:600 == 5
+    			PRINTFORMW 「说不定正是因为对方是%CSTR:2%呢…」
+    		ELSEIF CFLAG:600 == 6
+    			PRINTFORMW 「%CSTR:2%也这么想？」
+    		ELSEIF CFLAG:600 == 7
+    			PRINTFORMW 「那么，正式的约会就从下一次开始」
+    		ELSEIF CFLAG:600 == 8
+    			PRINTFORMW 「为什么会有人觉得这种行为快乐呢」
+    		ELSEIF CFLAG:600 == 9
+    			PRINTFORMW 「果然是选错了场所的关系？」
+    		ELSEIF CFLAG:600 == 10
+    			PRINTFORMW 「那就罚%MASTERNAME%想一个更好的地方吧」
+    		ELSEIF CFLAG:600 == 11
+    			PRINTFORMW 「这、这算是约好了下一次吗？下一次也是%CSTR:0%？」
+    		ELSEIF CFLAG:600 == 12
+    			PRINTFORMW 「原来%CSTR:1%还是有自觉的啊？啊…难不成，是抖Ｍ？」
+    			PRINTFORMW 「真是的，让%CSTR:0%遭受这种体验，可是天大的罪过啊」
+    		ELSEIF CFLAG:600 == 13
+    			PRINTFORMW 「唉……」
+    		ELSE
+    		    PRINTFORMW 「那就赶快回家吧！回家，回家…」
+    		ENDIF
+			PRINTL 
+			PRINTL 爱情经验＋3
+			SETCOLOR 192, 192, 192
+			PRINTL <达成感増加>
+			RESETCOLOR
+			SOURCE:达成感 += 100
+			EXP:爱情经验 += 3
+			;本音 好き→建前 嫌い→傲娇っている
+			IF LOCAL > 1
+				IF TALENT:MASTER:观察眼
+					PRINTL 
+					PRINTFORML ……实际上%CALLNAME%可能觉得这次约会还不错。
+					PRINTL 
+					SETCOLOR 192, 192, 192
+					PRINTL <屈从＆郁闷増加・大>
+					RESETCOLOR
+				ENDIF
+				SOURCE:屈从 += 300
+				SOURCE:郁闷 += 800
+			;本音 普通→建前 嫌い→満足していないアピール
+			ELSEIF LOCAL >= -1 && LOCAL <= 1
+				IF TALENT:MASTER:观察眼
+					PRINTL 
+					PRINTFORML ……实际上%CALLNAME%可能觉得也没那么差。
+					PRINTL 
+					SETCOLOR 192, 192, 192
+					PRINTL <屈从＆郁闷増加>
+					RESETCOLOR
+				ENDIF
+				SOURCE:屈从 += 100
+				SOURCE:郁闷 += 400
+			;本音 嫌い→建前 嫌い→本当に嫌い
+			ELSE
+				SETCOLOR 192, 192, 192
+				SIF TALENT:MASTER:观察眼
+					PRINTL <情爱＆恭顺増加>
+				RESETCOLOR
+				SOURCE:情爱 += 100
+				SOURCE:恭顺 += 100
+			ENDIF
+		ELSEIF RESULT == 2
+		;主人：控えめに同意する
+			PRINTFORM %CALLNAME%
+			IF CFLAG:600 == 1
+    			PRINTFORMW 「是吧？」
+    		ELSEIF CFLAG:600 == 2
+    			PRINTFORMW 「嗯？其实%MASTERNAME%觉得还行吗？」
+    		ELSEIF CFLAG:600 == 3
+    			PRINTFORMW 「…有异议吗？」
+    		ELSEIF CFLAG:600 == 4
+    			PRINTFORMW 「所以啊，还是应该换一个地方」
+    		ELSEIF CFLAG:600 == 5
+    			PRINTFORMW 「早知道就去别的地方了，可恶」
+    		ELSEIF CFLAG:600 == 6
+    			PRINTFORMW 「不都是因为%MASTERNAME%在的关系吗？」
+    		ELSEIF CFLAG:600 == 7
+    			PRINTFORMW 「哦呀，其实%CSTR:2%意外地觉得还行吗？」
+    		ELSEIF CFLAG:600 == 8
+    			PRINTFORMW 「…其实有享受到吗？」
+    		ELSEIF CFLAG:600 == 9
+    			PRINTFORMW 「干嘛…不同意就大声说出来」
+    		ELSEIF CFLAG:600 == 10
+    			PRINTFORMW 「作为惩罚，下次也要叫%CSTR:0%哦」
+    		ELSEIF CFLAG:600 == 11
+    			PRINTFORMW 「明明想拥有更美好的回忆…唉……」
+    		ELSEIF CFLAG:600 == 12
+    			PRINTFORMW 「能有自觉是好事…不过，能否快点作出补偿呢？」
+    		ELSEIF CFLAG:600 == 13
+    			PRINTFORMW 「……不，下次也请邀请%CSTR:0%吧」
+    		ELSE
+    		    PRINTFORMW 「那我们回家吧？」
+    		ENDIF
+			PRINTL 
+			;本音 好き→建前 嫌い→傲娇っている
+			IF LOCAL > 1
+				IF TALENT:MASTER:观察眼
+					PRINTFORML ……%CALLNAME%的真实想法恐怕并非如此。
+					PRINTL 
+					SETCOLOR 192, 192, 192
+					PRINTL <屈从＆郁闷増加>
+					RESETCOLOR
+				ENDIF
+				SOURCE:屈从 += 100
+				SOURCE:郁闷 += 400
+			;本音 普通→建前 嫌い→満足していないアピール
+			ELSEIF LOCAL >= -1 && LOCAL <= 1
+				IF TALENT:MASTER:观察眼
+					PRINTFORML ……%CALLNAME%好像完全没有得到满足。
+					PRINTL
+					SETCOLOR 192, 192, 192
+					PRINTL <情爱＆恭顺増加>
+					RESETCOLOR
+				ENDIF
+				SOURCE:情爱 += 100
+				SOURCE:恭顺 += 100
+			ENDIF
+		ELSE
+		;主人：面白かったと言う
+			PRINTFORM %CALLNAME%
+			IF CFLAG:600 == 1
+    			PRINTFORMW 「真的假的？震惊……」
+    		ELSEIF CFLAG:600 == 2
+    			PRINTFORMW 「是、是吗……」
+    		ELSEIF CFLAG:600 == 3
+    			PRINTFORMW 「那是%MASTERNAME%的品味有问题吧」
+    		ELSEIF CFLAG:600 == 4
+    			PRINTFORMW 「骗人的吧，这样也能算有趣吗！？」
+    		ELSEIF CFLAG:600 == 5
+    			PRINTFORMW 「……%MASTERNAME%真是个笨蛋」
+    		ELSEIF CFLAG:600 == 6
+    			PRINTFORMW 「的确像是%MASTERNAME%能说出的话」
+    		ELSEIF CFLAG:600 == 7
+    			PRINTFORMW 「嗯？这可真是……」
+    		ELSEIF CFLAG:600 == 8
+    			PRINTFORMW 「……啊？」
+    		ELSEIF CFLAG:600 == 9
+    			PRINTFORMW 「……还是饶了%CSTR:0%吧」
+    		ELSEIF CFLAG:600 == 10
+    			PRINTFORMW 「打击——感受竟然完全不同…」
+    		ELSEIF CFLAG:600 == 11
+    			PRINTFORML 「什、什么…」
+    			PRINTFORMW 好像开始慌张了
+    		ELSEIF CFLAG:600 == 12
+    			PRINTFORMW 「……真不知道说%CSTR:1%什么好，不如说到了这一步反倒有些可怜%CSTR:1%了」
+    		ELSEIF CFLAG:600 == 13
+    			PRINTFORMW 「%CSTR:2%和%CSTR:0%中，一定有一个人的感知出问题了」
+    		ELSE
+    		    PRINTFORMW 「不是吧…」
+    		ENDIF
+			PRINTL
+			PRINTL 爱情经验－3
+			SETCOLOR 192, 192, 192
+			PRINTL <恐惧增加・大>
+			RESETCOLOR
+			SOURCE:恐惧 += 1500
+			EXP:爱情经验 -= 3
+			PRINTL 		
+			PRINTL 
+			;本音 好き→建前 嫌い→傲娇っている
+			IF LOCAL > 1
+				IF TALENT:MASTER:观察眼
+					PRINTFORML ……实际上%CALLNAME%恐怕相当满意这次约会。
+					PRINTL
+					SETCOLOR 192, 192, 192
+					PRINTL <屈从＆郁闷＆情爱＆恭顺增加>
+					RESETCOLOR
+				ENDIF
+				SOURCE:情爱 += 100
+				SOURCE:恭顺 += 100
+				SOURCE:屈从 += 100
+				SOURCE:郁闷 += 400
+			;本音 普通→建前 嫌い→満足していないアピール
+			ELSEIF LOCAL >= -1 && LOCAL <= 1
+				IF TALENT:MASTER:观察眼
+					PRINTFORML ……%CALLNAME%是真的觉得很无趣吧。
+					PRINTL 
+					SETCOLOR 192, 192, 192
+					PRINTL <屈从＆郁闷增加>
+					RESETCOLOR
+				ENDIF
+				SOURCE:屈从 += 100
+				SOURCE:郁闷 += 400
+			ENDIF
+		ENDIF
+	ENDIF
+	IF CSTR:23 == LOCALS
+		PRINTL 
+		PRINTL 　　　・
+		PRINTL 　　　・
+		PRINTW 　　　・
+		PRINTL
+		PRINTFORM 回去的路上告诉%CALLNAME%，
+		IF LOCAL:2
+			PRINTFORMW 虽然是自己选的，但实际上已经厌倦去%LOCALS%了。
+		ELSE
+			PRINTFORMW 实际上自己已经厌倦去%LOCALS%了。
+		ENDIF
+		PRINTL 
+        PRINTFORM %CALLNAME%
+        IF CFLAG:600 == 1
+            PRINTFORMW 「其实…%CSTR:0%也是这么想的」
+        ELSEIF CFLAG:600 == 2
+            PRINTFORMW 「也是啊…以后回避掉那里吧」
+        ELSEIF CFLAG:600 == 3
+            PRINTFORMW 「嗯，同感」
+        ELSEIF CFLAG:600 == 4
+            PRINTFORMW 「但是同行的是%CSTR:0%哦，多少有点不一样吧？」
+        ELSEIF CFLAG:600 == 5
+            PRINTFORMW 「就算%MASTERNAME%这么说，%CSTR:0%本来也是这么想的…」
+        ELSEIF CFLAG:600 == 6
+            PRINTFORMW 「难得意见一致呢」
+        ELSEIF CFLAG:600 == 7
+            PRINTFORMW 「嗯，的确会这样呢，同一个地方从第二次开始就会变得无聊」
+        ELSEIF CFLAG:600 == 8
+            PRINTFORMW 「说的也是…%CSTR:0%也这么认为的」
+        ELSEIF CFLAG:600 == 9
+            PRINTFORMW 「真巧，%CSTR:0%也一样」
+        ELSEIF CFLAG:600 == 10
+            PRINTFORMW 「那还有很多可以去的地方嘛，全—部—和%CSTR:0%一起逛个遍吧」
+        ELSEIF CFLAG:600 == 11
+            PRINTFORMW 「怎、怎么办，这次和上次一样…」
+        ELSEIF CFLAG:600 == 12
+            PRINTFORMW 「厌倦？不可能吧，毕竟是和%CSTR:0%在一起，应该每一次都有新鲜的体验啊」
+        ELSEIF CFLAG:600 == 13
+            PRINTFORMW 「原来…会厌倦啊？」
+        ELSE
+            PRINTFORMW 「因为是去过的地方？」
+        ENDIF
+		PRINTL 
+		SETCOLOR 192, 192, 192
+		PRINTL <达成感减少>
+		PRINTL <恐惧增加>
+		RESETCOLOR
+		SOURCE:达成感 -= 300
+		SOURCE:恐惧 += 500
+	ELSEIF SOURCE:达成感 >= 500 && !RAND:2
+		PRINTL 
+		PRINTL 　　　・
+		PRINTL 　　　・
+		PRINTW 　　　・
+		PRINTL 
+		PRINTL 回家的途中…
+		PRINTFORMW %CALLNAME%的状况有些不对劲。
+		PRINTFORMW \@ MALE(TARGET) ? 他 # 她 \@时不时磨蹭着%PLAYER_NAME()%的身躯，似乎在索求着什么…
+		PRINTL 那么，要怎么做呢？
+		PRINTL
+		;バー镇尼判定
+		V = 0
+		SIF (!TALENT:140 && (TALENT:0 || TALENT:1) && TALENT:161) || (TALENT:140 && TALENT:161)
+			V = 1
+		;主人バー镇尼判定､入れられないだと1
+		M = 0
+		SIF (!TALENT:MASTER:140 && (TALENT:MASTER:0 || TALENT:MASTER:1) && TALENT:MASTER:161) || (TALENT:MASTER:140 && TALENT:MASTER:161)
+			M = 1
+		PRINTFORML 　[1] 责骂\@ MALE(TARGET) ? 他 # 她 \@，让\@ MALE(TARGET) ? 他 # 她 \@安分一点
+		PRINTL 　[2] 受不了了，直接推倒
+		PRINTL 　[3] 置之不理
+		PRINTL 　[4] 抱怨说这可是性骚扰哦
+		PRINTL 　[5] 任其摆布
+		SIF M == 0 && (!TALENT:TARGET:受 && !TALENT:MASTER:攻) && PENIS(TARGET) && (EXP:MASTER:Ｖ经验 >= 20 || EXP:MASTER:Ａ经验 >= 20)
+			PRINTL 　[6] 再过分一点也没关系
+		$DAISEKKIN
+		INPUT
+		PRINTL
+		IF RESULT == 1
+			IF ABL:受虐属性 >= ABL:嗜虐属性
+                PRINTFORM %CALLNAME%
+                IF CFLAG:600 == 1
+                    PRINTFORMW 「哇啊，对不起！」
+                ELSEIF CFLAG:600 == 2
+                    PRINTFORMW 「对、对不起」
+                ELSEIF CFLAG:600 == 3
+                    PRINTFORMW 「…抱歉」
+                ELSEIF CFLAG:600 == 4
+                    PRINTFORMW 「不好意思啦…会听话的」
+                ELSEIF CFLAG:600 == 5
+                    PRINTFORMW 「%CSTR:0%才没有……对不起啦」
+                ELSEIF CFLAG:600 == 6
+                    PRINTFORMW 「……对不起」
+                ELSEIF CFLAG:600 == 7
+                    PRINTFORMW 「实在是非常抱歉…」
+                ELSEIF CFLAG:600 == 8
+                    PRINTFORMW 「对不起…不会再那样了」
+                ELSEIF CFLAG:600 == 9
+                    PRINTFORMW 「…对不起」
+                ELSEIF CFLAG:600 == 10
+                    PRINTFORMW 「对不起嘛…因为气氛实在是很好…」
+                ELSEIF CFLAG:600 == 11
+                    PRINTFORMW 「对不起！再也不会那样做了！」
+                ELSEIF CFLAG:600 == 12
+                    PRINTFORMW 「哇，真敢说啊…%CSTR:1%可以，%CSTR:0%却不行？」
+                    PRINTFORMW 「被%CSTR:0%袭击应该感恩戴德才对吧？这可是不计前嫌啊？」
+                ELSEIF CFLAG:600 == 13
+                    PRINTFORMW 「…抱歉啦，没有下次了」
+                ELSE
+                    PRINTFORMW 「哎，%MASTERNAME%不喜欢吗…抱歉」
+                ENDIF
+                IF CFLAG:600 == 12
+                    PRINTFORML 为什么反而是\@ MALE(TARGET) ? 他 # 她 \@生气了……！
+                ELSE
+				    PRINTFORML 诚心道歉了。
+				ENDIF
+				PRINTL 
+				SETCOLOR 192, 192, 192
+				PRINTL <恐惧增加>
+				PRINTL <达成感减少>
+				RESETCOLOR
+				SOURCE:恐惧 += 300
+				SOURCE:达成感 -= 100
+			ELSE
+				PRINTFORML 好像非常不满。
+				PRINTL 
+				SETCOLOR 192, 192, 192
+				PRINTL <反抗增加>
+				RESETCOLOR
+				SOURCE:反抗 += 5000
+			ENDIF
+		ELSEIF RESULT == 2
+			PRINTL 咚！
+			PRINTFORML 将%CALLNAME%推倒了。
+            PRINTFORM %CALLNAME%
+            IF CFLAG:600 == 1
+                PRINTFORMW 「就、就在这里吗…？！」
+            ELSEIF CFLAG:600 == 2
+                PRINTFORMW 「可以的话希望能换一个地方……」
+            ELSEIF CFLAG:600 == 3
+                PRINTFORMW 「怎么能在这种地方…喂、住手…」
+            ELSEIF CFLAG:600 == 4
+                PRINTFORMW 「好热情啊…再粗暴一点也没关系哦？」
+            ELSEIF CFLAG:600 == 5
+                PRINTFORMW 「不要…%CSTR:0%不要在这里……」
+            ELSEIF CFLAG:600 == 6
+                PRINTFORMW 「%CSTR:1%这野蛮人，快放手…」
+            ELSEIF CFLAG:600 == 7
+                PRINTFORMW 「这么心急的吗…呵呵」
+            ELSEIF CFLAG:600 == 8
+                PRINTFORMW 「不要在这里……」
+            ELSEIF CFLAG:600 == 9
+                PRINTFORMW 「喂，混蛋，怎么可能在这里…！」
+            ELSEIF CFLAG:600 == 10
+                PRINTFORMW 「哎嘿嘿，等不及了吗，%MASTERNAME%真可爱」
+            ELSEIF CFLAG:600 == 11
+                PRINTFORMW 「哇啊、这里可不行啊…！」
+            ELSEIF CFLAG:600 == 12
+                PRINTFORMW 「哼哼，%CSTR:0%的魅力一如既往的厉害呢…可以哦，随%CSTR:1%喜欢也没问题」
+            ELSEIF CFLAG:600 == 13
+                PRINTFORMW 「外面的话还是有点…啊……」
+            ELSE
+                PRINTFORMW 「等下，不是要在这里做的意思啦……」
+            ENDIF
+			PRINTFORMW 这附近都没什么人通过，天时地利人和。
+			PRINTFORML 和%CALLNAME%在外面野战了。
+			SOURCE:露出 += 500
+			PRINTL 
+			;受
+			IF M == 0 && (!TALENT:TARGET:受 && !TALENT:MASTER:攻) && PENIS(TARGET) && (EXP:MASTER:Ｖ经验 >= 20 || EXP:MASTER:Ａ经验 >= 20) && !RAND:2
+				PRINTFORML 2人的%EXPNAME:4%＋2
+				EXP:性交经验 += 2
+				EXP:MASTER:性交经验 += 2
+				PRINTFORML 2人的%EXPNAME:2%＋1
+				EXP:绝顶经验 += 1
+				EXP:MASTER:绝顶经验 += 1
+				IF TALENT:孩童尺寸== 0
+					PRINTFORML %EXPNAME:3%＋1
+					EXP:射精经验 += 1
+				ENDIF
+				IF PENIS(MASTER) && TALENT:MASTER:孩童尺寸== 0
+					PRINTFORML %CALLNAME:MASTER%的%EXPNAME:3%＋1
+					EXP:MASTER:射精经验 += 1
+				ENDIF
+				IF TALENT:MASTER:男性 || (ABL:MASTER:Ｖ感觉 < ABL:MASTER:Ａ感觉)
+					PRINTFORML %CALLNAME:MASTER%的%EXPNAME:1%＋2
+					EXP:MASTER:Ａ经验 += 2
+					IF PENIS(TARGET) && !TALENT:孩童尺寸
+						PRINTFORML %CALLNAME:MASTER%的%EXPNAME:8%＋1
+						EXP:MASTER:肛射经验 += 1
+					ENDIF
+				ELSE
+					PRINTFORML %CALLNAME:MASTER%的%EXPNAME:0%＋2
+					EXP:MASTER:Ｖ经验 += 2
+					IF PENIS(TARGET) && !TALENT:孩童尺寸
+						PRINTFORML %CALLNAME:MASTER%的%EXPNAME:5%＋1
+						EXP:MASTER:内射经验 += 1
+					ENDIF
+				ENDIF
+			;攻
+			ELSEIF V == 0 && (!TALENT:TARGET:攻 && !TALENT:MASTER:受)
+				PRINTFORML %EXPNAME:2%＋2
+				EXP:绝顶经验 += 2
+				IF PENIS(MASTER)
+					PRINTFORML %CALLNAME:MASTER%的%EXPNAME:2%＋1
+					EXP:MASTER:绝顶经验 += 1
+				ENDIF
+				IF PENIS(MASTER)
+					PRINTFORML 2人的%EXPNAME:4%＋2
+					EXP:性交经验 += 2
+					EXP:MASTER:性交经验 += 2
+				ENDIF
+				IF PENIS(TARGET) && TALENT:孩童尺寸== 0
+					PRINTFORML %EXPNAME:3%＋2
+					EXP:射精经验 += 2
+				ENDIF
+				IF PENIS(MASTER) && TALENT:MASTER:孩童尺寸== 0
+					PRINTFORML %CALLNAME:MASTER%的%EXPNAME:3%＋1
+					EXP:MASTER:射精经验 += 1
+				ENDIF
+				IF TALENT:男性 || (ABL:Ｖ感觉 < ABL:Ａ感觉)
+					PRINTFORML %EXPNAME:1%＋2
+					EXP:Ａ经验 += 2
+					IF PENIS(MASTER) && !TALENT:MASTER:孩童尺寸
+						PRINTFORML %EXPNAME:8%＋1
+						EXP:肛射经验 += 1
+					ENDIF
+				ELSE
+					PRINTFORML %EXPNAME:0%＋2
+					EXP:Ｖ经验 += 2
+					IF CFLAG:101 > 0 && CFLAG:108 == 0 && PENIS(MASTER) && !TALENT:MASTER:孩童尺寸
+						PRINTFORML %EXPNAME:5%＋1
+						EXP:内射经验 += 1
+					ENDIF
+				ENDIF
+			;軽く
+			ELSE
+				PRINTFORML %EXPNAME:2%＋2
+				EXP:绝顶经验 += 2
+				IF PENIS(TARGET) && TALENT:孩童尺寸== 0
+					PRINTFORML %EXPNAME:3%＋2
+					EXP:射精经验 += 2
+				ENDIF
+			ENDIF
+		ELSEIF RESULT == 3
+			PRINTFORMW 一边说着为什么要做这种意味不明的行为，一边给了%CALLNAME%一个爆栗
+			IF ABL:受虐属性 >= ABL:嗜虐属性
+                PRINTFORM %CALLNAME%
+                IF CFLAG:600 == 1
+                    PRINTFORMW 「抱歉抱歉，不会再这样做了啦…」
+                ELSEIF CFLAG:600 == 2
+                    PRINTFORMW 「对不起，下次不会了……」
+                ELSEIF CFLAG:600 == 3
+                    PRINTFORMW 「抱歉，没有下次了」
+                ELSEIF CFLAG:600 == 4
+                    PRINTFORMW 「呜，好痛啊……对不起啦，没有下次了」
+                ELSEIF CFLAG:600 == 5
+                    PRINTFORMW 「什、什么啊，下手真狠……%MASTERNAME%不想做的话就算了」
+                ELSEIF CFLAG:600 == 6
+                    PRINTFORMW 「本来以为…对不起，这是最后一次」
+                ELSEIF CFLAG:600 == 7
+                    PRINTFORMW 「啊，好痛…有点伤心了呢……没有下次了哦」
+                ELSEIF CFLAG:600 == 8
+                    PRINTFORMW 「抱歉，冒犯到了吗…」
+                ELSEIF CFLAG:600 == 9
+                    PRINTFORMW 「痛痛痛…%CSTR:0%道歉，%CSTR:0%道歉！」
+                ELSEIF CFLAG:600 == 10
+                    PRINTFORMW 「呜，不但被拒绝还被打了吗…对不起嘛」
+                ELSEIF CFLAG:600 == 11
+                    PRINTFORMW 「哎哟，好痛…实在是非常抱歉……下次不敢了…」
+                ELSEIF CFLAG:600 == 12
+                    PRINTFORMW 「%CSTR:1%居然…居然胆敢殴打%CSTR:0%……太可恶了，才不会原谅%CSTR:1%！」
+                    PRINTFORMW 「……喂，为什么…还不道歉啊？%CSTR:0%是真的很生气啊！」
+                ELSEIF CFLAG:600 == 13
+                    PRINTFORMW 「呜…对不起……」
+                ELSE
+                    PRINTFORMW 「对不起…！！」
+                ENDIF
+				PRINTFORML 变得沮丧了。
+				PRINTL 
+				SETCOLOR 192, 192, 192
+				PRINTL <疼痛・恐惧增加>
+				PRINTL <达成感减少>
+				RESETCOLOR
+				SOURCE:恐惧 += 300
+				SOURCE:疼痛 += 300
+				SOURCE:达成感 -= 100
+			ELSE
+				PRINTFORML 好像非常不满。
+				PRINTL 
+				SETCOLOR 192, 192, 192
+				PRINTL <反抗增加>
+				RESETCOLOR
+				SOURCE:反抗 += 5000
+			ENDIF
+		ELSEIF RESULT == 4
+            PRINTFORM %CALLNAME%
+            IF CFLAG:600 == 1
+                PRINTFORMW 「明明平时一直对%CSTR:0%那样做…？！」
+            ELSEIF CFLAG:600 == 2
+                PRINTFORMW 「欸？可、可是明明%MASTERNAME%一直…」
+            ELSEIF CFLAG:600 == 3
+                PRINTFORMW 「这种话从%CSTR:2%的嘴里说出来，还真是荒谬」
+            ELSEIF CFLAG:600 == 4
+                PRINTFORMW 「这算什么嘛…%MASTERNAME%可以，%CSTR:0%却不可以？」
+            ELSEIF CFLAG:600 == 5
+                PRINTFORMW 「竟、竟然说是性骚扰，真过分…先性骚扰的明明是%MASTERNAME%吧！」
+            ELSEIF CFLAG:600 == 6
+                PRINTFORMW 「%CSTR:1%怎么有脸这么说…？」
+            ELSEIF CFLAG:600 == 7
+                PRINTFORMW 「虽然事先预料了各种各样的反应，没想到…」
+            ELSEIF CFLAG:600 == 8
+                PRINTFORMW 「……这算是自己骂自己吗？」
+            ELSEIF CFLAG:600 == 9
+                PRINTFORMW 「喂喂，%CSTR:2%有什么资格说这种话啊！」
+            ELSEIF CFLAG:600 == 10
+                PRINTFORMW 「好狡猾，%MASTERNAME%不是每天都在做这种事吗？」
+            ELSEIF CFLAG:600 == 11
+                PRINTFORMW （盯——）
+            ELSEIF CFLAG:600 == 12
+                PRINTFORMW 「哦哦，没有听清呢，请再重复一次…嗯嗯，就是这样……」
+                PRINTFORMW 「哈…所以%CSTR:1%也是有自觉的啊，自己平时做的都是什么档次的事……」
+            ELSEIF CFLAG:600 == 13
+                PRINTFORMW 「自己的话就不可以吗，没有说服力啊…」
+            ELSE
+                PRINTFORMW 「%CSTR:0%只是做了%MASTERNAME%对%CSTR:0%做的事，却被这样说…」
+            ENDIF
+			PRINTFORML 露出微妙的表情了……这也难怪啊。
+			PRINTL 
+			SETCOLOR 192, 192, 192
+			PRINTL <反抗增加>
+			RESETCOLOR
+			SOURCE:反抗 += 5000
+		ELSEIF RESULT == 5
+			PRINTFORML 没有喝止的后果，就是%CALLNAME%愈加得意忘形起来
+			PRINTFORMW 一边画圆圈一样挑逗%PLAYER_NAME()%的身体一边询问着反应。
+			PRINTFORML 所谓的新手的恶作剧吗…？
+			PRINTFORMW 回去之后，可得好好报复一下呢。
+			PRINTL 
+			SETCOLOR 192, 192, 192
+			PRINTL <情爱・达成感增加>
+			RESETCOLOR
+			SOURCE:情爱 += 200
+			SOURCE:达成感 += 200
+		ELSEIF RESULT == 6 && M == 0 && (!TALENT:TARGET:受 && !TALENT:MASTER:攻) && PENIS(TARGET) && (EXP:MASTER:Ｖ经验 >= 20 || EXP:MASTER:Ａ经验 >= 20)
+			PRINTL 咚！
+			PRINTFORMW %CALLNAME%的身体压了上来。
+			PRINTFORMW 等不及的似乎不只是%PLAYER_NAME()%一个人呢…
+			PRINTFORMW 和%CALLNAME%在外面野战了。
+			PRINTL 
+			SOURCE:露出 += 500
+			PRINTFORML 2人的%EXPNAME:4%＋2
+			EXP:性交经验 += 2
+			EXP:MASTER:性交经验 += 2
+			PRINTFORML 2人的%EXPNAME:2%＋1
+			EXP:绝顶经验 += 1
+			EXP:MASTER:绝顶经验 += 1
+			IF TALENT:孩童尺寸== 0
+				PRINTFORML %EXPNAME:3%＋1
+				EXP:射精经验 += 1
+			ENDIF
+			IF PENIS(MASTER) && TALENT:MASTER:孩童尺寸== 0
+				PRINTFORML %CALLNAME:MASTER%的%EXPNAME:3%＋1
+				EXP:MASTER:射精经验 += 1
+			ENDIF
+			IF TALENT:MASTER:男性 || (ABL:MASTER:Ｖ感觉 < ABL:MASTER:Ａ感觉)
+				PRINTFORML %CALLNAME:MASTER%的%EXPNAME:1%＋2
+				EXP:MASTER:Ａ经验 += 2
+				IF PENIS(TARGET) && !TALENT:孩童尺寸
+					PRINTFORML %CALLNAME:MASTER%的%EXPNAME:8%＋1
+					EXP:MASTER:肛射经验 += 1
+				ENDIF
+			ELSE
+				PRINTFORML %CALLNAME:MASTER%的%EXPNAME:0%＋2
+				EXP:MASTER:Ｖ经验 += 2
+				IF PENIS(TARGET) && !TALENT:孩童尺寸
+					PRINTFORML %CALLNAME:MASTER%的%EXPNAME:5%＋1
+					EXP:MASTER:内射经验 += 1
+				ENDIF
+			ENDIF
+		ELSE
+			GOTO DAISEKKIN
+		ENDIF
+	ENDIF
+	;今回の约会場所を前回の場所として記録
+	CSTR:23 = %LOCALS%
+	RETURN 0
+ENDIF
+;--------------------------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------------------------
+;调教状況に合わせた汎用口上
+;そのキャラ、その指令専用の口上が書いてない場合、ここの汎用口上になる
+;-------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------------------------
+;口塞いでるか首絞め中は汎用喘ぎへ飛ばす
+IF GETBIT(TFLAG:49, 4) || SELECTCOM == 112 || SELECTCOM == 517 || SELECTCOM == 518
+	SIF TFLAG:51 == 0 && FLAG:10 == 1
+		CALL PANT_VOICE2(10)
+	RETURN 0
+ENDIF
+;書いた部分の最後ににTFLAG:51 = 1と付け加えると、汎用喘ぎを省ける
+;痛苦LV1＆快感レベル1以下(快感を感じる余裕が無い状態)
+IF D == 1 && C:4 <= 1 && !RAND:3
+	;受虐狂ッ気4以上あり　もしくは陷落（強く反抗しない）
+	IF ABL:9 > 3 || KANRAKU(TARGET)
+		;ヴァギナか肛のあまりの疼痛に苦しんでいる
+		IF D:1 == 3 ||  D:2 == 3
+			;受虐狂
+			IF ABL:9 > 3 && (TALENT:淫乱 || TALENT:娼妇 || TALENT:服从 || TALENT:隶属)
+				IF !RAND:2
+					IF !RAND:4
+						PRINTFORML 「哈、哈啊…好痛…感觉…要裂开了、好棒…！
+					ELSEIF !RAND:3
+						PRINTFORML 「哈、啊啊…好痛…大概要裂开了…但是、好棒…！
+					ELSEIF !RAND:2
+						PRINTFORML 「哈、啊啊…好痛…感觉…要裂开了、好棒…！
+					ELSE
+						PRINTFORML 「哈、哈啊…大概要、裂开了吧…但是好棒…嗯…！
+					ENDIF
+				ELSE
+					IF !RAND:2
+						PRINTFORML 「虽然很痛…！哈啊…拜托了…还想要…更多…！
+					ELSE
+						PRINTFORML 「好痛…！哈啊、啊…求%CSTR:1%了…再给更…多一点…！
+					ENDIF
+				ENDIF
+				PRINT 　
+				CALL PANT_VOICE2(2)
+				PRINTFORML ｣
+			;受虐狂だけど淫乱か服从ではない、もしくは受虐狂ではないけど陷落
+			ELSE
+				IF D:1 == 3 && D:2 == 3
+					IF !RAND:2
+						IF !RAND:3
+							PRINTFORML 「身体…要裂开了…拔…出来…啊啊、啊…」
+						ELSEIF !RAND:2
+							PRINTFORML 「感觉…要裂开了…快拔…出来…啊…啊啊啊…」
+						ELSE
+							PRINTFORML 「好痛…裂…裂开了…拔出…去…哈、啊…」
+						ENDIF
+					ELSE
+						IF !RAND:4
+							PRINTFORML 「呜啊…拜、拜托……拔…拔出…不行的…已经…！」
+						ELSEIF !RAND:3
+							PRINTFORML 「呜啊…求%CSTR:1%了…拔…出去吧…已经…不行了…！」
+						ELSEIF !RAND:2
+							PRINTFORML 「呜啊…拜托了…拔…出…呜…已经…不行了…！」
+						ELSE
+							PRINTFORML 「呜、啊…求求%CSTR:1%…拔出…去…呜…已经…不行了…！」
+						ENDIF
+					ENDIF
+				ELSEIF D:1 == 3
+					IF !RAND:2
+						IF !RAND:4
+							PRINTFORML 「屁股…要裂开了…%CSTR:1%这畜…生…啊啊啊…」
+						ELSEIF !RAND:3
+							PRINTFORML 「里面…要裂开了…拔出去啊…啊啊…！」
+						ELSEIF !RAND:2
+							PRINTFORML 「屁股要…裂开了…抜、拔出去…把…那东西…！」
+						ELSE
+							PRINTFORML 「屁股…要裂开、了…快点…拔出去啊…痛…！」
+						ENDIF
+					ELSE
+						IF !RAND:3
+							PRINTFORML 「不行…啊…进不去的…呜、啊！…啊啊！！」
+						ELSEIF !RAND:2
+							PRINTFORML 「呜…不行的…进不去了…啊！…啊啊！！」
+						ELSE
+							PRINTFORML 「已经…不可能再…更深了…啊、啊啊…！」
+						ENDIF
+					ENDIF
+				ELSE
+					IF !RAND:2
+						IF !RAND:4
+							PRINTFORML 「那里…要裂开了…畜、生…啊啊、啊…」
+						ELSEIF !RAND:3
+							PRINTFORML 「里面要…裂、裂开了…拔出去啊…嗯…啊啊…！」
+						ELSEIF !RAND:2
+							PRINTFORML 「呜…不行的…进不去了…啊啊！…要裂开…了…！！」
+						ELSE
+							PRINTFORML 「已经…不可能再…更深了…啊、啊啊…快拔出去…啊…！」
+						ENDIF
+					ELSE
+						PRINTFORML 「呜、啊！…要坏了…呜…拔出去啊…啊啊啊…」
+					ENDIF
+				ENDIF
+			ENDIF
+			TFLAG:51 = 1
+		;ヴァギナか肛が痛いが快感もある
+		ELSEIF (D:1 && C:2) || (D:2 && C:1)
+			IF ABL:9 > 3 && (TALENT:淫乱 || TALENT:娼妇 || TALENT:服从 || TALENT:隶属)
+				IF CFLAG:602 && CFLAG:603
+					IF C:2 && C:1
+						PRINTFORM 「哈啊啊%UNICODE(0x2661) *1%…小穴跟屁股小穴都好热…好舒服%UNICODE(0x2661) *1%…
+					ELSEIF C:2
+						PRINTFORM 「哈啊啊%UNICODE(0x2661) *1%…屁股小穴里面好热…要融化了…好舒服%UNICODE(0x2661) *1%…
+					ELSE
+						PRINTFORM 「哈啊啊%UNICODE(0x2661) *1%…小穴里面好热…要融化了…好舒服%UNICODE(0x2661) *1%…
+					ENDIF
+				ELSEIF TALENT:娼妇
+					IF C:2 && C:1
+						PRINTFORM 「啊啊…身体好热…
+					ELSEIF C:2
+						PRINTFORM 「啊啊…身体好烫啊…
+					ELSE
+						PRINTFORM 「啊啊…身体要融化掉了…
+					ENDIF
+					IF !RAND:2
+						PRINTFORM 超爽的%UNICODE(0x2661) *1%…
+					ELSE
+						PRINTFORM 好棒啊%UNICODE(0x2661) *1%…
+					ENDIF
+				ELSE
+					IF !RAND:2
+						PRINTFORM 「呜啊啊…身体…要烧起来了…
+					ELSE
+						IF C:2 && C:1
+							PRINTFORM 「哈啊啊…身体好热…
+						ELSEIF C:2
+							PRINTFORM 「哈啊啊…后面…好热…
+						ELSE
+							PRINTFORM 「哈啊啊…小穴里面…好热…
+						ENDIF
+					ENDIF
+					IF !RAND:2
+						PRINTFORM 超级舒服%UNICODE(0x2661) *1%…
+					ELSE
+						PRINTFORM 好棒%UNICODE(0x2661) *1%…
+					ENDIF
+				ENDIF
+				CALL PANT_VOICE2(2)
+				PRINTFORML ｣
+			ELSE
+				IF !RAND:4
+					IF !RAND:6
+						PRINTFORM 「快点…拔…抜出来…这样…好奇怪啊！…
+					ELSEIF !RAND:5
+						PRINTFORM 「快点…拔…抜出来…感觉…好奇怪啊！…
+					ELSEIF !RAND:4
+						PRINTFORM 「快…拔出去…拔出去…！这样子…太奇怪了！…
+					ELSEIF !RAND:3
+						PRINTFORM 「快…快点拔、拔出去…！这样子…太奇怪了！…
+					ELSEIF !RAND:2
+						PRINTFORM 「快…快点拔、拔出去…！这样子…好奇怪啊！…
+					ELSE
+						PRINTFORM 「快点…拔、抜出去…！这样子…好奇怪啊！…
+					ENDIF
+				ELSEIF !RAND:3
+					IF !RAND:2
+						PRINTFORM 「虽然…很痛…但又好舒服…%CSTR:0%…%CSTR:0%已经不知道在说什么了…
+					ELSE
+						PRINTFORM 「虽然…很痛…但却这么舒服…%CSTR:0%…%CSTR:0%已经什么都不知道了…
+					ENDIF
+				ELSEIF !RAND:2
+					IF !RAND:3
+						PRINTFORM 「痛…呜…好痛…啊、但是却…！
+					ELSEIF !RAND:2
+						PRINTFORM 「痛…呜…明明很痛…啊、为什么…！
+					ELSE
+						PRINTFORM 「痛…呜…明明这么痛…却、为什么…！
+					ENDIF
+				ELSE
+					PRINTFORM 「咕…呜…这么痛…却…为、为什么…！
+				ENDIF
+				CALL PANT_VOICE2(1)
+				PRINTFORML ｣
+			ENDIF
+			TFLAG:51 = 1
+		;ヴァギナか肛が痛い
+		ELSEIF D:1 || D:2
+			IF ABL:9 > 3
+				IF !RAND:2
+					IF !RAND:2
+						PRINTFORM 「呜啊…好痛…又、又来了…！哈啊、啊…
+					ELSE
+						PRINTFORM 「嗯、哈啊…痛…又、又来了…！哈啊、哈…
+					ENDIF
+				ELSE
+					PRINTFORM 「咕…好痛…大概…要上瘾了…
+				ENDIF
+			ELSE
+				PRINTFORM 「呜啊…好痛…别、别动…！
+				IF !RAND:2
+					PRINTFORM 拜、拜…托了…
+				ELSE
+					PRINTFORM 求%CSTR:1%、了…啊…
+				ENDIF
+			ENDIF
+			CALL PANT_VOICE2(2)
+			PRINTFORML ｣
+			TFLAG:51 = 1
+		;肛、ヴァギナ以外の疼痛（殴る、打屁股など、鞭子、蜡烛、针、家具にするなど）
+		ELSE
+			IF ABL:9 > 3 && (TALENT:淫乱 || TALENT:娼妇 || TALENT:服从 || TALENT:隶属)
+				SELECTCASE RAND:4
+					CASE 0
+						IF !RAND:4
+							PRINTFORM 「哈啊…哈啊…更加严厉地…处罚%CSTR:0%吧～%UNICODE(0x2661) *1%…！
+						ELSEIF !RAND:3
+							PRINTFORM 「哈啊…哈啊…更严厉一点…也没关系哦%UNICODE(0x2661) *1%…！
+						ELSEIF !RAND:2
+							PRINTFORM 「哈啊…哈、啊…还想要更多的…处罚%UNICODE(0x2661) *1%…！
+						ELSE
+							PRINTFORM 「哈啊、哈啊…请给%CSTR:0%更多的…处罚吧%UNICODE(0x2661) *1%…！
+						ENDIF
+					CASE 1
+						IF !RAND:3
+							PRINTFORM 「啊啊、啊！…更痛一点…也没、关系…哈啊…！
+						ELSEIF !RAND:2
+							PRINTFORM 「啊啊、啊！…还想要更加…更加痛苦…！
+						ELSE
+							PRINTFORM 「啊啊、啊！…再多一点也没、关系…给%CSTR:0%…痛苦…！
+						ENDIF
+					CASE 2
+						IF !RAND:2
+							PRINTFORM 「啊啊…好爽…这种…痛感…
+						ELSE
+							PRINTFORM 「啊啊…好棒…这种痛感…真好…
+						ENDIF
+					CASEELSE
+						IF !RAND:4
+							PRINTFORM 「哈啊！…还想要更舒服的～…！
+						ELSEIF !RAND:3
+							PRINTFORM 「哈啊！…请让%CSTR:0%更舒服一点…！
+						ELSEIF !RAND:2
+							PRINTFORM 「哈啊、哈啊！…还想变得更舒服一点…！
+						ELSE
+							PRINTFORM 「哈啊、啊啊…把%CSTR:0%彻底弄坏吧…！
+						ENDIF
+				ENDSELECT
+				CALL PANT_VOICE2(2)
+				PRINTFORML ｣
+			ELSE
+				IF !RAND:2
+					IF !RAND:2
+						PRINTFORM 「呜啊…好痛…又、又来了…！啊啊…
+					ELSE
+						PRINTFORM 「嗯、哈啊…痛…又、又来了…！哈啊、哈…
+					ENDIF
+				ELSE
+					PRINTFORM 「哈啊、哈……啊啊……呜…好热…
+				ENDIF
+				CALL PANT_VOICE2(2)
+				PRINTFORML ｣
+			ENDIF
+			TFLAG:51 = 1
+		ENDIF
+	;受虐狂じゃない普通の状態＋未陷落 ;TFLAG:51 = 1
+	ELSE
+		;ヴァギナか肛のあまりの疼痛に苦しんでいる
+		IF D:1 == 3 || D:2 == 3
+			;両方
+			IF D:1 == 3 && D:2 == 3
+				IF !RAND:2
+					IF !RAND:6
+						PRINTFORML 「很痛耶…呜啊！下半身要…裂开来了…畜…生…」
+					ELSEIF !RAND:5
+						PRINTFORML 「痛…下半身要…裂开了啊…抜…抜出去啊…」
+					ELSEIF !RAND:4
+						PRINTFORML 「痛…身体要…裂开了…拔…抜出去…」
+					ELSEIF !RAND:3
+						PRINTFORML 「痛…下半身要…裂开了…快点拔…抜出去啊…！」
+					ELSEIF !RAND:2
+						PRINTFORML 「好痛…！下半身…裂开了…快拔出去、拔出去啊…！」
+					ELSE
+						PRINTFORML 「痛…下半身要裂开了…呜、快点拔…抜出去…！」
+					ENDIF
+				ELSE
+					IF !RAND:3
+						PRINTFORML 「两边…这样…不可能的…啊……拔、拔出去…！」
+					ELSEIF !RAND:2
+						PRINTFORML 「一起…这样…不可能的…抜出…去啊…啊啊！」
+					ELSE
+						PRINTFORML 「一起…这样…不可能的…拔…出…去啊…！」
+					ENDIF
+				ENDIF
+				TFLAG:51 = 1
+			;肛だけ
+			ELSEIF D:1 == 3
+				IF MARK:反抗刻印 > 1
+					IF !RAND:2
+						IF !RAND:4
+							PRINTFORM 「屁股…要裂开了…可…可恶…
+						ELSEIF !RAND:3
+							PRINTFORM 「屁股要…裂了…滚开…啊…
+						ELSEIF !RAND:2
+							PRINTFORM 「屁股…要坏了…拔…出去…
+						ELSE
+							PRINTFORM 「屁股…要坏掉了…畜、畜生…
+						ENDIF
+						CALL PANT_VOICE2(1)
+						PRINTFORML ｣
+					ELSE
+						IF !RAND:4
+							PRINTFORML 「请不要这样…！…绝对不行的啊！…那里、怎么可能进得去…！」
+						ELSEIF !RAND:3
+							PRINTFORML 「不要啊！…绝对不行的啊！…那里、怎么可能进得去…！」
+						ELSEIF !RAND:2
+							PRINTFORML 「不要！…绝对不可能的！…那里怎么可能…进得去啊…！」
+						ELSE
+							PRINTFORML 「别、住手！…不可能的…绝对不可能进得去啊！…怎么可能…进得去…！」
+						ENDIF
+					ENDIF
+				ELSE
+					IF !RAND:3
+						PRINTFORM 「呜啊…真的…痛得要裂开了…啊啊…住手啊…
+					ELSEIF !RAND:2
+						PRINTFORM 「呜、啊…真的…痛得要裂开了…！快停手吧…
+					ELSE
+						PRINTFORM 「呜、啊…真的…要裂成两半了…！住手啊…
+					ENDIF
+					CALL PANT_VOICE2(1)
+					PRINTFORML ｣
+				ENDIF
+				TFLAG:51 = 1
+			;ヴァギナだけ
+			ELSE
+				IF !RAND:2
+					IF !RAND:4
+						PRINTFORM 「小穴…要被弄坏了…畜…生…
+					ELSEIF !RAND:3
+						PRINTFORM 「小穴要…裂开来了…出去啊…
+					ELSEIF !RAND:2
+						PRINTFORM 「小穴要…裂成两半了…拔出、去啊…
+					ELSE
+						PRINTFORM 「小穴要…裂成两半了…滚、开啊…
+					ENDIF
+				ELSE
+					PRINTFORM 「啊、咕！这、这么痛…根本、受不了…啊…！
+				ENDIF
+				CALL PANT_VOICE2(1)
+				PRINTFORML ｣
+			ENDIF
+			TFLAG:51 = 1
+		;ヴァギナか肛が痛いが快感もある
+		ELSEIF (D:1 && C:2) || (D:2 && C:1)
+			IF MARK:反抗刻印 > 1
+				IF !RAND:3
+					IF !RAND:6
+						PRINTFORM 「这样…动起来…好痛苦…！
+					ELSEIF !RAND:5
+						PRINTFORM 「好、好难受…好痛啊…！…
+					ELSEIF !RAND:4
+						PRINTFORM 「这样子……好痛啊！
+					ELSEIF !RAND:3
+						PRINTFORM 「这样…只有、痛而已啊…
+					ELSEIF !RAND:2
+						PRINTFORM 「这样…动起来…好难受…！
+					ELSE
+						PRINTFORM 「好痛苦…好难受啊…！
+					ENDIF
+				ELSEIF !RAND:3
+					IF !RAND:6
+						PRINTFORM 「舒服什么的…完全…没有！…只有…痛而已！
+					ELSEIF !RAND:5
+						PRINTFORM 「一点都不…舒服啊！…只觉得痛而已！…
+					ELSEIF !RAND:4
+						PRINTFORM 「才、才不舒服呢！…只有痛而已！
+					ELSEIF !RAND:3
+						PRINTFORM 「一点…都不…舒服！…只有…痛而已！
+					ELSEIF !RAND:2
+						PRINTFORM 「完全不觉得…舒服…！…只有、痛…而已…
+					ELSE
+						PRINTFORM 「一点也不…舒服…！…只是…痛罢了…
+					ENDIF
+				ELSE
+					PRINTFORM 「很难…受啊…！不要…！
+				ENDIF
+				CALL PANT_VOICE2(1)
+				PRINTFORML ｣
+			ELSE
+				IF !RAND:2
+					IF !RAND:6
+						PRINTFORM 「快点…拔…抜出去…这样…好奇怪！…
+					ELSEIF !RAND:5
+						PRINTFORM 「快点…拔…抜出去…这样…好难受！…
+					ELSEIF !RAND:4
+						PRINTFORM 「请拔…抜出去…这样子…好奇怪啊…
+					ELSEIF !RAND:3
+						PRINTFORM 「请拔…抜出去…这样子…太奇怪了…
+					ELSEIF !RAND:2
+						PRINTFORM 「快点…拔…抜出去…这样…太奇怪了！…
+					ELSE
+						PRINTFORM 「快点…拔、抜出去…这样子…好难受…
+					ENDIF
+				ELSE
+					IF !RAND:4
+						PRINTFORM 「好讨厌…的…感觉…！
+					ELSEIF !RAND:3
+						PRINTFORM 「不要…感觉…好奇怪…！
+					ELSEIF !RAND:2
+						PRINTFORM 「讨厌…感觉…好奇怪…！
+					ELSE
+						PRINTFORM 「讨厌…好奇怪的…感觉…！
+					ENDIF
+				ENDIF
+				CALL PANT_VOICE2(1)
+				PRINTFORML ｣
+			ENDIF
+			TFLAG:51 = 1
+		;ヴァギナか肛が痛い
+		ELSEIF D:1 || D:2
+			IF MARK:反抗刻印 > 1
+				IF !RAND:2
+					IF !RAND:7
+						PRINTFORM 「痛…呜…好痛…都这样说了…！
+					ELSEIF !RAND:6
+						PRINTFORM 「痛…呜…都说很痛了…别这样！
+					ELSEIF !RAND:5
+						PRINTFORM 「痛…呜…都说很痛了…请不要这样！
+					ELSEIF !RAND:4
+						PRINTFORM 「痛…呜…好痛…都说很痛了啊…！
+					ELSEIF !RAND:3
+						PRINTFORM 「呜…好…痛苦…都说很痛了…别这样！
+					ELSEIF !RAND:2
+						PRINTFORM 「呜…好…痛苦…没听到说、很痛吗…！
+					ELSE
+						PRINTFORM 「呜…好…痛苦…明明这么说了…没听到…吗！
+					ENDIF
+				ELSE
+					IF !RAND:3
+						PRINTFORM 「呜、啊…好痛啊…请适可而止…啊！
+					ELSEIF !RAND:2
+						PRINTFORM 「呜、啊…好痛…适可而止…吧…！
+					ELSE
+						PRINTFORM 「呜…啊…痛、好痛啊…%CSTR:1%做够了没啊…！
+					ENDIF
+				ENDIF
+				CALL PANT_VOICE2(2)
+				PRINTFORML ｣
+			ELSE
+				IF !RAND:2
+					PRINTFORM 「啊啊…不要再…不行了…！
+				ELSE
+					IF !RAND:3
+						PRINTFORM 「咕…好痛…啊…
+					ELSEIF !RAND:2
+						PRINTFORM 「呜…痛死…了…
+					ELSE
+						PRINTFORM 「呜…好…痛…
+					ENDIF
+				ENDIF
+				CALL PANT_VOICE2(2)
+				PRINTFORML ｣
+			ENDIF
+			TFLAG:51 = 1
+		;肛、ヴァギナ以外の疼痛（殴る、打屁股など、鞭子、蜡烛、针、家具にするなど）
+		ELSE
+			IF MARK:反抗刻印 > 1
+				IF !RAND:2 && !ASSIPLAY
+					IF !RAND:7
+						PRINTFORML 「呜…就算、这样子…也不会…屈从的！
+					ELSEIF !RAND:6
+						PRINTFORML 「痛…就算、这样子…%CSTR:0%也不会…屈服…！
+					ELSEIF !RAND:5
+						PRINTFORML 「呜…用暴力…威胁…也是…没用的！
+					ELSEIF !RAND:4
+						PRINTFORML 「痛…就算、这样子…也是…没用的！
+					ELSEIF !RAND:3
+						PRINTFORML 「呜…用暴力…威胁…%CSTR:0%也不会…屈服…！
+					ELSEIF !RAND:2
+						PRINTFORML 「呜…就算、用暴力…%CSTR:0%也不会…屈服…！
+					ELSE
+						PRINTFORML 「呜…就算%CSTR:1%用暴力…%CSTR:0%也绝不…屈从…！
+					ENDIF
+				ELSE
+					IF !RAND:4
+						PRINTFORML 「呜！…靠着…暴力这样…这嗜好真是差劲…！
+					ELSEIF !RAND:3
+						PRINTFORML 「呜！…靠着…暴力这样…恶心的嗜好…！
+					ELSEIF !RAND:2
+						IF !RAND:2
+							PRINTFORML 「呜！…靠着…暴力这样…耀武扬威…恶心的嗜好呢…！
+						ELSE
+							PRINTFORML 「呜！…靠着…暴力…耀武扬威…这嗜好真是差劲…！
+						ENDIF
+					ELSE
+						PRINTFORML 「呜！…靠着暴力…耀武扬威…这真是差劲的嗜好…！
+					ENDIF
+				ENDIF
+				PRINT 　
+				CALL PANT_VOICE2()
+				PRINTFORML ｣
+			ELSE
+				PRINTFORML 「咕、啊！…就算是这样…也…没有用的…
+				PRINT 　
+				CALL PANT_VOICE2()
+				PRINTFORML ｣
+			ENDIF
+			TFLAG:51 = 1
+		ENDIF
+	ENDIF
+;快感LV4（三箇所以上绝顶寸前）
+ELSEIF C:4 == 4 && !RAND:2
+	;男性なら必ずＣＡＢ三重绝顶寸前
+	;ＣＡＢ绝顶寸前
+	IF C:1 == 0
+		;堅物、冷静タイプは娼妇にならないとアヘらない
+		IF TALENT:淫乱 && CFLAG:600 != 3 && CFLAG:600 != 8
+			IF !RAND:2
+				IF !RAND:5
+					IF !RAND:2
+						PRINTFORM 「啊啊、啊！太爽了！呜哇、这样！！完全受不了了！！
+					ELSE
+						PRINTFORM 「啊啊、嗯啊、啊…好棒！超、舒服的！！已经、受不了了！！
+					ENDIF
+				ELSEIF !RAND:4
+					PRINTFORM 「嗯啊、好棒、啊、感觉…好棒、好喜欢…喜欢…！！
+				ELSEIF !RAND:3
+					PRINTFORM 「咿呀、好棒、啊…好棒！超、舒服的！！已经、受不了了！！
+				ELSEIF !RAND:2
+					PRINTFORM 「嗯啊、好棒、啊、啊啊…要死了！！喜欢…呼…啊啊…！！
+				ELSE
+					PRINTFORM 「咿呀、好棒、啊啊啊、感觉…要死了！！喜欢…呼…啊啊…！！
+				ENDIF
+			ELSE
+				IF !RAND:3
+					PRINTFORM 「这也、太有感觉了…呜啊、啊！已…已经…！
+				ELSEIF !RAND:2
+					PRINTFORM 「好、好舒服啊…哈啊！呜…已经…！
+				ELSE
+					PRINTFORM 「这是、什么…好、好棒啊…呜啊…已经…！
+				ENDIF
+			ENDIF
+			CALL PANT_VOICE2(1)
+			PRINTFORML ｣
+			TFLAG:51 = 1
+		;娼妇は淫語モードになる
+		ELSEIF TALENT:娼妇
+			;今してる做爱で分岐
+			;Ａ做爱､主人ペニバン
+			IF SEXPLAY(TARGET) == 2 && !PENIS(PLAYER) && !ASSIPLAY
+				IF !RAND:2
+					PRINTFORM 「啊啊…！！要死了…！%MASTERNAME%的%PENIS_YOBIKATA(TARGET)%太厉害了！里面被抽插得好爽…！！
+				ELSE
+					IF !RAND:4
+						PRINTFORM 「啊啊！！快、快要…超糟糕的…！
+					ELSEIF !RAND:3
+						PRINTFORM 「啊嗯！这个…爽死了…！
+					ELSEIF !RAND:2
+						PRINTFORM 「啊嗯！这个…超棒…！
+					ELSE
+						PRINTFORM 「啊、嗯！好爽！
+					ENDIF
+					PRINTFORM %MASTERNAME%的%PENIS_YOBIKATA(TARGET)%世界第一舒服！插得%CSTR:0%好爽…嗯、嗯…！！
+				ENDIF
+			;Ａ做爱､调教者阴茎あり
+			ELSEIF SEXPLAY(TARGET) == 2 && PENIS(PLAYER)
+				;関西弁
+				IF !RAND:2
+					PRINTFORM 「啊啊…啊！！不行了！
+					IF ASSIPLAY
+						PRINTFORM %CSTR:1%的
+					ELSE
+						PRINTFORM %MASTERNAME%的
+					ENDIF
+					PRINTFORM %PENIS_YOBIKATA(TARGET)%好厉害！
+					PRINTFORM 最喜欢
+					SIF !ASSIPLAY
+						PRINTFORM %MASTERNAME%的
+					PRINTFORM %PENIS_YOBIKATA(TARGET)%了！
+				ELSE
+					IF !RAND:4
+						PRINTFORM 「啊啊…啊！！不行了！
+					ELSEIF !RAND:3
+						PRINTFORM 「啊啊！！快、快要…超糟糕的…！
+					ELSEIF !RAND:2
+						PRINTFORM 「啊嗯！这个…超棒…！
+					ELSE
+						PRINTFORM 「啊、嗯！好爽！
+					ENDIF
+					IF ASSIPLAY
+						PRINTFORM %CSTR:1%的
+					ELSE
+						PRINTFORM %MASTERNAME%的
+					ENDIF
+					PRINTFORM %PENIS_YOBIKATA(TARGET)%好棒！
+					PRINTFORM 最喜欢
+					SIF !ASSIPLAY
+						PRINTFORM %MASTERNAME%的
+					PRINTFORM %PENIS_YOBIKATA(TARGET)%了！
+				ENDIF
+			;逆做爱
+			ELSEIF SEXPLAY(TARGET) == 3
+				;関西弁
+				IF !RAND:2
+					PRINTFORM 「啊啊、啊！！要不行了…！
+					SIF !ASSIPLAY
+						PRINTFORM %MASTERNAME%的
+					PRINTFORM 小穴好棒啊！把%PENIS_YOBIKATA(TARGET)%全部吃下去了啊啊——！
+				ELSE
+					IF !RAND:4
+						PRINTFORM 「啊啊、啊！！不行了…！
+					ELSEIF !RAND:3
+						PRINTFORM 「嗯啊、啊！！好棒…！
+					ELSEIF !RAND:2
+						PRINTFORM 「嗯啊、啊！！好舒服…！
+					ELSE
+						PRINTFORM 「嗯啊、啊！！爽、爽死了…！
+					ENDIF
+					SIF !ASSIPLAY
+						PRINTFORM %MASTERNAME%的
+					IF !RAND:2
+						PRINTFORM 小穴超会吸！把%PENIS_YOBIKATA(TARGET)%
+					ELSE
+						PRINTFORM 小穴超紧啊！把%PENIS_YOBIKATA(TARGET)%
+					ENDIF
+					IF !RAND:4
+						PRINTFORM 紧紧地攥住了——！
+					ELSEIF !RAND:3
+						PRINTFORM 全部吞进去了啊——！
+					ELSEIF !RAND:2
+						PRINTFORM 全部吃下去了啊——！
+					ELSE
+						PRINTFORM 紧紧吮吸着——！
+					ENDIF
+				ENDIF
+			;逆Ａ做爱
+			ELSEIF SEXPLAY(TARGET) == 4
+				;関西弁
+				IF !RAND:2
+					PRINTFORM 「啊、啊！！要、要去了…！
+					IF ASSIPLAY
+						PRINTFORM %CSTR:1%的
+					ELSE
+						PRINTFORM %MASTERNAME%的
+					ENDIF
+					PRINTFORM 尻穴超紧的！把%PENIS_YOBIKATA(TARGET)%全部吃下去了——！
+				ELSE
+					IF !RAND:4
+						PRINTFORM 「啊啊、啊！！不行了…！
+					ELSEIF !RAND:3
+						PRINTFORM 「嗯啊、啊！！好棒…！
+					ELSEIF !RAND:2
+						PRINTFORM 「嗯啊、啊！！好舒服…！
+					ELSE
+						PRINTFORM 「嗯啊、啊！！爽、爽死了…！
+					ENDIF
+					IF ASSIPLAY
+						PRINTFORM %CSTR:1%的
+					ELSE
+						PRINTFORM %MASTERNAME%的
+					ENDIF
+					IF !RAND:3
+						PRINTFORM 屁股超会吸！把%PENIS_YOBIKATA(TARGET)%
+					ELSEIF !RAND:2
+						PRINTFORM 菊穴超会吸！把%PENIS_YOBIKATA(TARGET)%
+					ELSE
+						PRINTFORM 屁股小穴超会吸！把%PENIS_YOBIKATA(TARGET)%
+					ENDIF
+					IF !RAND:4
+						PRINTFORM 紧紧地攥住了——！
+					ELSEIF !RAND:3
+						PRINTFORM 全部吞进去了啊——！
+					ELSEIF !RAND:2
+						PRINTFORM 全部吃下去了啊——！
+					ELSE
+						PRINTFORM 紧紧吮吸着——！
+					ENDIF
+				ENDIF
+			;ほか
+			ELSE
+				;関西弁
+				IF !RAND:2
+					PRINTFORM 「嗯啊啊%UNICODE(0x2661) *1%！%PENIS_YOBIKATA(TARGET)%也是乳头也是、连屁股都好爽！超——舒服啊%UNICODE(0x2661) *1%！！
+				;标准（ナ型orネ型）
+				ELSE
+					PRINTFORM 「嗯啊啊%UNICODE(0x2661) *1%！%PENIS_YOBIKATA(TARGET)%跟乳头还有屁股都好爽！好舒服%UNICODE(0x2661) *1%！！
+				ENDIF
+			ENDIF
+			CALL PANT_VOICE2(2)
+			PRINTFORML ｣
+			TFLAG:51 = 1
+		ELSEIF TALENT:恋慕 || TALENT:相亲相爱 || TALENT:服从 || TALENT:隶属
+			;Ａ做爱､主人ペニバン
+			IF SEXPLAY(TARGET) == 2 && !PENIS(PLAYER) && !ASSIPLAY
+				IF !RAND:2
+					PRINTFORM 「啊啊啊！%MASTERNAME%！%MASTERNAME%！%CSTR:0%、已经…要去、要去～了啊！
+				ELSE
+					IF !RAND:2
+						PRINTFORM 「啊啊…啊！！已经…受不了、了！%MASTERNAME%的…一动一动地…抽插着！里面被、被插到要去了！！
+					ELSE
+						IF !RAND:4
+							PRINTFORM 「啊啊！！这样下去…会糟…！
+						ELSEIF !RAND:3
+							PRINTFORM 「啊啊！！这样…不妙…！
+						ELSEIF !RAND:2
+							PRINTFORM 「啊啊！！这么动的话…大事不妙…！
+						ELSE
+							PRINTFORM 「啊啊！！这么动的话…会很糟糕…！
+						ENDIF
+						PRINTFORM %MASTERNAME%好棒！超绝…究极、舒服的！要、要去了——！！
+					ENDIF
+				ENDIF
+			;Ａ做爱､主人阴茎あり
+			ELSEIF SEXPLAY(TARGET) == 2 && PENIS(PLAYER) && !ASSIPLAY
+				;関西弁
+				IF !RAND:2
+					PRINTFORM 「啊啊、嗯啊…！！不行了、不行了！%MASTERNAME%的
+					IF TALENT:PLAYER:尺寸傲人
+						PRINTFORM 太大了…会坏掉的…啊啊…！
+					ELSEIF TALENT:PLAYER:巨根
+						PRINTFORM 好大啊…好舒服…啊啊…！
+					ELSE
+						PRINTFORM 好舒服…好烫…啊啊…！
+					ENDIF
+				ELSE
+					IF !RAND:4
+						PRINTFORM 「啊啊！！这样下去…会糟…！
+					ELSEIF !RAND:3
+						PRINTFORM 「啊啊！！这样…不妙…！
+					ELSEIF !RAND:2
+						PRINTFORM 「啊啊！！这么抽插的话…大事不妙…！
+					ELSE
+						PRINTFORM 「啊啊！！这么抽插的话…很糟糕…！
+					ENDIF
+					PRINTFORM 要被%MASTERNAME%的
+					IF TALENT:PLAYER:尺寸傲人
+						IF !RAND:2
+							PRINTFORM 凶器操坏了啊～啊啊%UNICODE(0x2661) *1%！
+						ELSE
+							PRINTFORM 大肉柱操坏了啊～啊啊%UNICODE(0x2661) *1%！
+						ENDIF
+					ELSEIF TALENT:PLAYER:巨根
+						PRINTFORM 大肉棒操射了啊～呀啊%UNICODE(0x2661) *1%！
+					ELSE
+						PRINTFORM 肉棒操射、射了～呀啊%UNICODE(0x2661) *1%！
+					ENDIF
+				ENDIF
+			;逆做爱 对主人
+			ELSEIF SEXPLAY(TARGET) == 3 && !ASSIPLAY
+				;関西弁
+				IF !RAND:2
+					PRINTFORM 「啊嗯、啊！！好爽…！乳头和后面都…%MASTERNAME%的里面好舒服！把%PENIS_YOBIKATA(TARGET)%紧紧地吮吸着——！
+				ELSE
+					IF !RAND:2
+						IF !RAND:4
+							PRINTFORM 「嗯啊啊！快受不了了！乳头也是屁股也是！
+						ELSEIF !RAND:3
+							PRINTFORM 「嗯、啊！！好棒…！乳头和屁股都有感觉了…！
+						ELSEIF !RAND:2
+							PRINTFORM 「嗯、啊！！好棒…！乳头和屁股都好有感觉…！
+						ELSE
+							PRINTFORM 「嗯啊啊！真、真爽…！乳头和屁股都好有感觉…！
+						ENDIF
+						PRINTFORM %MASTERNAME%的里面超级舒服！把%PENIS_YOBIKATA(TARGET)%
+					ELSE
+						PRINTFORM 「全、全身上下…都超有感觉、停不下来…！把%PENIS_YOBIKATA(TARGET)%
+					ENDIF
+					IF !RAND:4
+						PRINTFORM 紧紧地吸附着——！
+					ELSEIF !RAND:3
+						PRINTFORM 色情地绞紧了——！
+					ELSEIF !RAND:2
+						PRINTFORM 深深地包裹着——！
+					ELSE
+						PRINTFORM 煽情地吞吐着——！
+					ENDIF
+				ENDIF
+			;逆Ａ做爱 对主人
+			ELSEIF SEXPLAY(TARGET) == 4 && !ASSIPLAY
+				IF !RAND:2
+					PRINTFORM 「啊、好紧啊…全身…好有感觉、停不下来…！已经…！
+				ELSE
+					IF !RAND:2
+						PRINTFORM 「嗯啊、啊啊…！快不行了！胸部和屁股都…！%MASTERNAME%的里面好舒服！嗯啊、把%PENIS_YOBIKATA(TARGET)%吸得紧紧的～～啊…！
+					ELSE
+						IF !RAND:4
+							PRINTFORM 「好舒服、好舒服啊…要、要去了…乳头和屁股都有感觉了…%MASTERNAME%的屁股超舒服啊…！
+						ELSEIF !RAND:3
+							PRINTFORM 「不、不行了…停不下来…嗯、啊啊！乳头和屁股…好有感、觉…%MASTERNAME%的屁股…
+						ELSEIF !RAND:2
+							PRINTFORM 「要去、去了…停不下来…好舒服…！乳头和屁股好舒服…%MASTERNAME%的屁股正
+						ELSE
+							PRINTFORM 「啊嗯…！这个…好棒啊！乳头和屁股…好有感、觉…%MASTERNAME%的屁股
+						ENDIF
+						PRINTFORM 把%PENIS_YOBIKATA(TARGET)%
+						IF !RAND:4
+							PRINTFORM 紧紧地吸附着——！
+						ELSEIF !RAND:3
+							PRINTFORM 色情地绞紧了——！
+						ELSEIF !RAND:2
+							PRINTFORM 深深地包裹着——！
+						ELSE
+							PRINTFORM 煽情地吞吐着——！
+						ENDIF
+					ENDIF
+				ENDIF
+			;ほか
+			ELSE
+				IF !RAND:2
+					IF !RAND:2
+						PRINTFORM 「嗯啊啊！啊、哈、啊啊、刺激太…强了…！感觉、好、舒服！
+					ELSE
+						PRINTFORM 「嗯啊啊！啊、哈、啊啊、刺激太…强了…！已经、不、行了…！
+					ENDIF
+				ELSE
+					IF !RAND:2
+						PRINTFORM 「啊、哈啊啊、好舒服…好棒…！已经、不、不行了…救命…！
+					ELSE
+						PRINTFORM 「啊、哈、啊啊…爽…爽死了…咿…救、救命…！
+					ENDIF
+				ENDIF
+			ENDIF
+			PRINTL 
+			PRINT 　
+			CALL PANT_VOICE2()
+			PRINTFORML ｣
+			TFLAG:51 = 1
+		;ここから未陷落で三重绝顶
+		ELSEIF MARK:反抗刻印 > 1
+			IF !RAND:2
+				IF !RAND:5
+					PRINTFORML 「啊、啊啊…啊！可恶、不要、不要不要不要…啊、啊！…不想这个样子啊！
+				ELSEIF !RAND:4
+					PRINTFORML 「嗯、啊啊！这、这…样、不要…讨厌讨厌讨厌…啊、啊！…不想这个样子啊！
+				ELSEIF !RAND:3
+					PRINTFORML 「啊、啊啊啊！呜、啊…不要！%CSTR:0%…不想这个样子啊！
+				ELSEIF !RAND:2
+					PRINTFORML 「啊、啊啊！呜、呜…好讨厌…呜呜、很讨厌啊！…不想这个样子啊！
+				ELSE
+					PRINTFORML 「啊、哈啊、啊！可恶…明明…很讨厌的…不要、不要啊…不想这个样子啊！
+				ENDIF
+			ELSE
+				IF !RAND:4
+					PRINTFORML 「啊啊！讨厌！…这也…太卑鄙了！要…坏了…！嗯啊、啊啊！！
+				ELSEIF !RAND:3
+					PRINTFORML 「啊啊啊！别、住手！…这也…太卑鄙了！真的…要疯了！嗯啊、啊啊！！
+				ELSEIF !RAND:2
+					PRINTFORML 「啊啊！好、恶心！…这太过…卑鄙了！要…坏了…！嗯啊、啊…啊！！
+				ELSE
+					PRINTFORML 「嗯、啊！好、恶心！…这也…太卑鄙了！要…坏了…！嗯啊、啊啊！！
+				ENDIF
+			ENDIF
+			PRINT 　
+			CALL PANT_VOICE2()
+			PRINTFORML ｣
+			TFLAG:51 = 1
+		ELSE
+			IF !RAND:2
+				IF !RAND:7
+					IF !RAND:2
+						PRINTFORM 「不行…这样不行、啊…！不要再…！像傻瓜一样…动着…！
+					ELSE
+						PRINTFORM 「啊啊！！不要了…不要再做这种事…了…啊啊、啊！
+					ENDIF
+				ELSEIF !RAND:6
+					PRINTFORM 「不行…这样不行、啊…！不要再做这种事…了…啊啊、啊！
+				ELSEIF !RAND:5
+					PRINTFORM 「呜啊！混帐啊！…不要这样动啊、很痛耶…呜啊！%CSTR:1%这、白痴！
+				ELSEIF !RAND:4
+					PRINTFORM 「都说了、不要这样动啊！呜啊！像傻瓜一样…动着…！
+				ELSEIF !RAND:3
+					PRINTFORM 「请不要这样、不要靠过来啊！不、不要再做这种事…了…啊啊、啊！
+				ELSEIF !RAND:2
+					PRINTFORM 「这、这样子！不行了！不要再来了！很痛耶…呜啊！%CSTR:1%这、混账！
+				ELSE
+					PRINTFORM 「啊啊！！不要了…别这样动啊！呜啊！好痛…啊啊、啊！
+				ENDIF
+			ELSE
+				IF !RAND:3
+					PRINTFORM 「啊、已经…！身体自己、嗯啊、要去、去了——！
+				ELSEIF !RAND:2
+					PRINTFORM 「不、不行了…已经…放弃抵抗了…要、要去——！
+				ELSE
+					PRINTFORM 「啊、不行…好糟糕…！身体自己动着…嗯啊、要去、要去了啊——！
+				ENDIF
+			ENDIF
+			CALL PANT_VOICE2(2)
+			PRINTFORML ｣
+			TFLAG:51 = 1
+		ENDIF
+	;ＶＡＢ绝顶寸前
+	ELSEIF C:0 == 0
+		;胸ありの奴隶（揉まれてる可能性もあり）
+		IF BREAST(TARGET)
+		;男性か绝壁持ちの奴隶（乳首しかない）
+		ELSE
+		ENDIF
+	;ＣＶＢ绝顶寸前
+	ELSEIF C:2 == 0
+		IF PENIS(TARGET)
+			;阴茎、ヴァギナ、乳房
+			IF BREAST(TARGET)
+			;阴茎、ヴァギナ、乳首
+			ELSE
+			ENDIF
+		ELSE
+			;クリ、ヴァギナ、乳房
+			IF BREAST(TARGET)
+			;クリ、ヴァギナ、乳首
+			ELSE
+			ENDIF
+		ENDIF
+	;ＣＶＡ绝顶寸前
+	ELSEIF C:3 == 0
+		;阴茎、ヴァギナ、肛
+		IF PENIS(TARGET)
+		;クリ、ヴァギナ、肛
+		ELSE
+		ENDIF
+	;ＣＶＡＢ四箇所同時に責められている
+	ELSE
+	ENDIF
+	;TFLAG:51 = 1
+;快感LV3（一箇所～二箇所绝顶寸前or三箇所の気持ちよさが3以上）
+ELSEIF C:4 == 3
+	;どこか一箇所绝顶寸前
+	IF C:0 == 4 || C:1 == 4 || C:2 == 4 || C:3 == 4
+		;ＣＶ绝顶寸前
+		IF C:0 + C:1 == 8
+		;ＣＡ绝顶寸前
+		ELSEIF C:0 + C:2 == 8
+		;ＣＢ绝顶寸前
+		ELSEIF C:0 + C:3 == 8
+		;ＶＡ绝顶寸前
+		ELSEIF C:1 + C:2 == 8
+		;ＶＢ绝顶寸前
+		ELSEIF C:1 + C:3 == 8
+		;ＡＢ绝顶寸前
+		ELSEIF C:2 + C:3 == 8
+		;Ｃ绝顶寸前
+		ELSEIF C:0 == 4
+			;阴茎あり
+			IF PENIS(TARGET)
+
+			;阴茎无
+			ELSE
+			ENDIF
+		;Ｖ绝顶寸前
+		ELSEIF C:1 == 4
+		;Ａ绝顶寸前
+		ELSEIF C:2 == 4
+
+		;Ｂ绝顶寸前
+		ELSEIF C:3 == 4
+			;胸あり
+			IF BREAST(TARGET)
+			;胸无
+			ELSE
+			ENDIF
+		ENDIF
+	;三箇所の気持ちよさが3以上
+	ELSE
+		;男性なら必ずＣＡＢ
+		IF TALENT:男性
+		;ＶＡＢ
+		ELSEIF C:0 < 3
+		;ＣＡＢ
+		ELSEIF C:1 < 3
+		;ＣＶＢ
+		ELSEIF C:2 < 3
+		;ＣＶＡ
+		ELSEIF C:3 < 3
+		ENDIF
+	ENDIF
+	;TFLAG:51 = 1
+;快感LV2（绝顶寸前ではない、二箇所の気持ちよさが2以上）
+ELSEIF C:4 == 2 && !RAND:2
+	;一番気持ちいいところで判断
+	;Ｃ
+	IF PALAM_COMPARE(0) && C:0 > 0
+	;Ａ
+	ELSEIF PALAM_COMPARE(2) &&  C:2 > 0
+		IF TALENT:淫乱 || TALENT:娼妇
+			;Ａ做爱
+			IF SEXPLAY(TARGET) == 2
+				PRINTFORM 「啊、啊…呼、嗯…哈啊啊…
+				SIF PLAYER == MASTER
+					PRINTFORM %MASTERNAME%的
+				PRINTFORM %PENIS_YOBIKATA(TARGET)%…好喜欢…
+				IF PENIS(PLAYER)
+					IF !RAND:2
+						PRINT 超烫的…
+					ELSE
+						PRINT 好热…
+					ENDIF
+				ELSE
+					IF !RAND:3
+						PRINT 心脏一样跳动着…
+					ELSE
+						PRINT 一动一动的…
+					ENDIF
+				ENDIF
+				IF !RAND:2
+					PRINTFORM 好舒服…
+				ELSE
+					PRINTFORM 好爽…嗯啊…
+				ENDIF
+				CALL PANT_VOICE2(3)
+				PRINTFORML ｣
+				TFLAG:51 = 1
+			;Ａ做爱以外
+			ELSE
+				PRINTFORM 「啊、嗯唔、
+				IF TALENT:娼妇
+					PRINT 骚穴
+				ELSE
+					IF !RAND:3
+						PRINT 屁股小穴
+					ELSEIF !RAND:2
+						PRINT 屁股
+					ELSE
+						PRINT 菊穴
+					ENDIF
+				ENDIF
+				IF !RAND:2
+					PRINTFORM 里面舒服得要升天…
+				ELSE
+					PRINTFORM 爽得要融化了…
+				ENDIF
+				CALL PANT_VOICE2(2)
+				PRINTFORML ｣
+				TFLAG:51 = 1
+			ENDIF
+		ENDIF
+	;Ｖ
+	ELSEIF PALAM_COMPARE(1) &&  C:1 > 0
+	;Ｂ
+	ELSEIF PALAM_COMPARE(3) &&  C:3 > 0
+	ENDIF
+	;TFLAG:51 = 1
+ENDIF
+;-------------------------------------------------
+;特に口上が書いてない、喘がないフラグも無い場合、汎用喘ぎを呼ぶ
+SIF TFLAG:51 == 0 && FLAG:10 == 1
+	CALL PANT_VOICE2(10)

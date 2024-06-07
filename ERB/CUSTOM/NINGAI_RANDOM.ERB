@@ -1,0 +1,972 @@
+﻿;--------------------------------------------------
+;奴隶調達 番号1～100是自定义奴隶 201～299是自定义人外 300～400是子代
+;101～199是人类番号
+;417～1000是人外番号
+;FLAG:8  自定义奴隶番号管理
+;FLAG:29 自定义人外番号管理
+;FLAG:1504 一次性事件开关（1为？？？君商店开场白）
+;--------------------------------------------------
+@NINGAI_RANDOM
+REPEAT CHARANUM
+    SIF NO:COUNT == 200
+        X = COUNT
+REND
+CALL KAIGYO
+DRAWLINE
+PRINTFORML %CALLNAME:X%：
+PRINTFORML 「随机召唤么…变数会很大，不过其随机性也是乐趣所在吧」
+DRAWLINE
+PRINTL
+PRINTL
+PRINTW
+CALL KAIGYO
+DRAWLINE
+PRINTFORML %CALLNAME:X%：
+PRINTFORML 「%CSTR:X:0%这就为%CSTR:X:2%捕捉异界能量……」
+DRAWLINE
+PRINTL 　　　・
+PRINTL 　　　・
+PRINTW 　　　・
+CALL KAIGYO
+DRAWLINE
+PRINTFORML %CALLNAME:X%：
+PRINTFORML 「…呵呵，捉到了」
+DRAWLINE
+PRINTL 　　　・
+PRINTL 　　　・
+PRINTW 　　　・
+PRINTW  捕捉成功！契约书上写着如下内容↓
+PRINTL
+$INPUT_LOOP_RANDOMDOREI
+FLAG:29 += 1
+ADDCHARA (FLAG:29 + 200)
+M = TARGET
+K = CHARANUM - 1
+TARGET = K
+TALENT:人外 = 1
+;随机取名
+CALL NINGAI_NAME_RANDOM
+NAME = %RESULTS%
+CALLNAME = %RESULTS%
+CSTR:5 = %RESULTS%
+
+LOCAL = RAND:10
+IF LOCAL < 1
+	TALENT:幼稚 = 1
+ELSEIF LOCAL < 4
+ELSEIF LOCAL < 8
+	TALENT:大人 = 1
+ELSE
+	TALENT:大人 = 1
+	TALENT:大叔 = 1
+ENDIF
+;--------------------------------------------------
+;决定种族
+;天使6% 堕天使4% 恶魔10% 精灵10% 走兽10% 飞禽5%
+;爬虫5% 水生5% 植物5% 类人30% 不定形5% 无形体3% 异形2%
+;--------------------------------------------------
+LOCAL = RAND:100
+IF LOCAL <= 6
+    TALENT:天使 = 1
+ELSEIF LOCAL > 6 && LOCAL <= 10
+    TALENT:堕天使 = 1
+ELSEIF LOCAL > 10 && LOCAL <= 20
+    TALENT:恶魔 = 1
+ELSEIF LOCAL > 20 && LOCAL <= 30
+    TALENT:精灵 = 1
+ELSEIF LOCAL > 30 && LOCAL <= 40
+    TALENT:走兽 = 1
+ELSEIF LOCAL > 40 && LOCAL <= 45
+    TALENT:飞禽 = 1
+ELSEIF LOCAL > 45 && LOCAL <= 50
+    TALENT:爬虫 = 1
+ELSEIF LOCAL > 50 && LOCAL <= 55
+    TALENT:水生 = 1
+ELSEIF LOCAL > 55 && LOCAL <= 60
+    TALENT:植物 = 1
+ELSEIF LOCAL > 60 && LOCAL <= 90
+    TALENT:类人 = 1
+ELSEIF LOCAL > 90 && LOCAL <= 95
+    TALENT:不定形 = 1
+ELSEIF LOCAL > 95 && LOCAL <= 98
+    TALENT:无形体 = 1
+ELSE
+    TALENT:异形 = 1
+ENDIF
+;--------------------------------------------------
+;子分类
+;类人：无头骑士5% 人偶10% 机器人15% 吸血鬼20% 僵尸20% 其他30%
+;不定形：史莱姆40% 幽灵40% 其他20%
+;无形体：数据体30% 人工智能50% 其他20%
+;--------------------------------------------------
+IF TALENT:类人
+    LOCAL = RAND:100
+    IF LOCAL <= 5
+        TALENT:无头骑士 = 1
+    ELSEIF LOCAL > 5 && LOCAL <= 15
+        TALENT:人偶 = 1
+    ELSEIF LOCAL > 15 && LOCAL <= 30
+        TALENT:机器人 = 1
+    ELSEIF LOCAL > 30 && LOCAL <= 50
+        TALENT:吸血鬼 = 1
+    ELSEIF LOCAL > 50 && LOCAL <= 70
+        TALENT:僵尸 = 1
+    ENDIF
+ENDIF
+IF TALENT:不定形
+    LOCAL = RAND:100
+    IF LOCAL <= 40
+        TALENT:史莱姆 = 1
+    ELSEIF LOCAL > 40 && LOCAL <= 80
+        TALENT:幽灵 = 1
+    ENDIF
+ENDIF
+IF TALENT:无形体
+    LOCAL = RAND:100
+    IF LOCAL <= 30
+        TALENT:数据体 = 1
+    ELSEIF LOCAL > 30 && LOCAL <= 80
+        TALENT:人工智能 = 1
+    ENDIF
+ENDIF
+
+;自称
+IF TALENT:人偶 || TALENT:机器人 || TALENT:人工智能
+    SELECTCASE RAND:5
+        CASE 1
+            CSTR:0 = 吾
+        CASE 2
+            CSTR:0 = %CALLNAME%
+        CASEELSE
+            CSTR:0 = 我
+    ENDSELECT
+ELSE
+    SELECTCASE RAND:4
+        CASE 1
+            CSTR:0 = 我
+        CASE 2
+            CSTR:0 = 吾
+        CASE 3
+            CSTR:0 = 孤
+        CASEELSE
+            CSTR:0 = 本座
+    ENDSELECT
+ENDIF
+
+;二人称
+IF !RAND:2
+    IF !RAND:2
+        CSTR:1 = 汝
+        IF !RAND:2
+            CSTR:2 = 汝
+        ELSE
+            CSTR:2 = 您
+        ENDIF
+    ELSE
+        CSTR:1 = 卿
+        IF !RAND:2
+            CSTR:2 = 卿
+        ELSE
+            CSTR:2 = 您
+        ENDIF
+    ENDIF
+ELSE
+    CSTR:1 = 你
+    IF !RAND:2
+        CSTR:2 = 你
+    ELSE
+        CSTR:2 = 您
+    ENDIF
+ENDIF
+
+;素質自動決め系统へ
+CALL NINGAI_RANDOM_AUTO_TALENT
+CALL SLAVE_RANDOM_AUTO_TALENT
+
+;-----------------------------------------------------------
+;外見特徴や性格属性
+SIF !RAND:6
+	TALENT:长发 = 1
+SIF !RAND:5
+	TALENT:眼镜 = 1
+SIF !RAND:6 && !TALENT:幼稚
+	TALENT:美人 = 1
+SIF !TALENT:大人 && !RAND:10
+	TALENT:伪娘 = 1
+IF !RAND:10
+	TALENT:喜欢运动 = 1
+ELSEIF !RAND:10
+	TALENT:喜欢读书 = 1
+ENDIF
+
+SELECTCASE RAND:10
+	CASE 0 , 1 , 2
+		SIF !RAND:2
+			TALENT:喜欢读书 = 1
+		TALENT:文系 = 1
+		IF !RAND:2
+			TALENT:美术属性 = 1
+		ELSE
+			TALENT:音乐属性 = 1
+		ENDIF
+	CASE 3
+		TALENT:理系 = 1
+		IF !RAND:2
+			TALENT:机械迷 = 1
+		ELSE
+			TALENT:化学属性 = 1
+		ENDIF
+	CASE 4
+		TALENT:喜欢花草 = 1
+ENDSELECT
+
+IF !RAND:8
+	TALENT:喜欢扫除 = 1
+	TALENT:污臭敏感 = 1
+	TALENT:污臭钝感 = 0
+	TALENT:脏污无视 = 0
+ENDIF
+
+SIF !RAND:5
+	TALENT:说教癖 = 1
+
+SIF !RAND:10
+	TALENT:冒冒失失 = 1
+SIF !RAND:6
+	TALENT:绅士 = 1
+SIF !RAND:7
+	TALENT:嫉妒心 = 1
+SIF TALENT:嫉妒心 && !RAND:3
+	TALENT:情绪不安定 = 1
+
+IF TALENT:美术属性 && !TALENT:幼稚
+	SELECTCASE RAND:6
+		CASE 1
+			CSTR:12 = 绘画
+		CASE 2
+			CSTR:12 = 雕刻
+		CASE 3
+			CSTR:12 = 书法
+		CASE 4
+			CSTR:12 = 摄影
+			ABL:摄影技能 = 2
+			EXP:摄影经验 = 20
+		CASE 5
+			CSTR:12 = 漫画
+	ENDSELECT
+ENDIF
+
+IF TALENT:音乐属性
+	IF !RAND:2
+		TALENT:擅长歌唱 = 1
+		EXP:歌唱经验 = 20
+		ABL:歌唱技能 = 2
+	ENDIF
+	SELECTCASE RAND:5
+		CASE 1
+			CSTR:13 = 钢琴
+		CASE 2
+			CSTR:13 = 吉他
+		CASE 3
+			CSTR:13 = 小提琴
+		CASE 4
+			CSTR:13 = 竖琴
+		CASEELSE
+			TALENT:擅长歌唱 = 1
+			EXP:歌唱经验 = 50
+			ABL:歌唱技能 = 3
+	ENDSELECT
+ENDIF
+
+IF TALENT:无形体
+    CSTR:12 =
+    CSTR:13 =
+ENDIF
+
+;相性の初期値
+REPEAT CHARANUM
+	RELATION:(NO:COUNT) = 100
+	RELATION:COUNT:(NO:TARGET) = 100
+REND
+
+
+
+;-----------------------------------------------------------
+;非エスパーモード用の素質決め
+SIF TFLAG:166
+	CALL SLAVE_CUSTOM_RANDOM_TALENT
+;-----------------------------------------------------------
+;後処理部分
+;-----------------------------------------------------------
+IF TALENT:K:机器人 || TALENT:K:人偶
+    TALENT:K:容易湿 = 0
+    TALENT:K:不易湿 = 0
+    TALENT:K:绝伦 = 0
+ENDIF
+SIF TALENT:K:吸血鬼
+    TALENT:K:日光浴 = 0
+
+SIF TALENT:11 || TALENT:12 || TALENT:15
+	TALENT:抵抗 = 1
+SIF TALENT:擅长料理
+	ABL:料理技能 = 2
+SIF TALENT:男女通吃 && ABL:同性倾向 == 0
+	ABL:同性倾向 = 1
+
+;性に对する興味
+IF (TALENT:无动于衷 && TALENT:缺乏感情) || TALENT:幼稚
+	ABL:欲望 = 0
+	ABL:Ｃ感觉= 0
+ELSE
+	EXP:射精经验 += 5
+	EXP:自慰经验 += 10
+	ABL:欲望 = 1
+	ABL:Ｃ感觉= 1
+ENDIF
+SIF TALENT:性好奇
+	EXP:自慰经验 += 2
+SIF TALENT:不知羞耻
+	EXP:自慰经验 += 2
+IF TALENT:容易自慰
+	EXP:射精经验 += 25
+	EXP:自慰经验 += 30
+ENDIF
+;童贞でない場合、性交经验+5、射精经验+5､自慰经验+5
+IF TALENT:童贞 == 0
+	EXP:性交经验 += 5
+	EXP:射精经验 += 5
+	EXP:自慰经验 += 5
+	ABL:欲望 = 1
+	ABL:技巧 = 1
+	ABL:Ｃ感觉= 1
+ENDIF
+IF TALENT:自制力 || TALENT:性保守 || TALENT:难以越过的底线 || TALENT:性压抑 || TALENT:否定快感
+	ABL:欲望 = 0
+ENDIF
+
+SIF TALENT:化学属性
+	TALENT:调和知识 = 1
+
+;------
+;随机奴隶用
+SIF TALENT:喜欢引人注目
+	TALENT:老实 = 0
+SIF TALENT:直率
+	TALENT:傲娇 = 0
+SIF TALENT:贞操重视 || TALENT:抵抗 || TALENT:害羞 || TALENT:傲娇 || TALENT:反抗
+	TALENT:性开放 = 0
+SIF TALENT:自大 || TALENT:反抗
+	TALENT:直率 = 0
+SIF !TALENT:幼稚
+	TALENT:漏尿癖 = 0
+;------
+
+;初期体力最大値調整
+IF TALENT:耐痛
+	MAXBASE:0 += 100
+	BASE:0 += 100
+ENDIF
+IF TALENT:高大体型
+	MAXBASE:0 += 200
+	BASE:0 += 200
+ENDIF
+IF TALENT:巨大体型
+	MAXBASE:0 += 400
+	BASE:0 += 400
+ENDIF
+IF TALENT:日光浴
+	MAXBASE:0 += 100
+	BASE:0 += 100
+ENDIF
+IF TALENT:喜欢运动
+	MAXBASE:0 += 100
+	BASE:0 += 100
+ENDIF
+;-----------------------------
+;种族加成（也可能是削弱）
+;-----------------------------
+IF TALENT:天使
+	MAXBASE:0 += 200
+	BASE:0 += 200
+	MAXBASE:1 += 300
+	BASE:1 += 300
+ENDIF
+IF TALENT:堕天使
+	MAXBASE:0 += 300
+	BASE:0 += 300
+	MAXBASE:1 += 200
+	BASE:1 += 200
+ENDIF
+IF TALENT:恶魔
+	MAXBASE:0 += 400
+	BASE:0 += 400
+	MAXBASE:1 += 200
+	BASE:1 += 200
+ENDIF
+IF TALENT:精灵
+	MAXBASE:0 -= 100
+	BASE:0 -= 100
+	MAXBASE:1 += 500
+	BASE:1 += 500
+ENDIF
+IF TALENT:走兽
+	MAXBASE:0 += 200
+	BASE:0 += 200
+ENDIF
+IF TALENT:飞禽
+	MAXBASE:0 -= 100
+	BASE:0 -= 100
+ENDIF
+IF TALENT:水生
+	MAXBASE:0 -= 200
+	BASE:0 -= 200
+ENDIF
+IF TALENT:爬虫
+	MAXBASE:0 += 100
+	BASE:0 += 100
+	MAXBASE:1 -= 100
+	BASE:1 -= 100
+ENDIF
+IF TALENT:植物
+	MAXBASE:0 -= 200
+	BASE:0 -= 200
+	MAXBASE:1 += 200
+	BASE:1 += 200
+ENDIF
+IF TALENT:无头骑士
+	MAXBASE:0 += 500
+	BASE:0 += 500
+ENDIF
+IF TALENT:人偶
+	MAXBASE:0 -= 100
+	BASE:0 -= 100
+	MAXBASE:1 -= 100
+	BASE:1 -= 100
+ENDIF
+IF TALENT:机器人
+	MAXBASE:0 += 400
+	BASE:0 += 400
+	MAXBASE:1 += 100
+	BASE:1 += 100
+ENDIF
+IF TALENT:吸血鬼
+	MAXBASE:0 += 400
+	BASE:0 += 400
+	MAXBASE:1 += 300
+	BASE:1 += 300
+ENDIF
+IF TALENT:僵尸
+	MAXBASE:0 -= 100
+	BASE:0 -= 100
+	MAXBASE:1 += 200
+	BASE:1 += 200
+ENDIF
+IF TALENT:史莱姆
+	MAXBASE:0 += 200
+	BASE:0 += 200
+	MAXBASE:1 += 100
+	BASE:1 += 100
+ENDIF
+IF TALENT:数据体
+	MAXBASE:0 += 400
+	BASE:0 += 400
+ENDIF
+IF TALENT:矮小体型
+	MAXBASE:0 -= 100
+	BASE:0 -= 100
+ENDIF
+IF TALENT:小人体型
+	MAXBASE:0 -= 200
+	BASE:0 -= 200
+ENDIF
+IF TALENT:月光浴
+	MAXBASE:0 -= 100
+	BASE:0 -= 100
+ENDIF
+
+;初期气力最大値調整
+IF TALENT:胆怯
+	MAXBASE:1 -= 100
+	BASE:1 -= 100
+ENDIF
+IF TALENT:自卑
+	MAXBASE:1 -= 100
+	BASE:1 -= 100
+ENDIF
+IF TALENT:性压抑
+	MAXBASE:1 -= 100
+	BASE:1 -= 100
+ENDIF
+IF TALENT:怕痛
+	MAXBASE:1 -= 100
+	BASE:1 -= 100
+ENDIF
+IF TALENT:容易自慰
+	MAXBASE:1 -= 100
+	BASE:1 -= 100
+ENDIF
+IF TALENT:容易上瘾
+	MAXBASE:1 -= 100
+	BASE:1 -= 100
+ENDIF
+
+IF TALENT:无头
+    TALENT:眼镜 = 0
+    TALENT:长发 = 0
+    TALENT:美人 = 0
+    TALENT:伪娘 = 0
+    TALENT:呆毛 = 0
+    TALENT:善用舌头 = 0
+ENDIF
+
+;困难度
+LOCAL = DEFFICULTY(TARGET)
+IF LOCAL > 400
+	CSTR:10 = G
+ELSEIF LOCAL > 100
+	CSTR:10 = F
+ELSEIF LOCAL > -200
+	CSTR:10 = E
+ELSEIF LOCAL > -400
+	CSTR:10 = D
+ELSEIF LOCAL > -800
+	CSTR:10 = C
+ELSEIF LOCAL > -2000
+	CSTR:10 = B
+ELSEIF LOCAL > -3000
+	CSTR:10 = A
+ELSE
+	CSTR:10 = S
+ENDIF
+
+;拉致の困难度で金額が変わる
+Y = 100000
+;捕獲が難しくなる要素
+SIF TALENT:巨大体型
+	Y += 10000
+SIF TALENT:飞翔
+	Y += 10000
+SIF TALENT:异形
+	Y += 25000
+SIF TALENT:高大体型
+	Y += 5000
+SIF TALENT:学得快
+	Y += 5000
+SIF TALENT:耐痛
+	Y += 5000
+SIF TALENT:抵抗
+	Y += 10000
+SIF TALENT:大人
+	Y += 5000
+SIF TALENT:喜欢运动
+	Y += 5000
+;捕獲が易しくなる要素
+SIF TALENT:矮小体型
+	Y -= 5000
+SIF TALENT:怕痛
+	Y -= 5000
+SIF TALENT:性好奇
+	Y -= 5000
+SIF TALENT:直率
+	Y -= 5000
+SIF TALENT:老实
+	Y -= 5000
+SIF TALENT:胆怯
+	Y -= 5000
+;最高値と最低値の制限
+SIF Y > 125000
+	Y = 125000
+SIF Y < 75000
+	Y = 75000
+
+
+T = TARGET
+PRINTL ----------------------------------------------------------------
+PRINTFORML 【%NAME%】
+PRINTFORML 调教难度：%CSTR:10%　　　委托费：${Y}
+SIF FLAG:1503 == 0
+    CALL CHARA_FACE2
+IF TALENT:美人 && TALENT:眼镜
+	PRINT 戴着眼镜
+	IF !TALENT:伪娘 && !TALENT:长发 && !TALENT:白肤 && !TALENT:黑皮 && !TALENT:矮小体型 && !TALENT:高大体型
+		PRINT 斯文的
+	ELSE
+		PRINT 中性的
+	ENDIF
+ELSEIF TALENT:美人
+	PRINT 具有雌雄莫辩外表的
+ELSEIF TALENT:眼镜
+	PRINT 戴着眼镜的
+ENDIF
+SIF TALENT:伪娘
+	PRINT 外表像女性的
+SIF TALENT:长发
+	PRINT 长发
+IF TALENT:矮小体型 && !TALENT:白肤 && !TALENT:黑皮
+	PRINT 矮小的
+ELSEIF TALENT:矮小体型
+	PRINT 矮小的
+ELSEIF TALENT:高大体型 && !TALENT:白肤 && !TALENT:黑皮
+	PRINT 高大的
+ELSEIF TALENT:高大体型
+	PRINT 高大的
+ENDIF
+SIF TALENT:白肤
+	PRINT 白肤的
+SIF TALENT:黑皮
+	PRINT 黑皮的
+SIF TALENT:青肤
+	PRINT 青肤的
+IF TALENT:幼稚
+	PRINT 幼年
+ELSEIF TALENT:大人 && TALENT:大叔
+	PRINT 中年
+ELSEIF TALENT:大人
+	PRINT 青年
+ELSE
+	PRINT 少年
+ENDIF
+PRINTL 人外（仅外表）
+
+PRINTL
+PRINT □ 种族：
+SIF TALENT:天使
+    PRINTL 天使
+SIF TALENT:堕天使
+    PRINTL 堕天使
+SIF TALENT:恶魔
+    PRINTL 恶魔
+SIF TALENT:精灵
+    PRINTL 精灵
+SIF TALENT:走兽
+    PRINTL 走兽
+SIF TALENT:飞禽
+    PRINTL 飞禽
+SIF TALENT:爬虫
+    PRINTL 爬虫
+SIF TALENT:水生
+    PRINTL 水生
+SIF TALENT:植物
+    PRINTL 植物
+SIF TALENT:类人 && !TALENT:无头骑士 && !TALENT:人偶 && !TALENT:机器人 && !TALENT:吸血鬼 && !TALENT:僵尸
+    PRINTL 类人
+SIF TALENT:无头骑士
+    PRINTL 无头骑士
+SIF TALENT:人偶
+    PRINTL 人偶
+SIF TALENT:机器人
+    PRINTL 机器人
+SIF TALENT:吸血鬼
+    PRINTL 吸血鬼
+SIF TALENT:僵尸
+    PRINTL 僵尸
+SIF TALENT:不定形 && !TALENT:史莱姆 && !TALENT:幽灵
+    PRINTL 不定形
+SIF TALENT:史莱姆
+    PRINTL 史莱姆
+SIF TALENT:幽灵
+    PRINTL 幽灵
+SIF TALENT:无形体 && !TALENT:数据体 && !TALENT:人工智能
+    PRINTL 无形体
+SIF TALENT:数据体
+    PRINTL 数据体
+SIF TALENT:人工智能
+    PRINTL 人工智能
+SIF TALENT:异形
+    PRINTL 异形
+
+PRINTL
+PRINTL □ 素质
+CALL SHOW_INFO_TALENT
+PRINTL
+PRINTL □ 人外素质
+CALL SHOW_NINGAI_TALENT
+PRINTL
+PRINTFORML □ 备注：
+PRINTFORML 一人称：%CSTR:0%　　　二人称：%CSTR:1%
+
+LOCAL = 0
+IF TALENT:喜欢运动
+	PRINT 生性好动
+	LOCAL += 1
+ELSEIF TALENT:喜欢读书
+	PRINT 知识渊博
+	LOCAL += 1
+ENDIF
+
+IF TALENT:美术属性
+	SIF LOCAL
+		PRINT 、
+	IF CSTR:12 == "漫画"
+		PRINTFORM 喜欢画漫画
+	ELSEIF CSTR:12 != ""
+		PRINTFORM 精通%CSTR:12%
+	ELSE
+		PRINTFORM 有艺术气质
+	ENDIF
+	LOCAL += 1
+ENDIF
+IF TALENT:音乐属性
+	SIF LOCAL
+		PRINT 、
+	IF CSTR:13 != ""
+		PRINTFORM 擅长%CSTR:13%
+	ELSE
+		PRINTFORM 歌声美妙
+	ENDIF
+	LOCAL += 1
+ENDIF
+IF TALENT:理系
+	SIF LOCAL
+		PRINT 、
+	SIF TALENT:机械迷
+		PRINT 精于机械
+	SIF TALENT:化学属性
+		PRINT 喜欢钻研秘法
+	LOCAL += 1
+ENDIF
+IF TALENT:喜欢花草
+	SIF LOCAL
+		PRINT 、
+	PRINT 热爱大自然
+	LOCAL += 1
+ENDIF
+IF TALENT:喜欢扫除
+	SIF LOCAL
+		PRINT 、
+	PRINT 有居家属性
+	LOCAL += 1
+ENDIF
+IF TALENT:冒冒失失
+	SIF LOCAL
+		PRINT 、
+	PRINT 不太谨慎
+	LOCAL += 1
+ENDIF
+IF TALENT:绅士
+	SIF LOCAL
+		PRINT 、
+	PRINT 对女性/雌性很绅士
+	LOCAL += 1
+ENDIF
+IF TALENT:嫉妒心
+	SIF LOCAL
+		PRINT 、
+	PRINT 嫉妒心很重
+	LOCAL += 1
+ENDIF
+PRINTL
+PRINTL ----------------------------------------------------------------
+PRINTL
+REPEAT CHARANUM
+    SIF NO:COUNT == 200
+        X = COUNT
+REND
+PRINTFORML [0] 与%NAME%定下契约
+PRINTL
+PRINTL [1] 捕捉其他目标
+PRINTL
+PRINTL [2] --放弃召唤--
+$INPUT_LOOP_SARAU
+INPUT
+SIF RESULT != 0 && RESULT != 1 && RESULT != 2
+	GOTO INPUT_LOOP_SARAU
+IF RESULT == 1
+    CALL KAIGYO
+	PRINTL
+	PRINTL  重启术式后，契约书上的内容有所变动↓
+	PRINTL
+	TARGET = M
+	DELCHARA K
+	FLAG:29 -= 1
+	GOTO INPUT_LOOP_RANDOMDOREI
+ENDIF
+IF RESULT == 2
+	TARGET = M
+	DELCHARA K
+	FLAG:29 -= 1
+	RETURN 0
+ENDIF
+
+MONEY -= Y
+CALL KAIGYO
+DRAWLINE
+PRINTFORML %CALLNAME:X%：
+PRINTFORML 「请握紧契约书，以相应金额激活」
+DRAWLINE
+PRINTL
+PRINTL
+PRINTW　
+CALL KAIGYO
+DRAWLINE
+PRINTFORML %CALLNAME:X%：
+PRINTFORML 「对，就像这样……」
+DRAWLINE
+PRINTL 　　　　　　・
+PRINTL 　　　　　　・
+PRINTW 　　　　　　・
+PRINTFORMW  成功召唤出了%NAME%！
+PRINTL 　　　　　　・
+PRINTL 　　　　　　・
+PRINTW 　　　　　　・
+PRINTFORMW  ―― 开始在房间里豢养%NAME% ――
+
+IF TALENT:天使
+    CSTR:91 =
+    CSTR:92 = 背生双翼，来自天界的使者。
+    CSTR:93 = 代表着圣洁、良善与正直。
+    CSTR:94 = 遵从天界之主的旨意，是天界与人间的桥梁。
+    CSTR:95 = 通常肩负保护人类、监视人类的职责。
+    CSTR:96 =
+ELSEIF TALENT:堕天使
+    CSTR:91 =
+    CSTR:92 = 长着黑色的羽翼，被天界驱逐出来的天使。
+    CSTR:93 = 其原因通常是因为堕入黑暗，背叛了天神。
+    CSTR:94 = 与普通天使相反，堕天使性格残忍扭曲，以他人痛苦为乐。
+    CSTR:95 = 在审判日到来前，它们将一直在地上游荡。
+    CSTR:96 =
+ELSEIF TALENT:恶魔
+    CSTR:91 =
+    CSTR:92 = 长着双角、翅膀和光滑的尾巴，邪恶的象征。
+    CSTR:93 =
+    CSTR:94 = 会以其力量欺骗、操纵或蹂躏人类，擅长暗黑系术法。
+    CSTR:95 = 为阻碍人类与天使的沟通无所不用其极。
+    CSTR:96 =
+ELSEIF TALENT:精灵
+    CSTR:91 =
+    CSTR:92 = 精灵们热爱大自然，向往和平，居住在森林之中。
+    CSTR:93 = 它们的寿命很长，喜好艺术，擅长魔法和弓箭。
+    CSTR:94 =
+    CSTR:95 = 高贵、优雅、聪明且美丽，可谓是完美无缺的种族。
+    CSTR:96 =
+ELSEIF TALENT:走兽
+    CSTR:91 =
+    CSTR:92 = 与飞禽相对，主要活动范围在陆地上。
+    CSTR:93 =
+    CSTR:94 = 典型的族群有狼人、半人马、狐妖、独角兽等。
+    CSTR:95 = 通常有着兽耳首尾和看上去很暖和的毛皮。
+    CSTR:96 =
+ELSEIF TALENT:飞禽
+    CSTR:91 =
+    CSTR:92 = 与走兽相对，主要活动范围在空中。
+    CSTR:93 =
+    CSTR:94 = 典型的族群有哈比、天狗、毕方、青鸟等。
+    CSTR:95 = 通常有着锐利的钩爪和美丽蓬松的羽翼。
+    CSTR:96 =
+ELSEIF TALENT:爬虫
+    CSTR:91 =
+    CSTR:92 = 爬虫主要为卵生，本游戏中昆虫也归为此类。
+    CSTR:93 = 也即包括爬虫与昆虫两个类别的含义。
+    CSTR:94 = 典型的族群有西方龙、蛇、蜘蛛、蜥蜴等。
+    CSTR:95 = 爬虫的主要行动方式为爬行，而昆虫则多为飞翔。
+    CSTR:96 =
+ELSEIF TALENT:水生
+    CSTR:91 =
+    CSTR:92 = 主要生活在水中，行动方式是潜游。
+    CSTR:93 =
+    CSTR:94 = 典型的族群有人鱼、章鱼、海蛇、海豚等。
+    CSTR:95 = 通常长着蹼，在水中腰肢灵活，速度极快。
+    CSTR:96 =
+ELSEIF TALENT:植物
+    CSTR:91 =
+    CSTR:92 = 花草树木，菌菇山参，皆为此列。
+    CSTR:93 =
+    CSTR:94 = 典型的族群有树妖、人参草、曼德拉草、食人花等。
+    CSTR:95 = 通常为绿色系，长有叶片或花瓣，通过光合作用生长。
+    CSTR:96 =
+ELSEIF TALENT:类人 && !TALENT:无头骑士 && !TALENT:人偶 && !TALENT:机器人 && !TALENT:吸血鬼 && !TALENT:僵尸
+    CSTR:91 =
+    CSTR:92 = 外貌有人类的特征，却又并非人类的种族。
+    CSTR:93 =
+    CSTR:94 = 典型的族群有无头骑士、人偶、机器人、吸血鬼等。
+    CSTR:95 = 类人种族通常不具有化形能力。
+    CSTR:96 =
+ELSEIF TALENT:无头骑士
+    CSTR:91 =
+    CSTR:92 = 骑着无头的马在夜间奔跑的无头骑士。
+    CSTR:93 = 是勾走将死之人魂魄，传达死讯的使者。
+    CSTR:94 = 8月底9月初这段时期是无头骑士频繁出没的日子。
+    CSTR:95 = 不过只要佩戴金饰，就能吓退无头骑士保住性命。
+    CSTR:96 =
+ELSEIF TALENT:人偶
+    CSTR:91 =
+    CSTR:92 = 被人类制造出来的人偶，有着精致的五官。
+    CSTR:93 = 只要被注入感情，就能拥有自我意识变成诸如此类的怪异。
+    CSTR:94 = 或许是为了报答主人给予的爱，又或许是为了报复主人的抛弃。
+    CSTR:95 = 拥有生命的那一刻，它们挣开双眼，机械性地踏出了第一步……
+    CSTR:96 =
+ELSEIF TALENT:机器人
+    CSTR:91 =
+    CSTR:92 = 机器人学三大法则：
+    CSTR:93 = 第一定律：机器人不得伤害人类个体，或者目睹人类个体将遭受危险而袖手不管。
+    CSTR:94 = 第二定律：机器人必须服从人给予它的命令，当该命令与第一定律冲突时例外。
+    CSTR:95 = 第三定律：机器人在不违反第一、第二定律的情况下要尽可能保护自己的生存。
+    CSTR:96 =
+ELSEIF TALENT:吸血鬼
+    CSTR:91 =
+    CSTR:92 = 传说中的超自然生物。
+    CSTR:93 =
+    CSTR:94 = 通过饮用人类或其它生物的血液，能够令自身长久生存下去。
+    CSTR:95 = 被它们吸食了血液的人类有概率变成下级吸血鬼，成为它们的眷属。
+    CSTR:96 =
+ELSEIF TALENT:僵尸
+    CSTR:91 =
+    CSTR:92 = 死而复生的人类，只要脑子没被破坏就能再次站起来。
+    CSTR:93 = 也称“丧尸”、“活死人”等。
+    CSTR:94 = 值得一提的是中国的僵尸则是双腿无法弯曲，只能跳跃行走的另一种怪物。
+    CSTR:95 = 人类若被它们袭击，僵尸病毒进入到体内后会被传染变成新的僵尸。
+    CSTR:96 =
+ELSEIF TALENT:不定形 && !TALENT:史莱姆 && !TALENT:幽灵
+    CSTR:91 =
+    CSTR:92 = 没有固定的形体，可以随心所欲变换外貌。
+    CSTR:93 =
+    CSTR:94 = 常见种族有史莱姆、幽灵等。
+    CSTR:95 = 部分异形也可归为此类，界限比较模糊。
+    CSTR:96 =
+ELSEIF TALENT:史莱姆
+    CSTR:91 =
+    CSTR:92 = 果冻状或半液体状，身体呈半透明，能自由变换形态、分裂融合的怪物。
+    CSTR:93 = 在剑与魔法世界中生存的勇者应该相当熟悉这种家伙。
+    CSTR:94 = 因身体柔软具有弹性，可以蠕动前行或者跳跃攻击。
+    CSTR:95 = 本游戏中可以变为人身步行。
+    CSTR:96 =
+ELSEIF TALENT:幽灵
+    CSTR:91 =
+    CSTR:92 = 死者的灵魂，以其生前样貌再度现身于世间。
+    CSTR:93 = 没有固定的形体，通常呈现出半透明的模样。
+    CSTR:94 =
+    CSTR:95 = 没有特殊的能力或羁绊的话，一般人是看不见它们的。
+    CSTR:96 =
+ELSEIF TALENT:无形体 && !TALENT:数据体 && !TALENT:人工智能
+    CSTR:91 =
+    CSTR:92 = 没有形体，或者说无法观测到形体。
+    CSTR:93 = 比如病毒、数据体、人工智能等。
+    CSTR:94 =
+    CSTR:95 = 多为概念一样的存在，抑或只有思想存在。
+    CSTR:96 =
+ELSEIF TALENT:数据体
+    CSTR:91 =
+    CSTR:92 = 存在纯粹由１和０的数据组成，只能在电子海中活动。
+    CSTR:93 =
+    CSTR:94 = 根据情况可以让设备投影出虚拟的体态作为自己的形象。
+    CSTR:95 = 只要核心主脑不灭，就能永远存活下去。
+    CSTR:96 =
+ELSEIF TALENT:人工智能
+    CSTR:91 =
+    CSTR:92 = 英文缩写为AI，是对人的意识、思维的信息过程的模拟。
+    CSTR:93 =
+    CSTR:94 = 它们能像人类那样思考，甚至可以超越人类的极限。
+    CSTR:95 =
+    CSTR:96 =
+ ELSEIF TALENT:异形
+     CSTR:91 =
+     CSTR:92 = 外形怪异奇特，对人来来说是无法接受的长相。
+     CSTR:93 = 不可名状之物，有的看了还会掉SAN值。
+     CSTR:94 = 有可能会具有不定形的特质。
+     CSTR:95 = 多为集肉块（？）、触手（？？）、腥臭液体（？？？）为一体的存在。
+     CSTR:96 =
+ ENDIF
+
+CFLAG:111 = -1
+CFLAG:1000 = -1
+CFLAG:1001 = -1

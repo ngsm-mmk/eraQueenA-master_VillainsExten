@@ -1,0 +1,652 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	Module		:LIST_CHARA.ERB
+;	Facility	:リスト（キャラ）。
+;
+;	Licence		:ライセンスフリー。
+;
+;	Modification Data:
+;
+;	Edit	Date			Author					Reason
+;	001		20XX/XX/XX		----					新建
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;===============================================================================
+;  ◇記載関数一覧(記載順)
+;
+;		Module Name						Explanation
+;
+; *- XXXX
+;
+;	・ LIST_CHARA						LIST:キャラリスト
+;
+;===============================================================================
+
+;---------------------------------------------------------------------------------------
+;   XXXX
+;---------------------------------------------------------------------------------------
+
+;=================================================
+;   sub LIST_CHARA
+;=================================================
+;   LIST:キャラリスト
+;---------------------------------------------------------
+; Input:
+;  ARGS:0				説明文
+;  ARG:0				ページ位置
+;  ARGS:1				再帰した際のエラーメッセージ
+; Output:
+;  RESULT:0				キャラ(1000の場合は"返回")
+;  RESULT:1				ページ位置
+;---------------------------------------------------------
+@LIST_CHARA(ARGS:0, ARG:0, ARGS:1)
+#DIM L_INPUT
+#DIM L_I
+#DIM L_PAGE
+#DIM L_CNT_DATA
+#DIM L_CNT_PRINT
+#DIM L_PREV
+#DIM L_NEXT
+#DIM T_A
+#DIMS L_ERR_MSG
+;-----------------------------
+;- 初期処理
+;-----------------------------
+T_A = 0
+L_INPUT=0
+L_I=0
+L_PAGE=ARG:0
+L_CNT_DATA=0
+L_CNT_PRINT=0
+
+; キャラ総数
+L_CNT_DATA = CHARANUM
+
+; キャラ表示数/P
+L_CNT_PRINT = 18
+
+L_ERR_MSG = %ARGS:1%
+
+SIF !INRANGE(L_PAGE, 0, L_CNT_DATA / L_CNT_PRINT)
+	L_PAGE = 0
+
+;-----------------------------
+;- 処理開始
+;-----------------------------
+T_A = TARGET
+$PRINT_LIST
+REDRAW 0
+CALL KAIGYO
+DRAWLINE
+IF R == 1
+    IF TARGET >= 0 && !TARGET == MASTER
+        PRINT 现在的调教对象是
+        PRINTFORML %NAME:TARGET%
+    ELSE
+        PRINTL 现在没有调教对象
+    ENDIF
+    PRINTFORML 今天要调教谁呢？ ＜page.{L_PAGE+1}/{L_CNT_DATA / 18 +1}＞ (共{L_CNT_DATA}人)
+ELSEIF R == 0 
+	IF 房間推倒中		  
+		TARGET = ARG
+		RETURN 0
+	ENDIF
+    PRINTFORML 要查看谁的能力？ ＜page.{L_PAGE+1}/{L_CNT_DATA / 18 +1}＞ (共{L_CNT_DATA}人)
+ENDIF
+DRAWLINE
+
+L_I = 0
+WHILE 1
+
+	;SET:開始値
+	SIF L_I < (L_PAGE * L_CNT_PRINT)
+		L_I = (L_PAGE * L_CNT_PRINT)
+
+	;ページ範囲外
+	SIF L_I >= ( (L_PAGE + 1) * L_CNT_PRINT)
+		BREAK
+
+	;- 最大キャラ数超過
+	IF L_I >= L_CNT_DATA
+		;空行
+		PRINTL
+
+	ELSE
+	    CALL INFO_TARGET1_DETAIL(L_I)
+		PRINTFORM [%TOSTR(L_I),3%]
+		CALL INFO_TARGET_DETAIL(L_I)
+		PRINTL
+	ENDIF
+
+	L_I += 1
+
+WEND
+DRAWLINE
+IF E >= 1
+	PRINTL 　　　  ☆：调教中　★：助手　○：助手可　●：原助手　◆：见习　
+ELSE
+	PRINTL 　　　  ☆：调教中　★：助手　○：助手可　●：原助手　
+ENDIF
+DRAWLINE
+L_PREV = (L_PAGE <= 0) ? 0 # 1
+L_NEXT = ( L_PAGE >= (L_CNT_DATA / L_CNT_PRINT) ) ? 0 # 1
+
+IF DAY > 4 && TFLAG:167
+	PRINTL ·····调教日志·····
+	REPEAT 12
+		SIF COUNT == 0
+			PRINT 1回前：
+		SIF COUNT == 1
+			PRINT 2回前：
+		SIF COUNT == 2
+			PRINT 3回前：
+		SIF COUNT == 3
+			PRINT 4回以前：
+		IF PREVCOM:(COUNT+801) > 0 && NO2(PREVCOM:(COUNT+801)) == -1
+			PRINTFORM 已拍卖
+		ELSEIF PREVCOM:(COUNT+801) > 0
+			PRINTFORM %CALLNAME:(NO2(PREVCOM:(COUNT+801)))%
+		ENDIF
+		SIF PREVCOM:(COUNT+801) <= 0
+			PRINT 无
+		IF PREVCOM:(COUNT+815) > 0 && NO2(PREVCOM:(COUNT+815)) == -1
+			PRINTFORM (助手:已拍卖)
+		ELSEIF PREVCOM:(COUNT+815) > 0
+			PRINTFORM (助手:%CALLNAME:(NO2(PREVCOM:(COUNT+815)))%)
+		ENDIF
+		SIF COUNT != 11 && COUNT != 0 && COUNT != 1 && COUNT != 2
+			PRINT 、
+		SIF COUNT ==0 ||  COUNT == 1 || COUNT == 2 || COUNT == 11
+			PRINTL
+	REND
+ENDIF
+IF DAY > 4 && TFLAG:167
+	PRINTL  [150] - 关闭调教日志
+ELSEIF DAY > 4
+	PRINTL  [150] - 开启调教日志
+ENDIF
+DRAWLINE
+PRINTFORMLC \@(!L_PREV) ? %" " * 20% # [1007]上一页　　\@
+PRINTFORMLC [1000]返回
+PRINTFORMLC \@(!L_NEXT) ? %" " * 20% # [1009]下一页　　\@
+
+SIF STRLENS(L_ERR_MSG)
+	REUSELASTLINE （%L_ERR_MSG%）
+
+REDRAW 1
+$INPUT_LOOP_1
+INPUT
+L_INPUT = RESULT
+L_ERR_MSG=
+
+;- 表示:ページ別
+SELECTCASE L_INPUT
+	;- 終了
+	CASE 1000
+	    TARGET = T_A
+		RETURN 0
+	;- キャラ
+	CASE 0 TO L_CNT_DATA -1
+	    IF R == 1
+            IF L_INPUT == MASTER
+                CALL C_INPUT_ERROR("这是你自己")
+                WAIT
+                GOTO PRINT_LIST
+            ELSEIF CFLAG:L_INPUT:119
+                IF TALENT:L_INPUT:男性
+                    CALL C_INPUT_ERROR("该角色还在成长中，不能调教")
+                ELSE
+                    CALL C_INPUT_ERROR("该角色还在成长中")
+                ENDIF
+                WAIT
+                GOTO PRINT_LIST
+            ;调教对象選択時、見習は除外 R控制
+            ELSEIF CFLAG:L_INPUT:1 == 3
+                CALL C_INPUT_ERROR("该角色是见习调教师，不能调教")
+                WAIT
+                GOTO PRINT_LIST
+            ELSEIF CFLAG:L_INPUT:12 > 0
+                CALL C_INPUT_ERROR("该角色正在劳役中，不能调教")
+                WAIT
+                GOTO PRINT_LIST
+            ELSE
+                C = L_INPUT
+                CALL CHECK_CHILD_CARE
+                IF RESULT == 1
+                    CALL C_INPUT_ERROR("该角色正在育儿室，不能调教")
+                    WAIT
+                    GOTO PRINT_LIST
+                ENDIF
+                SIF C != 0 && C != MASTER
+                    TARGET = C
+                SIF TARGET == ASSI
+                    ASSI = -1
+            ENDIF
+        ELSEIF R == 0
+            CALL KAIGYO
+            LOCAL = 1
+            T = L_INPUT
+            $INPUT_SHOSAI
+            PRINTL -----------------------------------------------------------------
+            PRINTFORM %NAME:T%　　　　
+            IF T != MASTER && CFLAG:T:1 != 3
+            	PRINTFORML 调教难度：%CSTR:T:10%
+            ELSE
+            	PRINTL
+            ENDIF
+            IF T != MASTER
+            	B = 0
+                IF TALENT:MASTER:156
+                    PRINTFORML  (依赖度:{CFLAG:T:2} 压力值{CFLAG:T:10})
+                ELSE
+                    PRINTL
+                ENDIF
+                IF TALENT:T:人外
+                    PRINTL □ 种族  □------------------------------------------------------
+                    SIF TALENT:T:天使
+                        PRINT   天使
+                    SIF TALENT:T:堕天使
+                        PRINT   堕天使
+                    SIF TALENT:T:恶魔
+                        PRINT   恶魔
+                    SIF TALENT:T:精灵
+                    	PRINT   精灵
+                    SIF TALENT:T:走兽
+                    	PRINT   走兽
+                    SIF TALENT:T:飞禽
+                    	PRINT   飞禽
+                    SIF TALENT:T:爬虫
+                    	PRINT   爬虫
+                    SIF TALENT:T:水生
+                    	PRINT   水生
+                    SIF TALENT:T:植物
+                    	PRINT   植物
+                    SIF TALENT:T:类人 && !TALENT:T:无头骑士 && !TALENT:T:人偶 && !TALENT:T:机器人 && !TALENT:T:吸血鬼 && !TALENT:T:僵尸
+                    	PRINT   类人
+                    SIF TALENT:T:无头骑士
+                    	PRINT   无头骑士
+                    SIF TALENT:T:人偶
+                    	PRINT   人偶
+                    SIF TALENT:T:机器人
+                    	PRINT   机器人
+                    SIF TALENT:T:吸血鬼
+                    	PRINT   吸血鬼
+                    SIF TALENT:T:僵尸
+                    	PRINT   僵尸
+                    SIF TALENT:T:不定形 && !TALENT:T:史莱姆 && !TALENT:T:幽灵
+                    	PRINT   不定形
+                    SIF TALENT:T:史莱姆
+                    	PRINT   史莱姆
+                    SIF TALENT:T:幽灵
+                    	PRINT   幽灵
+                    SIF TALENT:T:无形体 && !TALENT:T:数据体 && !TALENT:T:人工智能
+                    	PRINT   无形体
+                    SIF TALENT:T:数据体
+                    	PRINT   数据体
+                    SIF TALENT:T:人工智能
+                    	PRINT   人工智能
+                    SIF TALENT:T:异形
+                    	PRINT   异形
+                ELSE
+                    PRINTL □ 性格  □------------------------------------------------------
+                    SELECTCASE CFLAG:T:600
+                        CASE 1
+                            PRINT   开朗・元气型
+                        CASE 2
+                            PRINT   稳重・温柔型
+                        CASE 3
+                            PRINT   认真・固执型
+                        CASE 4
+                            PRINT   花花公子型
+                        CASE 5
+                            PRINT   别扭傲娇型
+                        CASE 6
+                            PRINT   目中无人・高傲型
+                        CASE 7
+                            PRINT   举止温和・腹黑型
+                        CASE 8
+                            PRINT   阴暗・无口・冷漠型
+                        CASE 9
+                            PRINT   蛮不讲理・精英型
+                        CASE 10
+                            PRINT   任性爱撒娇型
+                        CASE 11
+                            PRINT   直率纯真型
+                        CASE 12
+                            PRINT   无常识・自恋型
+                        CASE 13
+                            PRINT   天然・电波型
+						CASE 66
+                            PRINT   痞气・油嘴滑舌型
+						CASE 67
+                        	PRINT   心机・白莲花型
+						CASE 68
+                        	PRINT   创伤・自暴自弃型
+						CASE 94
+                            PRINT   自订性格94
+						CASE 95
+                            PRINT   自订性格95					
+						CASE 96
+                            PRINT   自订性格96
+						CASE 97
+                            PRINT   自订性格97
+						CASE 98
+                            PRINT   自订性格98
+						CASE 99
+                            PRINT   自订性格99
+                    ENDSELECT
+                ENDIF
+            	PRINTFORML        第一人称：%CSTR:T:0%
+            	IF LOCAL == 2
+            		PRINTL □ 珠子  □------------------------------------------------------
+            		CALL SHOW_INFO_JUEL
+            	ENDIF
+            ELSEIF T == MASTER
+            	IF FLAG:4
+            		PRINT  （游戏难度:
+            		IF FLAG:4 == 1
+            			PRINT EASY）
+            		ELSEIF FLAG:4 == 2
+            			PRINT NORMAL）
+            		ELSEIF FLAG:4 == 3
+            			PRINT HARD）
+            		ENDIF
+					IF	 催眠技术
+						CALL 催眠EXP顯示(ARG)	
+						PRINTFORM  催眠技能 ：LV{催眠技术}  催眠点数 ：{催眠EXP} 
+						IF 催眠技术 < 9
+							PRINTFORML 升级尚须：{升級催眠EXP}
+						ELSE
+							PRINTFORML (等級MAX)
+						ENDIF
+					ELSE
+						PRINTL
+					ENDIF
+            	ELSE
+            		PRINTL
+            	ENDIF
+            ENDIF
+            IF LOCAL == 2
+            	CALL SHOW_INFO
+            ELSE
+            	PRINTL □ 通常素质  □--------------------------------------------------
+            	CALL SHOW_INFO_TALENT
+            	IF TALENT:T:人外
+                    PRINTL □ 人外素质  □--------------------------------------------------
+                    CALL SHOW_NINGAI_TALENT
+                ENDIF
+            ENDIF
+            ;2 称号機能あり かつ、 4 称号機能オンのとき
+            IF (FLAG:2 & 6) == 6
+                PRINTL □ 称号  □------------------------------------------------------
+            	CALL SHOW_INFO_TALENT2
+            ENDIF
+            CALL GET_EATPURE
+            IF STRLENS(CSTR:T:20) || STRLENS(CSTR:T:21) || STRLENS(CSTR:T:22) || E:1 > 0 || E:2 > 0 || E:3 > 0 || (T == MASTER && (FLAG:30+FLAG:31+FLAG:32)) || STRLENS(CSTR:T:56) 
+            	PRINTL □ 经历  □------------------------------------------------------
+            	IF T != MASTER && CFLAG:T:1 != 3
+            		SIF STRLENS(CSTR:T:21)
+            			PRINTFORML   交予童贞的对象：%CSTR:T:21%
+            		SIF STRLENS(CSTR:T:22)
+            			PRINTFORML   交予后庭处子的对象：%CSTR:T:22%
+            		SIF STRLENS(CSTR:T:20)
+            			PRINTFORML   交予处女的对象：%CSTR:T:20%
+;             		SIF E:1
+;             			PRINTFORML   收割童贞数：{E:1}人
+;             		SIF E:2
+;             			PRINTFORML   收割处女数：{E:2}人
+;             		SIF E:3
+;             			PRINTFORML   收割后庭处子数：{E:3}人
+            	ELSE
+            		SIF FLAG:30+FLAG:31+FLAG:32
+            			PRINTFORML   陷落人数:{FLAG:30+FLAG:31+FLAG:32}人
+;             		SIF E:1
+;            			PRINTFORML   收割童贞数：{E:1}人
+;             		SIF E:2
+;             			PRINTFORML   收割处女数：{E:2}人
+;            		SIF E:3
+;            			PRINTFORML   收割后庭处子数：{E:3}人
+            		SIF STRLENS(CSTR:T:20)
+            			PRINTFORML   交予处女的对象：%CSTR:T:20%
+            		SIF STRLENS(CSTR:T:22)
+            			PRINTFORML   交予后庭处子的对象：%CSTR:T:22%
+            		SIF STRLENS(CSTR:T:21)
+            			PRINTFORML   交予童贞的对象：%CSTR:T:21%
+            	ENDIF
+				SIF STRLENS(CSTR:T:56) 
+            	PRINTFORML   身上烙印的字样：%CSTR:T:56%
+            ENDIF
+            IF STRLENS(CSTR:T:31) || STRLENS(CSTR:T:32) || STRLENS(CSTR:T:30)
+            	PRINTL □ 亲属  □------------------------------------------------------
+            	IF STRLENS(CSTR:T:31)
+            		PRINTFORM   母：%CSTR:T:31%
+            		IF STRLENS(CSTR:T:32)
+            			PRINT 　　　
+            		ELSE
+            			PRINTL
+            		ENDIF
+            	ENDIF
+            	;CSTR:T:35 != NAME:Tはver0.41のバグ解除用
+            	SIF STRLENS(CSTR:T:32)
+            		PRINTFORML   父：%CSTR:T:32%
+            	SIF STRLENS(CSTR:T:35) && CSTR:T:35 != NAME:T
+            		PRINTFORML   姐：%CSTR:T:35%
+            	SIF STRLENS(CSTR:T:36) && CSTR:T:36 != NAME:T
+            		PRINTFORML   妹：%CSTR:T:36%
+            	SIF STRLENS(CSTR:T:33) && CSTR:T:33 != NAME:T
+            		PRINTFORML   兄：%CSTR:T:33%
+            	SIF STRLENS(CSTR:T:34) && CSTR:T:34 != NAME:T
+            		PRINTFORML   弟：%CSTR:T:34%
+            	SIF STRLENS(CSTR:T:30)
+            		PRINTFORML   子女：%CSTR:T:30%
+            	;ver0.41のバグ解除用
+            	SIF CSTR:T:33 == NAME:T
+            		CSTR:T:33 =
+            	SIF CSTR:T:34 == NAME:T
+            		CSTR:T:34 =
+            	SIF CSTR:T:35 == NAME:T
+            		CSTR:T:35 =
+            	SIF CSTR:T:36 == NAME:T
+            		CSTR:T:36 =
+            ENDIF
+            PRINTL -----------------------------------------------------------------
+            PRINT  详细数据显示：
+            SETCOLOR 210, 255, 255
+            IF LOCAL == 2
+            	PRINTBUTTON "ＯＮ　" , 1
+            ELSE
+            	PRINTBUTTON "ＯＦＦ" , 2
+            ENDIF
+            RESETCOLOR
+            PRINTL
+            PRINTL
+            PRINTFORMLC  [101]更改姓名和简介
+            PRINTFORMLC  [100]返回
+            PRINTFORMLC  [102]切换页面
+            SIF T != MASTER
+                PRINTFORMLC  [103]个人房间
+			SIF T == MASTER && 催眠技术
+				PRINTFORMLC  [104]升级催眠技能
+			PRINTL
+            VARSET LOCAL
+            INPUT
+            LOCAL = RESULT
+            IF RESULT == 1 || RESULT == 2
+            	CLEARLINE 1
+            	REPEAT 10
+            		PRINTL
+            	REND
+            	GOTO INPUT_SHOSAI
+            ELSEIF RESULT == 101
+                IF T == MASTER
+                    CALL SITEN_SETTING
+                ELSE
+                    ARG = T
+                    CALL NAME_CHANGE(ARG)
+                ENDIF
+            ELSEIF RESULT == 102
+                ARG = T
+                CALL SHOW_TALENT_CONDITION(ARG)
+            ELSEIF RESULT == 103 && T != MASTER
+                ARG = T
+                CALL CHARA_ROOM(ARG)
+			ELSEIF RESULT == 104 && T == MASTER
+				ARG = T
+				CALL 催眠升级(ARG)
+            ENDIF
+            TARGET = T_A
+            RESTART
+        ENDIF
+		RESULT:1 = L_PAGE
+		RETURN L_INPUT
+	CASE 150
+	    IF DAY > 4
+            CLEARLINE 1
+            IF TFLAG:167
+                TFLAG:167 = 0
+            ELSE
+                TFLAG:167 = 1
+            ENDIF
+            RESTART
+        ENDIF
+	;上一页　　
+	CASE 1007
+		SIF !L_PREV
+			GOTO ERROR
+		L_PAGE -= 1
+	;下一页　　
+	CASE 1009
+		SIF !L_NEXT
+			GOTO ERROR
+		L_PAGE += 1
+	;- 其他
+	CASEELSE
+		$ERROR
+		;INPUTエラー対応
+		CALL C_INPUT_ERROR
+		GOTO INPUT_LOOP_1
+ENDSELECT
+GOTO PRINT_LIST
+
+
+@C_INPUT_ERROR(ARGS="")
+
+CLEARLINE 1
+IF ARGS == ""
+	REUSELASTLINE （输入值 {RESULT} 在范围外）
+ELSE
+	REUSELASTLINE （%ARGS%）
+ENDIF
+
+
+@INFO_TARGET1_DETAIL(ARG:0, ARG:1=0)
+#DIM L_I
+#DIM L_TMP
+#DIMS L_STR
+
+L_I=ARG
+
+IF ARG == TARGET
+    PRINT ☆
+ELSEIF CFLAG:ARG:1 == 3
+    PRINT ◆
+ELSEIF ARG == ASSI
+    PRINT ★
+ELSEIF ISASSI:ARG == 1
+    PRINT ●
+ELSEIF CFLAG:ARG:1 == 2
+    PRINT ○
+ELSE
+    PRINT 　
+ENDIF
+
+@INFO_TARGET_DETAIL(ARG:0, ARG:1=0)
+#DIM L_I
+#DIM L_TMP
+#DIMS L_STR
+
+L_I=ARG
+
+
+CALL VAR_PRINT_LIST_NAME(L_I)
+CALL VAR_BAR_BASE(L_I, 0, 2)
+E = 0
+SIF !TALENT:ARG:140 && !TALENT:ARG:137 && !TALENT:ARG:139
+    PRINT  女
+SIF TALENT:ARG:140
+    PRINT  男
+SIF TALENT:ARG:137
+    PRINT  双
+SIF TALENT:ARG:139
+    PRINT  扶
+IF TALENT:ARG:3 || TALENT:ARG:4 || TALENT:ARG:5 || TALENT:ARG:6 || TALENT:ARG:7 || TALENT:ARG:8 || TALENT:ARG:9 || CFLAG:ARG:0 > 0 || CFLAG:ARG:1 == 3
+    SIF TALENT:ARG:3
+        PRINT    恋慕  
+    SIF TALENT:ARG:4
+        PRINT    淫乱  
+    SIF TALENT:ARG:5
+        PRINT    服从  
+    SIF TALENT:ARG:6
+        PRINT  相亲相爱
+    IF TALENT:ARG:7
+        ;男なら「娼夫」
+        IF MALE(ARG)
+            PRINT    娼夫  
+        ELSE
+            PRINT    娼妇  
+        ENDIF
+    ENDIF
+    SIF TALENT:ARG:8
+        PRINT    隶属  
+    SIF TALENT:ARG:9
+        PRINT    崩溃  
+    SIF CFLAG:ARG:0 > 0
+        PRINT    ＥＸ  
+    IF CFLAG:ARG:1 == 3
+        PRINT    见习  
+        E++
+    ENDIF
+ELSE
+    PRINT          
+ENDIF
+IF TALENT:ARG:0 || TALENT:ARG:1 || TALENT:ARG:160
+    SIF TALENT:ARG:0
+        PRINT    处女  
+    SIF TALENT:ARG:1
+        PRINT  再生处女
+    SIF TALENT:ARG:160
+        PRINT    童贞  
+ELSE
+    PRINT          
+ENDIF
+;労役中のキャラ
+SIF CFLAG:ARG:12 > 0
+    PRINT   <劳役中>
+;育児部屋に移动しているキャラは除外
+C = ARG
+CALL CHECK_CHILD_CARE
+SIF R == 1 && RESULT == 1
+    PRINT   <育儿中>
+IF CFLAG:ARG:7000
+	SETCOLOR 0x99BBFF
+	PRINTFORM %UNICODE(0x2721)%催眠控制%UNICODE(0x2721)%
+	RESETCOLOR
+ENDIF
+
+
+@VAR_PRINT_LIST_NAME(ARG)
+PRINTFORM  %NAME:ARG,14,LEFT%
+IF 發情期 && TALENT:ARG:164	
+	SETCOLOR 0xFF6A6A
+	PRINTFORM %UNICODE(0x2665)%发情%UNICODE(0x2665)%
+	RESETCOLOR
+ELSE
+	PRINTFORM        
+ENDIF
+@VAR_BAR_BASE(ARG, ARG:1, ARG:2 = 0)
+A = BASE:ARG:0
+SIF BASE:ARG:0 < 0
+    A = 0
+BAR A,MAXBASE:ARG:0,10
+ PRINTFORM (%TOSTR(A),4,RIGHT%/%TOSTR(MAXBASE:ARG:0),4,RIGHT%)

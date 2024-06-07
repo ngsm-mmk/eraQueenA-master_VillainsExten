@@ -1,0 +1,2541 @@
+﻿;----------------------------------------------------------------------
+;调教指令で汎用随机喘ぎ
+;
+;hetaA用の汎用喘ぎを移植・改造したものです
+;----------------------------------------------------------------------
+;変数使用状況
+;A = キャラ口調（現在5種）
+;B = 喘ぎ回数指定用
+;F = 喘ぎ回数指定用
+;口が塞がってる(口塞球・触手口虐中以外)=7
+
+;----------------------------------------------------------------------
+;変数初期化
+;----------------------------------------------------------------------
+@PANT_VOICE2(ARG)
+B = 0
+C = 0
+D = 0
+F = 0
+H = 0
+;Bに入ってるもの：喘ぎ反復回数
+;P:1 = (-1)
+;----------------------------------------------------------------------
+;喘ぐ種類
+;快感レベルと痛苦レベルの計算
+;----------------------------------------------------------------------
+CALL KYOTUU_JYOKYO
+
+;C:4 = 全体の快感のレベル
+;C:0 = C快感
+;C:1 = V快感
+;C:2 = A快感
+;C:3 = B快感
+;D = 全体の痛苦のレベル
+;D:1 = Ａが痛い
+;D:2 = Ｖが痛い
+
+;逆正常位か逆后背位中で、ＡやＶに快感がないなら喘がない
+SIF (SELECTCOM == 205 || SELECTCOM == 206 || SELECTCOM == 213 || SELECTCOM == 214) && C:1 <= 1 && C:2 <= 1
+	RETURN 0
+;胸での侍奉も、CやＡやＶに刺激がないなら喘がない
+SIF (SELECTCOM == 82 || SELECTCOM == 87 || SELECTCOM == 125) && !CCHECK(TARGET) && !ACHECK(TARGET) && !VCHECK(TARGET)
+	RETURN 0
+;----------------------------------------------------------------------
+;----------------------------------------------------------------------
+;喘ぎ回数の計算
+;----------------------------------------------------------------------
+;----------------------------------------------------------------------
+;素質によってB喘ぐ回数にプラスマイ茄子。
+;----------------------------------------------------------------------
+;反抗
+SIF TALENT:11 == 1
+	B -= 1
+;刚强
+SIF TALENT:12 == 1
+	B -= 1
+;直率
+SIF TALENT:13 == 1
+	B += 1
+;高傲
+SIF TALENT:15 == 1
+	B -= 2
+;自卑
+SIF TALENT:17 == 1
+	B += 1
+;傲娇は顺从4以上ならB＋以下ならB－
+SIF TALENT:18 == 1 && ABL:0 >= 4
+	B += 1
+SIF TALENT:18 == 1 && ABL:0 < 4
+	B -= 1
+;自制力
+SIF TALENT:20 == 1
+	B -= 1
+;无动于衷
+SIF TALENT:21 == 1
+	B -= 2
+;缺乏感情
+SIF TALENT:22 == 1
+	B -= 3
+;性保守
+SIF TALENT:24 == 1
+	B -= 1
+;难以越过的底线は陷落前ならBC-
+SIF TALENT:27 == 1 && TALENT:3 == 0 && TALENT:4 == 0 && TALENT:5 == 0 && TALENT:6 == 0 && TALENT:7 == 0 && TALENT:8 == 0
+	B -= 1
+;贞操重视
+SIF TALENT:30 == 1
+	B -= 1
+;性开放
+SIF TALENT:33 == 1
+	B += 2
+;害羞
+SIF TALENT:35 == 1
+	B -= 1
+;不知羞耻
+SIF TALENT:36 == 1
+	B += 1
+;容易自慰または自慰狂は自慰系COMで
+SIF (TALENT:60 == 1 || TALENT:74 == 1) && (SELECTCOM == 10 || SELECTCOM == 11 || SELECTCOM == 14 || SELECTCOM == 505 || SELECTCOM == 592)
+	B += 1
+;接受快感
+SIF TALENT:70 == 1
+	B += 2
+
+;否定快感
+SIF TALENT:71 == 1
+	B -= 2
+;一度Bの回数異常阻止
+SIF B < 1
+	B = 1
+;----------------------------------------------------------------------
+;陷落資質
+;----------------------------------------------------------------------
+;恋慕
+SIF TALENT:3 == 1
+	B += 1
+;相亲相爱
+SIF TALENT:6 == 1
+	B += 1
+;淫乱
+SIF TALENT:4 == 1
+	B += 2
+;娼妇
+SIF TALENT:7 == 1
+	B += 2
+;反抗Lv1
+IF MARK:3 == 1
+	B -= 1
+;反抗Lv2
+ELSEIF MARK:3 == 2
+	B -= 2
+;反抗Lv3
+ELSEIF MARK:3 == 3
+	B -= 3
+ENDIF
+;屈服Lv1
+IF MARK:2 == 1
+	B += 1
+;屈服Lv2
+ELSEIF MARK:2 == 2
+	B += 2
+;屈服Lv3
+ELSEIF MARK:2 == 3
+	B += 3
+ENDIF
+
+;----------------------------------------------------------------------
+;素質その２
+;----------------------------------------------------------------------
+CALL CVAB_CHECK
+;淫壶
+SIF TALENT:75 == 1 && (GETBIT(TFLAG:49, 1) || VCHECK(TARGET))
+	B += 1
+;尻穴狂
+SIF TALENT:76 == 1 && (GETBIT(TFLAG:49, 2) || ACHECK(TARGET))
+	B += 1
+;淫乳
+SIF TALENT:77 == 1 && (GETBIT(TFLAG:49, 3) || BCHECK(TARGET))
+	B += 1
+;性爱狂
+SIF TALENT:78 ==1 && (SEXPLAY(TARGET) == 1 || SEXPLAY(TARGET) == 2)
+	B += 1
+SIF TALENT:Ｃ钝感 && GETBIT(TFLAG:49, 0)
+	B -= 1
+SIF TALENT:Ｖ钝感 && GETBIT(TFLAG:49, 1)
+	B -= 1
+SIF TALENT:Ａ钝感 && GETBIT(TFLAG:49, 2)
+	B -= 1
+SIF (TALENT:Ｂ钝感 || TALENT:男性) && GETBIT(TFLAG:49, 3)
+	B -= 1
+SIF TALENT:Ｃ敏感 && GETBIT(TFLAG:49, 0)
+	B += 1
+SIF TALENT:Ｖ敏感 && GETBIT(TFLAG:49, 1)
+	B += 1
+SIF TALENT:Ａ敏感 && GETBIT(TFLAG:49, 2)
+	B += 1
+SIF TALENT:Ｂ敏感 && GETBIT(TFLAG:49, 3)
+	B += 1
+SIF TALENT:贫乳 == 1 && GETBIT(TFLAG:49, 3)
+	B += 1
+SIF TALENT:绝壁 == 1 && GETBIT(TFLAG:49, 3)
+	B += 2
+SIF TALENT:巨乳 == 1 && GETBIT(TFLAG:49, 3)
+	B -= 1
+SIF TALENT:爆乳 == 1 && GETBIT(TFLAG:49, 3)
+	B -= 2
+SIF TALENT:母乳体质 == 1 && GETBIT(TFLAG:49, 3)
+	B += 1
+
+;----------------------------------------------------------------------
+;行為軽度
+;----------------------------------------------------------------------
+;重い＋本番
+;自慰棒、肛塞、后庭拉珠、挤奶器、导尿管、正常位、后背位、正常位肛交、后背位肛交、骑乘位、骑乘位肛交、对面座位、背面座位
+;对面座位肛交、背面座位肛交、错开内裤插入、错开内裤插入肛门、对面立位、对面立位肛、背面立位、背面立位肛、鞭子、蜡烛、针、首絞め、イマラチオ
+;触手插入、触手插肛、触手揉阴、触手揉乳、触手玩弄阴茎、插入命令、肛插入命令、３Ｐ、乱れ牡丹、骑乘位揉乳自慰、插入Ｇ点玩弄、插入子宫口玩弄、駅弁
+SIF SELECTCOM == 44 || SELECTCOM == 45 || SELECTCOM == 46 || SELECTCOM == 49 || SELECTCOM == 50 || SELECTCOM == 60 || SELECTCOM == 61 || SELECTCOM == 62 || SELECTCOM == 63 || SELECTCOM == 65 || SELECTCOM == 66 || SELECTCOM == 67 || SELECTCOM == 68 || SELECTCOM == 69 || SELECTCOM == 70 || SELECTCOM == 71 || SELECTCOM == 72 || SELECTCOM == 73 || SELECTCOM == 74 || SELECTCOM == 75 || SELECTCOM == 76 || SELECTCOM == 77 || SELECTCOM == 102 || SELECTCOM == 103 || SELECTCOM == 104 || SELECTCOM == 112 || SELECTCOM == 140 || SELECTCOM == 161 || SELECTCOM == 162 || SELECTCOM == 163 || SELECTCOM == 164 || SELECTCOM == 169 || SELECTCOM == 225 || SELECTCOM == 226 || SELECTCOM == 500 || SELECTCOM == 504 || SELECTCOM == 505 || SELECTCOM == 506 || SELECTCOM == 507 || SELECTCOM == 514
+	B += 2
+;通常じゃやらないの
+;暴力を振るう、拷問、拳交、肛门拳交、两穴拳交、灌肠器＋塞头、扩张气球、肛门电极、乳房电极、鳗鱼池、虫子池、尿道バル—ン
+;肉便器、兽姦、烙印、触手挤奶、触手灌肠、触手尿道插入、触手乳腺責め、触手Ｇスポ責め、触手子宮責め、触手前立腺責め、触手ヴァギナ拡張、触手肛拡張、触手両穴拡張
+;触手产卵、触手肛産卵、二輪刺し、二輪刺し肛、打屁股做爱、打屁股肛、首絞め做爱、首絞め肛
+SIF SELECTCOM == 30 || SELECTCOM == 419 || SELECTCOM == 110 || SELECTCOM == 141 || SELECTCOM == 142 || SELECTCOM == 143 || SELECTCOM == 146 || SELECTCOM == 148 || SELECTCOM == 149 || SELECTCOM == 150 || SELECTCOM == 151 || SELECTCOM == 152 || SELECTCOM == 153 || SELECTCOM == 154 || SELECTCOM == 155 || SELECTCOM == 156 || SELECTCOM == 165 || SELECTCOM == 167 || SELECTCOM == 170 || SELECTCOM == 300 || SELECTCOM == 301 || SELECTCOM == 302 || SELECTCOM == 303 || SELECTCOM == 304 || SELECTCOM == 305 || SELECTCOM == 306 || SELECTCOM == 307 || SELECTCOM == 308 || SELECTCOM == 512 || SELECTCOM == 513 || SELECTCOM == 515 || SELECTCOM == 516 || SELECTCOM == 517 || SELECTCOM == 518
+	B += 2
+
+
+;----------------------------------------------------------------------
+;素質その３
+;----------------------------------------------------------------------
+;胆怯は痛苦があるときB + 1（ぎゃあぎゃあ喚くイメ—ジ）
+SIF TALENT:10 == 1 && D > 0
+	B += 1
+;怕痛
+SIF TALENT:40 == 1 && D > 0
+	B += 1
+
+;耐痛
+SIF TALENT:41 == 1 && D > 0
+	B -= 1
+;施虐狂
+SIF TALENT:83 == 1 && D > 0
+	B -= 2
+;受虐狂
+SIF TALENT:84 == 1 && D > 0
+	B += 1
+;----------------------------------------------------------------------
+;キャラ口調タイプ別（簡易版）
+;古风
+IF CFLAG:605 > 0
+	H = 7
+;堅い
+ELSEIF CFLAG:604
+	H = 6
+;标准乱暴
+ELSEIF CFLAG:601 == 0 && (CFLAG:602 || CFLAG:603)
+	H = 1
+;敬語
+ELSEIF CFLAG:601 == 2
+	H = 4
+;関西弁
+ELSEIF CFLAG:601 == 3
+	H = 5
+;柔らかめ
+ELSEIF CFLAG:606 || CFLAG:601 == 4
+	H = 3
+;标准
+ELSE
+	H = 2
+ENDIF
+;----------------------------------------------------------------------
+;喘ぐ前に回数に異常ないかチェック
+;現状5回以上は繰り返さない。
+
+IF B > 5
+	B = 5
+ELSEIF B < 1
+	B = 1
+ENDIF
+;ARGの数字異常防止
+SIF ARG < 1
+	ARG = 0
+;汎用喘ぎ用
+SIF ARG == 10
+	F = ARG
+;ARGが1to5なら喘ぎ回数はBの値に限らずARG回に
+SIF ARG >= 1 && ARG <= 5
+	B = ARG
+;崩溃なら問答無用で快感LV1へ
+IF TALENT:崩溃
+	CALL PANT_VOICE_G2
+	RETURN 0
+ENDIF
+
+;口が塞がってる(口塞球・触手口虐中)
+IF GETBIT(TFLAG:49, 4) && !TEQUIP:20 && !TEQUIP:36
+	CALL PANT_VOICE_A2
+;首絞め中なら問答無用で痛苦LV2へ
+ELSEIF SELECTCOM == 112 || SELECTCOM == 517 || SELECTCOM == 518
+	CALL PANT_VOICE_B2
+;痛苦LV2&快感レベル2以下(快感を感じる余裕が無い状態)
+ELSEIF D == 2 && C:4 <= 2
+	;痛苦LV2禁止でLV1へ
+	IF CFLAG:611 || CFLAG:600 == 8
+		CALL PANT_VOICE_C2
+	ELSE
+		CALL PANT_VOICE_B2
+	ENDIF
+;痛苦LV1&快感レベル1以下
+ELSEIF D == 1 && C:4 <= 2
+	CALL PANT_VOICE_C2
+;ELSEIF D >= 1 && C:4 >= 2
+;痛苦+快感の喘ぎ　まだ無い
+;	CALL PANT_VOICE_H2
+;快感LV4
+ELSEIF C:4 == 4
+	CALL PANT_VOICE_D2
+;快感LV3
+ELSEIF C:4 == 3
+	CALL PANT_VOICE_E2
+;快感LV2
+ELSEIF C:4 == 2
+	CALL PANT_VOICE_F2
+;快感LV1
+ELSEIF C:4 == 1
+	CALL PANT_VOICE_G2
+ELSE
+	RETURN 0
+ENDIF
+RETURN 0
+
+;----------------------------------------------------------------------
+;口が塞がってる(口塞球・触手口虐中以外、ちょっとは喋れる程度)
+;----------------------------------------------------------------------
+@PANT_VOICE_A2
+SIF F == 10
+	PRINT 「
+REPEAT B
+	;痛苦LV2がある
+	IF D == 2
+		SELECTCASE COUNT
+			CASE 0
+				SELECTCASE RAND:10
+					CASE 0
+						PRINT 呣—！
+					CASE 1
+						PRINT 嗯—！
+					CASE 2
+						PRINT 呜—！唔—…！
+					CASE 3
+						PRINT 唔、嗯——…！
+					CASE 4
+						PRINT 呃、嗯——！
+					CASE 5
+						PRINT 咿—！
+					CASE 6
+						PRINT 呜～～！
+					CASE 7
+						PRINT 呜咕—！
+					CASE 8
+						PRINT 咕、唔——！
+					CASE 9
+						PRINT 呜呜—呜—！
+				ENDSELECT
+			CASE 1
+				SELECTCASE RAND:6
+					CASE 0
+						PRINT 嗯咕……！
+					CASE 1
+						PRINT 啊、嗯啊…！
+					CASE 2
+						PRINT 唔嗯、咕—！
+					CASE 3
+						PRINT 唔啊—
+					CASE 4
+						PRINT 唔唔—！
+					CASE 5
+						PRINT 呜…
+				ENDSELECT
+			CASE 2
+				SELECTCASE RAND:6
+					CASE 0
+						PRINT 呜、呜…
+					CASE 1
+						PRINT 咕呜…
+					CASE 2
+						PRINT 哈啊、唔唔—！！
+					CASE 3
+						PRINT 啊、呜…！
+					CASE 4
+						PRINT 嗯啊—！
+					CASE 5
+						PRINT 呜——！
+				ENDSELECT
+			CASE 3
+				SELECTCASE RAND:6
+					CASE 0
+						PRINT 啊啊…
+					CASE 1
+						PRINT 嗯啊啊啊—
+					CASE 2
+						PRINT 唔啊！
+					CASE 3
+						PRINT 呜嗯—！
+					CASE 4
+						PRINT 唔啊……
+					CASE 5
+						PRINT 唔呜呜……！
+				ENDSELECT
+			CASE 4
+				SELECTCASE RAND:6
+					CASE 0
+						PRINT 嗯呃…
+					CASE 1
+						PRINT 呣…！
+					CASE 2
+						PRINT 嗯呣！
+					CASE 3
+						PRINT 呼啊…！
+					CASE 4
+						PRINT 呜唔—！
+					CASE 5
+						PRINT 呜～～！
+				ENDSELECT
+		ENDSELECT
+	;痛苦LV1があるか　绝顶寸前
+	ELSEIF D == 1 || C:0 == 4 || C:1 == 4 || C:2 == 4 || C:3 == 4
+		SELECTCASE COUNT
+			CASE 0
+				SELECTCASE RAND:10
+					CASE 0
+						PRINT 嗯—啊！
+					CASE 1
+						PRINT 嗯、呣！
+					CASE 2
+						PRINT 呜嗯…！
+					CASE 3
+						PRINT 嗯唔…！
+					CASE 4
+						PRINT 啊…
+					CASE 5
+						PRINT 呜—啊！
+					CASE 6
+						PRINT 呃嗯！
+					CASE 7
+						PRINT 呜呜…！
+					CASE 8
+						PRINT ——…！
+					CASE 9
+						PRINT 啊嗯…！
+				ENDSELECT
+			CASE 1
+				SELECTCASE RAND:8
+					CASE 0
+						PRINT 唔、
+					CASE 1
+						PRINT 咿、
+					CASE 2
+						PRINT 呜、
+					CASE 3
+						PRINT 嗯呜、
+					CASE 4
+						PRINT 咕、
+					CASE 5
+						PRINT 唔！
+					CASE 6
+						PRINT 嗯、啊、
+					CASE 7
+						PRINT …啊、
+				ENDSELECT
+			CASE 2
+				SELECTCASE RAND:8
+					CASE 0
+						PRINT 呜咕…！
+					CASE 1
+						PRINT 嗯咕、
+					CASE 2
+						PRINT —啊、
+					CASE 3
+						PRINT 嗯、
+					CASE 4
+						PRINT 嗯嗯—、
+					CASE 5
+						PRINT 唔啊、！
+					CASE 6
+						PRINT 嗯呣、
+					CASE 7
+						PRINT 呼呜、
+				ENDSELECT
+			CASE 3
+				SELECTCASE RAND:8
+					CASE 0
+						PRINT 呼唔…
+					CASE 1
+						PRINT 嗯、
+					CASE 2
+						PRINT 呜、
+					CASE 3
+						PRINT 咕啊…
+					CASE 4
+						PRINT 唔嗯啊、
+					CASE 5
+						PRINT 呃唔！
+					CASE 6
+						PRINT 咕、
+					CASE 7
+						PRINT —、
+				ENDSELECT
+			CASE 4
+				SELECTCASE RAND:8
+					CASE 0
+						PRINT 嗯呜—…呜、
+					CASE 1
+						PRINT 嗯啊、！
+					CASE 2
+						PRINT 呜、
+					CASE 3
+						PRINT 嗯呃…
+					CASE 4
+						PRINT 嗯嗯、
+					CASE 5
+						PRINT 呜…！
+					CASE 6
+						PRINT 嗯呣、
+					CASE 7
+						PRINT ～啊、
+				ENDSELECT
+		ENDSELECT
+	ELSEIF ABL:顺从 < 3 && ABL:侍奉精神 < 2
+		SELECTCASE COUNT
+			CASE 0
+				SELECTCASE RAND:15
+					CASE 0
+						PRINT 呜呣、
+					CASE 1
+						PRINT 呣呜、
+					CASE 2
+						PRINT 嗯哈、
+					CASE 3
+						PRINT 呣呜呜…
+					CASE 4
+						PRINT 哈啊啊…
+					CASE 5
+						PRINT 嗯—
+					CASE 6
+						PRINT 呜呜啊…
+					CASE 7
+						PRINT 呜…！
+					CASE 8
+						PRINT 咕、呜
+					CASE 9
+						PRINT 咕嗯…
+					CASE 10
+						PRINT 呃、啊
+					CASE 11
+						PRINT 咿—
+					CASE 12
+						PRINT 呜呣…！
+					CASE 13
+						PRINT ——…！
+					CASE 14
+						PRINT 呜…！
+				ENDSELECT
+			CASE 1
+				SELECTCASE RAND:10
+					CASE 0
+						SIF H == 1
+							PRINT 混蛋…
+						SIF H == 2 || H == 6 || H == 7
+							PRINTFORM 不…
+						SIF H == 4
+							PRINTFORM 别…
+						SIF H == 3
+							PRINT 不要…
+						SIF H == 5
+							PRINT 讨厌…
+					CASE 1
+						SIF H == 1
+							PRINT 可…恶…！
+						SIF H == 7
+							PRINT 混蛋！
+						SIF H == 2 || H == 6
+							PRINT 呜…
+						SIF H == 4
+							PRINT 不、要…
+						SIF H == 3
+							PRINT 停…
+						SIF H == 5
+							PRINT 住手…
+					CASE 2
+						PRINT 咕…
+					CASE 3
+						PRINT 哈…啊、
+					CASE 4
+						PRINT 唔咕…
+					CASE 5
+						PRINT …唔、
+					CASE 6
+						PRINT 呜咕…
+					CASE 7
+						PRINT 哈…呜、
+					CASE 8
+						PRINT 咕…
+					CASE 9
+						PRINT 呜…唔、
+				ENDSELECT
+			CASE 2
+				SELECTCASE RAND:2
+					CASE 0
+						PRINT 嗯嗯！
+					CASE 1
+						PRINT …
+				ENDSELECT
+			CASE 3
+				SELECTCASE RAND:2
+					CASE 0
+						PRINT 嗯、
+					CASE 1
+						PRINT …
+				ENDSELECT
+			CASE 4
+				SELECTCASE RAND:2
+					CASE 0
+						PRINT 嗯呣、
+					CASE 1
+						PRINT …
+				ENDSELECT
+		ENDSELECT
+	ELSE
+		SELECTCASE COUNT
+			CASE 0
+				SELECTCASE RAND:2
+					CASE 0
+						PRINT 嗯咕…呃、
+					CASE 1
+						PRINT 嗯嗯、
+				ENDSELECT
+			CASE 1
+				SELECTCASE RAND:2
+					CASE 0
+						PRINT 嗯、呣…
+					CASE 1
+						PRINT 啊呜…
+				ENDSELECT
+			CASE 2
+				SELECTCASE RAND:2
+					CASE 0
+						;淫乱か娼妇
+						IF KANRAKU(TARGET) == 2 && (SELECTCOM  == 81 || SELECTCOM  == 88 || SELECTCOM  == 113 || SELECTCOM  == 120 || SELECTCOM  == 124|| SELECTCOM  == 511)
+							PRINT 好好…吃、
+						ELSE
+							PRINT 哈❤…
+						ENDIF
+					CASE 1
+						PRINT …啾、
+				ENDSELECT
+			CASE 3
+				SELECTCASE RAND:2
+					CASE 0
+						;淫乱か娼妇､调教者阴茎あり
+						IF PENIS(PLAYER) && KANRAKU(TARGET) == 2 && (SELECTCOM  == 81 || SELECTCOM  == 88 || SELECTCOM  == 113 || SELECTCOM  == 124|| SELECTCOM  == 511)
+							SIF H == 1 || H == 6 || H == 7
+								PRINT 精液…喜欢…
+							SIF H == 2
+								PRINT 给我精液…啾…
+							SIF H == 3	
+								PRINT 给我精—液…啾…
+							SIF H == 4	
+								PRINT 请给我精液…啾…
+							SIF H == 5	
+								PRINT 我要精液…啾…！
+						ELSEIF KANRAKU(TARGET) == 2 && (SELECTCOM  == 81 || SELECTCOM  == 88 || SELECTCOM  == 113 || SELECTCOM  == 120 || SELECTCOM  == 124|| SELECTCOM  == 511)
+							PRINT 滋溜…咻溜…
+						ELSE
+							PRINT 呣呼…
+						ENDIF
+					CASE 1
+						PRINT …嗯唔、
+				ENDSELECT
+			CASE 4
+				SELECTCASE RAND:2
+					CASE 0
+						PRINT 啾…
+					CASE 1
+						PRINT 呼…
+				ENDSELECT
+		ENDSELECT
+	ENDIF
+REND
+;反抗3または痛苦有でえづく
+IF !RAND:2 && (MARK:反抗刻印 == 3 || D > 0)
+	PRINT …唔、咕啊…
+ELSEIF !RAND:9
+	PRINT 呃嗯
+ELSEIF !RAND:8
+	PRINT 噗哈
+ELSEIF !RAND:7
+	PRINT 嗯
+ELSEIF !RAND:6
+	PRINT 嗯唔
+ELSEIF !RAND:5
+	PRINT 呜
+ELSEIF !RAND:4
+	PRINT 唔呜
+ELSEIF !RAND:3
+	PRINT 嗯嗯
+ELSEIF !RAND:2
+	PRINT …嗯呣！
+ELSE
+	PRINT …哈啊…呜
+ENDIF
+SIF F == 10
+	PRINTL 」
+
+
+B = 0
+C = 0
+D = 0
+F = 0
+G = 0
+RETURN 0
+
+;----------------------------------------------------------------------
+;痛苦LV2
+;----------------------------------------------------------------------
+@PANT_VOICE_B2
+;A = 口調（1=雑、2=标准、3=柔、4=敬語、5=関西）
+SIF F == 10
+	PRINT 「
+REPEAT B
+	;首絞め中
+	IF SELECTCOM == 112 || SELECTCOM == 517 || SELECTCOM == 518
+		SELECTCASE COUNT
+			CASE 0
+				SELECTCASE RAND:8
+					CASE 0
+						PRINT 咕呜…
+					CASE 1
+						PRINT 咕—…！
+					CASE 2
+						PRINT 嗯咕—…！
+					CASE 3
+						PRINT 啊嗯…！
+					CASE 4
+						PRINT 唔咕…！
+					CASE 5
+						PRINT 哈…！
+					CASE 6
+						PRINT 呜、啊…！
+					CASE 7
+						PRINT 啊咕…！
+				ENDSELECT
+			CASE 1
+				SELECTCASE RAND:6
+					CASE 0
+						PRINT 咕…
+					CASE 1
+						PRINT 咕呜、
+					CASE 2
+						PRINT 咕、咿…
+					CASE 3
+						PRINT 呜、
+					CASE 4
+						PRINT 咕…
+					CASE 5
+						PRINT 咕啊、嗯、哈…
+				ENDSELECT
+			CASE 2
+				SELECTCASE RAND:6
+					CASE 0
+						PRINT 啊、呜…
+					CASE 1
+						PRINT 呀啊…！
+					CASE 2
+						PRINT 咿—…
+					CASE 3
+						PRINT 呜、
+					CASE 4
+						PRINT 嗯啊…
+					CASE 5
+						PRINT 啊、嘎哈…
+				ENDSELECT
+			CASE 3
+				SELECTCASE RAND:5
+					CASE 0
+						PRINT 咕、
+					CASE 1
+						PRINT 咿
+					CASE 2
+						PRINT 嗯咕—…！
+					CASE 3
+						PRINT 啊呀…！
+					CASE 4
+						PRINT 唔咕…！
+				ENDSELECT
+			CASE 4
+				SELECTCASE RAND:5
+					CASE 0
+						PRINT 呀…
+					CASE 1
+						PRINT 呃…
+					CASE 2
+						PRINT 啊嗯…！
+					CASE 3
+						PRINT 啊…！
+					CASE 4
+						PRINT 嗯…！
+				ENDSELECT
+		ENDSELECT
+	;口塞球か触手口虐中
+	ELSEIF TEQUIP:20 || TEQUIP:36
+		SELECTCASE COUNT
+			CASE 0
+				SELECTCASE RAND:10
+					CASE 0
+						PRINT 呜—！
+					CASE 1
+						PRINT 呜――！
+					CASE 2
+						PRINT 呜—！呜—…！
+					CASE 3
+						PRINT 嗯呜呜——…！
+					CASE 4
+						PRINT 呼唔―！
+					CASE 5
+						PRINT 咿呜—―！
+					CASE 6
+						PRINT 呜～～嗯！
+					CASE 7
+						PRINT 呜咕――—！
+					CASE 8
+						PRINT 呼、呜——！
+					CASE 9
+						PRINT 咿—！呜—！
+				ENDSELECT
+			CASE 1
+				SELECTCASE RAND:8
+					CASE 0
+						PRINT 嗯咕呜！
+					CASE 1
+						PRINT 哦、呀、
+					CASE 2
+						PRINT 嗯咕、呜！
+					CASE 3
+						PRINT 啊、呀…！
+					CASE 4
+						PRINT 呜呜…！
+					CASE 5
+						PRINT 唔嗯—！
+					CASE 6
+						PRINT 唔呜—！
+					CASE 7
+						PRINT 呜嗯…
+				ENDSELECT
+			CASE 2
+				SELECTCASE RAND:8
+					CASE 0
+						PRINT 啊噢…
+					CASE 1
+						PRINT 咕呜、
+					CASE 2
+						PRINT 啊啊啊…嗯、
+					CASE 3
+						PRINT 噢嗯…呜、
+					CASE 4
+						PRINT 呼、咕呜！
+					CASE 5
+						PRINT 呜唔—！
+					CASE 6
+						PRINT 啊唔、
+					CASE 7
+						PRINT 唔呜、嗯…！
+				ENDSELECT
+			CASE 3
+				SELECTCASE RAND:8
+					CASE 0
+						PRINT 啊啊…嗯、
+					CASE 1
+						PRINT 呼嗯—、
+					CASE 2
+						PRINT 唔、呜…
+					CASE 3
+						PRINT 咕——呜、
+					CASE 4
+						PRINT 呼、呜唔—！
+					CASE 5
+						PRINT 噢、唔…！
+					CASE 6
+						PRINT 咿——！
+					CASE 7
+						PRINT 呜嗯——！
+				ENDSELECT
+			CASE 4
+				SELECTCASE RAND:2
+					CASE 0
+						PRINT 嗯咕
+					CASE 1
+						PRINT 呣呜…！
+				ENDSELECT
+		ENDSELECT
+	;受虐狂用
+	ELSEIF ABL:9 > 3
+		SELECTCASE COUNT
+			CASE 0
+				SELECTCASE RAND:10
+					CASE 0
+						PRINT 呼咿…！
+					CASE 1
+						PRINT 咿、
+					CASE 2
+						PRINT 呜啊、
+					CASE 3
+						PRINT 咿啊、
+					CASE 4
+						PRINT 嗯啊、
+					CASE 5
+						PRINT 呀…！
+					CASE 6
+						PRINT —啊！
+					CASE 7
+						PRINT 呀啊、
+					CASE 8
+						PRINT 咕呜、
+					CASE 9
+						PRINT 咿嗯、
+				ENDSELECT
+			CASE 1
+				SELECTCASE RAND:10
+					CASE 0
+						PRINT 呀啊！
+					CASE 1
+						PRINT 啊――…嗯、
+					CASE 2
+						PRINT 呜啊啊、
+					CASE 3
+						PRINT 呀啊、
+					CASE 4
+						PRINT 呼啊、
+					CASE 5
+						PRINT 咕呜…！
+					CASE 6
+						PRINT ～嗯！
+					CASE 7
+						PRINT 嗯啊、
+					CASE 8
+						PRINT 咕呼———呣、
+					CASE 9
+						PRINT 嗯哦、
+				ENDSELECT
+			CASE 2
+				SELECTCASE RAND:4
+					CASE 0
+						IF KANRAKU(TARGET)
+							SIF H == 1
+								PRINT 好痛…好难、受…
+							SIF H == 2 && H == 4
+								PRINT …让我…更痛一点吧…！
+							SIF H == 3
+								PRINT 讨厌…虽然很痛、但是好舒服……
+							SIF H == 5
+								PRINT 快要疯掉了…！
+							SIF H == 6 || H == 7
+								PRINTFORM 更多…给我更多！…
+						ELSE
+							PRINT 哈啊…哈啊…
+						ENDIF
+					CASE 1
+						IF KANRAKU(TARGET)
+							SIF H == 1 || H == 2 || H == 6
+								PRINT 啊、嗯啊、
+							SIF H == 3	
+								PRINT 好舒、服…
+							SIF H == 4	
+								PRINT …哈嗯、已经变得…啊、
+							SIF H == 5	
+								PRINT 好痛、好爽啊…！
+							SIF H == 7
+								PRINT 还远远…不够！…
+						ELSE
+							IF H == 6 || H == 7
+								PRINT 为…什么？…
+							ELSE
+								PRINT 啊…咧？…
+							ENDIF
+						ENDIF
+					CASE 2
+						IF KANRAKU(TARGET)
+							SIF H == 1
+								PRINT 超…厉害啊…
+							SIF H == 2 && H == 4
+								PRINT …不够…还想要…！
+							SIF H == 3
+								PRINT 这样…好厉害、
+							SIF H == 5
+								PRINT 好、好奇怪啊…！
+							SIF H == 6 || H == 7
+								PRINTFORM 嗯哈…那、那里…还想要…
+						ELSE
+							PRINT 哈啊…哈啊…
+						ENDIF
+					CASE 3
+						IF KANRAKU(TARGET)
+							SIF H == 1 || H == 2 || H == 6
+								PRINT 咿、好棒……！
+							SIF H == 3	
+								PRINT 好舒服、啊…
+							SIF H == 4	
+								PRINT …诶嗯、变得…乱七八糟、
+							SIF H == 5	
+								PRINT 痛、但是…舒…服……！
+							SIF H == 7
+								PRINT 远远…不够！…
+						ELSE
+							IF H == 6 || H == 7
+								PRINTFORM 什、这是什么感觉…
+							ELSE
+								PRINT 什…！
+							ENDIF
+						ENDIF
+				ENDSELECT
+			CASE 3
+				SELECTCASE RAND:8
+					CASE 0
+						PRINT 呀…！
+					CASE 1
+						PRINT 呀、
+					CASE 2
+						PRINT 咿咿—…！
+					CASE 3
+						PRINT 啊啊啊…！
+					CASE 4
+						PRINT 呜咕呜呜…！
+					CASE 5
+						PRINT 呀咿…！
+					CASE 6
+						PRINT 啊啊啊——啊…！
+					CASE 7
+						PRINT 呜咕——…
+				ENDSELECT
+			CASE 4
+				SELECTCASE RAND:8
+					CASE 0
+						PRINT 哈――咿！
+					CASE 1
+						PRINT 啊――…嗯、
+					CASE 2
+						PRINT 啊咕—…！
+					CASE 3
+						PRINT 呜、呜啊…！
+					CASE 4
+						PRINT 嗯、咿…！
+					CASE 5
+						PRINT …—啊…！
+					CASE 6
+						PRINT 呜、咕呜…！
+					CASE 7
+						PRINT 咕啊—…！
+				ENDSELECT
+		ENDSELECT
+	;普通の人用
+	ELSE
+		SELECTCASE COUNT
+			CASE 0
+				SELECTCASE RAND:10
+					CASE 0
+						PRINT 呀咿――啊、
+					CASE 1 , 2
+						;高傲or自大or刚强or抵抗or反抗or耐痛or服从or反抗or自制力
+						IF TALENT:自制力 || TALENT:11 == 1 || TALENT:12 == 1 || TALENT:15 == 1 || TALENT:16 == 1 || TALENT:34 == 1 || TALENT:40 == 1 || TALENT:5 == 1 || TALENT:8 == 1 || MARK:3 > 0 || CFLAG:600 == 8
+							PRINT 啊呀、…
+						ELSE
+							IF H == 1
+								PRINT 好痛…！
+							ELSEIF H == 2 || H == 6 || H == 4 || CFLAG:601 == 4
+								PRINT 好痛、痛死了！
+							ELSEIF H == 3
+								PRINT 好痛啊、
+							ELSEIF H == 5
+								PRINT 痛死人了！
+							ELSEIF H == 7
+								PRINT 受够了！
+							ENDIF
+						ENDIF
+					CASE 3
+						PRINT 啊――…呜、
+					CASE 4
+						PRINT 咿！
+					CASE 5
+						PRINT 嘶…！
+					CASE 6
+						PRINT 咿、
+					CASE 7
+						PRINT 咕啊、
+					CASE 8
+						PRINT 呜呜！
+					CASE 9
+						PRINT 呜咕！
+				ENDSELECT
+			CASE 1
+				SELECTCASE RAND:2
+					CASE 0
+						PRINT 噫咿…！
+					CASE 1
+						;高傲or自大or刚强or抵抗or反抗or耐痛or服从or反抗
+						IF TALENT:11 == 1 || TALENT:12 == 1 || TALENT:15 == 1 || TALENT:16 == 1 || TALENT:34 == 1 || TALENT:40 == 1 || TALENT:5 == 1 || TALENT:8 == 1 || MARK:3 > 0 || CFLAG:600 == 8
+							PRINT 咿…嗯、
+						ELSE		
+							SIF H == 1 || H == 2
+								PRINT 快…住手、
+							SIF H == 3	
+								PRINT 不要了…啊、
+							SIF H == 4	
+								PRINTFORM 求你了…停下…！
+							SIF H == 5	
+								PRINT 已经、受不了了…呀啊
+							SIF H == 7 || H == 6
+								PRINT 放开…我、
+						ENDIF
+				ENDSELECT
+			CASE 2
+				SELECTCASE RAND:2
+					CASE 0
+						SIF H == 1 || H == 2 || H == 6 || H == 7
+							PRINT 去死、唔啊
+						SIF H == 4
+							PRINT 去死吧…！
+						SIF H == 3
+							PRINT 快给我去死！…
+						SIF H == 5
+							PRINT 快、快死了…
+					CASE 1
+						PRINT 呀啊…啊！
+				ENDSELECT
+			CASE 3
+				SELECTCASE RAND:2
+					CASE 0
+						;;高傲or自大or刚强or抵抗or反抗or耐痛or服从or反抗
+						IF TALENT:11 == 1 || TALENT:12 == 1 || TALENT:15 == 1 || TALENT:16 == 1 || TALENT:34 == 1 || TALENT:40 == 1 || TALENT:5 == 1 || TALENT:8 == 1 || MARK:3 > 0 || CFLAG:600 == 8
+							PRINT 咕…唔、
+						ELSE	
+							SIF H == 1 || H == 2 || H == 6 || H == 7
+								PRINT 别这样、
+							SIF H == 3	
+								PRINT 不要了啦…！
+							SIF H == 4	
+								PRINT 放了我吧…
+							SIF H == 5	
+								PRINT 不要――讨厌！
+						ENDIF
+					CASE 1
+						PRINT 哈啊……哈啊、呜
+				ENDSELECT
+			CASE 4
+				SELECTCASE RAND:2
+					CASE 0
+						PRINT 唔、―――嗯嗯、
+					CASE 1
+						PRINT 呀啊、
+				ENDSELECT
+		ENDSELECT
+
+	ENDIF
+REND
+;首絞め中
+IF SELECTCOM == 112 || SELECTCOM == 517 || SELECTCOM == 518
+	IF !RAND:3
+		PRINT 啊…！
+	ELSEIF !RAND:2
+		PRINT 呀啊…！
+	ELSE
+		PRINT 呣呜呜…！
+	ENDIF
+;口塞球か触手口虐中
+ELSEIF TEQUIP:20 || TEQUIP:36
+	IF !RAND:3
+		PRINT 嗯唔唔唔呜唔！
+	ELSEIF !RAND:2
+		PRINT 啊呜呜…！
+	ELSE
+		PRINT 咕呜呜…呼唔…
+	ENDIF
+ELSE
+	IF !RAND:3
+		PRINT 啊啊啊啊啊啊！！！
+	ELSEIF !RAND:2
+		PRINT 咿―――唔嗯！！！
+	ELSE
+		PRINT 哈啊…哈…
+	ENDIF
+ENDIF
+SIF F == 10
+	PRINTL 」
+
+B = 0
+C = 0
+D = 0
+F = 0
+H = 0
+RETURN 0
+
+;----------------------------------------------------------------------
+;痛苦LV1
+;----------------------------------------------------------------------
+@PANT_VOICE_C2
+;A = 口調（1=雑、2=标准、3=柔、4=敬語、5=関西）
+SIF F == 10
+	PRINT 「
+REPEAT B
+	;口塞球か触手口虐中
+	IF TEQUIP:20 || TEQUIP:36
+		SELECTCASE COUNT
+			CASE 0
+				SELECTCASE RAND:5
+					CASE 0
+						PRINT 嗯呜！
+					CASE 1
+						PRINT 呣呜…！
+					CASE 2
+						PRINT 呜呜…！
+					CASE 3
+						PRINT 嗯呜…！
+					CASE 4
+						PRINT 嗯…！
+				ENDSELECT
+			CASE 1
+				SELECTCASE RAND:2
+					CASE 0
+						PRINT 嗯…
+					CASE 1
+						PRINT 嗯啊…哈、
+				ENDSELECT
+			CASE 2
+				SELECTCASE RAND:2
+					CASE 0
+						PRINT 嗯呣…
+					CASE 1
+						PRINT …呣…！
+				ENDSELECT
+			CASE 3
+				SELECTCASE RAND:2
+					CASE 0
+						PRINT 啊…啊、
+					CASE 1
+						PRINT 啊啊…
+				ENDSELECT
+			CASE 4
+				SELECTCASE RAND:2
+					CASE 0
+						PRINT 咕…
+					CASE 1
+						PRINT …咕呜…
+				ENDSELECT
+		ENDSELECT
+	;受虐狂ッ気4以上あり
+	ELSEIF ABL:9 > 3
+		SELECTCASE COUNT
+			CASE 0
+				SELECTCASE RAND:5
+					CASE 0
+						PRINT 咿…啊、
+					CASE 1
+						PRINT 啊嗯…！
+					CASE 2
+						PRINT 啊…呀…
+					CASE 3
+						PRINT 呀…啊…
+					CASE 4
+						PRINT 呜…嗯呜…
+				ENDSELECT
+			CASE 1
+				SELECTCASE RAND:2
+					CASE 0
+						;陷落前
+						IF (H == 1 || H == 2 || H == 3 || H == 4) && (!TALENT:3 && !TALENT:4 && !TALENT:5 && !TALENT:6 && !TALENT:7 && !TALENT:8) && MARK:反抗刻印 != 3 && ABL:受虐属性 < 3
+							PRINT 这是什么、感觉…呜、
+						ELSEIF (H == 6 || H == 7) && (!TALENT:3 && !TALENT:4 && !TALENT:5 && !TALENT:6 && !TALENT:7 && !TALENT:8) && MARK:反抗刻印 != 3 && ABL:受虐属性 < 3
+							PRINT 这是、什么…感觉、
+						ELSEIF H == 5 && (!TALENT:3 && !TALENT:4 && !TALENT:5 && !TALENT:6 && !TALENT:7 && !TALENT:8) && MARK:反抗刻印 != 3 && ABL:受虐属性 < 3
+							PRINT 为什么会这样…？
+						ELSE
+							PRINT 呜…啊啊…
+						ENDIF
+					CASE 1
+						PRINT 啊…哈啊…啊、
+				ENDSELECT
+			CASE 2
+				SELECTCASE RAND:2
+					CASE 0
+						PRINT 啊！
+					CASE 1
+						PRINT 咿呀、
+				ENDSELECT
+			CASE 3
+				SELECTCASE RAND:2
+					CASE 0
+						PRINT 住手、
+					CASE 1
+						PRINT 哈啊啊…
+				ENDSELECT
+			CASE 4
+				SELECTCASE RAND:2
+					CASE 0
+						PRINT 咿、
+					CASE 1
+						PRINT 嗯啊…
+				ENDSELECT
+		ENDSELECT
+	;普通の人
+	ELSE
+		SELECTCASE COUNT
+			CASE 0
+				SELECTCASE RAND:5
+					CASE 0
+						PRINT 不…啊、
+					CASE 1
+						PRINT 呜…
+					CASE 2
+						PRINT 咿…
+					CASE 3
+						PRINT 咕…
+					CASE 4
+						IF H == 1
+							PRINT 好…痛…
+						ELSE
+							PRINT 嘶…痛…
+						ENDIF
+				ENDSELECT
+			CASE 1
+				SELECTCASE RAND:4
+					CASE 0
+						IF H == 1 && !KANRAKU(TARGET) && !RAND:2
+							PRINT …别…开…玩笑了……
+						ELSE
+							;;高傲or自大or刚强or抵抗or反抗or耐痛or服从or反抗
+							IF TALENT:11 == 1 || TALENT:12 == 1 || TALENT:15 == 1 || TALENT:16 == 1 || TALENT:34 == 1 || TALENT:40 == 1 || TALENT:5 == 1 || TALENT:8 == 1 || MARK:3 > 0 || CFLAG:600 == 8
+								PRINT …咕、…唔咕…
+							ELSE
+								SIF H == 1 
+									PRINT …呜…混蛋……
+								SIF H == 2 || H == 6 || H == 7
+									PRINTFORM 不行、别那样…
+								SIF H == 4
+									PRINTFORM 不行…住手…！
+								SIF H == 3
+									PRINT 不要…不可以、
+								SIF H == 5
+									PRINT 好难…受、
+							ENDIF
+						ENDIF
+					CASE 1
+						PRINT 唔呜…咕、
+					CASE 2
+						;;高傲､冷静､堅物
+						IF KANRAKU(TARGET) || CFLAG:600 == 3 || CFLAG:600 == 8
+							PRINT …可恶…
+						ELSE
+							IF D:1 > 0 && !RAND:3
+								SIF H == 1
+									PRINT 屁眼
+								SIF H == 2 || H == 6 || H == 7
+									PRINT 后面
+								SIF H == 4
+									PRINT 后面…
+								SIF H == 3
+									PRINT 屁股
+								SIF H == 5
+									PRINT 屁股穴…
+							ENDIF
+							SIF H == 1
+								PRINT 好痛啊！…
+							SIF H == 2 
+								PRINT 痛死了！…
+							SIF H == 4
+								PRINTFORM 好痛苦…！…
+							SIF H == 3
+								PRINT 好痛啊…
+							SIF H == 5
+								PRINT 痛死了…
+							SIF H == 6
+								PRINT …痛…
+							SIF H == 7
+								PRINT 好痛啊！…
+						ENDIF
+					CASE 3
+						PRINT 呜…
+				ENDSELECT
+			CASE 2
+				SELECTCASE RAND:2
+					CASE 0
+						;;高傲､冷静､堅物
+						IF KANRAKU(TARGET) || CFLAG:600 == 3 || CFLAG:600 == 8
+							PRINT 唔…
+						ELSE
+							SIF H == 1 || H == 2
+								PRINT 不要…！
+							SIF H == 3 || H == 4
+								PRINT 讨厌…
+							SIF H == 5
+								PRINT 已经…唔、现在…已经、
+							SIF H == 6 || H == 7
+								PRINT 放开…我、
+						ENDIF
+					CASE 1
+						PRINT 不要、
+				ENDSELECT
+			CASE 3
+				SELECTCASE RAND:2
+					CASE 0
+						PRINT 啊啊！
+					CASE 1
+						PRINT 咿噫、
+				ENDSELECT
+			CASE 4
+				SELECTCASE RAND:2
+					CASE 0
+						PRINT 呀…！
+					CASE 1
+						PRINT 咕……
+				ENDSELECT
+		ENDSELECT
+	ENDIF
+REND
+;締め
+;口塞球か触手口虐中
+IF TEQUIP:20 || TEQUIP:36
+	IF !RAND:3
+		PRINT …嗯嗯！
+	ELSEIF !RAND:2
+		PRINT …唔…
+	ELSE
+		PRINT …嗯…啊…
+	ENDIF
+;受虐狂
+ELSEIF ABL:9 > 3
+	IF !RAND:3
+		PRINT 呀啊啊啊
+	ELSEIF !RAND:2
+		PRINT …呜呜、啊…
+	ELSE
+		PRINT 嗯、啊呜…
+	ENDIF
+;普通の人
+ELSE
+	IF !RAND:3
+		PRINT …呜唔、啊…
+	ELSEIF !RAND:2
+		PRINT 啊…
+	ELSE
+		PRINT …嗯…
+	ENDIF
+ENDIF
+
+SIF F == 10
+	PRINTL 」
+
+B = 0
+C = 0
+D = 0
+F = 0
+H = 0
+RETURN 0
+
+;----------------------------------------------------------------------
+;快感LV4
+;----------------------------------------------------------------------
+@PANT_VOICE_D2
+SIF F == 10
+	PRINT 「
+;A = 口調（1=雑、2=标准、3=柔、4=敬語、5=関西）
+REPEAT B
+	;口塞球か触手口虐中
+	IF TEQUIP:20 || TEQUIP:36
+		SELECTCASE COUNT
+			CASE 0
+				SELECTCASE RAND:10
+					CASE 0
+						PRINT 嗯嗯―――！
+					CASE 1
+						PRINT 嗯呜！
+					CASE 2
+						PRINT 呼呣呜呜！
+					CASE 3
+						PRINT 呼嗯嗯嗯嗯！
+					CASE 4
+						PRINT 啊嗯呜呜呜！
+					CASE 5
+						PRINT 咿呜呜呜呜―！
+					CASE 6
+						PRINT 呜～～～嗯！
+					CASE 7
+						PRINT 嗯呜―—―！
+					CASE 8
+						PRINT 噢呜呜呜——唔！
+					CASE 9
+						PRINT 呜呜—！
+				ENDSELECT
+			CASE 1
+				SELECTCASE RAND:10
+					CASE 0
+						PRINT 呣―――！
+					CASE 1
+						PRINT 嗯嗯嗯唔、
+					CASE 2
+						PRINT 唔嗯嗯咕！
+					CASE 3
+						PRINT 呜—！
+					CASE 4
+						PRINT 呜呜！
+					CASE 5
+						PRINT 唔—啊…
+					CASE 6
+						PRINT 呜～嗯！
+					CASE 7
+						PRINT 嗯——！
+					CASE 8
+						PRINT 呜呜呜——呜！
+					CASE 9
+						PRINT 呜呜—！
+				ENDSELECT
+			CASE 2
+				SELECTCASE RAND:6
+					CASE 0
+						PRINT 啊呜呜呜！
+					CASE 1
+						PRINT 嗯咕…啊、
+					CASE 2
+						PRINT 呼、呜呜—！！
+					CASE 3
+						PRINT 哦、呜呜…！
+					CASE 4
+						PRINT 唔呜——！
+					CASE 5
+						PRINT 唔唔——！
+				ENDSELECT
+			CASE 3
+				SELECTCASE RAND:6
+					CASE 0
+						PRINT 嗯哦、
+					CASE 1
+						PRINT 嗯唔唔！
+					CASE 2
+						PRINT 呼、咕呜呜！
+					CASE 3
+						PRINT 呜呜—！
+					CASE 4
+						PRINT 嗯呜！
+					CASE 5
+						PRINT 唔呜…！
+				ENDSELECT
+			CASE 4
+				SELECTCASE RAND:6
+					CASE 0
+						PRINT 啊…
+					CASE 1
+						PRINT 呼呜呜、
+					CASE 2
+						PRINT 唔唔唔！
+					CASE 3
+						PRINT 呼…！
+					CASE 4
+						PRINT 呣呜—！
+					CASE 5
+						PRINT 呜～～！
+				ENDSELECT
+		ENDSELECT
+	ELSE
+		SELECTCASE COUNT
+			CASE 0
+				SELECTCASE RAND:10
+					CASE 0
+						PRINT 啊啊啊——啊！
+					CASE 1
+						PRINT 咿啊啊啊啊、
+					CASE 2
+						PRINT 啊啊嗯啊啊！
+					CASE 3
+						PRINT 啊嗯———！
+					CASE 4
+						PRINT 呀、啊啊啊啊嗯！
+					CASE 5
+						PRINT 嗯啊啊啊——唔！
+					CASE 6
+						PRINT 咿呀啊啊啊啊、
+					CASE 7
+						PRINT 哦哦嗯哦哦！
+					CASE 8
+						PRINT 嗯咿嗯嗯呜—！
+					CASE 9
+						PRINT 啊咕呜呜呜啊！
+				ENDSELECT
+			CASE 1
+				SELECTCASE RAND:5
+					CASE 0
+						PRINT 啊啊—嗯！
+					CASE 1
+						;陷落前
+						IF H == 5 && !KANRAKU(TARGET)
+							PRINT 讨厌、讨厌啊啊啊！
+						ELSEIF !KANRAKU(TARGET)
+							PRINTFORM 讨厌、不要啊啊啊！
+						;淫語モ—ド
+						ELSEIF TALENT:娼妇 && !RAND:3
+							;胸弄られてる
+							IF (BCHECK(TARGET) || GETBIT(TFLAG:49, 3)) && PALAM:快Ｂ >= 7000
+								PRINT 奶头感觉——好奇怪！
+							ENDIF
+							;阴茎持ちでＣを弄られてる
+							IF PENIS(TARGET) && (CCHECK(TARGET) || GETBIT(TFLAG:49, 0)) && PALAM:快Ｃ >= 7000
+								PRINTFORM %PENIS_YOBIKATA(TARGET)%
+								PRINT 了啦
+								IF CFLAG:600 == 11
+									PRINT 精—液
+								ELSE
+									PRINT 精液
+								ENDIF
+								PRINT 射出来了！
+							;阴茎无でＣを弄られてる
+							ELSEIF !PENIS(TARGET) && (CCHECK(TARGET) || GETBIT(TFLAG:49, 0)) && PALAM:快Ｃ >= 7000
+								PRINT 感觉实在太棒…嗯啊啊！
+							ENDIF
+							;Ａを弄られてる
+							IF GETBIT(TFLAG:49, 2) && PALAM:快Ａ >= 8000
+								IF ABL:5 > 4
+									PRINT 被搞得乱七八糟的了……！
+								ELSE
+									PRINT 被干得一塌糊涂的了……！
+								ENDIF
+							;Ｖを弄られてる
+							ELSEIF GETBIT(TFLAG:49, 1)
+								PRINT 小穴好舒服、啊啊啊！
+							ELSE
+								PRINT 啊啊啊！
+							ENDIF
+						ELSE
+							PRINT 啊啊！咿啊啊啊嗯！
+						ENDIF
+					CASE 2
+						SIF H == 1 || H == 2
+							PRINT 脑子…变得混乱了…
+						SIF H == 3 || H == 4
+							PRINT 要坏掉…了、
+						SIF H == 5
+							PRINT 好热…呜、好热啊…
+						SIF H == 6 || H == 7
+							PRINT 脑子…坏掉…了
+					CASE 3
+						PRINT 嗯咿…！
+					CASE 4
+						PRINT 啊、啊唔！
+				ENDSELECT
+			CASE 2
+				SELECTCASE RAND:5
+					CASE 0
+						;;高傲or自大or刚强or抵抗or反抗or耐痛or服从or反抗
+						IF TALENT:11 == 1 || TALENT:12 == 1 || TALENT:15 == 1 || TALENT:16 == 1 || TALENT:34 == 1 || TALENT:40 == 1 || TALENT:5 == 1 || TALENT:8 == 1 || MARK:3 > 0 || CFLAG:600 == 8
+							PRINT …嗯啊啊啊啊！
+						ELSEIF !KANRAKU(TARGET) && !RAND:2
+							SIF H == 1 || H == 2 || H == 6 || H == 7
+								PRINT 要被、要被干死了！
+							SIF H == 4
+								PRINT 啊、快要、快升天了…！
+							SIF H == 3
+								PRINT 咿、爽飞了——！
+							SIF H == 5
+								PRINT 要死、要死了！！…
+						ELSEIF (PALAM:快Ｃ >= 8000 || BASE:2 >= 8000) && PENIS(TARGET)
+							SIF H == 1 || H == 2
+								PRINT 去、去了！
+							SIF H == 4
+								PRINT 去了…！
+							SIF H == 3
+								PRINT 去了——！
+							SIF H == 5 || H == 6 || H == 7
+								PRINT 去了…！
+						ELSE
+							PRINT …啊啊啊啊嗯！
+						ENDIF
+					CASE 1
+						PRINT …咿、
+					CASE 2
+						PRINT 嗯嗯嗯嗯！
+					CASE 3
+						PRINT 哈、哈啊、
+					CASE 4
+						PRINT 嗯哈啊啊啊啊啊嗯！
+				ENDSELECT
+			CASE 3
+				SELECTCASE RAND:5
+					CASE 0
+						PRINT 噫咿、
+					CASE 1
+						IF TALENT:娼妇
+							IF GETBIT(TFLAG:49, 2) && PALAM:快Ａ >= 8000 && (SELECTCOM != 14 && SELECTCOM != 11)
+								PRINT 被这样操干屁眼的话
+							ELSEIF GETBIT(TFLAG:49, 3) && PALAM:快Ｂ >= 8000 && (SELECTCOM != 10 && SELECTCOM != 11 && SELECTCOM != 82 && SELECTCOM != 87 && SELECTCOM != 125)
+								PRINT 被这样欺负奶子的话
+							ENDIF
+							;阴茎あり
+							IF (TALENT:137 || TALENT:139 || TALENT:140) && (BASE:2 >= 7000 || PALAM:快Ｃ >= 8000)
+								PRINTFORM %PENIS_YOBIKATA(TARGET)%
+								;膣もある
+								IF !TALENT:男性
+									PRINT 水要流个不停了！
+								ELSE
+									PRINT 要失禁了！
+								ENDIF
+							ELSEIF TALENT:137 || TALENT:139 || TALENT:140
+								SIF H == 1 || H == 2 || H == 6 || H == 7
+									PRINT 去、去了、去了啊啊啊！
+								IF H == 4
+									;「です」過剰使用ｏr「ッス」語尾 
+									IF CFLAG:614 || CFLAG:610
+										PRINT 要去、要去了啊啊啊啊！
+									ELSE
+										PRINT 丢、丢了——…！
+									ENDIF
+								ENDIF
+								SIF H == 3
+									PRINT 疯了、去、去了——！
+								SIF H == 5
+									PRINT 去了、马上就去了——！
+							;阴茎无
+							ELSE
+								PRINT 被干出汁来了——！
+							ENDIF
+						ELSE
+							PRINT 咿啊啊啊啊嗯！
+						ENDIF
+					CASE 2
+						PRINT 嗯、咿呀啊啊—！
+					CASE 3
+						PRINT 那里、啊！
+					CASE 4
+						PRINT 啊、啊啊啊啊啊！
+				ENDSELECT
+			CASE 4
+				SELECTCASE RAND:5
+					CASE 0
+						PRINT 嗯啊啊啊啊！
+					CASE 1
+						PRINT 哈啊啊啊！
+					CASE 2
+						PRINT 咕、呜呜呜呜！
+					CASE 3
+						PRINT 嗯啊啊、啊啊啊！
+					CASE 4
+						PRINT 啊、呣啊！
+				ENDSELECT
+		ENDSELECT
+
+	ENDIF
+REND
+;締め
+;口塞球か触手口虐中
+IF TEQUIP:20 || TEQUIP:36
+	SELECTCASE RAND:5
+		CASE 0
+			PRINT 嗯呜――！
+		CASE 1
+			PRINT 嗯唔唔唔唔！
+		CASE 2
+			PRINT 唔呜唔――！
+		CASE 3
+			PRINT 啊啊啊啊！
+		CASE 4
+			PRINT 噢哦哦哦哦——啊！
+	ENDSELECT
+ELSE
+	SELECTCASE RAND:10
+		CASE 0
+			IF CFLAG:606 || CFLAG:600 == 11
+				PRINT 住手啊啊啊！！
+			ELSE
+				PRINT …嗯唔唔！！！
+			ENDIF
+		CASE 1
+			PRINT 嗯啊啊啊啊啊！
+		CASE 2
+			PRINT 啊啊――！
+		CASE 3
+			PRINT 啊啊啊啊！
+		CASE 4
+			PRINT 咿啊啊啊啊啊！
+		CASE 5
+			PRINT 啊啊——嗯！
+		CASE 6
+			PRINT 咿啊啊啊嗯、
+		CASE 7
+			PRINT 嗯啊啊啊！
+		CASE 8
+			PRINT 咿呀啊啊啊—！
+		CASE 9
+			PRINT 啊、咕啊啊啊！
+	ENDSELECT
+ENDIF
+SIF F == 10
+	PRINTL 」
+
+
+B = 0
+C = 0
+D = 0
+F = 0
+H = 0
+RETURN 0
+
+;----------------------------------------------------------------------
+;快感LV3
+;----------------------------------------------------------------------
+@PANT_VOICE_E2
+SIF F == 10
+	PRINT 「
+;A = 口調（1=雑、2=标准、3=柔、4=敬語、5=関西）
+REPEAT B
+	;口塞球か触手口虐中
+	IF TEQUIP:20 || TEQUIP:36
+		SELECTCASE COUNT
+			CASE 0
+				SELECTCASE RAND:10
+					CASE 0
+						PRINT 嗯―！
+					CASE 1
+						PRINT 嗯噢…
+					CASE 2
+						PRINT 嗯嗯唔！
+					CASE 3
+						PRINT 呜呜呜！
+					CASE 4
+						PRINT 嗯嗯―！
+					CASE 5
+						PRINT 嗯唔唔―！
+					CASE 6
+						PRINT 嗯…
+					CASE 7
+						PRINT 嗯唔呜呜呜！
+					CASE 8
+						PRINT 唔唔—！
+					CASE 9
+						PRINT 呜唔―！
+				ENDSELECT
+			CASE 1
+				SELECTCASE RAND:2
+					CASE 0
+						PRINT 呼啊…！
+					CASE 1
+						PRINT 唔…
+				ENDSELECT
+			CASE 2
+				SELECTCASE RAND:2
+					CASE 0
+						PRINT 嗯啊！
+					CASE 1
+						PRINT 啊…啊、
+				ENDSELECT
+			CASE 3
+				SELECTCASE RAND:2
+					CASE 0
+						PRINT 嗯咕…啊、
+					CASE 1
+						PRINT 呼…啊啊、
+				ENDSELECT
+			CASE 4
+				SELECTCASE RAND:2
+					CASE 0
+						PRINT 啊呜！
+					CASE 1
+						PRINT 咕呜、
+				ENDSELECT
+		ENDSELECT
+	ELSE
+		SELECTCASE COUNT
+			CASE 0
+				SELECTCASE RAND:10
+					CASE 0
+						PRINT 呀…嗯、
+					CASE 1
+						PRINT 啊！啊啊、
+					CASE 2
+						PRINT 呼啊、咿…嗯、
+					CASE 3
+						PRINT 嗯、嗯—呃…
+					CASE 4
+						PRINT 哈啊啊…
+					CASE 5
+						PRINT 呀…
+					CASE 6
+						PRINT 唔、嗯…
+					CASE 7
+						PRINT 嗯…咕！
+					CASE 8
+						PRINT 嗯哈啊、
+					CASE 9
+						PRINT 嗯唔！
+				ENDSELECT
+			CASE 1
+				SELECTCASE RAND:6
+					CASE 0
+						;反抗刻印１以上
+						IF MARK:反抗刻印 != 0 && CFLAG:600 != 8 && (SELECTCOM != 10 && SELECTCOM != 11 && SELECTCOM != 9 && SELECTCOM != 14 && SELECTCOM != 82 && SELECTCOM != 87 && SELECTCOM != 125)
+							IF H == 1 || H == 6 || H == 7
+								PRINTFORM 讨厌、
+							ELSEIF H == 2 || H == 3
+								PRINT 不行、不可以…啊、
+							ELSEIF H == 4
+								PRINTFORM 已经不行了、
+							ELSEIF H == 5
+								PRINT 不行了、
+							ENDIF
+						;淫語モ—ド
+						ELSEIF TALENT:娼妇 && !RAND:3
+							;胸弄られてる
+							SIF GETBIT(TFLAG:49, 3) && PALAM:快Ｂ > 6000
+								PRINT 奶头硬得好难受、…
+							;阴茎持ちでＣを弄られてる
+							IF (TALENT:137 || TALENT:139 || TALENT:140) && (CCHECK(TARGET) || GETBIT(TFLAG:49, 0)) && PALAM:快Ｃ > 6000
+								PRINTFORM %PENIS_YOBIKATA(TARGET)%
+								PRINT 好胀啊啊、
+							;阴茎无でＣを弄られてる
+							ELSEIF CCHECK(TARGET) || GETBIT(TFLAG:49, 0) && PALAM:快Ｃ > 6000
+								PRINT 小豆豆好舒服啊啊、
+							ENDIF
+							;Ａを弄られてる
+							IF GETBIT(TFLAG:49, 2) && PALAM:快Ａ > 6000
+								PRINT 屁眼…好棒
+							;Ｖを弄られてる
+							ELSEIF GETBIT(TFLAG:49, 1) && PALAM:快Ｖ > 6000
+								PRINT 小穴里好舒服…
+							ELSE
+								PRINT 咿呀啊啊、
+							ENDIF
+						ELSE
+							PRINT 好棒、
+						ENDIF
+					CASE 1
+						PRINT 呀啊啊啊…！
+					CASE 2
+						PRINT 嗯啊！
+					CASE 3
+						PRINT 嗯呜呜呜…
+					CASE 4
+						PRINT 咿啊啊…
+					CASE 5
+						PRINT 咕呜呜…
+				ENDSELECT
+			CASE 2
+				SELECTCASE RAND:10
+					CASE 0
+						PRINT 已经…！
+					CASE 1
+						PRINT 啊、呀啊、
+					CASE 2
+						PRINT 呜呜…唔、
+					CASE 3
+						PRINT 啊嗯…！
+					CASE 4
+						PRINT 嗯啊！
+					CASE 5
+						PRINT 啊呜……！
+					CASE 6
+						PRINT 呼呜……！
+					CASE 7
+						PRINT 啊啊！
+					CASE 8
+						PRINT 咿噫—…
+					CASE 9
+						PRINT 嗯唔…！
+				ENDSELECT
+			CASE 3
+				SELECTCASE RAND:10
+					CASE 0
+						PRINT 啊—嗯！
+					CASE 1
+						PRINT 嗯、啊啊啊啊…
+					CASE 2
+						PRINT 唔啊啊…！
+					CASE 3
+						PRINT 呜呜呜唔！
+					CASE 4
+						PRINT 啊啊呜…
+					CASE 5
+						PRINT 唔—嗯…
+					CASE 6
+						PRINT 咿呀啊啊！
+					CASE 7
+						PRINT 呀啊啊、唔
+					CASE 8
+						PRINT 啊啊啊！
+					CASE 9
+						PRINT 啊啊啊啊！
+				ENDSELECT
+			CASE 4
+				SELECTCASE RAND:10
+					CASE 0
+						PRINT 呀啊、
+					CASE 1
+						PRINT 呀啊啊…！
+					CASE 2
+						PRINT 呼啊、咿…嗯、
+					CASE 3
+						PRINT 啊、啊…
+					CASE 4
+						PRINT 咕—嗯…
+					CASE 5
+						PRINT 哈啊啊…
+					CASE 6
+						PRINT 嗯…
+					CASE 7
+						PRINT 嗯嗯嗯—唔！
+					CASE 8
+						PRINT 啊、啊嗯、
+					CASE 9
+						PRINT 唔—嗯、嗯啊、
+				ENDSELECT
+		ENDSELECT
+	ENDIF
+REND
+;締め
+;口塞球か触手口虐中
+IF TEQUIP:20 || TEQUIP:36
+	SELECTCASE RAND:10
+		CASE 0
+			PRINT 嗯啊啊――！
+		CASE 1
+			PRINT 呣――！
+		CASE 2
+			PRINT 呼啊啊――！
+		CASE 3
+			PRINT 啊、啊…
+		CASE 4
+			PRINT 唔呜—唔…
+		CASE 5
+			PRINT 哈啊…
+		CASE 6
+			PRINT 嗯啊…
+		CASE 7
+			PRINT 啊咕…
+		CASE 8
+			PRINT 啊！
+		CASE 9
+			PRINT 唔—嗯
+	ENDSELECT
+ELSE
+	SELECTCASE RAND:10
+		CASE 0
+			PRINT 啊啊啊―嗯！
+		CASE 1
+			PRINT …嗯啊―！！
+		CASE 2
+			PRINT 啊啊啊啊！！
+		CASE 3
+			PRINT 嗯啊—啊！！
+		CASE 4
+			PRINT 嗯——！！
+		CASE 5
+			PRINT 啊啊啊啊！！
+		CASE 6
+			PRINT 啊啊啊啊啊！
+		CASE 7
+			PRINT 哈啊、哈啊
+		CASE 8
+			PRINT 啊！嗯啊！
+		CASE 9
+			PRINT 嗯啊啊啊！
+	ENDSELECT
+ENDIF
+SIF F == 10
+	PRINTL 」
+
+B = 0
+C = 0
+D = 0
+F = 0
+H = 0
+RETURN 0
+
+;----------------------------------------------------------------------
+;快感LV2
+;----------------------------------------------------------------------
+@PANT_VOICE_F2
+SIF F == 10
+	PRINT 「
+;A = 口調（1=雑、2=标准、3=柔、4=敬語、5=関西）
+REPEAT B
+	;口塞球か触手口虐中
+	IF TEQUIP:20 || TEQUIP:36
+		SELECTCASE COUNT
+			CASE 0
+				SELECTCASE RAND:10
+					CASE 0
+						PRINT 嗯唔…
+					CASE 1
+						PRINT 嗯…
+					CASE 2
+						PRINT 嗯嗯呜、
+					CASE 3
+						PRINT 呜呜、
+					CASE 4
+						PRINT 咕…
+					CASE 5
+						PRINT 呼啊啊…
+					CASE 6
+						PRINT 噢、哦…
+					CASE 7
+						PRINT 唔—呜、
+					CASE 8
+						PRINT 呜……
+					CASE 9
+						PRINT 呜嗯、
+				ENDSELECT
+			CASE 1
+				SELECTCASE RAND:10
+					CASE 0
+						PRINT 呼啊啊…
+					CASE 1
+						PRINT 呜啊…
+					CASE 2
+						PRINT 嗯嗯…
+					CASE 3
+						PRINT 唔嗯……
+					CASE 4
+						PRINT 啊呜…
+					CASE 5
+						PRINT 呣、
+					CASE 6
+						PRINT 呜—…
+					CASE 7
+						PRINT —呜、
+					CASE 8
+						PRINT 呜呜呜…
+					CASE 9
+						PRINT 呣…
+				ENDSELECT
+			CASE 2
+				SELECTCASE RAND:5
+					CASE 0
+						PRINT 嗯啊…
+					CASE 1
+						PRINT 呼啊…啊、
+					CASE 2
+						PRINT 呣啊…
+					CASE 3
+						PRINT 呜呜…
+					CASE 4
+						PRINT 呜…啊…
+				ENDSELECT
+			CASE 3
+				SELECTCASE RAND:2
+					CASE 0
+						PRINT 嗯、
+					CASE 1
+						PRINT 啊、
+				ENDSELECT
+			CASE 4
+				SELECTCASE RAND:5
+					CASE 0
+						PRINT 呼…
+					CASE 1
+						PRINT 哈啊…
+					CASE 2
+						PRINT 唔…
+					CASE 3
+						PRINT 嗯…
+					CASE 4
+						PRINT 嗯啊、
+				ENDSELECT
+		ENDSELECT
+	ELSE
+		SELECTCASE COUNT
+			CASE 0
+				SELECTCASE RAND:10
+					CASE 0
+						PRINT 嗯啊、
+					CASE 1
+						PRINT 嗯嗯…
+					CASE 2
+						PRINT 哈啊…嗯呣…
+					CASE 3
+						PRINT …啊啊、
+					CASE 4
+						PRINT 嗯啊…
+					CASE 5
+						PRINT 咕啊…
+					CASE 6
+						PRINT 哈啊…
+					CASE 7
+						PRINT 哈嗯—啊、
+					CASE 8
+						PRINT 唔……
+					CASE 9
+						PRINT 唔呣、
+				ENDSELECT
+			CASE 1
+				SELECTCASE RAND:5
+					CASE 0
+						;陷落
+						IF KANRAKU(TARGET)
+							SIF H == 1 || H == 2 || H == 3 || H == 4 || H == 6 || H == 7
+								PRINT 好爽、嗯…
+							SIF H == 5
+								PRINT 好舒服…嗯啊、
+						;反抗刻印が１以上ある
+						ELSEIF MARK:反抗刻印 > 0 && (SELECTCOM != 10 && SELECTCOM != 11 && SELECTCOM != 9 && SELECTCOM != 14 && SELECTCOM != 82 && SELECTCOM != 87 && SELECTCOM != 125)
+							SIF H == 1 || H == 6 || H == 7
+								PRINT 可恶…呜、
+							SIF H == 2
+								PRINT 讨厌…
+							SIF H == 3
+								PRINT 住手、呜…哈啊、
+							SIF H == 4
+								PRINT 放开…请放开…我、
+							SIF H == 5
+								PRINT 讨厌…啊、
+						ELSE
+							PRINT 啊…！
+						ENDIF
+					CASE 1
+						;陷落前　Aで感じるまたは男でBで感じる
+						IF !KANRAKU(TARGET) && ((PALAM:快Ａ >= 6000 && GETBIT(TFLAG:49, 2)) || (MALE(TARGET) && PALAM:快Ｂ >= 6000 && GETBIT(TFLAG:49, 3)))
+							SIF H == 1 || H == 6 || H == 7
+								PRINTFORM 不可能…嗯啊、
+							SIF H == 2 || H == 3
+								PRINT 为什、么…？
+							SIF H == 4
+								PRINT …骗人……
+							SIF H == 5
+								PRINT 不是、骗人…？
+						ELSE
+							PRINT 呜…
+						ENDIF
+					CASE 2
+						PRINT 唔…
+					CASE 3
+						PRINT 呣…
+					CASE 4
+						PRINT 嗯啊、
+				ENDSELECT
+			CASE 2
+				SELECTCASE RAND:5
+					CASE 0
+						;淫語モ—ド
+						IF TALENT:娼妇 && !RAND:3
+							;胸弄られてる
+							SIF (GETBIT(TFLAG:49, 2) || BCHECK(TARGET)) && PALAM:快Ｂ > 3000
+								PRINT 胸部感觉…好棒
+							;阴茎持ちでＣを弄られてる
+							IF (TALENT:137 || TALENT:139 || TALENT:140) && (GETBIT(TFLAG:49, 0) || CCHECK(TARGET)) && PALAM:快Ｃ > 3000
+								PRINTFORM %PENIS_YOBIKATA(TARGET)%
+								PRINT 咕啾咕啾的…
+							;阴茎无でＣを弄られてる
+							ELSEIF (GETBIT(TFLAG:49, 0) || CCHECK(TARGET)) && PALAM:快Ｃ > 3000 && (SELECTCOM != 10 && SELECTCOM != 11 && SELECTCOM != 82 && SELECTCOM != 87 && SELECTCOM != 125)
+								PRINT 再用力一点、
+								SIF H == 1
+									PRINT 嗯啊…
+								SIF H == 2 || H == 3 || H ==5
+									PRINT 啊…
+								SIF H == 4
+									PRINT 也没…嗯、
+							;Ａを弄られてる
+							ELSEIF GETBIT(TFLAG:49, 2) && PALAM:快Ａ > 3000
+								PRINT 小豆豆超…舒服
+							;Ｖを弄られてる
+							ELSEIF GETBIT(TFLAG:49, 1) && PALAM:快Ｖ > 3000
+								PRINT 要弄出水……来…
+								SIF H == 1
+									PRINT 呜呜…
+								SIF H == 2 || H == 3 || H ==5
+									PRINT 嗯啊啊…
+								SIF H == 4
+									PRINT 了啦、
+							;一応保険
+							ELSE
+								PRINT 啊、哈…啊、
+							ENDIF
+						ELSE
+							PRINT 啊、啊…嗯、
+						ENDIF
+					CASE 1
+						PRINT …嗯、唔、
+					CASE 2
+						PRINT 呼啊…
+					CASE 3
+						PRINT 嗯呣…
+					CASE 4
+						PRINT 嗯、
+				ENDSELECT
+			CASE 3
+				SELECTCASE RAND:10
+					CASE 0
+						PRINT 嗯…
+					CASE 1
+						PRINT 呀…
+					CASE 2
+						PRINT 嗯嗯…
+					CASE 3
+						PRINT 呜嗯……
+					CASE 4
+						PRINT 啊…
+					CASE 5
+						PRINT 咿、
+					CASE 6
+						PRINT 呜—…
+					CASE 7
+						PRINT 哈啊—嗯、
+					CASE 8
+						PRINT …唔唔…
+					CASE 9
+						PRINT …呜…
+				ENDSELECT
+			CASE 4
+				SELECTCASE RAND:10
+					CASE 0
+						PRINT 哈啊啊
+					CASE 1
+						PRINT 呼啊啊、
+					CASE 2
+						PRINT 啊…
+					CASE 3
+						PRINT 呜呜…
+					CASE 4
+						PRINT 咕…呜…
+					CASE 5
+						PRINT 咿、
+					CASE 6
+						PRINT 啊呜呜啊啊…
+					CASE 7
+						PRINT 呜…啊、
+					CASE 8
+						PRINT 哈啊啊…
+					CASE 9
+						PRINT 哈啊……
+				ENDSELECT
+		ENDSELECT
+	ENDIF
+REND
+;締め
+SELECTCASE RAND:10
+	CASE 0
+		PRINT 嗯呣
+	CASE 1
+		PRINT 啊…唔！
+	CASE 2
+		PRINT 啊、嗯
+	CASE 3
+		PRINT 呜…！
+	CASE 4
+		PRINT 唔…！
+	CASE 5
+		PRINT 呣！
+	CASE 6
+		PRINT 嗯啊
+	CASE 7
+		PRINT 唔啊
+	CASE 8
+		PRINT 哈啊
+	CASE 9
+		PRINT 嗯呣…
+ENDSELECT
+SIF F == 10
+	PRINTL 」
+
+B = 0
+C = 0
+D = 0
+F = 0
+H = 0
+RETURN 0
+
+;----------------------------------------------------------------------
+;弱快感
+;----------------------------------------------------------------------
+@PANT_VOICE_G2
+SIF F == 10
+	PRINT 「
+;A = 口調（1=雑、2=标准、3=柔、4=敬語、5=関西）
+REPEAT B
+	SELECTCASE COUNT
+		CASE 0
+			SELECTCASE RAND:10
+				CASE 0
+					PRINT …
+				CASE 1
+					PRINT …嗯、
+				CASE 2
+					PRINT 啊…
+				CASE 3
+					PRINT 嗯嗯、
+				CASE 4
+					PRINT ……
+				CASE 5
+					PRINT …呣、
+				CASE 6
+					PRINT 嗯呃、
+				CASE 7
+					PRINT 啊呣…
+				CASE 8
+					PRINT 呜…
+				CASE 9
+					PRINT …嗯…
+			ENDSELECT
+		CASE 1
+			SELECTCASE RAND:5
+				CASE 0
+					PRINT 哈嗯…
+				CASE 1
+					;口塞球か触手口虐中
+					IF TEQUIP:20 || TEQUIP:36
+						PRINT 嗯…
+					;反抗刻印１以上、自慰系でなく、逆调教系ではなく
+					ELSEIF MARK:反抗刻印 > 0 && (SELECTCOM != 10 && SELECTCOM != 11 && SELECTCOM != 9 && SELECTCOM != 14 && SELECTCOM != 82 && SELECTCOM != 87 && SELECTCOM != 125 && (SELECTCOM < 200 || SELECTCOM > 215))
+						SIF H == 1
+							PRINT 住手啊
+						SIF H == 2
+							PRINT 不要…别、
+						SIF H == 3
+							PRINT 不行…啊、
+						SIF H == 4
+							PRINT 请不要碰我…
+						SIF H == 5
+							PRINT 别碰我…
+						IF H == 6
+							IF !RAND:2
+								PRINT 停下、
+							ELSE
+								PRINT 放开我
+							ENDIF
+						ENDIF
+						IF H == 7
+							IF !RAND:2
+								PRINT 不要
+							ELSE
+								PRINT 真行啊…
+							ENDIF
+						ENDIF
+					;淫乱か娼妇
+					ELSEIF KANRAKU(TARGET) == 2 && !SEXPLAY(TARGET) && ((GETBIT(TFLAG:49, 0) && PALAM:快Ｃ < 1500) || (GETBIT(TFLAG:49, 1) && PALAM:快Ｖ < 1500) || (GETBIT(TFLAG:49, 2) && PALAM:快Ａ < 1500) || (GETBIT(TFLAG:49, 3) && PALAM:快Ｂ < 1500)) && (SELECTCOM != 10 && SELECTCOM != 11 && SELECTCOM != 9 && SELECTCOM != 14)
+						SIF H == 1 || H == 2
+							PRINT 不是…那里…嗯、
+						SIF H == 3
+							PRINT 让我…更加地舒服吧…
+						SIF H == 4
+							PRINT 还要…还想变得更舒服…嗯啊、
+						SIF H == 5
+							PRINT …就是…那里哦……
+						SIF H == 6 || H == 7
+							PRINT 不是…那个地方…啊嗯、
+					;淫乱か娼妇
+					ELSEIF !RAND:3 && KANRAKU(TARGET) == 2 && (SELECTCOM != 10 && SELECTCOM != 11 && SELECTCOM != 9 && SELECTCOM != 14 && SELECTCOM != 82 && SELECTCOM != 87 && SELECTCOM != 125)
+						PRINT 不够…
+					ELSE
+						PRINT …哈啊…
+					ENDIF
+				CASE 2
+					PRINT 呜…
+				CASE 3
+					PRINT 呣、
+				CASE 4
+					PRINT 嗯啊…
+			ENDSELECT
+		CASE 2
+			SELECTCASE RAND:10
+				CASE 0
+					PRINT 呜…
+				CASE 1
+					PRINT …啊…
+				CASE 2
+					PRINT …
+				CASE 3
+					PRINT 嗯啊、
+				CASE 4
+					PRINT …呜…
+				CASE 5
+					PRINT …啊啊、
+				CASE 6
+					PRINT 嗯、
+				CASE 7
+					PRINT 呼呜…
+				CASE 8
+					PRINT 呜…
+				CASE 9
+					PRINT 呜啊…
+			ENDSELECT
+		CASE 3
+			SELECTCASE RAND:10
+				CASE 0
+					PRINT …嗯、
+				CASE 1
+					PRINT …
+				CASE 2
+					PRINT …唔呜、
+				CASE 3
+					PRINT 嗯、
+				CASE 4
+					PRINT ……
+				CASE 5
+					PRINT 啊啊、
+				CASE 6
+					PRINT 嗯、
+				CASE 7
+					PRINT 嗯嗯…
+				CASE 8
+					PRINT 呜啊…
+				CASE 9
+					PRINT 呜嗯…
+			ENDSELECT
+		CASE 4
+			SELECTCASE RAND:10
+				CASE 0
+					PRINT 啊…
+				CASE 1
+					PRINT …哈啊、
+				CASE 2
+					PRINT 嗯、
+				CASE 3
+					PRINT 啊、
+				CASE 4
+					PRINT …
+				CASE 5
+					PRINT …咿！
+				CASE 6
+					PRINT 呜、
+				CASE 7
+					PRINT 嗯啊…
+				CASE 8
+					PRINT 嗯…
+				CASE 9
+					PRINT 呜…
+			ENDSELECT
+	ENDSELECT
+REND
+;締め
+SELECTCASE RAND:10
+	CASE 0
+		PRINT …呣
+	CASE 1
+		PRINT 嗯啊
+	CASE 2
+		PRINT …啊
+	CASE 3
+		PRINT 啊啊
+	CASE 4
+		PRINT …！
+	CASE 5
+		PRINT …呣！
+	CASE 6
+		PRINT 呜
+	CASE 7
+		PRINT …呀
+	CASE 8
+		PRINT 嗯…
+	CASE 9
+		PRINT …
+ENDSELECT
+SIF F == 10
+	PRINTL 」
+
+B = 0
+C = 0
+D = 0
+F = 0
+H = 0
+RETURN 0
+

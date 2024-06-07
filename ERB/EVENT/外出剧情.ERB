@@ -1,0 +1,1034 @@
+﻿@外出劇情
+VARSET 外出人数
+VARSET 外出模式
+;1情趣（打工）2-5情趣（约会）6-10绳装 11-20 异装
+外出人数 = 0
+CLEARLINE LINECOUNT
+PRINTFORML
+   IF CHARANUM > 1
+	PRINTFORML  %PLAYER_NAME()%打算外出，要带谁一起去呢？
+	CALL 外出对象筛选
+	ELSE 
+		RESULT = 99
+	ENDIF
+$INPUT_LOOP
+INPUT	
+IF	RESULT == 99 
+	外出人数 = 1
+   PRINTFORMW %PLAYER_NAME()%打算一個人外出了
+ELSE
+	外出人数 = 2
+	外出对象 = RESULT
+	PRINTFORMW %PLAYER_NAME()%带着%CALLNAME:外出对象%兩個人一同外出了
+	PRINTFORMW 打算让%NAME:外出对象%以什么样的衣装外出呢？
+	CALL 外出打扮(外出对象)
+ENDIF
+	PRINTFORML
+	PRINTFORML 那么，本次外出的目的是？
+PRINTBUTTON "[ 打工 ]", 01
+IF 外出人数 == 1
+	PRINTBUTTON "    [ 闲逛 ]", 02
+ELSE
+	SIF KANRAKU(外出对象) 
+	PRINTBUTTON "    [ 约会 ]", 02
+ENDIF
+PRINTBUTTON "    [ 还是算了 ]", 03
+PRINTL
+INPUT
+SELECTCASE RESULT
+	CASE 1
+		PRINTFORML
+			CALL 打工
+	CASE 2
+		PRINTFORML
+			CALL 闲逛
+	CASE 3
+		RETURN 0
+ENDSELECT
+;日期更替
+FLAG:0 = 1
+BEGIN TURNEND
+RETURN 1
+
+@外出对象筛选
+REPEAT CHARANUM
+	;主人公，劳役中，孩子，育儿中疯癫崩溃，體力少於500排除
+	SIF COUNT == MASTER || CFLAG:COUNT:12  || CFLAG:COUNT:119 || TALENT:COUNT:育儿中  || TALENT:COUNT:疯癫 || TALENT:COUNT:崩溃 || BASE:COUNT:0 <500
+		CONTINUE
+		PRINTFORM [%TOSTR(COUNT),2,RIGHT%]
+		PRINTFORM  %NAME:COUNT,16,LEFT%　
+		PRINT 体力
+		BAR BASE:COUNT:0,MAXBASE:COUNT:0,16
+		PRINTFORM (%TOSTR(BASE:COUNT:0),4,RIGHT%/%TOSTR(MAXBASE:COUNT:0),4,RIGHT%)
+	PRINTFORML
+REND
+PRINTFORML [99] 谁都不带
+@打工
+#DIM 体力消耗
+#DIM 金钱变化
+VARSET 体力消耗
+VARSET 金钱变化
+IF 外出人数 == 1
+	SELECTCASE RAND:4
+		CASE 0
+			PRINTFORML %PLAYER_NAME()%决定到工地去打工
+		CASE 1
+			PRINTFORML %PLAYER_NAME()%决定到超市去打工
+		CASE 2
+			PRINTFORML %PLAYER_NAME()%决定到街上发传单
+		CASE 3
+			PRINTFORML %PLAYER_NAME()%决定到咖啡厅打工
+	ENDSELECT
+		PRINTFORMW ……………
+		PRINTFORMW ………
+		PRINTFORMW …	
+	SELECTCASE RAND:3
+		CASE 0
+			PRINTFORMW 天啊！搞砸了，今天的打工的状态太差劲了，工资被扣了一半！
+			体力消耗 = 500 + RAND:100
+			金钱变化 = 1000 - 体力消耗*2
+		CASE 1
+			PRINTFORMW	呼～真累，看来外出工作还是太辛苦了，马马虎虎地完成了工作
+			体力消耗 = 400 + RAND:100
+			金钱变化 = 1500 - 体力消耗
+		CASE 2
+			PRINTFORMW 平安无事的完成了工作， %PLAYER_NAME()%看着手里拿到的工资，
+			PRINTFORMW 居然堪比一个奴隶的金额，内心不由得产生了奇妙的违和感………
+			体力消耗 = 250 + RAND:100
+			金钱变化 = 2000 - 体力消耗
+	ENDSELECT
+			BASE:MASTER:0 -= 体力消耗
+			MONEY += 金钱变化
+			PRINTFORML %PLAYER_NAME()%的体力消耗{体力消耗}了！
+			PRINTFORMW 打工获得金钱{金钱变化}！
+ELSE
+	;正装
+	IF (外出服 == 1 && (TALENT:外出对象:137 || TALENT:外出对象:140)) || (外出服 == 2 && !(TALENT:外出对象:137 || TALENT:外出对象:140)) || 外出服 == 3
+		PRINTFORML %PLAYER_NAME()%与%CALLNAME:外出对象%两人一起去打工了	
+		IF KANRAKU(外出对象)
+			PRINTFORML 虽然外出的目的是打工，但是%CALLNAME:外出对象%好像完全不在意的样子
+			PRINTFORMW ……………
+			PRINTFORMW ………
+			PRINTFORMW …
+			IF TALENT:外出对象:3 || TALENT:外出对象:6
+				PRINTFORML 尽管工作一点也不轻松，但是他依然全程带着笑颜陪着%PLAYER_NAME()%，还似乎颇为开心的样子……
+				体力消耗 = 250 + RAND:100
+				金钱变化 = 5000 - 体力消耗
+				PRINTL 爱情经验＋5
+				EXP:外出对象:爱情经验 += 5
+			ELSEIF TALENT:外出对象:4 || TALENT:外出对象:7
+				PRINTFORML 期间一直紧缠着%PLAYER_NAME()%，直到%PLAYER_NAME()%答应回去会有"奖励"之後。才认真地开始工作……
+				体力消耗 = 200 + RAND:100
+				金钱变化 = 4000 - 体力消耗
+			ELSEIF TALENT:外出对象:5 || TALENT:外出对象:8
+				PRINTFORML 在他的心中，只有%PLAYER_NAME()%的命令是绝对的，所以无论做什么事情都心甘情愿……
+				体力消耗 = 250 + RAND:100
+				金钱变化 = 5000 - 体力消耗
+				PRINTFORMW %CALLNAME:外出对象%的恭顺増加了 100 ！	
+				SOURCE:外出对象:恭顺 += 100
+			ENDIF
+		ELSE
+			IF MARK:外出对象:3
+				PRINTFORML %CALLNAME:外出对象%皱着眉头做着吩咐下来的工作，情绪似乎很紧张地东张西望
+				IF RAND:2
+					PRINTFORML 在%PLAYER_NAME()%忙碌注意分散之际，一溜烟转头就跑了！
+					PRINTFORML 还好%PLAYER_NAME()%之前有注意过附近的地形，比起生疏的%CALLNAME:外出对象%更熟悉附近的路线
+					PRINTFORML 一下子把他追了回来，不过，在追逐的过程耽误之下，工作也搞砸了……
+					PRINTFORMW %CALLNAME:外出对象%的郁闷増加了 50 ！	
+					SOURCE:外出对象:郁闷 += 50
+					体力消耗 = 250 + RAND:100
+				ELSE
+					PRINTFORML 虽然 %CALLNAME:外出对象%的态度非常消极，但好歹两人顺利地完成了工作了……
+					体力消耗 = 250 + RAND:100
+					金钱变化 = 3000 - 体力消耗
+				ENDIF
+			ELSE
+				PRINTFORML %CALLNAME:外出对象%消极地与%PLAYER_NAME()%进行着打工
+				PRINTFORML 虽然是两个人一同工作，但是%CALLNAME:外出对象%像是心事重重那样，一点也没有跟%PLAYER_NAME()%互动的欲望
+				PRINTFORML 最後两人还是平平淡淡地完成工作了……
+					体力消耗 = 250 + RAND:100
+					金钱变化 = 3000 - 体力消耗				
+			ENDIF
+		ENDIF
+	;异装
+	ELSEIF  (外出服 == 1 && !(TALENT:外出对象:137 || TALENT:外出对象:140)) || (外出服 == 2 && (TALENT:外出对象:137 || TALENT:外出对象:140))
+		PRINTFORM %PLAYER_NAME()%决定带着穿着
+			IF TALENT:外出对象:137 || TALENT:外出对象:140
+				PRINTFORM 女
+			ELSE
+				PRINTFORM 男
+			ENDIF
+		PRINTFORML 装的%CALLNAME:外出对象%去大街上发传单了
+		PRINTFORML
+		PRINTFORML 穿着相反性别服装的%CALLNAME:外出对象%站在人来人往的街道上
+		IF  NO:外出对象 == 200
+			PRINTFORML 带着看似温和又莫名让人害怕的笑容，用客气的言语发着传单
+		ELSEIF TALENT:外出对象:胆怯 ||  TALENT:外出对象:自卑
+			PRINTFORML 觉得群众都在注视自己的恐惧，让他低着头，声音小的像蚂蚁似地发着传单
+		ELSEIF TALENT:外出对象:刚强 ||  TALENT:外出对象:自制力  ||  TALENT:外出对象:难以越过的底线
+			PRINTFORML 忍耐着周遭异样的目光，强装镇定地发着传单
+		ELSEIF TALENT:外出对象:直率 ||  TALENT:外出对象:高傲  ||  TALENT:外出对象:自大 || TALENT:外出对象:傲娇
+			PRINTFORML 明显地摆出一张臭脸，不甘不愿地发着传单
+		ELSEIF TALENT:外出对象:无动于衷 ||  TALENT:外出对象:缺乏感情
+			PRINTFORML 面无表情，沉默不语地发着传单
+		ELSE
+			PRINTFORML 顶着被人盯视的尴尬，装作若无其事地发着传单
+		ENDIF
+		PRINTFORML 虽然%CALLNAME:外出对象%的工作态度算不上积极，但是却莫名地受到好评
+		PRINTFORMW %CALLNAME:外出对象%的郁闷増加了 50 ！	
+			SOURCE:外出对象:郁闷 += 50
+			体力消耗 = 250 + RAND:100
+			金钱变化 = 5000 - 体力消耗			
+	;绳装
+	ELSEIF 外出服 == 4
+		PRINTFORML 由於%CALLNAME:外出对象%这样"特殊"的装扮，所以最後只能找到在公园临时清扫的工作
+		PRINTFORMW 每当有风吹过来的时候，%CALLNAME:外出对象%就会紧张地压着大衣的下摆
+		PRINTFORMW 但尽管这样，底下两条光裸的小腿还是时不时地暴露出来
+		PRINTFORML 加上大衣底下绳子的摩擦，让%CALLNAME:外出对象%的精神时刻紧绷着，面色潮红地进行着清扫……
+		IF TIME == 0
+			PRINTFORMW 尤其遇到公园的孩子们好奇%CALLNAME:外出对象%的装扮，然後被他们的家长迅速拉开的情况
+		ELSE
+			PRINTFORMW 尤其遇到在公园约会的男女看见在%CALLNAME:外出对象%後，一边远离一边窃窃私语的情况
+		ENDIF
+		PRINTFORM 让%CALLNAME:外出对象%简直觉得自己就像个变态一样无地自容，然後
+		IF  NO:外出对象 == 200
+			PRINTFORMW 苦笑着对%PLAYER_NAME()%的恶趣味叹了口气
+		ELSEIF TALENT:外出对象:胆怯 ||  TALENT:外出对象:自卑
+			PRINTFORMW 眼眶泛泪带着委屈地看着%PLAYER_NAME()%
+		ELSEIF TALENT:外出对象:刚强 ||  TALENT:外出对象:自制力  ||  TALENT:外出对象:难以越过的底线
+			PRINTFORMW 装作若无其事的模样，看也不看%PLAYER_NAME()%一眼
+		ELSEIF TALENT:外出对象:直率 ||  TALENT:外出对象:高傲  ||  TALENT:外出对象:自大 || TALENT:外出对象:傲娇
+			PRINTFORMW 恼怒地狠狠瞪了%PLAYER_NAME()%一眼
+		ELSEIF TALENT:外出对象:无动于衷 ||  TALENT:外出对象:缺乏感情
+			PRINTFORMW 面无表情，沉默不语地看了%PLAYER_NAME()%一眼
+		ELSE
+			PRINTFORMW 埋怨地瞪了%PLAYER_NAME()%一眼
+		ENDIF	
+		PRINTFORMW ………………　
+		PRINTFORMW …………
+		PRINTFORMW ……
+		PRINTFORMW 由於一整天%PLAYER_NAME()%都在观察%CALLNAME:外出对象%，还不停恶作剧地掀他的衣摆
+		PRINTFORML 尽管和%CALLNAME:外出对象%好不容易完成了工作，但是却只拿到一个人份的工资
+		PRINTFORMW 回去後，%PLAYER_NAME()%得意欣赏着%CALLNAME:外出对象%满身捆绑後的红痕，以及脱下来後一塌糊涂沾满不明体液的大衣
+		PRINTFORML 根本不在意今天根本没赚什么钱的事情了……
+		PRINTFORMW %CALLNAME:外出对象%的耻情之珠増加了 200 ！	
+			JUEL:外出对象:耻情 += 200
+			体力消耗 = 250 + RAND:100
+			金钱变化 = 2000 - 体力消耗		
+	;情趣装
+	ELSEIF 外出服 == 5
+		PRINTFORML %PLAYER_NAME()%决定带着装备着情趣道具的%CALLNAME:外出对象%去做收银的工作
+		PRINTFORMW 每当有客人要结帐的时候，%PLAYER_NAME()%都会使坏地把道具的振动调到最强
+		PRINTFORMW 欣赏着%CALLNAME:外出对象%一边咬牙忍耐下身的折磨，一边断断续续跟客人对话结帐的样子
+		PRINTFORMW 没人的时候，还会隔着衣服对他上下其手，甚至时不时将手伸进衣服里检查一下"成果"
+		PRINTFORMW %PLAYER_NAME()%故意地操作着遥控器，决定非要逼%CALLNAME:外出对象%当场高潮为止
+		PRINTFORML
+		外出模式 = 1
+		CALL 情趣装口上(外出对象)
+		PRINTFORMW ………………　
+		PRINTFORMW …………
+		PRINTFORMW ……
+		PRINTFORML 两人在店里实在玩的太过厉害，最後的打工钱只好全拿去抵换了当天店里的监控……
+		CFLAG:外出对象:20 += 1
+		PRINTFORMW 拿到了打工当天的录像！
+		PRINTFORMW %CALLNAME:外出对象%的情欲与耻情之珠増加了 100 ！
+		EXP:外出对象:绝顶经验 += 3
+		PRINTFORML %EXPNAME:2%＋3
+		IF PENIS(外出对象) && TALENT:外出对象:孩童尺寸== 0
+			EXP:外出对象:射精经验 += 2
+			PRINTFORML %EXPNAME:3%＋2
+		ENDIF
+			JUEL:外出对象:情欲 += 100
+			JUEL:外出对象:耻情 += 100
+			体力消耗 = 250 + RAND:100
+	ENDIF
+	BASE:外出对象:0 -= 体力消耗
+	MONEY += 金钱变化
+	PRINTFORMW %CALLNAME:外出对象%的体力消耗{体力消耗}了！
+	PRINTFORMW 打工获得金钱{金钱变化}！	
+ENDIF
+
+@闲逛
+#DIM 候補, 100
+#DIM 候補数
+#DIM 對象
+#DIM 体力消耗
+#DIM 气力消耗
+#DIM 金钱变化
+VARSET 候補
+VARSET 候補数
+VARSET 對象
+VARSET 体力消耗
+VARSET 气力消耗
+VARSET 金钱变化
+CLEARLINE LINECOUNT
+IF 外出人数 == 1
+			PRINTFORML %PLAYER_NAME()%在无所事事外面闲晃的时候
+	SELECTCASE RAND:10
+		CASE 0
+			PRINTFORMW 居然遇到了一群勒索金钱的流氓
+			IF TALENT:MASTER:禁断的知识 && ITEM:25
+				PRINTFORML 对方仗着人多势众，威胁着%PLAYER_NAME()%的时候
+				PRINTFORMW %PLAYER_NAME()%先是配合地随着他们走到隐密的巷子里
+				PRINTFORMW 然後冷笑地召唤出触手来，”好好地”招待了他们一顿……
+				PRINTFORMW 看着他们痛哭流涕惨叫求饶的样子，%PLAYER_NAME()%神清气爽地离去了……
+			ELSEIF TALENT:MASTER:调和知识 && ITEM:41 >= 5
+				PRINTFORML 对方仗着人多势众，威胁着%PLAYER_NAME()%的时候
+				PRINTFORMW %PLAYER_NAME()%先是配合地随着他们走到隐密的巷子里
+				PRINTFORMW 然後屏息，将身上携带的媚药尽数喷洒了出来
+				PRINTFORMW 在强力媚药喷洒的水雾之下，这些流氓们渐渐全身无力面露潮红
+				PRINTFORMW 他们彼此看着对方，然後就开始在巷子里进行着不堪入目的多人活动
+				PRINTFORMW %PLAYER_NAME()%一边摇头一边感叹，既然精力这么旺盛的话就内部消化才对
+				PRINTFORMW 之後，便踏着轻快的脚步悠哉地离开了……
+				PRINTFORMW 道具：媚药减少了 5个！
+				ITEM:41 -= 5
+			ELSE
+				PRINTFORML 虽然不想屈服，但无奈於对方人多势众
+				IF MONEY > 2000
+						PRINTFORMW 在一阵拳打脚踢之下，%PLAYER_NAME()%身上带的金钱被抢走了！
+						体力消耗 = 500 + RAND:100
+						金钱变化 = 体力消耗*2 + 500
+						MONEY -= 金钱变化
+						PRINTFORML
+						PRINTFORML 受伤的%PLAYER_NAME()%体力减少了{体力消耗}！
+						PRINTFORMW 所持金减少了{金钱变化}！
+				ELSE
+					PRINTFORML 在一阵拳打脚踢之下，流氓们正想取走%PLAYER_NAME()%的金钱
+					PRINTFORML 由於%PLAYER_NAME()%的金钱太少，让流氓们更加愤怒了！
+					PRINTFORMW 又被狠狠地围殴揍了一顿，最後，%PLAYER_NAME()%几乎是爬着回去的……
+					体力消耗 = 1000 + RAND:500
+					PRINTFORML
+					PRINTFORML 受伤的%PLAYER_NAME()%体力减少了{体力消耗}！
+				ENDIF
+			ENDIF
+		CASE 1
+			PRINTFORMW 一个满身酒臭的醉汉贴了过来
+			PRINTFORMW 但是心不在焉的%PLAYER_NAME()%却没有及时注意到，两人撞在了一起
+			PRINTFORML 相撞的同时，醉汉往%PLAYER_NAME()%的屁股上狠狠捏了一把！
+			PRINTFORMW  「哦！屁股NICE！大叔很满意！」
+			PRINTFORML 醉汉一边称赞一边回过头来竖起大拇指，然後跌跌撞撞地离去了
+			PRINTFORMW 呆愣在当场的%PLAYER_NAME()%，等回過神來帶著来不及飙出口的脏话，郁闷地回去了………
+			气力消耗 = 50 + RAND:100			
+			PRINTFORML
+			PRINTFORMW  心情不好的%PLAYER_NAME()%气力减少了{气力消耗}！
+		CASE 2
+			PRINTFORML 突然感觉好像踢到了什么东西，欸？居然是一个钱包
+			PRINTFORMW %PLAYER_NAME()%打开钱包一看，里面除了金钱之外没有其他东西
+			PRINTFORML 想想自己当前没有任何可以归还给失主的信息以及渠道
+			PRINTFORMW %PLAYER_NAME()%耸耸肩，默默地收下了
+			PRINTFORML
+			金钱变化 += 1000 + RAND:500
+			MONEY += 金钱变化
+			PRINTFORMW 所持金增加了{金钱变化}！
+		CASE 3
+			PRINTFORML 发现了一间看起来很不错的餐厅
+			IF MONEY > 1000
+				PRINTFORMW 抱着试试的心态进去嚐嚐这间餐厅的餐点
+				PRINTFORML 哇！异常地美味
+				PRINTFORML %PLAYER_NAME()%一边赞叹一边想着下次可以带谁一起来吃
+				PRINTFORMW 之後，心满意足地离开了餐厅
+				PRINTFORML
+				金钱变化 -= 500 + RAND:500
+				MONEY -= 金钱变化
+				BASE:MASTER:0 = MAXBASE:MASTER:0
+				PRINTFORML %PLAYER_NAME()%的体力全恢复了！
+				PRINTFORMW 所持金减少了{金钱变化}！
+			ELSE
+				PRINTFORMW 有心想要嚐嚐味道的%PLAYER_NAME()%看了看自己的钱包
+				PRINTFORMW 数了数里面零星的铜板，总共所持金才只有{MONEY}而已
+				PRINTFORMW 唉，吃什么餐厅啊，这点钱只够喝西北风跟吃土吧？
+				PRINTFORMW 悲哀地摸摸自己的肚子，踏着悲伤的脚步回去了………
+			ENDIF
+		CASE 4
+			PRINTFORML 发现了一间看起来很特别的手工饰品店
+			PRINTFORMW 也许会有什么新奇的东西？
+			PRINTFORML 抱着好奇的心态，%PLAYER_NAME()%打算进去逛逛
+			PRINTFORMW %PLAYER_NAME()%兴趣盎然地浏览着架上琳琅满目的饰品
+			PRINTFORML 
+				FOR LOCAL, 0, CHARANUM
+					IF LOCAL != MASTER && !TALENT:(LOCAL):崩溃
+						候補:LOCAL = RAND:1000
+						候補数 ++
+					ENDIF
+				NEXT
+				IF 候補数 <= 0 || MONEY < 1000
+					PRINTFORML 嗯，的确有很多精致好看又独特的饰品
+					PRINTFORML 也许下次有机会的话，可以带人过来一起挑选吧
+					PRINTFORMW %PLAYER_NAME()%一边想着一边心满意足地回程了………				
+				ELSE
+					對象 = FINDELEMENT(候補, MAXARRAY(候補))
+					PRINTFORML 嗯，这个饰品感觉很适合%CALLNAME:對象%的样子
+					PRINTFORMW %PLAYER_NAME()%一边想着一边不由自主地拿起了那个饰品结帐了
+					PRINTFORML 离开商店之後，%PLAYER_NAME()%才恍然自己居然不知不觉就买了礼物
+					PRINTFORMW 那家店真的没问题吗？%PLAYER_NAME()%一边摇摇头一边回去了……
+					金钱变化 -= 500 + RAND:500
+					MONEY -= 金钱变化
+					PRINTFORMW 所持金减少了{金钱变化}！
+					PRINTFORML
+					PRINTFORML 回去之後，将礼物递给了%CALLNAME:對象%
+					IF KANRAKU(對象)
+						CALL 收礼口上(對象)
+						PRINTL
+						PRINTFORML 看来，%CALLNAME:對象%非常中意这个礼物的样子
+						PRINTFORML					
+						PRINTL 爱情经验＋5
+						EXP:對象:爱情经验 += 5
+						PRINTW <情爱＆恭顺増加了 100 ！>	
+						SOURCE:對象:情爱 += 100
+						SOURCE:對象:恭顺 += 100
+					ELSE
+						PRINTFORML 突然收到%PLAYER_NAME()%的礼物，似乎让%CALLNAME:對象%很警惕的样子
+						PRINTFORML 不过，也许礼物真的很合对方心意吧？感觉%CALLNAME:對象%的态度好像软化了一点……
+						PRINTFORML
+						PRINTFORMW %CALLNAME:對象%的恭顺増加了 100！
+						SOURCE:對象:恭顺 += 100
+					ENDIF
+				ENDIF
+		CASE 5
+			PRINTFORML 发现了一处不甚陡峭很适合作为踏青去处的山丘
+			PRINTFORMW 想着这也是一项很不错的运动，於是%PLAYER_NAME()%就决定爬山了
+			IF TIME == 0
+				PRINTFORML 一边顶着晴朗但算不上炎热的阳光与层层叠叠的树荫，一边踏着轻快的脚步
+			ELSE
+				PRINTFORML 一边顶着满天的星光与感受着徐徐的凉风，一边踏着轻快的脚步
+			ENDIF
+			PRINTFORMW %PLAYER_NAME()%终於爬到了山顶
+			IF TIME == 0
+				PRINTFORML 一眼望去，壮观的景象在阳光的描绘之下如诗如画
+			ELSE
+				PRINTFORML 一眼望去，壮观的景象在星光与灯火的描绘之下如诗如画				
+			ENDIF
+			PRINTFORMW 极其辽阔的美景舒展了%PLAYER_NAME()%的精神，不由得让心情也开阔了起来……
+			BASE:MASTER:1 = MAXBASE:MASTER:1
+			MAXBASE:MASTER:0 += 50
+			PRINTFORML
+			PRINTFORMW 运动之後，%PLAYER_NAME()%的最大体力增加了50！
+			PRINTFORMW %PLAYER_NAME()%的气力全恢复了！
+		CASE 6
+			PRINTFORML 想着想着还是打算去附近的公园里逛逛
+			PRINTFORMW 这个公园建地非常辽阔，绿化也做的很好，有很多茂密的植被
+			PRINTFORML 正当%PLAYER_NAME()%悠闲地散步观赏之际，突然发现有声音从浓密的草丛里传出
+			PRINTFORML 在好奇心的驱使之下，%PLAYER_NAME()%慢慢走上前过去查看
+			PRINTFORML
+			IF !RAND:3
+				PRINTFORMW 突然！一团事物从草丛里蹦了出来！
+				PRINTFORML  「喵～」
+				PRINTFORMW 什么呀，原来是只野猫，%PLAYER_NAME()%好笑地摇摇头
+				PRINTFORML 如果下次有机会的话，带着猫粮过来吧？
+				PRINTFORMW %PLAYER_NAME()%一边想着一边打道回府了……
+			ELSEIF !RAND:2
+				PRINTFORMW 拨开草丛一看，就看见一个一脸惊惧的小孩蹲在那里
+				PRINTFORML 啊！原来是在跟同伴们玩捉迷藏啊？
+				IF TIME == 0
+					PRINTFORML 跟小孩约束好不会暴露他躲在这里的约定
+					PRINTFORMW %PLAYER_NAME()%一边笑着摇摇头一边决定打道回府了……
+				ELSE
+					PRINTFORML 都这么晚了，该不会是被同伴们忘记了吧？
+					PRINTFORMW %PLAYER_NAME()%严肃地劝说小孩快点回家，确定对方回到家之後，自己才慢慢地回去了……
+				ENDIF
+			ELSE
+				PRINTFORMW 拨开草丛一看，就看见两团雪白的事物纠缠在一起
+				PRINTFORML 哦？野外PLAY啊？%PLAYER_NAME()%挑高眉毛见怪不怪地审视了一下
+				PRINTFORMW 深諳此道的%PLAYER_NAME()%，不慌不忙走到路人架设的摄象头旁
+				PRINTFORML 检视了一下摆放的位置以及角度，嘛，素人还是有些地方做的不够专业啊！
+				PRINTFORMW %PLAYER_NAME()%好心地帮忙调整到最佳的角度後，点点头满意地离去了……
+				EXP:MASTER:摄影经验 += 5
+				PRINTFORML 
+				PRINTFORMW %PLAYER_NAME()%的摄影经验增加了 5 ！
+			ENDIF
+		CASE 7
+			PRINTFORMW 无意间经过车站，看到了一个西装笔挺貌似成功的人士正与一个流浪汉玩画片翻牌
+			PRINTFORML 喂喂喂！真不会是"那个"游戏吧？%PLAYER_NAME()%的脸部不由得扭曲了一下
+			PRINTFORMW 那位穿着西装的先生似乎注意到了%PLAYER_NAME()%的目光，看了过来然後礼貌地点头微笑
+			PRINTFORML 呜啊，该不会被记住样子了吧？下次破产时会找上我吗？
+			PRINTFORMW %PLAYER_NAME()%怀着惊惧不安的心情，转身快步地离去了……
+		CASE 8
+			PRINTFORMW 发现了一家装潢十分隐密又有风格独特的酒吧
+			PRINTFORML %PLAYER_NAME()%走进去随意点了一杯酒，便坐在吧台边休息了一下
+			PRINTFORML 因为这家酒吧有附设撞球桌，所以有几个客人正在进行撞球的娱乐
+			PRINTFORMW 看着他们熟练地拿着撞球竿，然後俯下身抬起屁股的姿态後
+			PRINTFORMW %PLAYER_NAME()%沉思了一会儿，突然觉得回去後添加一张撞球桌也不错……
+		CASE 9
+			PRINTFORMW 天空突然一下子乌云漫布，劈哩啪啦地下起暴雨来
+			PRINTFORML 没带雨伞的%PLAYER_NAME()%啧了一声，匆匆忙忙地跑到附近店家的屋檐下躲雨
+			PRINTFORMW 被淋的半湿的%PLAYER_NAME()%皱着眉头抬头看着天色，心里想着"雨快点停就好了"
+			PRINTFORML 神奇的是，才刚出现这个念头没多久，雨竟然就停了
+			PRINTFORMW 是巧合？还是刚好是场骤雨呢？%PLAYER_NAME()%没有多想，趁着雨停快步回去了……
+	ENDSELECT
+ELSE
+	;正装
+	IF (外出服 == 1 && (TALENT:外出对象:137 || TALENT:外出对象:140)) || (外出服 == 2 && !(TALENT:外出对象:137 || TALENT:外出对象:140)) || 外出服 == 3
+	         PRINTFORML %PLAYER_NAME()%和打扮齐整的%CALLNAME:外出对象%一起去约会了…
+            PRINTL
+            CALL ROOM_DATE(外出对象)
+            PRINTL
+            ;消費体力、气力
+            BASE:外出对象:0 -= 200
+            BASE:外出对象:1 -= 50
+            PRINTFORML %EXPNAME:23%＋10
+            EXP:外出对象:23 += 10
+            ;依赖度補正値(恋慕で1、相亲相爱で2）
+            IF TALENT:外出对象:3
+            	TFLAG:30 += 3
+            ELSEIF TALENT:外出对象:6
+            	TFLAG:30 += 5
+            ENDIF
+            CALL MASTER_DEPENDENCE_PLUS_ROOM(外出对象)
+            CALL BASE_SHOW_ROOM(外出对象)
+            PRINTL
+            PRINTW 之后，回到了宅邸…
+	;异装
+	ELSEIF  (外出服 == 1 && !(TALENT:外出对象:137 || TALENT:外出对象:140)) || (外出服 == 2 && (TALENT:外出对象:137 || TALENT:外出对象:140))
+		PRINTFORM %PLAYER_NAME()%带着穿着
+			IF TALENT:外出对象:137 || TALENT:外出对象:140
+				PRINTFORM 女
+			ELSE
+				PRINTFORM 男
+			ENDIF
+		PRINTFORM 装的%CALLNAME:外出对象%
+	SELECTCASE RAND:5
+		CASE 0
+			PRINTFORML 到公园散步
+			PRINTFORMW 正当两人悠闲第一边聊天一边欣赏风景的时候
+			IF !TIME
+				PRINTFORMW 一颗皮球滚到了%CALLNAME:外出对象%的脚边，被他顺手捡了起来
+				PRINTFORMW 然後一个小孩便急急忙忙跑了过来，看来是他的皮球吧？
+				PRINTFORMW %CALLNAME:外出对象%将皮球还给了对方，那小孩便露出可爱的笑容道谢
+				IF TALENT:外出对象:137 || TALENT:外出对象:140
+					PRINTFORMW 「谢谢你，漂亮的大姊姊！」
+				ELSE
+					PRINTFORMW 「谢谢你，帅气的大哥哥！」
+				ENDIF
+			ELSE
+				PRINTFORMW 附近卖夜宵的摊贩正在热情地呼喊着招揽生意
+				PRINTFORMW 当那位小贩一看见%CALLNAME:外出对象%的时候，眼睛都亮了起来，於是立马大喊着
+				IF TALENT:外出对象:137 || TALENT:外出对象:140
+					PRINTFORMW 「欸！？那位漂亮的妹妹！不来一份吗？会给你特别加大的哦！」
+				ELSE
+					PRINTFORMW 「欸！？那位帅气的哥哥！不来一份吗？会给你特别加大的哦！」
+				ENDIF
+			ENDIF
+			PRINTFORMW %PLAYER_NAME()%一边看着%CALLNAME:外出对象%露出的复杂表情一边忍笑
+			PRINTFORMW ………………　
+			PRINTFORMW …………
+			PRINTFORMW ……
+			PRINTFORMW 两人在公园里度过了一段悠闲的时光……
+		CASE 1
+			PRINTFORML 去了Cosplay的会场
+			PRINTFORMW 这里正在举办活动，各种穿着火辣或奇葩造型的Coser层出不穷
+			PRINTFORMW 在这样的环境之下，%CALLNAME:外出对象%似乎也觉得自己的装扮没什么特别引人注目的
+			PRINTFORMW 於是放下心来，一边看着展场上的商品一边与%PLAYER_NAME()%聊天
+			PRINTFORML 
+			PRINTFORMW 只是中途有人跑来询问可不可以合照时，让%CALLNAME:外出对象%露出了复杂的表情……
+			PRINTFORMW 而始作俑者的%PLAYER_NAME()%只是在一旁笑而不语……
+			PRINTFORMW ………………　
+			PRINTFORMW …………
+			PRINTFORMW ……
+			PRINTFORMW 两人在Cosplay的会场里度过了一段悠闲的时光……
+		CASE 2
+			PRINTFORMW 去了电影院
+			PRINTFORMW 在昏暗的情境下，不用在意他人眼光的%CALLNAME:外出对象%也放松了下来
+			PRINTFORMW 只是当他正专心看着电影时，%PLAYER_NAME()%却时不时伸出手来挑逗他的下身
+			PRINTFORMW %CALLNAME:外出对象%无奈地被%PLAYER_NAME()%不停地性骚扰着
+			PRINTFORMW ………………　
+			PRINTFORMW …………
+			PRINTFORMW ……
+			PRINTFORML 最後电影剧情到底是什么，两人似乎记不起来的样子……
+		CASE 3
+			PRINTFORMW 去了百货中心
+			PRINTFORMW 在人潮汹涌的地方，%CALLNAME:外出对象%怕被人注视，於是便忍不住低着头回避着他人的目光
+			PRINTFORMW 而%PLAYER_NAME()%却很坦然，甚至紧紧牵着%CALLNAME:外出对象%的手避免走失
+			PRINTFORMW 看着%CALLNAME:外出对象%紧张的样子，%PLAYER_NAME()%只好在耳边对他说着这装扮很适合他，很好看的话来鼓励
+			PRINTFORMW 而别人注目的眼光都是因为%CALLNAME:外出对象%太好看了，所以不用害怕
+			PRINTFORMW 在%PLAYER_NAME()%甜言蜜语（？）的安抚下，%CALLNAME:外出对象%终於平静下来了
+			PRINTFORMW ………………　
+			PRINTFORMW …………
+			PRINTFORMW ……
+			PRINTFORMW 两人在百货中心里度过了一段悠闲的时光……
+		CASE 4
+			PRINTFORML 在街道上随意逛逛的时候
+			PRINTFORMW 不巧的是，突然下起了倾盆大雨，两人只好连忙地跑到附近的走廊下避雨
+			PRINTFORML 
+			PRINTFORML 上身穿着轻薄白衣的%CALLNAME:外出对象%，在雨水的浸润之下
+			PRINTFORM 透出了那薄衣之下
+			IF TALENT:外出对象:137 || TALENT:外出对象:140
+				PRINTFORMW 因为女装而穿上的女性内衣
+			ELSE
+				PRINTFORMW 因为男装而什么都没穿的胸部
+			ENDIF	
+			PRINTFORML 			
+			PRINTFORML 忙着擦拭身体的%CALLNAME:外出对象%注意到%PLAYER_NAME()%盯着不放的目光
+			PRINTFORM %CALLNAME:外出对象%
+			IF  NO:外出对象 == 200
+				PRINTFORMW 无奈地叹了口气，拿%PLAYER_NAME()%痴汉的行为没有办法
+			ELSEIF TALENT:外出对象:胆怯 ||  TALENT:外出对象:害羞
+				PRINTFORMW 才注意到自己的样子，於是满脸通红忍不住转过身去
+			ELSEIF TALENT:外出对象:刚强 ||  TALENT:外出对象:自制力  ||  TALENT:外出对象:难以越过的底线
+				PRINTFORMW 先是莫名地皱着眉头，然後才注意到自己的样子
+			ELSEIF TALENT:外出对象:直率 ||  TALENT:外出对象:高傲  ||  TALENT:外出对象:自大 || TALENT:外出对象:傲娇
+				PRINTFORMW 先是一脸莫名，之後看到自己的样子才恼羞了起来
+			ELSEIF TALENT:外出对象:无动于衷 ||  TALENT:外出对象:缺乏感情
+				PRINTFORMW 面无表情，沉默不语地任由%PLAYER_NAME()%打量
+			ELSE
+				PRINTFORMW 後知後觉地发现自己的模样，然後无奈地白了%PLAYER_NAME()%一眼
+			ENDIF 
+			PRINTFORMW ………………　
+			PRINTFORMW …………
+			PRINTFORMW ……
+			PRINTFORMW 最後雨终於停了，虽然两人没怎么逛到，但是%PLAYER_NAME()%因为看到了好风景所以心情颇美妙……
+	ENDSELECT
+			;男性女装回数+1
+			SIF TALENT:外出对象:137 || TALENT:外出对象:140
+			CFLAG:外出对象:113 += 1
+            ;依赖度補正値(恋慕で1、相亲相爱で2）
+            IF TALENT:外出对象:3
+            	TFLAG:30 += 3
+            ELSEIF TALENT:外出对象:6
+            	TFLAG:30 += 5
+            ENDIF
+	         PRINTFORMW %EXPNAME:23%＋5
+			EXP:外出对象:23 += 5
+            CALL MASTER_DEPENDENCE_PLUS_ROOM(外出对象)
+	;绳装
+	ELSEIF 外出服 == 4
+		PRINTFORML %PLAYER_NAME()%带着%CALLNAME:外出对象%在外面散步的时候
+		PRINTFORML %CALLNAME:外出对象%的大衣之下，每踏出一步那被捆绑的身体都受到一次绳结摩擦的刺激
+		PRINTFORMW 刚开始还在意着他人目光的%CALLNAME:外出对象%故作镇定，低着已经泛红的脸庞，艰辛地跟着%PLAYER_NAME()%的步伐
+		PRINTFORML 但是随着越走越远的距离，底下那私密的地方渐渐可耻地兴奋湿润了起来
+		PRINTFORML
+		PRINTFORMW %CALLNAME:外出对象%一边喘息，一边摩擦着大衣之下双腿，晶莹的体液从大腿根处流了出来
+		PRINTFORML %PLAYER_NAME()%像是故意恶作剧那样加快了步伐，让举步维艰的%CALLNAME:外出对象%难以追上
+		PRINTFORML 落後的%CALLNAME:外出对象%想要努力追上%PLAYER_NAME()%的时候，却不小心跌倒了
+		PRINTFORMW 两条光裸且沾着透明体液的双腿就从大衣的底下暴露了出来
+		PRINTFORML 刚好被路人看到了，甚至对方还走了过来，似乎想要关注%CALLNAME:外出对象%的状况
+		PRINTFORML
+		CALL 绳装口上(外出对象)
+		PRINTFORM 看着%CALLNAME:外出对象%
+			IF  NO:外出对象 == 200
+				PRINTFORMW 狼狈不堪，却又故作镇定的样子
+			ELSEIF TALENT:外出对象:胆怯 ||  TALENT:外出对象:自卑
+				PRINTFORMW 委屈地快要哭出来的样子
+			ELSEIF TALENT:外出对象:刚强 ||  TALENT:外出对象:自制力  ||  TALENT:外出对象:难以越过的底线
+				PRINTFORMW 皱着眉头，挣扎着想要爬起的样子
+			ELSEIF TALENT:外出对象:直率 ||  TALENT:外出对象:高傲  ||  TALENT:外出对象:自大 || TALENT:外出对象:傲娇
+				PRINTFORMW 不知是恼羞还是生气的样子
+			ELSEIF TALENT:外出对象:无动于衷 ||  TALENT:外出对象:缺乏感情
+				PRINTFORMW 面无表情，沉默不语的样子
+			ELSE
+				PRINTFORMW 难受又委屈的样子
+			ENDIF	
+			PRINTFORMW %PLAYER_NAME()%想着欺负这种事还是该适可而止吧，最後心疼的还不是自己吗？
+			PRINTFORM 之後便转过头快步走到%CALLNAME:外出对象%的身边，
+			IF TALENT:MASTER:140 && !TALENT:MASTER:矮小体型
+				PRINTFORMW 不管他人的眼光就将他公主抱了起来
+			ELSE
+				PRINTFORMW 一边道歉一边将他扶了起来
+			ENDIF
+			PRINTFORML 看着%CALLNAME:外出对象%忍耐得眼眶泛红，%PLAYER_NAME()%将他带进无人的巷子里
+			IF TALENT:MASTER:140 || TALENT:MASTER:137
+				PRINTFORMW 然後使出浑身解数，让%CALLNAME:外出对象%从难受到想哭变成爽到哭出来为止……
+			ELSE
+				PRINTFORMW 然後使出浑身解数，一边亲吻一边爱撫%CALLNAME:外出对象%大衣下的身体，直到他從难受变成舒服为止……
+			ENDIF
+			PRINTFORMW ………………　
+			PRINTFORMW …………
+			PRINTFORMW ……
+			PRINTFORMW %CALLNAME:外出对象%的情欲与耻情之珠増加了 100 ！
+			EXP:外出对象:绝顶经验 += 3
+			PRINTFORML %EXPNAME:2%＋3
+			IF PENIS(外出对象) && TALENT:外出对象:孩童尺寸== 0
+				EXP:外出对象:射精经验 += 2
+				PRINTFORML %EXPNAME:3%＋2
+			ENDIF
+			JUEL:外出对象:情欲 += 100
+			JUEL:外出对象:耻情 += 100
+			;消費体力、气力
+            BASE:外出对象:0 -= 200
+            BASE:外出对象:1 -= 50
+            PRINTFORMW %EXPNAME:23%＋5
+            EXP:外出对象:23 += 5
+            CALL MASTER_DEPENDENCE_PLUS_ROOM(外出对象)
+            CALL BASE_SHOW_ROOM(外出对象)
+	;情趣装
+	ELSEIF 外出服 == 5
+		PRINTFORML %PLAYER_NAME()%带着看似正常打扮但身上另装着道具的%CALLNAME:外出对象%去餐厅吃饭
+		PRINTFORML
+		PRINTFORML 这家的餐厅除了餐点特别美味之外，装潢独特同时还附设了隐密的包厢
+		PRINTFORMW 在服务员点餐的时候，%PLAYER_NAME()%坏心眼地故意把振动调强
+		PRINTFORML 欣赏着%CALLNAME:外出对象%一边脸红一边断断续续点餐的样子
+		PRINTFORMW 由於他脸上的红晕实在太明显了，服务员还特地询问了%CALLNAME:外出对象%是不是不舒服？要不要先去医院等等
+		PRINTFORML 而%CALLNAME:外出对象%身下的嗡鸣声越来越大，正当他要忍不住叫出来的时候
+		PRINTFORMW %PLAYER_NAME()%瞬间抢过菜单，转移了服务员的注意力，快速点好了两人的餐点
+		PRINTFORML %CALLNAME:外出对象%羞耻到连耳根都通红，紧紧咬着下唇，一幅被欺负惨了的样子
+		PRINTFORM 用那双泛着生理性泪水湿润的眼睛
+			IF  NO:外出对象 == 200
+				PRINTFORMW 看着%PLAYER_NAME()%，一边摇头一边叹气
+			ELSEIF TALENT:外出对象:胆怯 ||  TALENT:外出对象:自卑
+				PRINTFORMW 像是快哭出来似地，看着%PLAYER_NAME()%
+			ELSEIF TALENT:外出对象:刚强 ||  TALENT:外出对象:自制力  ||  TALENT:外出对象:难以越过的底线
+				PRINTFORMW ，无奈地看着%PLAYER_NAME()%
+			ELSEIF TALENT:外出对象:直率 ||  TALENT:外出对象:高傲  ||  TALENT:外出对象:自大 || TALENT:外出对象:傲娇
+				PRINTFORMW ，狠狠地瞪了%PLAYER_NAME()%一眼
+			ELSEIF TALENT:外出对象:无动于衷 ||  TALENT:外出对象:缺乏感情
+				PRINTFORMW ，沉默地盯视着%PLAYER_NAME()%
+			ELSE
+				PRINTFORMW 委屈地看着%PLAYER_NAME()%
+			ENDIF
+		PRINTFORML			
+		PRINTFORML 等餐点送上来时，%PLAYER_NAME()%保证自己不会使坏，让%CALLNAME:外出对象%安心
+		PRINTFORML 在%CALLNAME:外出对象%的半信半疑之下，两人享受了一段美好的用餐时光
+		PRINTFORMW 只是最後当点心送上来的时候，当%CALLNAME:外出对象%已经完全放松警戒的时候
+		PRINTFORMW %PLAYER_NAME()%不但将振动调到最大，还伸脚出去逗弄坐在对面的%CALLNAME:外出对象%的股间
+		PRINTFORMW 似乎%CALLNAME:外出对象%不高潮的话就不肯停下来
+		PRINTFORMW ………………　
+		PRINTFORMW …………
+		PRINTFORMW ……
+		外出模式 = 2
+		CALL 情趣装口上(外出对象)
+		PRINTFORMW %CALLNAME:外出对象%的情欲与耻情之珠増加了 200 ！
+		EXP:外出对象:绝顶经验 += 3
+		PRINTFORML %EXPNAME:2%＋3
+		IF PENIS(外出对象) && TALENT:外出对象:孩童尺寸== 0
+			EXP:外出对象:射精经验 += 2
+			PRINTFORML %EXPNAME:3%＋2
+		ENDIF
+			JUEL:外出对象:情欲 += 200
+			JUEL:外出对象:耻情 += 200
+			;消費体力、气力
+            BASE:外出对象:0 -= 200
+            BASE:外出对象:1 -= 50
+            PRINTFORMW %EXPNAME:23%＋5
+            EXP:外出对象:23 += 5
+			金钱变化 -= 1000 + RAND:500
+			MONEY -= 金钱变化
+			PRINTFORMW 所持金减少了{金钱变化}！
+            CALL MASTER_DEPENDENCE_PLUS_ROOM(外出对象)
+            CALL BASE_SHOW_ROOM(外出对象)
+	ENDIF
+ENDIF
+
+@外出打扮(ARG)
+$LOOP
+	PRINTFORML [ 01]  男性的服裝
+	PRINTFORML [ 02]  女性的服裝
+	PRINTFORML [ 03]  中性的服裝
+	IF KANRAKU(ARG) 
+		PRINTFORML [ 04]  赤裸用红绳龟甲缚外加大衣
+		PRINTFORML [ 05]  正常衣物，但是底下的乳头贴上电极片，下身塞入跳蛋
+	ENDIF
+INPUT
+IF RESULT == 1
+	PRINTFORMW 決定让%CALLNAME:ARG%穿着男装出门了
+	IF !TALENT:137 && !TALENT:140
+		PRINTFORMW %CALLNAME:ARG%皱着眉头看着%PLAYER_NAME()%拿过来的衣服，犹豫了一会儿才换上了衣服
+	ELSE
+		PRINTFORMW %CALLNAME:ARG%打量了一下%PLAYER_NAME()%拿过来的衣服
+		PRINTFORMW 发觉尺寸刚刚好，也没什么特别奇怪的地方，便决定换上了
+	ENDIF
+ELSEIF RESULT == 2
+	PRINTFORMW 決定让%CALLNAME:ARG%穿着女装出门了
+	IF TALENT:137 || TALENT:140
+		PRINTFORM %CALLNAME:ARG%皱着眉头看着%PLAYER_NAME()%拿过来的衣服，
+		IF KANRAKU(ARG) 
+			PRINTFORMW 一边摇头感叹%PLAYER_NAME()%的恶趣味一边换上了衣服
+		ELSE
+			PRINTFORMW 狠狠地瞪视着%PLAYER_NAME()%，并坚决不配合
+			PRINTFORMW 无奈之下，%PLAYER_NAME()%还是重新拿了正常的男装让他换上了
+			RESULT = 1
+		ENDIF
+	ELSE
+		PRINTFORMW %CALLNAME:ARG%打量了一下%PLAYER_NAME()%拿过来的衣服
+		PRINTFORMW 发觉尺寸刚刚好，也没什么特别奇怪的地方，便决定换上了
+	ENDIF
+ELSEIF RESULT == 3
+	PRINTFORMW %CALLNAME:ARG%打量了一下%PLAYER_NAME()%拿过来的衣服
+	PRINTFORMW 觉得似乎不合自己的品味，但也没什么特别奇怪的地方，便决定换上了
+ELSEIF RESULT == 4
+	PRINTFORMW 突然被剥光然後被红绳捆绑起来的%CALLNAME:ARG%，先是满脸惊讶，又因这羞耻的打扮而满脸通红
+	PRINTFORMW 虽然四肢行动自如，但怎么看都不是能外出的装扮吧？
+	PRINTFORMW 正要向%PLAYER_NAME()%抗议的时候，%PLAYER_NAME()%将长至脚踝的大衣套在了他的身上
+	PRINTFORMW 不，虽然全部遮住了，但是这种装扮岂不是更像变态了吗？
+	PRINTFORMW 这么想着的%CALLNAME:ARG%还来不及抵抗，就被%PLAYER_NAME()%拖出去了……
+ELSEIF RESULT == 5
+	PRINTFORMW 突然被剥光然後胸部与下身都被装上道具的%CALLNAME:ARG%满脸惊讶，这是不打算出门要调教了吗？
+	PRINTFORMW 正当%CALLNAME:ARG%被道具弄得满脸通红的时候，%PLAYER_NAME()%拿着正常的服装帮他套上
+	PRINTFORMW 欸？不是要调教吗？怎么，还套上了衣服，是要玩着衣PLAY？
+	PRINTFORMW 满脸问号还搞不清楚目的%CALLNAME:ARG%，就这样被%PLAYER_NAME()%拖出去了……
+ELSE
+	GOTO LOOP
+ENDIF
+外出服 =  RESULT
+@绳装口上(ARG)
+	IF NO:ARG == 200
+		PRINTFORMW 「唔……%CSTR:ARG:0%的%CSTR:ARG:3%…真是……太爱捉弄人了……」
+	ELSEIF CFLAG:ARG:600 == 1
+		PRINTFORMW 「啊！%MASTERNAME:ARG%！%MASTERNAME:ARG%别走……别丢下%CSTR:ARG:0%啊 ……呜」
+	ELSEIF CFLAG:ARG:600 == 2
+		PRINTFORMW 「%MASTERNAME:ARG%……等等……呜……好痛……」
+	ELSEIF CFLAG:ARG:600 == 3
+		PRINTFORMW 「不快点赶上去的话……%MASTERNAME:ARG%……%MASTERNAME:ARG%……」
+	ELSEIF CFLAG:ARG:600 == 4
+		PRINTFORMW 「呃……这么狠心的吗？%MASTERNAME:ARG%……」
+	ELSEIF CFLAG:ARG:600 == 5
+		PRINTFORMW 「哼……%CSTR:ARG:0%……%CSTR:ARG:0%……自己可以爬起来……呜」
+	ELSEIF CFLAG:ARG:600 == 6
+		PRINTFORMW 「难道带着%CSTR:ARG:0%出来，就是为了这样把%CSTR:ARG:0%丢下吗？%MASTERNAME:ARG%……」
+	ELSEIF CFLAG:ARG:600 == 7
+		PRINTFORMW 「唉……%MASTERNAME:ARG%又在使坏了……」
+	ELSEIF CFLAG:ARG:600 == 8
+		PRINTFORMW 「啊……要……快点……%MASTERNAME:ARG%……」
+	ELSEIF CFLAG:ARG:600 == 9
+		PRINTFORMW 「一着急就会这样……不快点起来不行……」
+	ELSEIF CFLAG:ARG:600 == 10
+		PRINTFORMW 「呜呜……不要！%MASTERNAME:ARG%！%MASTERNAME:ARG%！不要走啊！」
+	ELSEIF CFLAG:ARG:600 == 11
+		PRINTFORMW 「好……好痛啊！要…要追不上%MASTERNAME:ARG%了！呜呜……%MASTERNAME:ARG%！」
+	ELSEIF CFLAG:ARG:600 == 12
+		PRINTFORMW 「真是……想看%CSTR:ARG:0%的大腿就直说啊？唉……跌倒好痛……」
+	ELSEIF CFLAG:ARG:600 == 13
+		PRINTFORMW 「接……续……不……能………」
+	ELSEIF CFLAG:ARG:600 == 66
+		PRINTFORMW 「喂喂……不会真的这么残忍吧？」
+	ELSEIF CFLAG:ARG:600 == 67
+		PRINTFORMW 「唔……%MASTERNAME:ARG%……%MASTERNAME:ARG%……等等%CSTR:ARG:0%好吗？」
+	ELSEIF CFLAG:ARG:600 == 68
+		PRINTFORMW 「啊……果然……%CSTR:ARG:0%…%CSTR:ARG:0%……要被抛弃了吗？」
+	ELSE
+		PRINTFORMW 「啊……等等%CSTR:ARG:0%…%MASTERNAME:ARG%……%MASTERNAME:ARG%……」
+	ENDIF
+@情趣装口上(ARG)
+	IF NO:ARG == 200
+		PRINTFORMW 「嗯……已经……啊啊！%MASTERNAME:ARG%，别……别在这个地方……唔！啊啊！」	
+		PRINTFORMW 咬着下唇压抑呻吟的%CALLNAME:ARG%，无奈地看着自己下身湿成一塌糊涂的样子
+		PRINTFORMW 「%CSTR:ARG:3%…把%CSTR:ARG:0%…弄得这么狼狈不堪，应该…满足了吧…？」	
+		IF 外出模式 == 1
+			PRINTFORMW 「接下来……请%MASTERNAME:ARG%辛劳一下，%CSTR:ARG:0%去换个衣服……」
+			PRINTFORMW 虽然%CALLNAME:ARG%是带着微笑说着这些话，但是%PLAYER_NAME()%却突然有种毛骨悚然的感觉……
+		ELSEIF 外出模式 == 2
+			PRINTFORMW 「这幅模样……见不得人的样子…%MASTERNAME:ARG%？应该负责对吧？」
+			PRINTFORMW 虽然%CALLNAME:ARG%是微笑地询问着，但是如果不解决这个问题的话，好像会发生很可怕的事……
+			PRINTFORMW 最後%PLAYER_NAME()%脱下自己的外套，围住%CALLNAME:ARG%的下身，然後两人离开了餐厅……
+		ENDIF
+	ELSEIF CFLAG:ARG:600 == 1
+		PRINTFORMW 「不行……哇！啊啊！呜……出来了！衣服……都弄脏了……%MASTERNAME:ARG%」	
+		PRINTFORMW 高潮後的%CALLNAME:ARG%面色潮红，无措地看着自己下身湿成一塌糊涂的样子
+		IF 外出模式 == 1
+			PRINTFORMW 「这样子……怎么工作啊……唉～%MASTERNAME:ARG%真是坏心眼啊，%CSTR:ARG:0%要去换衣服了」
+			PRINTFORMW 高潮後的%CALLNAME:ARG%像是拿%PLAYER_NAME()%没办法那样，小声嘟囔着去员工室换衣服了……
+		ELSEIF 外出模式 == 2
+			PRINTFORMW 「这样子……怎么办啊？要被别人看见了……呜……%MASTERNAME:ARG%……帮帮%CSTR:ARG:0%呀……」
+			PRINTFORMW 看着像%CALLNAME:ARG%小狗一样露出无助的眼神求助，%PLAYER_NAME()%不由得心软了
+			PRINTFORMW 於是脱下了自己的外套，围住%CALLNAME:ARG%的下身，然後两人离开了餐厅……
+		ENDIF
+	ELSEIF CFLAG:ARG:600 == 2
+		PRINTFORMW 「%MASTERNAME:ARG%……不……不可以……呜啊啊！衣服……要弄脏了……唔啊！」
+		PRINTFORMW %CALLNAME:ARG%眼角带着高潮後的艳色，无奈地看着自己下身湿成一塌糊涂的样子
+		IF 外出模式 == 1
+			PRINTFORMW 「怎么办……只能去换件衣服了，%MASTERNAME:ARG%…接下来就麻烦%CSTR:ARG:2%看一下柜台……」
+			PRINTFORMW %CALLNAME:ARG%细声地将收银工作拜托给%PLAYER_NAME()%後，低调地到员工室换衣服了……
+		ELSEIF 外出模式 == 2
+			PRINTFORMW 「这副糟糕的样子……没办法出去呀？%MASTERNAME:ARG%……该怎么办……」
+			PRINTFORMW 明明是%PLAYER_NAME()%的恶作剧，但是%CALLNAME:ARG%却只是默默承受，一句重话也没说
+			PRINTFORMW 心虚的%PLAYER_NAME()%只好脱下自己的外套，围住%CALLNAME:ARG%的下身，然後两人离开了餐厅……
+		ENDIF
+	ELSEIF CFLAG:ARG:600 == 3
+		PRINTFORMW 「啊！%MASTERNAME:ARG%……停…停下来…唔…啊啊啊！」
+		PRINTFORMW %CALLNAME:ARG%皱着眉头压抑着嘴边的呻吟，无奈地看着自己下身湿成一塌糊涂的样子
+		IF 外出模式 == 1
+			PRINTFORMW 「唉……%MASTERNAME:ARG%……看看场合啊…现场…先交给%CSTR:ARG:2%了……」
+			PRINTFORMW %CALLNAME:ARG%一边摇头一边又拿%PLAYER_NAME()%没办法，迅速地前往员工室换衣服了……
+		ELSEIF 外出模式 == 2
+			PRINTFORMW 「唉……%MASTERNAME:ARG%……看看场合啊…现在…该怎么办呢？」
+			PRINTFORMW %CALLNAME:ARG%一边摇头一边似乎打算对%PLAYER_NAME()%说教的样子
+			PRINTFORMW 不想被说教的%PLAYER_NAME()%连忙脱下自己的外套，围住%CALLNAME:ARG%的下身，然後两人离开了餐厅……
+		ENDIF
+	ELSEIF CFLAG:ARG:600 == 4
+		PRINTFORMW 「呜，啊啊啊！%MASTERNAME:ARG%…！这…这样…啊…要去了…啊啊啊！」
+		PRINTFORMW 满脸通红还在微微喘息的%CALLNAME:ARG%，无奈地看着自己下身湿成一塌糊涂的样子
+		PRINTFORMW 「嘛……虽然……这样也别有一番情趣…但…唉…算了，谁叫%CSTR:ARG:0%拿%CSTR:ARG:2%没办法呢？」
+		IF 外出模式 == 1
+			PRINTFORMW %CALLNAME:ARG%露出理解又困扰的表情，前往员工室换衣服了……
+		ELSEIF 外出模式 == 2
+			PRINTFORMW %CALLNAME:ARG%露出理解又困扰的表情，然後自顾自地帮%PLAYER_NAME()%脱下外套
+			PRINTFORMW 正当%PLAYER_NAME()%一头雾水的时候，他用那件外套围着自己的下身，然後两人顺利地离开了餐厅……
+		ENDIF
+	ELSEIF CFLAG:ARG:600 == 5
+		PRINTFORMW 「呀！%MASTERNAME:ARG%…！不……不行…啊！要…要去了…啊…嗯……啊啊啊！」
+		PRINTFORMW 高潮後的%CALLNAME:ARG%恼羞地瞪了%PLAYER_NAME()%一眼，然後无措地看着自己下身湿成一塌糊涂的样子
+		IF 外出模式 == 1
+			PRINTFORMW 「这……这都是……%MASTERNAME:ARG%的错！所以…要罚%CSTR:ARG:2%一个人站柜台了！」
+			PRINTFORMW %CALLNAME:ARG%气呼呼地说完之後，像是要逃离什么一样，快速地前往员工室换衣服了……
+		ELSEIF 外出模式 == 2
+			PRINTFORMW 「这……这都是……%MASTERNAME:ARG%的错！所以…%MASTERNAME:ARG%要负责啊！」
+			PRINTFORMW %CALLNAME:ARG%似乎恼羞到双眼通红，又倔强地忍住眼泪的样子
+			PRINTFORMW 心虚的%PLAYER_NAME()%只好脱下自己的外套，围住%CALLNAME:ARG%的下身，然後两人离开了餐厅……
+		ENDIF
+	ELSEIF CFLAG:ARG:600 == 6
+		PRINTFORMW 「不！%MASTERNAME:ARG%…！住…住手…停…停下来啊！嗯…呀！不……不要啊！！」
+		PRINTFORMW 高潮後的%CALLNAME:ARG%恼羞地瞪了%PLAYER_NAME()%一眼，然後咬牙地看着自己下身湿成一塌糊涂的样子
+		PRINTFORMW 「%MASTERNAME:ARG%…%CSTR:ARG:2%…%CSTR:ARG:2%…真是……！」
+		IF 外出模式 == 1
+			PRINTFORMW %CALLNAME:ARG%不知该恨%PLAYER_NAME()%还是该恨自己太容易高潮，最後只好先忿忿不平地去员工室换衣服了……
+		ELSEIF 外出模式 == 2
+			PRINTFORMW %CALLNAME:ARG%似乎不知该怎么办的样子，最後怒气冲冲地扯掉了%PLAYER_NAME()%的外套
+			PRINTFORMW  嫌弃地围住了自己的下身，然後两人才顺利地离开了餐厅……
+		ENDIF
+	ELSEIF CFLAG:ARG:600 == 7
+		PRINTFORMW 「%MASTERNAME:ARG%……不……不要……嗯……唔！啊……啊啊啊！」
+		PRINTFORMW 咬着下唇压抑呻吟的%CALLNAME:ARG%，无奈地看着自己下身湿成一塌糊涂的样子
+		PRINTFORMW 「唉……%CSTR:ARG:2%…真是…太爱捉弄人了…接下来，只能先麻烦%MASTERNAME:ARG%了……」
+		IF 外出模式 == 1
+			PRINTFORMW 高潮後的%CALLNAME:ARG%像是拿%PLAYER_NAME()%没办法那样，苦笑着去员工室换衣服了……
+		ELSEIF 外出模式 == 2
+			PRINTFORMW 高潮後的%CALLNAME:ARG%无奈地摇摇头，礼貌地向%PLAYER_NAME()%借了外套
+			PRINTFORMW 谨慎地围住了自己的下身遮掩了痕迹，然後两人才顺利地离开了餐厅……
+		ENDIF
+	ELSEIF CFLAG:ARG:600 == 8
+		PRINTFORMW 「不…嗯啊…不…不可以……呜…啊啊啊！」
+		PRINTFORMW 咬着下唇压抑呻吟的%CALLNAME:ARG%，呆愣地看着自己下身湿成一塌糊涂的样子
+		IF 外出模式 == 1
+			PRINTFORMW 「弄成这样子了…%MASTERNAME:ARG%…%CSTR:ARG:0%…%CSTR:ARG:0%先去换衣服了……」
+			PRINTFORMW 不知该拿%PLAYER_NAME()%如何是好的%CALLNAME:ARG%，只好默默低着头去员工室换衣服了……
+		ELSEIF 外出模式 == 2
+			PRINTFORMW 「弄成这样子了…%MASTERNAME:ARG%…%CSTR:ARG:0%…%CSTR:ARG:0%该怎么办……」
+			PRINTFORMW 不知该拿%PLAYER_NAME()%如何是好的%CALLNAME:ARG%，只是无助地呆愣着
+			PRINTFORMW 心虚的%PLAYER_NAME()%只好脱下自己的外套，围住%CALLNAME:ARG%的下身，然後两人离开了餐厅……
+		ENDIF
+	ELSEIF CFLAG:ARG:600 == 9
+		PRINTFORMW 「唔！不…别在这种地方…呜！…停…停下来…唔…啊啊啊！」
+		PRINTFORMW 咬着下唇压抑呻吟的%CALLNAME:ARG%，皱着眉头看着自己下身湿成一塌糊涂的样子
+		IF 外出模式 == 1
+			PRINTFORMW 「%MASTERNAME:ARG%……也该适可而止了吧？接下来的收银就先交给%CSTR:ARG:2%了……」
+			PRINTFORMW %CALLNAME:ARG%埋怨又无奈地看了%PLAYER_NAME()%一眼，快速地前往员工室换衣服了……
+		ELSEIF 外出模式 == 2
+			PRINTFORMW 「%MASTERNAME:ARG%……也该适可而止了吧？等下出门的时候不就被人看见了吗？」
+			PRINTFORMW %CALLNAME:ARG%埋怨又无奈地看了%PLAYER_NAME()%一眼，迅速地解开了%PLAYER_NAME()%的外套
+			PRINTFORMW 谨慎地围住了自己的下身遮掩了痕迹，然後两人才顺利地离开了餐厅……
+		ENDIF
+	ELSEIF CFLAG:ARG:600 == 10
+		PRINTFORMW 「呀啊啊！要！要去了！……%MASTERNAME:ARG%…停…停下来…嗯…啊啊啊！」
+		PRINTFORMW 高潮後的%CALLNAME:ARG%面色潮红，无措地看着自己下身湿成一塌糊涂的样子
+		PRINTFORMW 「呜呜……衣服……衣服上面都是……%MASTERNAME:ARG%…%MASTERNAME:ARG%！怎…怎么办呀？」
+		IF 外出模式 == 1
+			PRINTFORMW 看着拉着自己衣袖一幅快哭出来的%CALLNAME:ARG%，%PLAYER_NAME()%只好先让他去员工室换衣服了……
+		ELSEIF 外出模式 == 2
+			PRINTFORMW 看着拉着自己衣袖一幅快哭出来的%CALLNAME:ARG%，%PLAYER_NAME()%只好先脱下自己的外套
+			PRINTFORMW 帮他围在下身遮掩了痕迹，然後两人才顺利地离开了餐厅……
+		ENDIF
+	ELSEIF CFLAG:ARG:600 == 11
+		PRINTFORMW 「呀！不！不可以啊！%MASTERNAME:ARG%！…要…要去了…呜……呜呀！啊啊啊！」
+		PRINTFORMW 高潮後的%CALLNAME:ARG%面色潮红，无措地看着自己下身湿成一塌糊涂的样子
+		IF 外出模式 == 1
+			PRINTFORMW 「怎…怎么办呀？%MASTERNAME:ARG%…不然？…%CSTR:ARG:0%先去换衣服好了……」
+			PRINTFORMW 弄脏衣服的%CALLNAME:ARG%询问着%PLAYER_NAME()%的意见，然後像是做错事那样前往员工室换衣服了……
+		ELSEIF 外出模式 == 2
+			PRINTFORMW 「怎…怎么办呀？%MASTERNAME:ARG%…%MASTERNAME:ARG%…%CSTR:ARG:0%不想被人看见……」
+			PRINTFORMW 看到%CALLNAME:ARG%像是做错事那样，眼泪都快流出来的样子
+			PRINTFORMW 心虚的%PLAYER_NAME()%只好脱下自己的外套，围住%CALLNAME:ARG%的下身，然後两人离开了餐厅……
+		ENDIF
+	ELSEIF CFLAG:ARG:600 == 12
+		PRINTFORMW 「呜！振…振动…太……太强了……这…这样会……不……呀！……嗯啊啊啊！」
+		PRINTFORMW %CALLNAME:ARG%眼角带着高潮後的艳色，无奈地看着自己下身湿成一塌糊涂的样子
+		PRINTFORMW 「虽然知道%MASTERNAME:ARG%很迷恋%CSTR:ARG:0%高潮的样子……但是，被别人看到就不好了吧？」
+		IF 外出模式 == 1
+			PRINTFORMW %CALLNAME:ARG%像是理解又有点嗔怪地看了%PLAYER_NAME()%，然後自顾自地前往员工室换衣服了……
+		ELSEIF 外出模式 == 2
+			PRINTFORMW %CALLNAME:ARG%像是理解又有点嗔怪地看了%PLAYER_NAME()%，然後自顾自地解开了%PLAYER_NAME()%的外套
+			PRINTFORMW 谨慎地围住了自己的下身遮掩了痕迹，然後两人才顺利地离开了餐厅……
+		ENDIF
+	ELSEIF CFLAG:ARG:600 == 13
+		PRINTFORMW 「电…电波…太强了…呜…要坏了…要坏掉了…呜…啊啊啊！」
+		PRINTFORMW 高潮後的%CALLNAME:ARG%面色潮红，无措地看着自己下身湿成一塌糊涂的样子
+		PRINTFORMW 「%MASTERNAME:ARG%……这是在外面呀……唉…如果玩坏了怎么修呢……？」
+		IF 外出模式 == 1
+			PRINTFORMW %CALLNAME:ARG%很困扰地看了%PLAYER_NAME()%一眼，然後摇着头前往员工室换衣服了……
+		ELSEIF 外出模式 == 2
+			PRINTFORMW %CALLNAME:ARG%很困扰地看了%PLAYER_NAME()%一眼，然後摇着头解开了%PLAYER_NAME()%的外套
+			PRINTFORMW 谨慎地围住了自己的下身遮掩了痕迹，然後两人才顺利地离开了餐厅……
+		ENDIF
+	ELSEIF CFLAG:ARG:600 == 66
+		PRINTFORMW 「唔！……喂…不会吧…要让%CSTR:ARG:0%…在这里？……不…呜…啊啊啊！」
+		PRINTFORMW 高潮後的%CALLNAME:ARG%慢慢地平缓自己的呼吸，然後无奈地看着自己下身湿成一塌糊涂的样子
+		PRINTFORMW 「该怎说呢……？真会玩……是吗？唉……唉……」
+		IF 外出模式 == 1
+			PRINTFORMW %CALLNAME:ARG%一边叹气一边又拿%PLAYER_NAME()%没办法，像是认命那样前往员工室换衣服了……
+		ELSEIF 外出模式 == 2
+			PRINTFORMW %CALLNAME:ARG%一边叹气一边自然地解开了%PLAYER_NAME()%的外套
+			PRINTFORMW 谨慎地围住了自己的下身遮掩了痕迹，然後两人才顺利地离开了餐厅……
+		ENDIF
+	ELSEIF CFLAG:ARG:600 == 67
+		PRINTFORMW 「%MASTERNAME:ARG%？呀！不…不可以…在这里！嗯……嗯啊啊啊！」
+		PRINTFORMW %CALLNAME:ARG%眼角带着高潮後的艳色，无奈地看着自己下身湿成一塌糊涂的样子
+		PRINTFORMW 「把%CSTR:ARG:0%弄成这个样子……%MASTERNAME:ARG%……会负责的吧？」
+		IF 外出模式 == 1
+			PRINTFORMW %CALLNAME:ARG%嗔怪地看了%PLAYER_NAME()%一眼之後，然後低调地前往员工室换衣服了…… 
+		ELSEIF 外出模式 == 2
+			PRINTFORMW %CALLNAME:ARG%低着头用湿润又信任的眼神凝视着%PLAYER_NAME()%
+			PRINTFORMW 让%PLAYER_NAME()%只能投降地脱下自己的外套，围住他的下身，然後两人离开了餐厅……
+		ENDIF
+	ELSEIF CFLAG:ARG:600 == 68
+		PRINTFORMW 「振…振动…太……太强了！要…要…发情了啊！嗯……嗯啊啊啊啊！」
+		PRINTFORMW %CALLNAME:ARG%眼神失焦地呻吟着，似乎无法顾及自己下身湿成一塌糊涂的样子
+		PRINTFORMW 「对…对不起…%CSTR:ARG:0%……%CSTR:ARG:0%…太没用了…忍…忍不住…」
+		IF 外出模式 == 1
+			PRINTFORMW 看着%CALLNAME:ARG%一直道歉似乎要哭出来的样子，%PLAYER_NAME()%只好先让他去换衣服了……
+		ELSEIF 外出模式 == 2
+			PRINTFORMW 看着%CALLNAME:ARG%一直道歉似乎要哭出来的样子，%PLAYER_NAME()%只好先脱下自己的外套
+			PRINTFORMW 帮他围在下身遮掩了痕迹，然後两人才顺利地离开了餐厅……
+		ENDIF
+	ELSE
+		PRINTFORMW 「唔！不…别…呜！…啊…不…不行……要！要去了！！」
+		PRINTFORMW 高潮後的%CALLNAME:ARG%面色潮红，无措地看着自己下身湿成一塌糊涂的样子
+		PRINTFORMW 「在这种地方…%MASTERNAME:ARG%太过分了……真是…等下%CSTR:ARG:0%要怎么办啊……」
+		IF 外出模式 == 1
+			PRINTFORMW 拿%PLAYER_NAME()%没办法的%CALLNAME:ARG%，默默转身去员工室换衣服了……
+		ELSEIF 外出模式 == 2
+			PRINTFORMW 拿%PLAYER_NAME()%没办法的%CALLNAME:ARG%，默默地解开了%PLAYER_NAME()%的外套
+			PRINTFORMW 谨慎地围住了自己的下身遮掩了痕迹，然後两人才顺利地离开了餐厅……
+		ENDIF
+	ENDIF
+@收礼口上(ARG)
+	IF NO:ARG == 200
+		PRINTFORMW 「哦？%CSTR:ARG:3%希望%CSTR:ARG:0%把这个饰品…戴在哪个部位呢？」			
+		PRINTFORMW 「呵呵，开玩笑的，谢谢%MASTERNAME:ARG%的心意，%CSTR:ARG:0%很喜欢」
+	ELSEIF CFLAG:ARG:600 == 1
+		PRINTFORMW 「送给%CSTR:ARG:0%的？哇！%MASTERNAME:ARG%真好！最喜欢%MASTERNAME:ARG%了！」	
+	ELSEIF CFLAG:ARG:600 == 2
+		PRINTFORMW 「%MASTERNAME:ARG%有这份心意就够了，让%CSTR:ARG:2%破费真不好意思，礼物%CSTR:ARG:0%很喜欢」
+	ELSEIF CFLAG:ARG:600 == 3
+		PRINTFORMW 「送%CSTR:ARG:0%的吗？谢谢，下次也让%CSTR:ARG:0%准备礼物送%MASTERNAME:ARG%吧！」
+	ELSEIF CFLAG:ARG:600 == 4
+		PRINTFORMW 「欸，居然收到%MASTERNAME:ARG%的礼物，不该是先由%CSTR:ARG:0%主动来送吗！？」
+	ELSEIF CFLAG:ARG:600 == 5
+		PRINTFORMW 「哦？这种礼物啊……欸……等等…%CSTR:ARG:0%没说不要啊！」
+	ELSEIF CFLAG:ARG:600 == 6
+		PRINTFORMW 「既然是%CSTR:ARG:2%特地为%CSTR:ARG:0%挑选而买的，那%CSTR:ARG:0%就收下吧！」
+	ELSEIF CFLAG:ARG:600 == 7
+		PRINTFORMW 「%MASTERNAME:ARG%的这份心意，真的让%CSTR:ARG:0%感到受宠若惊，谢谢」
+	ELSEIF CFLAG:ARG:600 == 8
+		PRINTFORMW 「给…%CSTR:ARG:0%的？啊…那个…谢谢…」
+	ELSEIF CFLAG:ARG:600 == 9
+		PRINTFORMW 「这是？送%CSTR:ARG:0%的吗？嗯…品味很好啊？谢谢，%CSTR:ARG:0%很喜欢」
+	ELSEIF CFLAG:ARG:600 == 10
+		PRINTFORMW 「送给%CSTR:ARG:0%的？哇！真好看！呐，下次也带%CSTR:ARG:0%一起去逛街嘛！」
+	ELSEIF CFLAG:ARG:600 == 11
+		PRINTFORMW 「%CSTR:ARG:0%可以打开吗？啊！真好看啊，%MASTERNAME:ARG%快看，适合%CSTR:ARG:0%吗？」
+	ELSEIF CFLAG:ARG:600 == 12
+		PRINTFORMW 「特地为%CSTR:ARG:0%买的？嘛，这也无可厚非，毕竟%CSTR:ARG:2%就算出门，心里也还是只挂念着%CSTR:ARG:0%吧！」
+	ELSEIF CFLAG:ARG:600 == 13
+		PRINTFORMW 「欸？送给%CSTR:ARG:0%的？唔……这里面的能量让人很舒服啊……」
+	ELSEIF CFLAG:ARG:600 == 66
+		PRINTFORMW 「欸？给%CSTR:ARG:0%买了礼物吗？嘿，这么讨好%CSTR:ARG:0%是不是有什么企图呀？」
+	ELSEIF CFLAG:ARG:600 == 67
+		PRINTFORMW 「这是？送给%CSTR:ARG:0%的吗？好高兴，%MASTERNAME:ARG%能帮%CSTR:ARG:0%戴上吗？」
+	ELSEIF CFLAG:ARG:600 == 68
+		PRINTFORMW 「送给%CSTR:ARG:0%的？像…%CSTR:ARG:0%…这种人，居然能收到%MASTERNAME:ARG%的礼物…谢谢，%CSTR:ARG:0%会好好珍惜的！」
+	ELSE
+		PRINTDATAL
+			DATAFORM 「送给%CSTR:ARG:0%的吗？谢谢，%CSTR:ARG:0%很喜欢」
+			DATAFORM 「给%CSTR:ARG:0%的？谢谢，%CSTR:ARG:0%会好好珍惜的」
+			DATAFORM 「嗯，很好看，谢谢%MASTERNAME:ARG%」
+			DATAFORM 「谢谢，很适合%CSTR:ARG:0%。」
+			DATAFORM 「下次不如两人一起去逛吧？」
+		ENDDATA		
+	ENDIF

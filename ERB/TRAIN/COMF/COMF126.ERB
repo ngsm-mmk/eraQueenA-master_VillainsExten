@@ -1,0 +1,225 @@
+﻿;-------------------------------------------------
+;互相推搡胸部
+;助手による指令、及び百合プ雷、レベル1
+;-------------------------------------------------
+@COM126
+PRINTL 胸部互蹭
+;-------------------------------------------------
+;実行判定処理
+;-------------------------------------------------
+A = 0
+S = 0
+
+;すべての命令に共通の要素を考慮
+;(顺从が高いと命令に従いやすいなど)
+CALL COM_ORDER
+
+;ABL:欲望
+IF ABL:1
+	SIF S
+		PRINT  + 
+	A += ABL:1 * 1
+	PRINTS ABLNAME:1
+	PRINTV 'LV,ABL:1,'(,ABL:1 * 1,')
+	S = 1
+ENDIF
+;ABL:侍奉精神
+IF ABL:7
+	SIF S
+		PRINT  + 
+	A += ABL:7 * 4
+	PRINTS ABLNAME:7
+	PRINTV 'LV,ABL:7,'(,ABL:7 * 4,')
+	S = 1
+ENDIF
+IF MARK:1
+	SIF S
+		PRINT  + 
+	A += MARK:1 * 1
+	PRINTS MARKNAME:1
+	PRINTV 'LV,MARK:1,'(,MARK:1 * 1,')
+	S = 1
+ENDIF
+;PALAM:情欲
+IF PALAM:6 < PALAMLV:1
+	L = 0
+ELSEIF PALAM:6 < PALAMLV:2
+	L = 1
+ELSEIF PALAM:6 < PALAMLV:3
+	L = 2
+ELSEIF PALAM:6 < PALAMLV:4
+	L = 3
+ELSEIF PALAM:6 < PALAMLV:5
+	L = 4
+ELSE
+	L = 5
+ENDIF
+IF L
+	SIF S
+		PRINT  + 
+	A += L * 1
+	PRINTS PALAMNAME:6
+	PRINTV 'LV,L,'(,L * 1,')
+	S = 1
+ENDIF
+;害羞
+IF TALENT:35
+	PRINT  - 
+	A -= 1
+	PRINTS TALENTNAME:35
+	PRINTV '(,1,')
+	S = 1
+ENDIF
+;自我奉献
+IF TALENT:63
+	SIF S
+		PRINT  + 
+	A += 6
+	PRINTS TALENTNAME:63
+	PRINTV '(,6,')
+	S = 1
+ENDIF
+;否定快感（淫乱、娼妇で无效）
+IF TALENT:71 && (TALENT:4 == 0 && TALENT:7 == 0)
+	PRINT  - 
+	A -= 1
+	PRINTS TALENTNAME:71
+	PRINTV '(,1,')
+	S = 1
+ENDIF
+;调教者が男性
+IF TALENT:PLAYER:140 && ((TALENT:3 == 0 && TALENT:6 == 0) || PLAYER != MASTER)
+	PRINT  - 
+	A -= 3
+	PRINTS TALENTNAME:140
+	PRINTV '(,3,')
+	S = 5
+ENDIF
+;恋慕
+IF TALENT:3 && ASSIPLAY == 0
+	SIF S
+		PRINT  + 
+	A += 5
+	PRINTS TALENTNAME:3
+	PRINTV '(,5,')
+	S = 5
+ENDIF
+;相亲相爱
+IF TALENT:6 && ASSIPLAY == 0
+	SIF S
+		PRINT  + 
+	A += 10
+	PRINTS TALENTNAME:6
+	PRINTV '(,10,')
+	S = 10
+ENDIF
+
+;合計を表示(14以上で実行)
+PRINT  = 
+PRINTV A
+
+V = 14
+SIF A < V
+	PRINT  < 
+SIF A == V
+	PRINT  = 
+SIF A > V
+	PRINT  > 
+PRINT 实行值
+PRINTV V
+;実行不可口上/実行判定操作
+IF A < V
+	CALL KOJO_DENIAL
+	WAIT
+	RETURN 0
+ELSE
+	PRINTL
+ENDIF
+
+;-------------------------------------------------
+;実行決定
+;-------------------------------------------------
+
+STR:0 = 胸部互蹭
+
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 7
+LOSEBASE:1 += 70
+
+SOURCE:3 = 200
+SOURCE:5 = 150
+SOURCE:13 = 50
+SOURCE:15 = 30
+SOURCE:17 = 100
+SOURCE:18 = 200
+
+IF TALENT:140 && TALENT:PLAYER:140 == 0
+	SOURCE:4 = 50
+	SOURCE:5 = 200
+	SOURCE:6 = 25
+	SOURCE:14 = 50
+	SOURCE:17 = 20
+	SOURCE:18 = 100
+ENDIF
+
+
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 100
+
+;调教者が［幼儿退行］
+IF TALENT:PLAYER:150
+	TIMES SOURCE:3 , 1.20
+	TIMES SOURCE:5 , 1.20
+ENDIF
+
+;调教者が［幼稚］
+IF TALENT:PLAYER:151
+	TIMES SOURCE:3 , 1.20
+	TIMES SOURCE:5 , 1.20
+ENDIF
+
+;-------------------------------------------------
+;汚れの処理
+;-------------------------------------------------
+;奴隶のＢ⇔调教者の指の汚れが移动
+	STAIN:5 |= STAIN:PLAYER:1
+	STAIN:PLAYER:1 |= STAIN:5
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;蔷薇经验とか加算
+CALL COM_EXP(7)
+
+
+
+;依赖度ベクトル
+P = NO:PLAYER
+IF RELATION:P > 100
+	TFLAG:33 = 2
+ELSEIF RELATION:P < 100
+	TFLAG:33 = 3
+ELSE
+	TFLAG:33 = 1
+ENDIF
+
+;依赖度補正値(相性100↑かつ淫乱で1、娼妇で2）
+P = NO:PLAYER
+IF TALENT:4 && RELATION:P > 100
+	TFLAG:30 += 1
+ELSEIF TALENT:7 && RELATION:P > 100
+	TFLAG:30 += 2
+ENDIF
+
+TFLAG:100 = 1
+RETURN 1
+

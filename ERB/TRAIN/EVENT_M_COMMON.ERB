@@ -1,0 +1,227 @@
+﻿;--------------------------------------------------
+;@DAILY_LIFE_MASSAGE関係
+;休憩実行時に出力されます
+;選択されるのは必ずしもTARGETとは限らないので、口上存在判定をCFLAG:A:140を使って特殊にしています
+;--------------------------------------------------
+@DAILY_LIFE_MASSAGE
+RESULT = 0
+LOCAL = TARGET
+TARGET = A
+TRYCALLFORM DAILY_LIFE_MASSAGE_{CFLAG:A:600}
+TARGET = LOCAL
+RETURN RESULT
+
+;--------------------------------------------------
+;--------------------------------------------------
+;SELECTCOMに応じたテ接吻ト関数をCALLする
+@TRAIN_MESSAGE
+TFLAG:51 = 0
+TFLAG:52 = 0
+TFLAG:53 = 0
+CALL KYOTUU_JYOKYO
+PRINTL
+
+;主人のペニバン指令の実行回数を計算する
+SIF ITEM:捆绑式假阴茎 && !PENIS(MASTER) && !ASSIPLAY && (SELECTCOM == 62 || SELECTCOM == 63 || SELECTCOM == 67 || SELECTCOM == 70 || SELECTCOM == 71 || SELECTCOM == 73 || SELECTCOM == 75 || SELECTCOM == 77 || SELECTCOM == 185 || SELECTCOM == 516 || SELECTCOM == 591 || SELECTCOM == 592 || SELECTCOM == 593 || SELECTCOM == 594 || SELECTCOM == 595)
+	FLAG:96 += 1
+;调教者の射精止め指令の実行回数を計算する
+SIF SELECTCOM == 109
+	CFLAG:PLAYER:27 += 1
+;调教者が奴隶の胸を弄った回数を計算する
+SIF SELECTCOM == 6 || SELECTCOM == 7 || SELECTCOM == 8 || SELECTCOM == 47 || SELECTCOM == 48 || SELECTCOM == 49 || SELECTCOM == 65 || SELECTCOM == 89 || SELECTCOM == 82 || SELECTCOM == 87 || SELECTCOM == 88 || SELECTCOM == 89 || SELECTCOM == 101 || SELECTCOM == 126 || SELECTCOM == 509 || SELECTCOM == 594 || SELECTCOM == 595
+	CFLAG:PLAYER:54 += 1
+;调教者の饮用母乳した回数を計算する
+SIF SELECTCOM == 89
+	CFLAG:PLAYER:55 += 1
+;主人が今度の调教でVCを爱抚された回数
+SIF !ASSIPLAY && (SELECTCOM == 79 || SELECTCOM == 80 || SELECTCOM == 81 || SELECTCOM == 82 || SELECTCOM == 83 || SELECTCOM == 84 || SELECTCOM == 85 || SELECTCOM == 87 || SELECTCOM == 88 || SELECTCOM == 120 || SELECTCOM == 121 || SELECTCOM == 124 || SELECTCOM == 125 || SELECTCOM == 127 || SELECTCOM == 140 || SELECTCOM == 200 || SELECTCOM == 202 || SELECTCOM == 205 || SELECTCOM == 206 || (SELECTCOM == 215 && TFLAG:705 == 0) || SELECTCOM == 501 || SELECTCOM == 508)
+	TFLAG:58 += 1
+;主人が今度の调教でAを爱抚された回数
+SIF !ASSIPLAY && (SELECTCOM == 145 || SELECTCOM == 200 || SELECTCOM == 213 || SELECTCOM == 214 || (SELECTCOM == 215 && TFLAG:705 == 1) || (PREVCOM == 145 && SELECTCOM == 202))
+	TFLAG:59 += 1
+;经验少ない時の插入系の疼痛&恐惧ソースを追加（前の数値ではテ接吻トに合わないので）
+IF D:1 >= 3
+	SOURCE:7 += 1000
+;	SOURCE:8 += 500
+;	SOURCE:18 += 500
+ELSEIF D:1 >= 2
+	SOURCE:7 += 500
+;	SOURCE:8 += 200
+;	SOURCE:18 += 200
+ELSEIF D:1 >= 1
+	SOURCE:7 += 200
+;	SOURCE:18 += 50
+ENDIF
+IF D:1 >= 3
+	SOURCE:7 += 1000
+;	SOURCE:8 += 500
+;	SOURCE:18 += 500
+ELSEIF D:1 >= 2
+	SOURCE:7 += 500
+;	SOURCE:8 += 200
+;	SOURCE:18 += 200
+ELSEIF D:1 >= 1
+	SOURCE:7 += 200
+;	SOURCE:18 += 50
+ENDIF
+
+
+TRYCALLFORM MESSAGE_COM{SELECTCOM}
+IF TFLAG:52 == 0
+	PRINTL
+	CALL HANYOU_JYOKYO
+ELSE
+	PRINTL
+ENDIF
+
+;处女喪失の後で阴茎を抜いているか
+IF TFLAG:31 == 2
+	TFLAG:31 = 1
+ELSE
+	TFLAG:31 = 0
+ENDIF
+
+
+;TFLAG:13に応じたテ接吻ト関数をCALLする
+@EVENT_MESSAGE
+TRYCALLFORM EVENT_MESSAGE_{TFLAG:13}
+
+;指令口上の道具着脱分岐
+@MESSAGE_VARIATION
+SELECTCASE SELECTCOM
+	;阴蒂夹、触手揉阴
+	CASE 42, 163
+		SIF TEQUIP:阴蒂夹
+			TFLAG:54 = 1
+	;飞机杯、触手玩弄阴茎
+	CASE 43, 169
+		SIF TEQUIP:飞机杯
+			TFLAG:54 = 1
+	;自慰棒、触手、尾巴插入
+	CASE 44, 161, 51
+		SIF TEQUIP:自慰棒
+			TFLAG:54 = 1
+	;肛塞、触手、尾巴插肛
+	CASE 45, 162, 52
+		SIF TEQUIP:肛塞
+			TFLAG:54 = 1
+	;后庭拉珠
+	CASE 46
+		SIF TEQUIP:后庭拉珠
+			TFLAG:54 = 1
+	;乳头夹、触手揉乳
+	CASE 47, 164
+		SIF TEQUIP:乳头夹
+			TFLAG:54 = 1
+	;挤奶器、触手挤奶
+	CASE 49, 165
+		SIF TEQUIP:挤奶器
+			TFLAG:54 = 1
+	;眼罩
+	CASE 105
+		SIF TEQUIP:眼罩
+			TFLAG:54 = 1
+	;绳子、触手紧缚
+	CASE 106, 166
+		SIF TEQUIP:绳子
+			TFLAG:54 = 1
+	;口塞球
+	CASE 107
+		SIF TEQUIP:口塞球
+			TFLAG:54 = 1
+	;灌肠器＋塞头、触手灌肠
+	CASE 146, 167
+		SIF TEQUIP:灌肠器＋塞头
+			TFLAG:54 = 1
+	;扩张气球
+	CASE 148
+		SIF TEQUIP:扩张气球
+			TFLAG:54 = 1
+	;肛门电极
+	CASE 149
+		SIF TEQUIP:肛门电极
+			TFLAG:54 = 1
+	;乳房电极
+	CASE 150
+		SIF TEQUIP:乳房电极
+			TFLAG:54 = 1
+	;触手召喚
+	CASE 160
+		SIF TEQUIP:触手
+			TFLAG:54 = 1
+	;摄像机
+	CASE 183
+		SIF TEQUIP:摄像机
+			TFLAG:54 = 1
+	;野外PLAY
+	CASE 184
+		SIF TEQUIP:野外PLAY
+			TFLAG:54 = 1
+	;羞耻PLAY
+	CASE 186
+		SIF TEQUIP:羞耻PLAY
+			TFLAG:54 = 1
+	;浴室PLAY
+	CASE 187
+		SIF TEQUIP:浴室
+			TFLAG:54 = 1
+	;淋浴
+	CASE 188
+		SIF TEQUIP:淋浴
+			TFLAG:54 = 1
+	;水下PLAY
+	CASE 197
+		SIF TEQUIP:水下PLAY
+			TFLAG:54 = 1
+	;新妻PLAY
+	CASE 189
+		SIF TEQUIP:围裙
+			TFLAG:54 = 1
+	;触手口辱
+	CASE 168
+		SIF TEQUIP:触手口辱
+			TFLAG:54 = 1
+	;射精止め
+	CASE 109
+		SIF TEQUIP:禁止射精
+			TFLAG:54 = 1
+	;导尿管、触手尿道插入
+	CASE 50, 170
+		SIF TEQUIP:导尿管
+			TFLAG:54 = 1
+	;尿道バルーン
+	CASE 153
+		SIF TEQUIP:尿道气球
+			TFLAG:54 = 1
+	;触手乳腺責め
+	CASE 300
+		SIF TEQUIP:触手玩弄乳腺
+			TFLAG:54 = 1
+	;胸爱抚命令
+	CASE 222
+		SIF TEQUIP:助手Ｂ爱抚
+			TFLAG:54 = 1
+	;手指插入命令
+	CASE 223
+		SIF TEQUIP:助手Ｖ爱抚
+			TFLAG:54 = 1
+	;肛门爱抚命令
+	CASE 224
+		SIF TEQUIP:助手Ａ爱抚
+			TFLAG:54 = 1
+	;插入命令
+	CASE 225
+		SIF TEQUIP:助手Ｖ插入
+			TFLAG:54 = 1
+	;肛插入命令
+	CASE 226
+		SIF TEQUIP:助手Ａ插入
+			TFLAG:54 = 1
+	;阴蒂爱抚命令、阴茎爱抚命令
+	CASE 220, 221
+		SIF TEQUIP:助手Ｃ爱抚
+			TFLAG:54 = 1
+ENDSELECT
+
+
+

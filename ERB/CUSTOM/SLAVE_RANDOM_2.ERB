@@ -1,0 +1,728 @@
+﻿@NINGAI_RANDOM_AUTO_TALENT
+K = TARGET
+
+SIF !TALENT:精灵 && !TALENT:类人
+    TALENT:化形 = 1
+SIF TALENT:吸血鬼
+    TALENT:化形 = 1
+
+LOCAL:2 = 0
+LOCAL:1 = RAND:8
+LOCAL:1 += 5
+WHILE 1
+	$INPUT_LOOP_SHORI2
+	LOCAL:2 += 1
+	;随机输入
+	$INPUT_AUTO_RESULT
+	LOCAL = RAND:312
+	;その素質が输入不可の場合は输入し直す
+	SIF LOCAL < 54 || (LOCAL > 54 && LOCAL < 90) || (LOCAL > 90 && LOCAL < 142) || (LOCAL > 143 && LOCAL < 201) || (LOCAL > 238 && LOCAL < 307) || (LOCAL > 307 && LOCAL < 312)
+		GOTO INPUT_AUTO_RESULT
+
+	RESULT = LOCAL
+
+	SIF LOCAL:2 >= LOCAL:1
+		RESULT = 999
+
+	IF RESULT == 54 || RESULT == 90 || RESULT == 143 || RESULT == 142 || (RESULT >= 201 && RESULT <= 238) || RESULT == 307 || RESULT == 312
+		TALENT:K:RESULT = !TALENT:K:RESULT
+        IF !TALENT:K:异形
+            ;不是异形的话只能有一种羽翼
+            IF RESULT == 201
+                TALENT:K:202 = 0
+                TALENT:K:203 = 0
+                TALENT:K:204 = 0
+            ELSEIF RESULT == 202
+                TALENT:K:201 = 0
+                TALENT:K:203 = 0
+                TALENT:K:204 = 0
+            ELSEIF RESULT == 203
+                TALENT:K:201 = 0
+                TALENT:K:202 = 0
+                TALENT:K:204 = 0
+            ELSEIF RESULT == 204
+                TALENT:K:201 = 0
+                TALENT:K:202 = 0
+                TALENT:K:203 = 0
+            ENDIF
+            ;只能有一种角
+            IF RESULT == 205
+                TALENT:K:206 = 0
+            ELSEIF RESULT == 206
+                TALENT:K:205 = 0
+            ENDIF
+            ;只能有一种尾巴
+            IF RESULT == 207
+                TALENT:K:208 = 0
+                TALENT:K:209 = 0
+            ELSEIF RESULT == 208
+                TALENT:K:207 = 0
+                TALENT:K:209 = 0
+            ELSEIF RESULT == 209
+                TALENT:K:207 = 0
+                TALENT:K:208 = 0
+            ENDIF
+            ;尖耳兽耳不共存
+            IF RESULT == 143
+                TALENT:K:215 = 0
+            ELSEIF RESULT == 215
+                TALENT:K:143 = 0
+            ENDIF
+		ENDIF
+        IF TALENT:K:马身
+            TALENT:K:鱼尾 = 0
+            TALENT:K:蛇尾 = 0
+        ENDIF
+        SIF TALENT:K:鱼尾 || TALENT:K:蛇尾
+            TALENT:K:马身 = 0
+		;不是变色龙
+		IF RESULT == 238
+		    TALENT:K:307 = 0
+		    TALENT:K:312 = 0
+		ELSEIF RESULT == 307
+		    TALENT:K:312 = 0
+		    TALENT:K:238 = 0
+		ELSEIF RESULT == 312
+		    TALENT:K:307 = 0
+		    TALENT:K:238 = 0
+		ENDIF
+		;体型不共存
+		IF RESULT == 142
+		    TALENT:K:224 = 0
+		ELSEIF RESULT == 224
+		    TALENT:K:142 = 0
+		ENDIF
+		;体质不共存
+		IF RESULT == 226
+		    TALENT:K:227 = 0
+		    TALENT:K:228 = 0
+		ELSEIF RESULT == 227
+		    TALENT:K:226 = 0
+		    TALENT:K:228 = 0
+		ELSEIF RESULT == 228
+		    TALENT:K:226 = 0
+		    TALENT:K:227 = 0
+		ENDIF
+		;没有翅膀不存在Ｗ敏钝、不可以飞翔
+		IF !TALENT:K:201 && !TALENT:K:202 && !TALENT:K:203 && !TALENT:K:204
+		    TALENT:K:230 = 0
+		    TALENT:K:231 = 0
+		    TALENT:K:219 = 0
+		ENDIF
+		;没有兽耳和尖耳不存在Ｅ敏钝
+		IF !TALENT:K:143 && !TALENT:K:215
+		    TALENT:K:234 = 0
+		    TALENT:K:235 = 0
+		ENDIF
+		;没有尾巴不存在Ｔ敏钝，不存在多尾
+		IF !TALENT:K:207 && !TALENT:K:208 && !TALENT:K:209
+		    TALENT:K:210 = 0
+		    TALENT:K:232 = 0
+		    TALENT:K:233 = 0
+		ENDIF
+		;敏感相悖
+		IF RESULT == 230
+		    TALENT:K:231 = 0
+		ELSEIF RESULT == 231
+		    TALENT:K:230 = 0
+		ENDIF
+		IF RESULT == 232
+		    TALENT:K:233 = 0
+		ELSEIF RESULT == 233
+		    TALENT:K:232 = 0
+		ENDIF
+		IF RESULT == 234
+		    TALENT:K:235 = 0
+		ELSEIF RESULT == 235
+		    TALENT:K:234 = 0
+		ENDIF
+		;非不死系、非异形不可以没有头
+		SIF !TALENT:K:不死系 && !TALENT:K:异形
+		    TALENT:K:237 = 0
+		;类人无马身、多足
+        IF TALENT:K:类人
+		    TALENT:K:236 = 0
+		    TALENT:K:多足 = 0
+		ENDIF
+		;非走兽无狐狸
+        SIF !TALENT:K:走兽 && !TALENT:K:异形
+		    TALENT:K:狐狸 = 0
+	ELSEIF RESULT == 999
+		BREAK
+	ELSE
+		GOTO INPUT_LOOP_SHORI2
+	ENDIF
+WEND
+;固有不可变
+IF TALENT:K:天使
+    TALENT:K:羽翅 = 1
+    TALENT:K:飞翔 = 1
+    TALENT:K:潜游 = 0
+    TALENT:K:爬行 = 0
+    TALENT:K:四足步行 = 0
+    TALENT:K:白肤 = 1
+    TALENT:K:恒温体质 = 1
+    TALENT:K:变温体质 = 0
+    TALENT:K:无体温 = 0
+    TALENT:K:蝠翼 = 0
+    TALENT:K:虫翼 = 0
+    TALENT:K:骨翅 = 0
+    TALENT:K:独角 = 0
+    TALENT:K:双角 = 0
+    TALENT:K:兽尾 = 0
+    TALENT:K:鱼尾 = 0
+    TALENT:K:蛇尾 = 0
+    TALENT:K:多尾 = 0
+    TALENT:K:复眼 = 0
+    TALENT:K:兽耳 = 0
+    TALENT:K:猫舌 = 0
+    TALENT:K:黑皮 = 0
+    TALENT:K:青肤 = 0
+    TALENT:K:多足 = 0
+    TALENT:K:手爪 = 0
+    TALENT:K:足爪 = 0
+    TALENT:K:触手 = 0
+ELSEIF TALENT:K:堕天使
+    TALENT:K:羽翅 = 1
+    TALENT:K:蝠翼 = 0
+    TALENT:K:骨翅 = 0
+    TALENT:K:虫翼 = 0
+    TALENT:K:飞翔 = 1
+    TALENT:K:潜游 = 0
+    TALENT:K:爬行 = 0
+    TALENT:K:四足步行 = 0
+    TALENT:K:黑皮 = 1
+    TALENT:K:白肤 = 0
+    TALENT:K:青肤 = 0
+    TALENT:K:多足 = 0
+    TALENT:K:手爪 = 0
+    TALENT:K:足爪 = 0
+    TALENT:K:触手 = 0
+    TALENT:K:兽尾 = 0
+    TALENT:K:鱼尾 = 0
+    TALENT:K:蛇尾 = 0
+    TALENT:K:多尾 = 0
+    TALENT:K:复眼 = 0
+    TALENT:K:兽耳 = 0
+    TALENT:K:猫舌 = 0
+    TALENT:K:恒温体质 = 1
+    TALENT:K:变温体质 = 0
+    TALENT:K:无体温 = 0
+ELSEIF TALENT:K:恶魔
+    TALENT:K:蝠翼 = 1
+    TALENT:K:羽翅 = 0
+    TALENT:K:骨翅 = 0
+    TALENT:K:虫翼 = 0
+    TALENT:K:双角 = 1
+    TALENT:K:独角 = 0
+    TALENT:K:兽尾 = 1
+    TALENT:K:蛇尾 = 0
+    TALENT:K:鱼尾 = 0
+    TALENT:K:飞翔 = 1
+    TALENT:K:潜游 = 0
+    TALENT:K:爬行 = 0
+    TALENT:K:多足 = 0
+    TALENT:K:兽耳 = 0
+    TALENT:K:复眼 = 0
+    TALENT:K:四足步行 = 0
+    TALENT:K:漂浮 = 0
+    TALENT:K:恒温体质 = 1
+    TALENT:K:变温体质 = 0
+    TALENT:K:无体温 = 0
+ELSEIF TALENT:K:精灵
+    TALENT:K:尖耳 = 1
+    TALENT:K:兽耳 = 0
+    TALENT:K:恒温体质 = 1
+    TALENT:K:变温体质 = 0
+    TALENT:K:无体温 = 0
+    TALENT:K:爬行 = 0
+    TALENT:K:潜游 = 0
+    TALENT:K:四足步行 = 0
+    TALENT:K:多足 = 0
+    TALENT:K:手爪 = 0
+    TALENT:K:足爪 = 0
+    TALENT:K:青肤 = 0
+    TALENT:K:骨翅 = 0
+    TALENT:K:蝠翼 = 0
+    TALENT:K:羽翅 = 0
+    TALENT:K:独角 = 0
+    TALENT:K:双角 = 0
+    TALENT:K:兽尾 = 0
+    TALENT:K:鱼尾 = 0
+    TALENT:K:蛇尾 = 0
+    TALENT:K:触手 = 0
+    TALENT:K:复眼 = 0
+    TALENT:K:不死系 = 0
+ELSEIF TALENT:K:走兽
+    TALENT:K:兽耳 = 1
+    TALENT:K:尖耳 = 0
+    TALENT:K:兽尾 = 1
+    TALENT:K:蛇尾 = 0
+    TALENT:K:鱼尾 = 0
+    TALENT:K:复眼 = 0
+    TALENT:K:爬行 = 0
+    TALENT:K:漂浮 = 0
+    TALENT:K:瞬移 = 0
+    TALENT:K:潜游 = 0
+    TALENT:K:多足 = 0
+    TALENT:K:不死系 = 0
+    TALENT:K:恒温体质 = 1
+    TALENT:K:变温体质 = 0
+    TALENT:K:无体温 = 0
+ELSEIF TALENT:K:飞禽
+    TALENT:K:羽翅 = 1
+    TALENT:K:骨翅 = 0
+    TALENT:K:虫翼 = 0
+    TALENT:K:蝠翼 = 0
+    TALENT:K:飞翔 = 1
+    TALENT:K:潜游 = 0
+    TALENT:K:爬行 = 0
+    TALENT:K:四足步行 = 0
+    TALENT:K:漂浮 = 0
+    TALENT:K:瞬移 = 0
+    TALENT:K:复眼 = 0
+    TALENT:K:兽尾 = 0
+    TALENT:K:鱼尾 = 0
+    TALENT:K:蛇尾 = 0
+    TALENT:K:多尾 = 0
+    TALENT:K:触手 = 0
+    TALENT:K:多足 = 0
+    TALENT:K:复眼 = 0
+    TALENT:K:兽耳 = 0
+    TALENT:K:不死系 = 0
+    TALENT:K:猫舌 = 0
+    TALENT:K:恒温体质 = 1
+    TALENT:K:变温体质 = 0
+    TALENT:K:无体温 = 0
+ELSEIF TALENT:K:爬虫
+    TALENT:K:变温体质 = 1
+    TALENT:K:恒温体质 = 0
+    TALENT:K:无体温 = 0
+    TALENT:K:羽翅 = 0
+    TALENT:K:骨翅 = 0
+    TALENT:K:鱼尾 = 0
+    TALENT:K:猫舌 = 0
+    TALENT:K:兽耳 = 0
+    TALENT:K:漂浮 = 0
+    TALENT:K:瞬移 = 0
+    TALENT:K:不死系 = 0
+ELSEIF TALENT:K:水生
+    TALENT:K:变温体质 = 1
+    TALENT:K:恒温体质 = 0
+    TALENT:K:无体温 = 0
+    TALENT:K:羽翅 = 0
+    TALENT:K:骨翅 = 0
+    TALENT:K:蝠翼 = 0
+    TALENT:K:虫翼 = 0
+    TALENT:K:兽耳 = 0
+    TALENT:K:兽尾 = 0
+    TALENT:K:复眼 = 0
+    TALENT:K:不死系 = 0
+    TALENT:K:四足步行 = 0
+    TALENT:K:飞翔 = 0
+    TALENT:K:漂浮 = 0
+    TALENT:K:瞬移 = 0
+ELSEIF TALENT:K:人偶 || TALENT:K:机器人
+    TALENT:K:无体温 = 1
+    TALENT:K:恒温体质 = 0
+    TALENT:K:变温体质 = 0
+    TALENT:K:四足步行 = 0
+    TALENT:K:潜游 = 0
+    TALENT:K:瞬移 = 0
+    TALENT:K:漂浮 = 0
+ELSEIF TALENT:K:无形体 || TALENT:K:数据体 || TALENT:K:人工智能
+    TALENT:K:无体温 = 1
+    TALENT:K:恒温体质 = 0
+    TALENT:K:变温体质 = 0
+    TALENT:K:四足步行 = 0
+    TALENT:K:爬行 = 0
+    TALENT:K:飞翔 = 0
+ELSEIF TALENT:K:植物
+    TALENT:K:无体温 = 1
+    TALENT:K:恒温体质 = 0
+    TALENT:K:变温体质 = 0
+    TALENT:K:兽尾 = 0
+    TALENT:K:鱼尾 = 0
+    TALENT:K:蛇尾 = 0
+    TALENT:K:多尾 = 0
+    TALENT:K:羽翅 = 0
+    TALENT:K:蝠翼 = 0
+    TALENT:K:虫翼 = 0
+    TALENT:K:骨翅 = 0
+    TALENT:K:潜游 = 0
+    TALENT:K:爬行 = 0
+    TALENT:K:飞翔 = 0
+    TALENT:K:四足步行 = 0
+    TALENT:K:瞬移 = 0
+    TALENT:K:漂浮 = 0
+    TALENT:K:不死系 = 0
+    TALENT:K:马身 = 0
+    TALENT:K:多足 = 0
+    TALENT:K:手爪 = 0
+    TALENT:K:足爪 = 0
+    TALENT:K:兽耳 = 0
+    TALENT:K:独角 = 0
+    TALENT:K:双角 = 0
+    TALENT:K:复眼 = 0
+    TALENT:K:三目 = 0
+    TALENT:K:猫舌 = 0
+ELSEIF TALENT:K:无头骑士
+    TALENT:K:不死系 = 1
+    TALENT:K:无头 = 1
+    TALENT:K:羽翅 = 0
+    TALENT:K:蝠翼 = 0
+    TALENT:K:虫翼 = 0
+    TALENT:K:骨翅 = 0
+    TALENT:K:独角 = 0
+    TALENT:K:双角 = 0
+    TALENT:K:兽尾 = 0
+    TALENT:K:鱼尾 = 0
+    TALENT:K:蛇尾 = 0
+    TALENT:K:多尾 = 0
+    TALENT:K:手爪 = 0
+    TALENT:K:足爪 = 0
+    TALENT:K:多足 = 0
+    TALENT:K:触手 = 0
+    TALENT:K:三目 = 0
+    TALENT:K:复眼 = 0
+    TALENT:K:兽耳 = 0
+    TALENT:K:尖耳 = 0
+    TALENT:K:猫舌 = 0
+    TALENT:K:飞翔 = 0
+    TALENT:K:爬行 = 0
+    TALENT:K:瞬移 = 0
+    TALENT:K:潜游 = 0
+    TALENT:K:四足步行 = 0
+    TALENT:K:漂浮 = 0
+    TALENT:K:巨大体型 = 0
+    TALENT:K:变化体型 = 0
+    TALENT:K:小人体型 = 0
+ELSEIF TALENT:K:吸血鬼
+    TALENT:K:恒温体质 = 1
+    TALENT:K:变温体质 = 0
+    TALENT:K:无体温 = 0
+    TALENT:K:不死系 = 1
+    TALENT:K:白肤 = 1
+    TALENT:K:青肤 = 0
+    TALENT:K:黑皮 = 0
+    TALENT:K:四足步行 = 0
+    TALENT:K:爬行 = 0
+    TALENT:K:潜游 = 0
+    TALENT:K:漂浮 = 0
+    TALENT:K:小人体型 = 0
+    TALENT:K:巨大体型 = 0
+    TALENT:K:变化体型 = 0
+ELSEIF TALENT:K:僵尸
+    TALENT:K:青肤 = 1
+    TALENT:K:黑皮 = 0
+    TALENT:K:白肤 = 0
+    TALENT:K:羽翅 = 0
+    TALENT:K:骨翅 = 0
+    TALENT:K:蝠翼 = 0
+    TALENT:K:虫翼 = 0
+    TALENT:K:飞翔 = 0
+    TALENT:K:瞬移 = 0
+    TALENT:K:兽耳 = 0
+    TALENT:K:兽尾 = 0
+    TALENT:K:鱼尾 = 0
+    TALENT:K:蛇尾 = 0
+    TALENT:K:多尾 = 0
+    TALENT:K:独角 = 0
+    TALENT:K:双角 = 0
+    TALENT:K:猫舌 = 0
+    TALENT:K:潜游 = 0
+    TALENT:K:无体温 = 1
+    TALENT:K:恒温体质 = 0
+    TALENT:K:变温体质 = 0
+    TALENT:K:无头 = 0
+    TALENT:K:不死系 = 1
+ELSEIF TALENT:K:幽灵
+    TALENT:K:无体温 = 1
+    TALENT:K:恒温体质 = 0
+    TALENT:K:变温体质 = 0
+    TALENT:K:不死系 = 1
+    TALENT:K:四足步行 = 0
+    TALENT:K:飞翔 = 0
+    TALENT:K:潜游 = 0
+    TALENT:K:爬行 = 0
+    TALENT:K:羽翅 = 0
+    TALENT:K:蝠翼 = 0
+    TALENT:K:虫翼 = 0
+    TALENT:K:骨翅 = 0
+    TALENT:K:独角 = 0
+    TALENT:K:双角 = 0
+    TALENT:K:兽尾 = 0
+    TALENT:K:鱼尾 = 0
+    TALENT:K:蛇尾 = 0
+    TALENT:K:多尾 = 0
+    TALENT:K:手爪 = 0
+    TALENT:K:足爪 = 0
+    TALENT:K:多足 = 0
+    TALENT:K:触手 = 0
+    TALENT:K:三目 = 0
+    TALENT:K:复眼 = 0
+    TALENT:K:兽耳 = 0
+    TALENT:K:尖耳 = 0
+    TALENT:K:猫舌 = 0
+ELSEIF TALENT:K:史莱姆
+    TALENT:K:黑皮 = 0
+    TALENT:K:羽翅 = 0
+    TALENT:K:蝠翼 = 0
+    TALENT:K:虫翼 = 0
+    TALENT:K:骨翅 = 0
+    TALENT:K:独角 = 0
+    TALENT:K:双角 = 0
+    TALENT:K:兽尾 = 0
+    TALENT:K:鱼尾 = 0
+    TALENT:K:蛇尾 = 0
+    TALENT:K:多尾 = 0
+    TALENT:K:手爪 = 0
+    TALENT:K:足爪 = 0
+    TALENT:K:多足 = 0
+    TALENT:K:触手 = 0
+    TALENT:K:三目 = 0
+    TALENT:K:复眼 = 0
+    TALENT:K:兽耳 = 0
+    TALENT:K:尖耳 = 0
+    TALENT:K:猫舌 = 0
+    TALENT:K:飞翔 = 0
+    TALENT:K:瞬移 = 0
+    TALENT:K:潜游 = 0
+    TALENT:K:四足步行 = 0
+    TALENT:K:漂浮 = 0
+    TALENT:K:不死系 = 0
+ENDIF
+;没有翅膀不存在Ｗ敏钝、不可以飞翔
+IF !TALENT:K:201 && !TALENT:K:202 && !TALENT:K:203 && !TALENT:K:204
+    TALENT:K:230 = 0
+    TALENT:K:231 = 0
+    TALENT:K:219 = 0
+ENDIF
+;没有兽耳和尖耳不存在Ｅ敏钝
+IF !TALENT:K:143 && !TALENT:K:215
+    TALENT:K:234 = 0
+    TALENT:K:235 = 0
+ENDIF
+;没有尾巴不存在Ｔ敏钝，不存在多尾
+IF !TALENT:K:207 && !TALENT:K:208 && !TALENT:K:209
+    TALENT:K:210 = 0
+    TALENT:K:232 = 0
+    TALENT:K:233 = 0
+ENDIF
+
+@SLAVE_RANDOM_AUTO_TALENT
+K = TARGET
+;男性＋后庭处子である
+TALENT:140 = 1
+TALENT:161 = 1
+TALENT:160 = 0
+;童贞率　ショタ100％　　少年90％　成人　35％　大叔　7％
+IF TALENT:幼稚
+	TALENT:160 = 1
+ELSEIF TALENT:大人 && TALENT:大叔
+	SIF RAND:100 < 7
+		TALENT:160 = 1
+ELSEIF TALENT:大人
+	SIF RAND:100 < 35
+		TALENT:160 = 1
+ELSE
+	SIF RAND:10
+		TALENT:160 = 1
+ENDIF
+
+;エスパーじゃないモードで
+TFLAG:166 = 1
+
+;输入回数は5～12回  LOCAL:2→現在の输入回数　LOCAL:1→上限
+LOCAL:2 = 0
+LOCAL:1 = RAND:8
+LOCAL:1 += 5
+WHILE 1
+	$INPUT_LOOP_SHORI
+	LOCAL:2 += 1
+	;随机输入
+	$INPUT_AUTO_RESULT
+	LOCAL = RAND:158
+	;その素質が输入不可の場合は输入し直す
+	SIF LOCAL < 10 || LOCAL == 19 || LOCAL == 29 || LOCAL == 34 || (LOCAL >= 37 && LOCAL <= 39) || LOCAL == 42 || LOCAL == 43 || (LOCAL >= 45 && LOCAL <= 49) || LOCAL == 54 || LOCAL == 60 || LOCAL == 67 || LOCAL == 68 || LOCAL == 69 || (LOCAL >= 74 && LOCAL <= 79) || LOCAL == 85 || LOCAL == 86 || (LOCAL >= 89 && LOCAL <= 91) || (LOCAL >= 95 && LOCAL <= 99) || (LOCAL >= 101 && LOCAL <= 112) || (LOCAL >= 114 && LOCAL <= 129) || LOCAL == 132 || (LOCAL >= 137 && LOCAL <= 144) || LOCAL == 146 || (LOCAL >= 148 && LOCAL <= 151) || (LOCAL >= 153 && LOCAL <= 155) 
+		GOTO INPUT_AUTO_RESULT
+
+	RESULT = LOCAL
+	
+	SIF LOCAL:2 >= LOCAL:1
+		RESULT = 999
+
+	IF (RESULT >= 74 && RESULT <= 78) || RESULT == 90 || RESULT == 91 || (RESULT >= 109 && RESULT <= 112) || RESULT == 132 || (RESULT >= 137 && RESULT <= 142) || RESULT == 143 || RESULT == 146 || (RESULT >= 147 && RESULT <= 150)
+		GOTO INPUT_LOOP_SHORI
+    ELSEIF TFLAG:166 && (RESULT == 42 || RESULT == 43 || RESULT == 60 || (RESULT >= 101 && RESULT <= 108) || (RESULT >= 114 && RESULT <= 117) || RESULT == 119)
+		GOTO INPUT_LOOP_SHORI
+	ELSEIF RESULT >= 10 && RESULT <= 156
+		;输入した素質を反転
+		TALENT:K:RESULT = !TALENT:K:RESULT
+		;反抗→直率をOFF
+		IF RESULT == 11
+			TALENT:K:13 = 0
+		;直率→反抗をOFF
+		ELSEIF RESULT == 13
+			TALENT:K:11 = 0
+		;自卑→高傲をOFF
+		ELSEIF RESULT == 17
+			TALENT:K:15 = 0
+		;高傲→自卑をOFF
+		ELSEIF RESULT == 15
+			TALENT:K:17 = 0
+		;无动于衷→性好奇をOFF
+		ELSEIF RESULT == 21
+			TALENT:K:23 = 0
+		;性好奇→无动于衷をOFF
+		ELSEIF RESULT == 23
+			TALENT:K:21 = 0
+		;乐观→悲观をOFF
+		ELSEIF RESULT == 25
+			TALENT:K:26 = 0
+		;悲观→乐观をOFF
+		ELSEIF RESULT == 26
+			TALENT:K:25 = 0
+		;贞操重视→贞操淡漠をOFF
+		ELSEIF RESULT == 30
+			TALENT:K:31 = 0
+		;贞操淡漠→贞操重视をOFF
+		ELSEIF RESULT == 31
+			TALENT:K:30 = 0
+		;性压抑→解放をOFF
+		ELSEIF RESULT == 33
+			TALENT:K:34 = 0
+		;性开放→性压抑をOFF
+		ELSEIF RESULT == 34
+			TALENT:K:33 = 0
+		;害羞→不知羞耻をOFF
+		ELSEIF RESULT == 35
+			TALENT:K:36 = 0
+		;不知羞耻→害羞をOFF
+		ELSEIF RESULT == 36
+			TALENT:K:35 = 0
+		;怕痛→耐痛をOFF
+		ELSEIF RESULT == 40
+			TALENT:K:41 = 0
+		;耐痛→怕痛をOFF
+		ELSEIF RESULT == 41
+			TALENT:K:40 = 0
+		;容易湿→不易湿をOFF
+		ELSEIF RESULT == 42
+			TALENT:K:43 = 0
+		;不易湿→容易湿をOFF
+		ELSEIF RESULT == 43
+			TALENT:K:42 = 0
+		;不擅料理→擅长料理をOFF
+		ELSEIF RESULT == 44
+			TALENT:K:59 = 0
+		;擅长料理→不擅料理をOFF
+		ELSEIF RESULT == 59
+			TALENT:K:44 = 0
+		;学得快→学得慢をOFF
+		ELSEIF RESULT == 50
+			TALENT:K:51 = 0
+		;学得慢→学得快をOFF
+		ELSEIF RESULT == 51
+			TALENT:K:50 = 0
+		;污臭钝感→污臭敏感をOFF
+		ELSEIF RESULT == 61
+			TALENT:K:62 = 0
+		;污臭敏感→污臭钝感、脏污无视をOFF
+		ELSEIF RESULT == 62
+			TALENT:K:61 = 0
+			TALENT:K:64 = 0
+		;脏污无视→污臭敏感をOFF
+		ELSEIF RESULT == 64
+			TALENT:K:62 = 0
+		;喜欢身体接触→厌恶身体接触をOFF
+		ELSEIF RESULT == 65
+			TALENT:K:66 = 0
+		;厌恶身体接触→喜欢身体接触をOFF
+		ELSEIF RESULT == 66
+			TALENT:K:65 = 0
+		;接受快感→否定快感をOFF
+		ELSEIF RESULT == 70
+			TALENT:K:71 = 0
+		;否定快感→接受快感をOFF
+		ELSEIF RESULT == 71
+			TALENT:K:70 = 0
+		;男女通吃→讨厌男人、讨厌女人をOFF
+		ELSEIF RESULT == 81
+			TALENT:K:82 = 0
+			TALENT:K:88 = 0
+		;讨厌男人→男女通吃をOFF
+		ELSEIF RESULT == 82
+			TALENT:K:81 = 0
+		;讨厌女人→男女通吃をOFF
+		ELSEIF RESULT == 88
+			TALENT:K:81 = 0
+		;施虐狂→受虐狂をOFF
+		ELSEIF RESULT == 83
+			TALENT:K:84 = 0
+		;受虐狂→施虐狂をOFF
+		ELSEIF RESULT == 84
+			TALENT:K:83 = 0
+		;Ｃ钝感→Ｃ敏感をOFF
+		ELSEIF RESULT == 101
+			TALENT:K:102 = 0
+		;Ｃ敏感→Ｃ钝感をOFF
+		ELSEIF RESULT == 102
+			TALENT:K:101 = 0
+		;Ａ钝感→Ａ敏感をOFF
+		ELSEIF RESULT == 105
+			TALENT:K:106 = 0
+		;Ａ敏感→Ａ钝感をOFF
+		ELSEIF RESULT == 106
+			TALENT:K:105 = 0
+		;Ｂ钝感→Ｂ敏感をOFF
+		ELSEIF RESULT == 107
+			TALENT:K:108 = 0
+		;Ｂ敏感→Ｂ钝感をOFF
+		ELSEIF RESULT == 108
+			TALENT:K:107 = 0
+		;矮小体型→高大体型をOFF
+		ELSEIF RESULT == 100
+			TALENT:K:113 = 0
+		;高大体型→矮小体型をOFF
+		ELSEIF RESULT == 113
+			TALENT:K:100 = 0
+		;孩童尺寸→短小/巨根/尺寸傲人をOFF
+		ELSEIF RESULT == 114
+			TALENT:K:短小 = 0
+			TALENT:K:巨根 = 0
+			TALENT:K:尺寸傲人 = 0
+		;短小→孩童尺寸/巨根/尺寸傲人をOFF
+		ELSEIF RESULT == 115
+			TALENT:K:孩童尺寸= 0
+			TALENT:K:巨根 = 0
+			TALENT:K:尺寸傲人 = 0
+		;巨根→孩童尺寸/短小/尺寸傲人をOFF
+		ELSEIF RESULT == 116
+			TALENT:K:孩童尺寸= 0
+			TALENT:K:短小 = 0
+			TALENT:K:尺寸傲人 = 0
+		;尺寸傲人→孩童尺寸/短小/巨根をOFF
+		ELSEIF RESULT == 117
+			TALENT:K:孩童尺寸= 0
+			TALENT:K:短小 = 0
+			TALENT:K:巨根 = 0
+		;恢复快→恢复慢をOFF
+		ELSEIF RESULT == 130
+			TALENT:K:131 = 0
+		;恢复慢→恢复快をOFF
+		ELSEIF RESULT == 131
+			TALENT:K:130 = 0
+		;日光浴→月光浴をOFF
+		ELSEIF RESULT == 133
+			TALENT:K:134 = 0
+		;月光浴→日光浴をOFF
+		ELSEIF RESULT == 134
+			TALENT:K:133 = 0
+		ENDIF
+	ELSEIF RESULT == 999
+		BREAK
+	ELSE
+		GOTO INPUT_LOOP_SHORI
+	ENDIF
+WEND

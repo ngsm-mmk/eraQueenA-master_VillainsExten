@@ -1,0 +1,2356 @@
+﻿@SOURCE_CHECK
+;-------------------------------------------------
+;自慰棒など付けっぱ无アイテムのチェック
+;-------------------------------------------------
+CALL EQUIP_CHECK
+;-------------------------------------------------
+;主人、同性、调教者の能力の処理
+;-------------------------------------------------
+CALL SOURCE_SEX_CHECK
+CALL PLAYER_SKILL_CHECK
+;-------------------------------------------------
+;技巧のチェック
+;-------------------------------------------------
+CALL TECHNIQUE_CHECK
+
+;-------------------------------------------------
+;润滑で服を汚したかのチェック
+;-------------------------------------------------
+CALL JUNKATU_TYAKUI
+
+;-------------------------------------------------
+;【失意】チェック
+;-------------------------------------------------
+SIF TALENT:162
+	SOURCE:18 += ((TALENT:162 * 5) / 2)
+
+;-------------------------------------------------
+;快Ｃのソース
+;-------------------------------------------------
+;Ｃ敏感とＣ钝感はここで処理
+SIF TALENT:101
+	TIMES SOURCE:0 , 0.50
+SIF TALENT:102
+	TIMES SOURCE:0 , 2.00
+
+;C感覚
+SIF ABL:3 == 0
+	TIMES SOURCE:0 , 0.50
+SIF ABL:3 == 1
+	TIMES SOURCE:0 , 1.80
+SIF ABL:3 == 2
+	TIMES SOURCE:0 , 3.00
+SIF ABL:3 == 3
+	TIMES SOURCE:0 , 5.00
+SIF ABL:3 == 4
+	TIMES SOURCE:0 , 7.00
+SIF ABL:3 == 5
+	TIMES SOURCE:0 , 9.00
+SIF ABL:3 == 6
+	TIMES SOURCE:0 , 11.00
+SIF ABL:3 == 7
+	TIMES SOURCE:0 , 13.00
+SIF ABL:3 == 8
+	TIMES SOURCE:0 , 15.00
+SIF ABL:3 == 9
+	TIMES SOURCE:0 , 17.00
+SIF ABL:3 >= 10
+	TIMES SOURCE:0 , 20.00
+
+A = SOURCE:0
+
+;PALAM:情欲をみる
+SIF PALAM:6 < PALAMLV:1
+	TIMES A , 0.80
+SIF PALAM:6 < PALAMLV:2
+	TIMES A , 1.00
+SIF PALAM:6 < PALAMLV:3
+	TIMES A , 1.20
+SIF PALAM:6 < PALAMLV:4
+	TIMES A , 1.50
+SIF PALAM:6 >= PALAMLV:4
+	TIMES A , 1.80
+
+B = SOURCE:0
+
+;ABL:欲望をみる
+SIF ABL:1 == 0
+	TIMES B , 0.50
+SIF ABL:1 == 1
+	TIMES B , 0.60
+SIF ABL:1 == 2
+	TIMES B , 0.70
+SIF ABL:1 == 3
+	TIMES B , 0.80
+SIF ABL:1 == 4
+	TIMES B , 0.90
+SIF ABL:1 == 5
+	TIMES B , 1.00
+SIF ABL:1 == 6
+	TIMES B , 1.05
+SIF ABL:1 == 7
+	TIMES B , 1.10
+SIF ABL:1 == 8
+	TIMES B , 1.15
+SIF ABL:1 == 9
+	TIMES B , 1.20
+SIF ABL:1 >= 10
+	TIMES B , 1.40
+
+UP:0 += A
+UP:6 += B
+
+;-------------------------------------------------
+;快Ｖのソース
+;-------------------------------------------------
+;Ｖ敏感とＶ钝感はここで処理
+SIF TALENT:103
+	TIMES SOURCE:1 , 0.50
+SIF TALENT:104
+	TIMES SOURCE:1 , 2.00
+
+;V感覚
+SIF ABL:4 == 0
+	TIMES SOURCE:1 , 0.80
+SIF ABL:4 == 1
+	TIMES SOURCE:1 , 1.80
+SIF ABL:4 == 2
+	TIMES SOURCE:1 , 3.00
+SIF ABL:4 == 3
+	TIMES SOURCE:1 , 5.00
+SIF ABL:4 == 4
+	TIMES SOURCE:1 , 7.00
+SIF ABL:4 == 5
+	TIMES SOURCE:1 , 9.00
+SIF ABL:4 == 6
+	TIMES SOURCE:1 , 11.00
+SIF ABL:4 == 7
+	TIMES SOURCE:1 , 13.00
+SIF ABL:4 == 8
+	TIMES SOURCE:1 , 15.00
+SIF ABL:4 == 9
+	TIMES SOURCE:1 , 17.00
+SIF ABL:4 >= 10
+	TIMES SOURCE:1 , 20.00
+
+A = SOURCE:1
+
+;PALAM:情欲をみる
+SIF PALAM:6 < PALAMLV:1
+	TIMES A , 0.60
+SIF PALAM:6 < PALAMLV:2
+	TIMES A , 0.80
+SIF PALAM:6 < PALAMLV:3
+	TIMES A , 1.00
+SIF PALAM:6 < PALAMLV:4
+	TIMES A , 1.50
+SIF PALAM:6 >= PALAMLV:4
+	TIMES A , 2.00
+
+B = SOURCE:1
+
+;ABL:欲望をみる
+SIF ABL:1 == 0
+	TIMES B , 0.50
+SIF ABL:1 == 1
+	TIMES B , 0.60
+SIF ABL:1 == 2
+	TIMES B , 0.70
+SIF ABL:1 == 3
+	TIMES B , 0.80
+SIF ABL:1 == 4
+	TIMES B , 0.90
+SIF ABL:1 == 5
+	TIMES B , 1.00
+SIF ABL:1 == 6
+	TIMES B , 1.05
+SIF ABL:1 == 7
+	TIMES B , 1.10
+SIF ABL:1 == 8
+	TIMES B , 1.15
+SIF ABL:1 == 9
+	TIMES B , 1.20
+SIF ABL:1 >= 10
+	TIMES B , 1.40
+
+;EXP:Ｖ经验をみる
+SIF EXP:0 < EXPLV:1
+	TIMES SOURCE:1 , 0.50
+SIF EXP:0 < EXPLV:2
+	TIMES SOURCE:1 , 0.60
+SIF EXP:0 < EXPLV:3
+	TIMES SOURCE:1 , 1.00
+SIF EXP:0 < EXPLV:4
+	TIMES SOURCE:1 , 1.20
+SIF EXP:0 < EXPLV:5
+	TIMES SOURCE:1 , 1.40
+SIF EXP:0 >= EXPLV:5
+	TIMES SOURCE:1 , 1.60
+
+;PALAM:润滑をみる
+SIF PALAM:4 < PALAMLV:1
+	TIMES SOURCE:1 , 0.10
+SIF PALAM:4 < PALAMLV:2
+	TIMES SOURCE:1 , 0.40
+SIF PALAM:4 < PALAMLV:3
+	TIMES SOURCE:1 , 1.00
+SIF PALAM:4 < PALAMLV:4
+	TIMES SOURCE:1 , 1.40
+SIF PALAM:4 >= PALAMLV:4
+	TIMES SOURCE:1 , 1.80
+
+;小人体型
+IF TALENT:149
+	TIMES A , 0.80
+	TIMES B , 1.20
+	UP:8 += B/2
+ENDIF
+
+;巨大体型
+IF TALENT:224
+	TIMES A , 1.50
+	TIMES B , 0.80
+ENDIF
+
+UP:1 += A
+UP:6 += B
+
+;-------------------------------------------------
+;快Ａのソース
+;-------------------------------------------------
+;Ａ敏感とＡ钝感はここで処理
+SIF TALENT:105
+	TIMES SOURCE:2 , 0.50
+SIF TALENT:106
+	TIMES SOURCE:2 , 2.00
+
+;A感覚
+SIF ABL:5 == 0
+	TIMES SOURCE:2 , 0.50
+SIF ABL:5 == 1
+	TIMES SOURCE:2 , 1.80
+SIF ABL:5 == 2
+	TIMES SOURCE:2 , 3.00
+SIF ABL:5 == 3
+	TIMES SOURCE:2 , 5.00
+SIF ABL:5 == 4
+	TIMES SOURCE:2 , 7.00
+SIF ABL:5 == 5
+	TIMES SOURCE:2 , 9.00
+SIF ABL:5 == 6
+	TIMES SOURCE:2 , 11.00
+SIF ABL:5 == 7
+	TIMES SOURCE:2 , 13.00
+SIF ABL:5 == 8
+	TIMES SOURCE:2 , 15.00
+SIF ABL:5 == 9
+	TIMES SOURCE:2 , 17.00
+SIF ABL:5 >= 10
+	TIMES SOURCE:2 , 20.00
+
+A = SOURCE:2
+
+;PALAM:情欲をみる
+;快ＡはあまりPALAM:情欲では差が出ない
+SIF PALAM:6 < PALAMLV:1
+	TIMES A , 0.80
+SIF PALAM:6 < PALAMLV:2
+	TIMES A , 1.00
+SIF PALAM:6 < PALAMLV:3
+	TIMES A , 1.20
+SIF PALAM:6 < PALAMLV:4
+	TIMES A , 1.40
+SIF PALAM:6 >= PALAMLV:4
+	TIMES A , 1.60
+
+B = SOURCE:2
+
+;ABL:欲望をみる
+SIF ABL:1 == 0
+	TIMES B , 0.50
+SIF ABL:1 == 1
+	TIMES B , 0.60
+SIF ABL:1 == 2
+	TIMES B , 0.70
+SIF ABL:1 == 3
+	TIMES B , 0.80
+SIF ABL:1 == 4
+	TIMES B , 0.90
+SIF ABL:1 == 5
+	TIMES B , 1.00
+SIF ABL:1 == 6
+	TIMES B , 1.05
+SIF ABL:1 == 7
+	TIMES B , 1.10
+SIF ABL:1 == 8
+	TIMES B , 1.15
+SIF ABL:1 == 9
+	TIMES B , 1.20
+SIF ABL:1 >= 10
+	TIMES B , 1.40
+
+;EXP:Ａ经验をみる
+SIF EXP:1 < EXPLV:1
+	TIMES SOURCE:2 , 0.10
+SIF EXP:1 < EXPLV:2
+	TIMES SOURCE:2 , 0.30
+SIF EXP:1 < EXPLV:3
+	TIMES SOURCE:2 , 0.50
+SIF EXP:1 < EXPLV:4
+	TIMES SOURCE:2 , 1.00
+SIF EXP:1 < EXPLV:5
+	TIMES SOURCE:2 , 1.40
+SIF EXP:1 >= EXPLV:5
+	TIMES SOURCE:2 , 1.60
+
+;PALAM:润滑をみる
+SIF PALAM:4 < PALAMLV:1
+	TIMES SOURCE:2 , 0.40
+SIF PALAM:4 < PALAMLV:2
+	TIMES SOURCE:2 , 0.80
+SIF PALAM:4 < PALAMLV:3
+	TIMES SOURCE:2 , 1.00
+SIF PALAM:4 < PALAMLV:4
+	TIMES SOURCE:2 , 1.40
+SIF PALAM:4 >= PALAMLV:4
+	TIMES SOURCE:2 , 1.80
+
+;小人体型
+IF TALENT:149
+	TIMES A , 0.50
+	TIMES B , 1.50
+ENDIF
+
+;巨大体型
+IF TALENT:224
+	TIMES A , 1.50
+	TIMES B , 0.50
+ENDIF
+
+;快Aのソースが0以上で处女で贞操重视のとき、屈服のソースを三分の一にする
+IF EXP:0 == 0 && TALENT:30 && SOURCE:2 > 0
+	SOURCE:14 /= 3
+ENDIF
+
+UP:2 += A
+UP:6 += B
+
+;-------------------------------------------------
+;快Ｂのソース
+;-------------------------------------------------
+;Ｂ敏感とＢ钝感はここで処理
+SIF TALENT:107
+	TIMES SOURCE:3 , 0.50
+SIF TALENT:108
+	TIMES SOURCE:3 , 2.00
+
+;B感覚
+SIF ABL:6 == 0
+	TIMES SOURCE:3 , 0.50
+SIF ABL:6 == 1
+	TIMES SOURCE:3 , 1.80
+SIF ABL:6 == 2
+	TIMES SOURCE:3 , 3.00
+SIF ABL:6 == 3
+	TIMES SOURCE:3 , 5.00
+SIF ABL:6 == 4
+	TIMES SOURCE:3 , 7.00
+SIF ABL:6 == 5
+	TIMES SOURCE:3 , 9.00
+SIF ABL:6 == 6
+	TIMES SOURCE:3 , 11.00
+SIF ABL:6 == 7
+	TIMES SOURCE:3 , 13.00
+SIF ABL:6 == 8
+	TIMES SOURCE:3 , 15.00
+SIF ABL:6 == 9
+	TIMES SOURCE:3 , 17.00
+SIF ABL:6 >= 10
+	TIMES SOURCE:3 , 20.00
+
+A = SOURCE:3
+
+;PALAM:情欲をみる
+SIF PALAM:6 < PALAMLV:1
+	TIMES A , 0.80
+SIF PALAM:6 < PALAMLV:2
+	TIMES A , 1.00
+SIF PALAM:6 < PALAMLV:3
+	TIMES A , 1.20
+SIF PALAM:6 < PALAMLV:4
+	TIMES A , 1.50
+SIF PALAM:6 >= PALAMLV:4
+	TIMES A , 1.80
+
+B = SOURCE:3
+
+;ABL:欲望をみる
+SIF ABL:1 == 0
+	TIMES B , 0.50
+SIF ABL:1 == 1
+	TIMES B , 0.60
+SIF ABL:1 == 2
+	TIMES B , 0.70
+SIF ABL:1 == 3
+	TIMES B , 0.80
+SIF ABL:1 == 4
+	TIMES B , 0.90
+SIF ABL:1 == 5
+	TIMES B , 1.00
+SIF ABL:1 == 6
+	TIMES B , 1.05
+SIF ABL:1 == 7
+	TIMES B , 1.10
+SIF ABL:1 == 8
+	TIMES B , 1.15
+SIF ABL:1 == 9
+	TIMES B , 1.20
+SIF ABL:1 >= 10
+	TIMES B , 1.40
+
+;小人体型
+IF TALENT:149
+	TIMES A , 1.50
+	TIMES B , 1.20
+	UP:4 += B/2
+ENDIF
+
+;巨大体型
+IF TALENT:224
+	TIMES A , 1.20
+	TIMES B , 1.50
+ENDIF
+
+UP:3 += A
+UP:6 += B
+
+;-------------------------------------------------
+;快Ｗのソース
+;-------------------------------------------------
+;Ｗ敏感とＷ钝感はここで処理
+SIF TALENT:231
+	TIMES SOURCE:22 , 0.50
+SIF TALENT:230
+	TIMES SOURCE:22 , 2.00
+
+;Ｗ感覚
+SIF ABL:22 == 0
+	TIMES SOURCE:22 , 0.50
+SIF ABL:22 == 1
+	TIMES SOURCE:22 , 1.80
+SIF ABL:22 == 2
+	TIMES SOURCE:22 , 3.00
+SIF ABL:22 == 3
+	TIMES SOURCE:22 , 5.00
+SIF ABL:22 == 4
+	TIMES SOURCE:22 , 7.00
+SIF ABL:22 == 5
+	TIMES SOURCE:22 , 9.00
+SIF ABL:22 == 6
+	TIMES SOURCE:22 , 11.00
+SIF ABL:22 == 7
+	TIMES SOURCE:22 , 13.00
+SIF ABL:22 == 8
+	TIMES SOURCE:22 , 15.00
+SIF ABL:22 == 9
+	TIMES SOURCE:22 , 17.00
+SIF ABL:22 >= 10
+	TIMES SOURCE:22 , 20.00
+
+A = SOURCE:22
+
+;PALAM:情欲をみる
+SIF PALAM:6 < PALAMLV:4
+	TIMES A , 1.50
+SIF PALAM:6 >= PALAMLV:4
+	TIMES A , 1.80
+
+B = SOURCE:22
+
+;ABL:欲望をみる
+SIF ABL:1 == 0
+	TIMES B , 0.50
+SIF ABL:1 == 1
+	TIMES B , 0.60
+SIF ABL:1 == 2
+	TIMES B , 0.70
+SIF ABL:1 == 3
+	TIMES B , 0.80
+SIF ABL:1 == 4
+	TIMES B , 0.90
+SIF ABL:1 == 5
+	TIMES B , 1.00
+SIF ABL:1 == 6
+	TIMES B , 1.05
+SIF ABL:1 == 7
+	TIMES B , 1.10
+SIF ABL:1 == 8
+	TIMES B , 1.15
+SIF ABL:1 == 9
+	TIMES B , 1.20
+SIF ABL:1 >= 10
+	TIMES B , 1.40
+
+;小人体型
+IF TALENT:149
+	TIMES A , 1.50
+	TIMES B , 1.20
+	UP:4 += B/2
+ENDIF
+
+;巨大体型
+IF TALENT:224
+	TIMES A , 1.20
+	TIMES B , 1.50
+ENDIF
+
+UP:22 += A
+UP:6 += B
+
+;-------------------------------------------------
+;快Ｔのソース
+;-------------------------------------------------
+;Ｔ敏感とＴ钝感はここで処理
+SIF TALENT:233
+	TIMES SOURCE:23 , 0.50
+SIF TALENT:232
+	TIMES SOURCE:23 , 2.00
+
+;Ｔ感覚
+SIF ABL:23 == 0
+	TIMES SOURCE:23 , 0.50
+SIF ABL:23 == 1
+	TIMES SOURCE:23 , 1.80
+SIF ABL:23 == 2
+	TIMES SOURCE:23 , 3.00
+SIF ABL:23 == 3
+	TIMES SOURCE:23 , 5.00
+SIF ABL:23 == 4
+	TIMES SOURCE:23 , 7.00
+SIF ABL:23 >= 5
+	TIMES SOURCE:23 , 9.00
+SIF ABL:24 == 6
+	TIMES SOURCE:23 , 11.00
+SIF ABL:24 == 7
+	TIMES SOURCE:23 , 13.00
+
+A = SOURCE:23
+
+;PALAM:情欲をみる
+SIF PALAM:6 < PALAMLV:4
+	TIMES A , 1.50
+SIF PALAM:6 >= PALAMLV:4
+	TIMES A , 1.80
+
+B = SOURCE:23
+
+;ABL:欲望をみる
+SIF ABL:1 == 0
+	TIMES B , 0.50
+SIF ABL:1 == 1
+	TIMES B , 0.60
+SIF ABL:1 == 2
+	TIMES B , 0.70
+SIF ABL:1 == 3
+	TIMES B , 0.80
+SIF ABL:1 == 4
+	TIMES B , 0.90
+SIF ABL:1 == 5
+	TIMES B , 1.00
+SIF ABL:1 == 6
+	TIMES B , 1.05
+SIF ABL:1 == 7
+	TIMES B , 1.10
+SIF ABL:1 == 8
+	TIMES B , 1.15
+SIF ABL:1 == 9
+	TIMES B , 1.20
+SIF ABL:1 >= 10
+	TIMES B , 1.40
+
+;小人体型
+IF TALENT:149
+	TIMES A , 1.50
+	TIMES B , 1.20
+	UP:4 += B/2
+ENDIF
+
+;巨大体型
+IF TALENT:224
+	TIMES A , 1.20
+	TIMES B , 1.50
+ENDIF
+
+UP:23 += A
+UP:6 += B
+
+;-------------------------------------------------
+;快Ｅのソース
+;-------------------------------------------------
+;Ｅ敏感とＴ钝感はここで処理
+SIF TALENT:235
+	TIMES SOURCE:24 , 0.50
+SIF TALENT:234
+	TIMES SOURCE:24 , 2.00
+
+;Ｅ感覚
+SIF ABL:24 == 0
+	TIMES SOURCE:24 , 0.50
+SIF ABL:24 == 1
+	TIMES SOURCE:24 , 1.80
+SIF ABL:24 == 2
+	TIMES SOURCE:24 , 3.00
+SIF ABL:24 == 3
+	TIMES SOURCE:24 , 5.00
+SIF ABL:24 == 4
+	TIMES SOURCE:24 , 7.00
+SIF ABL:24 == 5
+	TIMES SOURCE:24 , 9.00
+SIF ABL:24 == 6
+	TIMES SOURCE:24 , 11.00
+SIF ABL:24 == 7
+	TIMES SOURCE:24 , 13.00
+SIF ABL:24 == 8
+	TIMES SOURCE:24 , 15.00
+SIF ABL:24 == 9
+	TIMES SOURCE:24 , 17.00
+SIF ABL:24 >= 10
+	TIMES SOURCE:24 , 20.00
+
+A = SOURCE:24
+
+;PALAM:情欲をみる
+SIF PALAM:6 < PALAMLV:4
+	TIMES A , 1.50
+SIF PALAM:6 >= PALAMLV:4
+	TIMES A , 1.80
+
+B = SOURCE:24
+
+;ABL:欲望をみる
+SIF ABL:1 == 0
+	TIMES B , 0.50
+SIF ABL:1 == 1
+	TIMES B , 0.60
+SIF ABL:1 == 2
+	TIMES B , 0.70
+SIF ABL:1 == 3
+	TIMES B , 0.80
+SIF ABL:1 == 4
+	TIMES B , 0.90
+SIF ABL:1 == 5
+	TIMES B , 1.00
+SIF ABL:1 == 6
+	TIMES B , 1.05
+SIF ABL:1 == 7
+	TIMES B , 1.10
+SIF ABL:1 == 8
+	TIMES B , 1.15
+SIF ABL:1 == 9
+	TIMES B , 1.20
+SIF ABL:1 >= 10
+	TIMES B , 1.40
+
+;小人体型
+IF TALENT:149
+	TIMES A , 1.50
+	TIMES B , 1.20
+	UP:4 += B/2
+ENDIF
+
+;巨大体型
+IF TALENT:224
+	TIMES A , 1.20
+	TIMES B , 1.50
+ENDIF
+
+UP:24 += A
+UP:6 += B
+;-------------------------------------------------
+;同じ指令の連続実行による上下の処理（快乐系）
+;-------------------------------------------------
+IF SELECTCOM == PREVCOM && TFLAG:56 == -1
+	;UP:0,1,2,3は绝顶に絡むので先に処理してある
+	UP:0 /= 2
+	UP:1 /= 2
+	UP:2 /= 2
+	UP:3 /= 2
+	UP:22 /= 2
+	UP:23 /= 2
+	UP:24 /= 2
+ENDIF
+
+;-------------------------------------------------
+;气力０による上下の処理（快乐系）
+;-------------------------------------------------
+IF BASE:1 <= 0
+	;UP:0,1,2,3は绝顶に絡むので先に処理してある
+	UP:0 /= 2
+	UP:1 /= 2
+	UP:2 /= 2
+	UP:3 /= 2
+	UP:22 /= 2
+	UP:23 /= 2
+	UP:24 /= 2
+ENDIF
+
+;-------------------------------------------------
+;相性による上下の処理（快乐系）
+;-------------------------------------------------
+R = NO:PLAYER
+IF RELATION:R != 0
+	UP:0 *= RELATION:R
+	UP:0 /= 100
+	UP:1 *= RELATION:R
+	UP:1 /= 100
+	UP:2 *= RELATION:R
+	UP:2 /= 100
+	UP:3 *= RELATION:R
+	UP:3 /= 100
+	UP:22 *= RELATION:R
+	UP:22 /= 100
+	UP:23 *= RELATION:R
+	UP:23 /= 100
+	UP:24 *= RELATION:R
+	UP:24 /= 100
+ENDIF
+
+;-------------------------------------------------
+;否定快感は、快ソースの数値に応じて、抑郁増加（淫乱、娼妇で无效）
+;-------------------------------------------------
+SIF TALENT:71 && (TALENT:4 == 0 && TALENT:7 == 0)
+	SOURCE:16 += (UP:0+UP:1+UP:2+UP:3+UP:22+UP:23+UP:24)/10
+
+;-------------------------------------------------
+;素質などによる上下の処理（快乐系）
+;-------------------------------------------------
+;媚薬
+IF TEQUIP:26
+	TIMES UP:0 , 2.00
+	TIMES UP:1 , 2.00
+	TIMES UP:2 , 2.00
+	TIMES UP:3 , 2.00
+	TIMES UP:22 , 2.00
+	TIMES UP:23 , 2.00
+	TIMES UP:24 , 2.00
+ENDIF
+
+;利尿剂
+IF TEQUIP:27
+	TIMES UP:0 , 0.70
+	TIMES UP:1 , 0.70
+	TIMES UP:2 , 0.70
+	TIMES UP:3 , 0.70
+	TIMES UP:22 , 0.70
+	TIMES UP:23 , 0.70
+	TIMES UP:24 , 0.70
+ENDIF
+
+;-------------------------------------------------
+;陷落素質
+;-------------------------------------------------
+;淫乱
+IF TALENT:4
+	TIMES UP:0 , 1.20
+	TIMES UP:1 , 1.20
+	TIMES UP:2 , 1.20
+	TIMES UP:3 , 1.20
+	TIMES UP:22 , 1.20
+	TIMES UP:23 , 1.20
+	TIMES UP:24 , 1.20
+ENDIF
+
+;娼妇
+IF TALENT:7
+	TIMES UP:0 , 1.50
+	TIMES UP:1 , 1.50
+	TIMES UP:2 , 1.50
+	TIMES UP:3 , 1.50
+	TIMES UP:22 , 1.50
+	TIMES UP:23 , 1.50
+	TIMES UP:24 , 1.50
+ENDIF
+
+;-------------------------------------------------
+;素質
+;-------------------------------------------------
+;自制力
+IF TALENT:20
+	TIMES UP:0 , 0.70
+	TIMES UP:1 , 0.90
+	TIMES UP:2 , 1.00
+	TIMES UP:3 , 0.70
+	TIMES UP:22 , 0.70
+	TIMES UP:23 , 0.70
+	TIMES UP:24 , 0.70
+ENDIF
+
+;容易高潮
+IF TALENT:73
+	TIMES UP:0 , 2.00
+	TIMES UP:1 , 2.00
+	TIMES UP:2 , 2.00
+	TIMES UP:3 , 2.00
+	TIMES UP:22 , 2.00
+	TIMES UP:23 , 2.00
+	TIMES UP:24 , 2.00
+ENDIF
+;自慰狂
+SIF TALENT:74
+	TIMES UP:0 , 1.20
+;淫壶
+SIF TALENT:75
+	TIMES UP:1 , 1.20
+;尻穴狂
+SIF TALENT:76
+	TIMES UP:2 , 1.20
+;淫乳
+SIF TALENT:77
+	TIMES UP:3 , 1.20
+;性爱狂
+Q = SELECTCOM
+IF TALENT:78 && (Q == 60 || Q == 61 || Q == 62 || Q == 63 || Q == 64 || Q == 65 || Q == 66 || Q == 67 || Q == 68 || Q == 69 || Q == 70 || Q == 71 || Q == 72 || Q == 73 || Q == 74 || Q == 75 || Q == 76 || Q == 77 || Q == 122 || Q == 205 || Q == 206 || Q == 211 || Q == 212 || Q == 213 || Q == 214 || Q == 225 || Q == 226 || Q == 500 || Q == 506 || Q == 507 || Q == 512 || Q == 513 || Q == 514 || Q == 515 || Q == 516 || Q == 517 || Q == 518)
+	TIMES UP:0 , 1.20
+	TIMES UP:1 , 1.20
+	TIMES UP:2 , 1.20
+	TIMES UP:3 , 1.20
+ENDIF
+;男性
+IF TALENT:140
+	TIMES UP:2 , 1.30
+ENDIF
+
+
+;Omega發情期
+IF 發情期 && TALENT:164
+	TIMES UP:0 , 2.00
+	TIMES UP:1 , 2.00
+	TIMES UP:2 , 2.00
+	TIMES UP:3 , 2.00
+	TIMES UP:22 , 2.00
+	TIMES UP:23 , 2.00
+	TIMES UP:24 , 2.00
+ENDIF
+;-------------------------------------------------
+;困难度による上下の処理（快乐系）
+;-------------------------------------------------
+;EASY
+IF FLAG:4 == 1
+	TIMES UP:0 , 1.60
+	TIMES UP:1 , 1.60
+	TIMES UP:2 , 1.60
+	TIMES UP:3 , 1.60
+	TIMES UP:22 , 1.60
+	TIMES UP:23 , 1.60
+	TIMES UP:24 , 1.60
+;NORMAL
+ELSEIF FLAG:4 == 2
+	TIMES UP:0 , 1.20
+	TIMES UP:1 , 1.20
+	TIMES UP:2 , 1.20
+	TIMES UP:3 , 1.20
+	TIMES UP:22 , 1.20
+	TIMES UP:23 , 1.20
+	TIMES UP:24 , 1.20
+;HARD
+ELSEIF FLAG:4 == 3
+	TIMES UP:0 , 0.80
+	TIMES UP:1 , 0.80
+	TIMES UP:2 , 0.80
+	TIMES UP:3 , 0.80
+	TIMES UP:22 , 0.80
+	TIMES UP:23 , 0.80
+	TIMES UP:24 , 0.80
+ENDIF
+
+
+;手指插入の慣らしギミック用処理、V经验が0の時は快Vは99で最大にする
+;A = UP:1 + PALAM:1
+;IF A >= 100 && EXP:0 == 0
+;	UP:1 = 0
+;	PALAM:1 = 99
+;ENDIF
+
+;-------------------------------------------------
+;愛液処理
+;-------------------------------------------------
+A = UP:0 + UP:1 + UP:2 + UP:3 + UP:22 + UP:23 + UP:24
+;快Ｃ＋快Ｖ＋快Ａ＋快Ｂが合わせて100以上上昇ならその20%の液体のソースが加わる（男性はダメ）
+IF A > 100 && !TALENT:机器人 && !TALENT:人偶
+	;容易湿と不易湿はここで処理
+	SIF TALENT:42
+		TIMES A , 3.00
+	SIF TALENT:43
+		TIMES A , 0.40
+	SOURCE:10 += A / 5
+ENDIF
+;-------------------------------------------------
+;调教指令の口上
+;-------------------------------------------------
+SIF !TEQUIP:25
+	CALL ITEM_SOUCHAKUCHUU
+;装着系
+IF SELECTCOM == 42 || SELECTCOM == 43 || SELECTCOM == 44 || SELECTCOM == 45 || SELECTCOM == 46 || SELECTCOM == 47 || SELECTCOM == 49 || SELECTCOM == 50 || SELECTCOM == 105 || SELECTCOM == 106 || SELECTCOM == 107 || SELECTCOM == 109 || SELECTCOM == 146 || SELECTCOM == 148 || SELECTCOM == 149 || SELECTCOM == 150 || SELECTCOM == 153 || SELECTCOM == 158 || SELECTCOM == 159 || SELECTCOM == 160 || SELECTCOM == 161 || SELECTCOM == 162 || SELECTCOM == 163 || SELECTCOM == 164 || SELECTCOM == 165 || SELECTCOM == 166 || SELECTCOM == 167 || SELECTCOM == 168 || SELECTCOM == 169 || SELECTCOM == 170 || SELECTCOM == 183 || SELECTCOM == 184 || SELECTCOM == 186 || SELECTCOM == 187 || SELECTCOM == 188 || SELECTCOM == 189 || SELECTCOM == 197 || SELECTCOM == 300 || SELECTCOM == 301 || SELECTCOM == 302 || SELECTCOM == 303 || SELECTCOM == 307 || SELECTCOM == 308
+	;IF TFLAG:52 == 0
+		PRINTL
+		CALL HANYOU_JYOKYO
+	;ELSE
+	;	PRINTL
+	;ENDIF
+	;喘がないフラグが無いなら汎用喘ぎ
+	;IF TFLAG:51 == 0 && FLAG:10 == 1
+		CALL PANT_VOICE2(10)
+		PRINTL
+		WAIT
+	;ENDIF
+ELSEIF !NPC回合
+	CALL KOJO_MESSAGE_COM
+ENDIF
+PRINTL
+;-------------------------------------------------
+;野外PLAY
+;-------------------------------------------------
+IF TEQUIP:29 == 1
+	CALL OUTDOOR_SITUATION_CHANGE
+	PRINTL
+ENDIF
+;-------------------------------------------------
+;处女喪失の処理
+;-------------------------------------------------
+CALL LOST_VIRGIN
+;-------------------------------------------------
+;童贞喪失の処理
+;-------------------------------------------------
+CALL LOST_VIRGIN_DT
+;-------------------------------------------------
+;后庭处子喪失の処理
+;-------------------------------------------------
+CALL LOST_VIRGIN_BACK
+;-------------------------------------------------
+;パラメータ変動をトリガーにした口上　喪失系
+;-------------------------------------------------
+CALL KOJO_MESSAGE_PALAMCNG_C
+;-------------------------------------------------
+;强精神药による绝顶取消
+;-------------------------------------------------
+IF TEQUIP:34 > 1
+	CALL ECST_CANCEL
+ELSE
+;-------------------------------------------------
+;绝顶処理
+	CALL ORGASM_ADD
+ENDIF
+;-------------------------------------------------
+
+;-------------------------------------------------
+;调教对象の射精チェック（扶她・男性）
+;-------------------------------------------------
+CALL TARGET_EJAC_CHECK
+
+;-------------------------------------------------
+;调教对象の射精チェック（喷乳）
+;-------------------------------------------------
+CALL TARGET_MILK_CHECK
+
+;-------------------------------------------------
+;情爱のソース
+;-------------------------------------------------
+A = SOURCE:4
+
+;ABL:顺从をみる
+SIF ABL:0 == 0
+	TIMES A , 0.10
+SIF ABL:0 == 1
+	TIMES A , 0.50
+SIF ABL:0 == 2
+	TIMES A , 1.00
+SIF ABL:0 == 3
+	TIMES A , 1.50
+SIF ABL:0 == 4
+	TIMES A , 2.00
+SIF ABL:0 == 5
+	TIMES A , 2.50
+SIF ABL:0 == 6
+	TIMES A , 3.00
+SIF ABL:0 == 7
+	TIMES A , 3.50
+SIF ABL:0 == 8
+	TIMES A , 4.00
+SIF ABL:0 == 9
+	TIMES A , 5.00
+SIF ABL:0 >= 10
+	TIMES A , 6.00
+
+B = SOURCE:4
+
+;欲望を見る
+SIF ABL:1 == 0
+	TIMES B , 0.00
+SIF ABL:1 == 1
+	TIMES B , 0.40
+SIF ABL:1 == 2
+	TIMES B , 0.80
+SIF ABL:1 == 3
+	TIMES B , 1.20
+SIF ABL:1 == 4
+	TIMES B , 1.60
+SIF ABL:1 == 5
+	TIMES B , 2.00
+SIF ABL:1 == 6
+	TIMES B , 2.40
+SIF ABL:1 == 7
+	TIMES B , 2.80
+SIF ABL:1 == 8
+	TIMES B , 3.20
+SIF ABL:1 == 9
+	TIMES B , 3.60
+SIF ABL:1 >= 10
+	TIMES B , 5.00
+
+UP:5 += A
+UP:6 += B
+
+;-------------------------------------------------
+;性行动のソース
+;-------------------------------------------------
+A = SOURCE:5
+
+;ABL:技巧をみる
+SIF ABL:2 == 0
+	TIMES A , 0.60
+SIF ABL:2 == 1
+	TIMES A , 1.20
+SIF ABL:2 == 2
+	TIMES A , 1.80
+SIF ABL:2 == 3
+	TIMES A , 2.40
+SIF ABL:2 == 4
+	TIMES A , 3.00
+SIF ABL:2 == 5
+	TIMES A , 3.60
+SIF ABL:2 == 6
+	TIMES A , 4.20
+SIF ABL:2 == 7
+	TIMES A , 4.80
+SIF ABL:2 == 8
+	TIMES A , 5.40
+SIF ABL:2 == 9
+	TIMES A , 6.00
+SIF ABL:2 >= 10
+	TIMES A , 7.00
+
+;ABL:侍奉精神をみる
+SIF ABL:7 == 0
+	TIMES A , 0.60
+SIF ABL:7 == 1
+	TIMES A , 0.80
+SIF ABL:7 == 2
+	TIMES A , 1.00
+SIF ABL:7 == 3
+	TIMES A , 1.20
+SIF ABL:7 == 4
+	TIMES A , 1.40
+SIF ABL:7 == 5
+	TIMES A , 1.70
+SIF ABL:7 == 6
+	TIMES A , 2.00
+SIF ABL:7 == 7
+	TIMES A , 2.40
+SIF ABL:7 == 8
+	TIMES A , 2.80
+SIF ABL:7 == 9
+	TIMES A , 4.00
+SIF ABL:7 >= 10
+	TIMES A , 5.00
+
+UP:8 += A
+
+;-------------------------------------------------
+;达成のソース
+;-------------------------------------------------
+A = SOURCE:6
+
+;ABL:顺从をみる
+SIF ABL:0 == 0
+	TIMES A , 0.50
+SIF ABL:0 == 1
+	TIMES A , 1.00
+SIF ABL:0 == 2
+	TIMES A , 1.50
+SIF ABL:0 == 3
+	TIMES A , 2.00
+SIF ABL:0 == 4
+	TIMES A , 2.50
+SIF ABL:0 == 5
+	TIMES A , 3.00
+SIF ABL:0 == 6
+	TIMES A , 3.50
+SIF ABL:0 == 7
+	TIMES A , 4.00
+SIF ABL:0 == 8
+	TIMES A , 4.50
+SIF ABL:0 == 9
+	TIMES A , 5.00
+SIF ABL:0 >= 10
+	TIMES A , 6.00
+
+;ABL:侍奉精神をみる
+SIF ABL:7 == 0
+	TIMES A , 0.00
+SIF ABL:7 == 1
+	TIMES A , 0.50
+SIF ABL:7 == 2
+	TIMES A , 1.00
+SIF ABL:7 == 3
+	TIMES A , 1.50
+SIF ABL:7 == 4
+	TIMES A , 2.00
+SIF ABL:7 == 5
+	TIMES A , 2.50
+SIF ABL:7 == 6
+	TIMES A , 3.00
+SIF ABL:7 == 7
+	TIMES A , 3.50
+SIF ABL:7 == 8
+	TIMES A , 4.00
+SIF ABL:7 == 9
+	TIMES A , 4.50
+SIF ABL:7 >= 10
+	TIMES A , 6.00
+
+UP:5 += A
+
+;-------------------------------------------------
+;疼痛のソース
+;-------------------------------------------------
+A = SOURCE:7
+B = SOURCE:7
+C = SOURCE:7/20
+
+;受虐属性
+SIF ABL:9 == 0
+	TIMES B , 0.00
+SIF ABL:9 == 1
+	TIMES B , 0.10
+SIF ABL:9 == 2
+	TIMES B , 0.20
+SIF ABL:9 == 3
+	TIMES B , 0.30
+SIF ABL:9 == 4
+	TIMES B , 0.45
+SIF ABL:9 == 5
+	TIMES B , 0.60
+SIF ABL:9 == 6
+	TIMES B , 0.75
+SIF ABL:9 == 7
+	TIMES B , 0.90
+SIF ABL:9 == 8
+	TIMES B , 1.20
+SIF ABL:9 == 9
+	TIMES B , 1.50
+SIF ABL:9 >= 10
+	TIMES B , 3.00
+
+;小人体型
+IF TALENT:149
+	TIMES A , 2.00
+	TIMES B , 0.75
+ENDIF
+
+;调教者が【施虐狂】
+SIF TALENT:PLAYER:83
+	TIMES B , 2.50
+
+;胆怯
+SIF TALENT:10
+	TIMES C , 2.00
+
+;受虐属性があるとPALAM:情欲も上がる
+;そのとき调教者が【施虐狂】だと効果的
+;痛苦に応じて恐怖のソースが増加する
+UP:10 += A
+UP:6 += B
+UP:11 += C
+
+;-------------------------------------------------
+;恐惧のソース
+;-------------------------------------------------
+A = SOURCE:8
+
+;ABL:顺从をみる（恐怖よりは畏怖に近いと解釈）
+SIF ABL:0 == 0
+	TIMES A , 1.00
+SIF ABL:0 == 1
+	TIMES A , 1.50
+SIF ABL:0 == 2
+	TIMES A , 2.00
+SIF ABL:0 == 3
+	TIMES A , 2.50
+SIF ABL:0 == 4
+	TIMES A , 3.00
+SIF ABL:0 == 5
+	TIMES A , 3.50
+SIF ABL:0 == 6
+	TIMES A , 4.00
+SIF ABL:0 == 7
+	TIMES A , 4.50
+SIF ABL:0 == 8
+	TIMES A , 5.00
+SIF ABL:0 == 9
+	TIMES A , 5.50
+SIF ABL:0 >= 10
+	TIMES A , 7.00
+
+UP:11 += A
+
+;-------------------------------------------------
+;中毒充足のソース
+;-------------------------------------------------
+A = SOURCE:9
+B = SOURCE:9
+
+;欲望
+IF ABL:1 == 0
+	TIMES A , 0.40
+	TIMES B , 0.50
+ELSEIF ABL:1 == 1
+	TIMES A , 0.60
+	TIMES B , 0.70
+ELSEIF ABL:1 == 2
+	TIMES A , 0.80
+	TIMES B , 0.90
+ELSEIF ABL:1 == 3
+	TIMES A , 1.00
+	TIMES B , 1.10
+ELSEIF ABL:1 == 4
+	TIMES A , 1.20
+	TIMES B , 1.30
+ELSEIF ABL:1 == 5
+	TIMES A , 1.40
+	TIMES B , 1.50
+ELSEIF ABL:1 == 6
+	TIMES A , 1.60
+	TIMES B , 1.70
+ELSEIF ABL:1 == 7
+	TIMES A , 1.80
+	TIMES B , 1.90
+ELSEIF ABL:1 == 8
+	TIMES A , 2.00
+	TIMES B , 2.10
+ELSEIF ABL:1 == 9
+	TIMES A , 2.20
+	TIMES B , 2.30
+ELSEIF ABL:1 >= 10
+	TIMES A , 2.50
+	TIMES B , 2.70
+ENDIF
+
+UP:5 += A
+UP:6 += B
+
+;-------------------------------------------------
+;液体のソース
+;-------------------------------------------------
+A = SOURCE:10
+
+;小人体型
+IF TALENT:149 && TALENT:PLAYER:149 == 0
+	SIF SELECTCOM != 50 && SELECTCOM != 180
+		TIMES A , 0.40
+ENDIF
+SIF TALENT:机器人 || TALENT:人偶
+    A = 0
+
+UP:4 += A
+
+;-------------------------------------------------
+;情欲のソース
+;-------------------------------------------------
+A = SOURCE:11
+
+;欲望を見る
+SIF ABL:1 == 0
+	TIMES A , 0.00
+SIF ABL:1 == 1
+	TIMES A , 0.40
+SIF ABL:1 == 2
+	TIMES A , 0.80
+SIF ABL:1 == 3
+	TIMES A , 1.20
+SIF ABL:1 == 4
+	TIMES A , 1.60
+SIF ABL:1 == 5
+	TIMES A , 2.00
+SIF ABL:1 == 6
+	TIMES A , 2.40
+SIF ABL:1 == 7
+	TIMES A , 2.80
+SIF ABL:1 == 8
+	TIMES A , 3.20
+SIF ABL:1 == 9
+	TIMES A , 3.60
+SIF ABL:1 >= 10
+	TIMES A , 5.00
+
+UP:6 += A
+
+;-------------------------------------------------
+;恭顺のソース
+;-------------------------------------------------
+A = SOURCE:12
+
+;ABL:顺从をみる
+SIF ABL:0 == 0
+	TIMES A , 0.50
+SIF ABL:0 == 1
+	TIMES A , 0.80
+SIF ABL:0 == 2
+	TIMES A , 1.00
+SIF ABL:0 == 3
+	TIMES A , 1.20
+SIF ABL:0 == 4
+	TIMES A , 1.40
+SIF ABL:0 == 5
+	TIMES A , 1.60
+SIF ABL:0 == 6
+	TIMES A , 1.80
+SIF ABL:0 == 7
+	TIMES A , 2.00
+SIF ABL:0 == 8
+	TIMES A , 2.40
+SIF ABL:0 == 9
+	TIMES A , 3.00
+SIF ABL:0 >= 10
+	TIMES A , 5.00
+
+UP:5 += A
+
+;-------------------------------------------------
+;露出のソース
+;-------------------------------------------------
+;害羞と不知羞耻はここで処理
+SIF TALENT:35
+	TIMES SOURCE:13 , 2.00
+SIF TALENT:36
+	TIMES SOURCE:13 , 0.50
+
+;部分人外处理
+SIF TALENT:机器人 || TALENT:史莱姆 || TALENT:人工智能
+	TIMES SOURCE:13 , 0.20
+
+;润滑アップの50％を露出のソースに加える
+;ただし液体追加のソースのぶんは引く
+SOURCE:13 += (UP:4-SOURCE:10) / 2
+
+A = SOURCE:13
+
+;ABL:露出癖をみる
+SIF ABL:8 == 0
+	TIMES A , 0.00
+SIF ABL:8 == 1
+	TIMES A , 0.10
+SIF ABL:8 == 2
+	TIMES A , 0.20
+SIF ABL:8 == 3
+	TIMES A , 0.40
+SIF ABL:8 == 4
+	TIMES A , 0.60
+SIF ABL:8 == 5
+	TIMES A , 0.80
+SIF ABL:8 == 6
+	TIMES A , 1.00
+SIF ABL:8 == 7
+	TIMES A , 1.20
+SIF ABL:8 == 8
+	TIMES A , 1.40
+SIF ABL:8 == 9
+	TIMES A , 1.60
+SIF ABL:8 >= 10
+	TIMES A , 2.00
+
+B = SOURCE:13
+
+;PALAM:耻情をみる
+;恥ずかしさを感じれば感じるほどあまり恥ずかしくなくなる
+IF PALAM:8 < PALAMLV:1
+	TIMES B , 1.00
+ELSEIF PALAM:8 < PALAMLV:2
+	TIMES B , 0.90
+ELSEIF PALAM:8 < PALAMLV:3
+	TIMES B , 0.80
+ELSEIF PALAM:8 < PALAMLV:4
+	TIMES B , 0.70
+ELSEIF PALAM:8 >= PALAMLV:4
+	TIMES B , 0.60
+ENDIF
+
+
+UP:6 += A
+UP:9 += B
+
+
+;-------------------------------------------------
+;屈从のソース
+;-------------------------------------------------
+A = SOURCE:14
+
+;ABL:顺从をみる
+SIF ABL:0 == 0
+	TIMES A , 0.50
+SIF ABL:0 == 1
+	TIMES A , 1.00
+SIF ABL:0 == 2
+	TIMES A , 1.50
+SIF ABL:0 == 3
+	TIMES A , 2.00
+SIF ABL:0 == 4
+	TIMES A , 2.50
+SIF ABL:0 == 5
+	TIMES A , 3.00
+SIF ABL:0 == 6
+	TIMES A , 3.50
+SIF ABL:0 == 7
+	TIMES A , 4.00
+SIF ABL:0 == 8
+	TIMES A , 4.50
+SIF ABL:0 == 9
+	TIMES A , 5.00
+SIF ABL:0 >= 10
+	TIMES A , 6.00
+
+;ABL:侍奉精神をみる
+SIF ABL:7 == 0
+	TIMES A , 1.00
+SIF ABL:7 == 1
+	TIMES A , 1.50
+SIF ABL:7 == 2
+	TIMES A , 2.00
+SIF ABL:7 == 3
+	TIMES A , 2.50
+SIF ABL:7 == 4
+	TIMES A , 3.00
+SIF ABL:7 == 5
+	TIMES A , 3.50
+SIF ABL:7 == 6
+	TIMES A , 4.00
+SIF ABL:7 == 7
+	TIMES A , 4.50
+SIF ABL:7 == 8
+	TIMES A , 5.00
+SIF ABL:7 == 9
+	TIMES A , 5.50
+SIF ABL:7 >= 10
+	TIMES A , 7.00
+
+UP:7 += A
+
+;-------------------------------------------------
+;不洁のソース
+;-------------------------------------------------
+A = SOURCE:15
+
+;ABL:顺从をみる
+SIF ABL:0 == 0
+	TIMES A , 1.00
+SIF ABL:0 == 1
+	TIMES A , 0.90
+SIF ABL:0 == 2
+	TIMES A , 0.80
+SIF ABL:0 == 3
+	TIMES A , 0.70
+SIF ABL:0 == 4
+	TIMES A , 0.60
+SIF ABL:0 == 5
+	TIMES A , 0.50
+SIF ABL:0 == 6
+	TIMES A , 0.40
+SIF ABL:0 == 7
+	TIMES A , 0.30
+SIF ABL:0 == 8
+	TIMES A , 0.20
+SIF ABL:0 == 9
+	TIMES A , 0.10
+SIF ABL:0 >= 10
+	TIMES A , 0.00
+
+UP:13 += A
+
+;-------------------------------------------------
+;郁闷のソース
+;-------------------------------------------------
+A = SOURCE:16
+
+IF !TALENT:嫉妒
+	;ABL:顺从をみる
+	SIF ABL:0 == 0
+		TIMES A , 1.00
+	SIF ABL:0 == 1
+		TIMES A , 0.80
+	SIF ABL:0 == 2
+		TIMES A , 0.60
+	SIF ABL:0 == 3
+		TIMES A , 0.40
+	SIF ABL:0 == 4
+		TIMES A , 0.30
+	SIF ABL:0 == 5
+		TIMES A , 0.20
+	SIF ABL:0 == 6
+		TIMES A , 0.10
+	SIF ABL:0 == 7
+		TIMES A , 0.08
+	SIF ABL:0 == 8
+		TIMES A , 0.06
+	SIF ABL:0 == 9
+		TIMES A , 0.04
+	SIF ABL:0 >= 10
+		TIMES A , 0.00
+ENDIF
+
+;ABL:欲望をみる
+SIF ABL:1 == 0
+	TIMES A , 1.00
+SIF ABL:1 == 1
+	TIMES A , 0.90
+SIF ABL:1 == 2
+	TIMES A , 0.80
+SIF ABL:1 == 3
+	TIMES A , 0.70
+SIF ABL:1 == 4
+	TIMES A , 0.60
+SIF ABL:1 == 5
+	TIMES A , 0.50
+SIF ABL:1 == 6
+	TIMES A , 0.40
+SIF ABL:1 == 7
+	TIMES A , 0.30
+SIF ABL:1 == 8
+	TIMES A , 0.20
+SIF ABL:1 == 9
+	TIMES A , 0.10
+SIF ABL:1 >= 10
+	TIMES A , 0.00
+
+UP:14 += A
+
+;-------------------------------------------------
+;逸脱のソース
+;-------------------------------------------------
+;性好奇と性保守はここで処理
+SIF TALENT:23
+	TIMES SOURCE:17 , 0.80
+SIF TALENT:24
+	TIMES SOURCE:17 , 2.00
+
+A = SOURCE:17
+
+IF !TALENT:嫉妒
+	;ABL:顺从をみる
+	SIF ABL:0 == 0
+		TIMES A , 1.00
+	SIF ABL:0 == 1
+		TIMES A , 0.80
+	SIF ABL:0 == 2
+		TIMES A , 0.60
+	SIF ABL:0 == 3
+		TIMES A , 0.40
+	SIF ABL:0 == 4
+		TIMES A , 0.30
+	SIF ABL:0 == 5
+		TIMES A , 0.20
+	SIF ABL:0 == 6
+		TIMES A , 0.10
+	SIF ABL:0 == 7
+		TIMES A , 0.08
+	SIF ABL:0 == 8
+		TIMES A , 0.06
+	SIF ABL:0 == 9
+		TIMES A , 0.04
+	SIF ABL:0 >= 10
+		TIMES A , 0.00
+ENDIF
+;ABL:受虐属性をみる
+SIF ABL:9 == 0
+	TIMES A , 1.00
+SIF ABL:9 == 1
+	TIMES A , 0.90
+SIF ABL:9 == 2
+	TIMES A , 0.80
+SIF ABL:9 == 3
+	TIMES A , 0.70
+SIF ABL:9 == 4
+	TIMES A , 0.60
+SIF ABL:9 == 5
+	TIMES A , 0.50
+SIF ABL:9 == 6
+	TIMES A , 0.40
+SIF ABL:9 == 7
+	TIMES A , 0.30
+SIF ABL:9 == 8
+	TIMES A , 0.20
+SIF ABL:9 == 9
+	TIMES A , 0.10
+SIF ABL:9 >= 10
+	TIMES A , 0.00
+
+UP:12 += A
+
+;-------------------------------------------------
+;反感のソース
+;-------------------------------------------------
+A = SOURCE:18
+
+;嫉妒があると、顺从による反感軽減が无效化される
+IF !TALENT:嫉妒
+	;ABL:顺从をみる
+	SIF ABL:0 == 0
+		TIMES A , 1.00
+	SIF ABL:0 == 1
+		TIMES A , 0.80
+	SIF ABL:0 == 2
+		TIMES A , 0.60
+	SIF ABL:0 == 3
+		TIMES A , 0.40
+	SIF ABL:0 == 4
+		TIMES A , 0.30
+	SIF ABL:0 == 5
+		TIMES A , 0.20
+	SIF ABL:0 == 6
+		TIMES A , 0.10
+	SIF ABL:0 == 7
+		TIMES A , 0.08
+	SIF ABL:0 == 8
+		TIMES A , 0.06
+	SIF ABL:0 == 9
+		TIMES A , 0.04
+	SIF ABL:0 >= 10
+		TIMES A , 0.00
+ENDIF
+;ABL:侍奉精神をみる
+;嫉妒があると、侍奉精神による反感軽減が无效化される
+IF !TALENT:嫉妒
+	SIF ABL:7 == 0
+		TIMES A , 1.00
+	SIF ABL:7 == 1
+		TIMES A , 0.90
+	SIF ABL:7 == 2
+		TIMES A , 0.80
+	SIF ABL:7 == 3
+		TIMES A , 0.70
+	SIF ABL:7 == 4
+		TIMES A , 0.60
+	SIF ABL:7 == 5
+		TIMES A , 0.50
+	SIF ABL:7 == 6
+		TIMES A , 0.40
+	SIF ABL:7 == 7
+		TIMES A , 0.30
+	SIF ABL:7 == 8
+		TIMES A , 0.20
+	SIF ABL:7 == 9
+		TIMES A , 0.10
+	SIF ABL:7 >= 10
+		TIMES A , 0.00
+ENDIF
+;ABL:受虐属性をみる
+SIF ABL:9 == 0
+	TIMES A , 1.00
+SIF ABL:9 == 1
+	TIMES A , 0.90
+SIF ABL:9 == 2
+	TIMES A , 0.80
+SIF ABL:9 == 3
+	TIMES A , 0.70
+SIF ABL:9 == 4
+	TIMES A , 0.60
+SIF ABL:9 == 5
+	TIMES A , 0.50
+SIF ABL:9 == 6
+	TIMES A , 0.40
+SIF ABL:9 == 7
+	TIMES A , 0.30
+SIF ABL:9 == 8
+	TIMES A , 0.20
+SIF ABL:9 == 9
+	TIMES A , 0.10
+SIF ABL:9 >= 10
+	TIMES A , 0.00
+
+UP:12 += A
+
+;-------------------------------------------------
+;素質などによる上下の処理
+;-------------------------------------------------
+;-------------------------------------------------
+;装备系（薬等）
+;-------------------------------------------------
+;媚薬
+IF TEQUIP:26
+	TIMES UP:5 , 1.20
+	TIMES UP:6 , 2.00
+	TIMES UP:7 , 1.20
+	TIMES UP:13 , 0.75
+ENDIF
+
+;利尿剂
+IF TEQUIP:27
+	TIMES UP:5 , 0.80
+	TIMES UP:6 , 0.80
+	TIMES UP:9 , 1.20
+	TIMES UP:12 , 1.50
+	TIMES UP:13 , 1.20
+ENDIF
+
+;-------------------------------------------------
+;陷落素質
+;-------------------------------------------------
+IF !TALENT:嫉妒
+	;恋慕
+	IF TALENT:3 && ASSIPLAY == 0
+		TIMES UP:5 , 1.50
+		TIMES UP:7 , 2.00
+		TIMES UP:12 , 0.50
+		TIMES UP:13 , 0.50
+	ELSEIF TALENT:3 && ASSIPLAY > 0
+		TIMES UP:5 , 0.80
+		TIMES UP:12 , 1.20
+		TIMES UP:13 , 1.20
+	ENDIF
+ELSEIF TALENT:嫉妒 && TALENT:3 && ASSIPLAY > 0
+		TIMES UP:5 , 0.50
+		TIMES UP:12 , 2.20
+		TIMES UP:13 , 2.20
+ENDIF
+
+;淫乱
+IF TALENT:4
+	TIMES UP:5 , 1.20
+	TIMES UP:7 , 1.20
+	TIMES UP:12 , 0.80
+	TIMES UP:13 , 0.80
+	TIMES UP:14 , 0.40
+ENDIF
+
+;服从
+IF TALENT:5
+	TIMES UP:5 , 0.50
+	TIMES UP:7 , 2.00
+	TIMES UP:11 , 1.50
+	TIMES UP:12 , 0.50
+ENDIF
+
+IF !TALENT:嫉妒
+	;相亲相爱
+	IF TALENT:6 && ASSIPLAY == 0
+		TIMES UP:5 , 2.00
+		TIMES UP:7 , 3.00
+		TIMES UP:12 , 0.20
+		TIMES UP:13 , 0.20
+		TIMES UP:14 , 0.50
+	ELSEIF TALENT:6 && ASSIPLAY > 0
+		TIMES UP:5 , 0.80
+		TIMES UP:12 , 1.20
+		TIMES UP:13 , 1.20
+	ENDIF
+ELSEIF TALENT:嫉妒 && TALENT:6 && ASSIPLAY > 0
+	TIMES UP:5 , 0.20
+	TIMES UP:12 , 3.20
+	TIMES UP:13 , 3.20
+ENDIF
+
+;娼妇
+IF TALENT:7
+	TIMES UP:5 , 1.50
+	TIMES UP:7 , 1.50
+	TIMES UP:12 , 0.60
+	TIMES UP:13 , 0.60
+	TIMES UP:14 , 0.30
+ENDIF
+
+;隶属
+IF TALENT:8
+	TIMES UP:5 , 0.20
+	TIMES UP:7 , 2.50
+	TIMES UP:11 , 3.00
+	TIMES UP:12 , 0.25
+	TIMES UP:13 , 0.25
+	TIMES UP:14 , 0.25
+ENDIF
+
+;-------------------------------------------------
+;素質
+;-------------------------------------------------
+;胆怯
+IF TALENT:10
+	TIMES UP:11 , 1.20
+	TIMES UP:12 , 1.20
+ENDIF
+;反抗（服从、隶属で无效）
+IF TALENT:11 && (TALENT:5 == 0 && TALENT:8 == 0)
+	TIMES UP:5 , 0.80
+	TIMES UP:7 , 0.80
+	TIMES UP:12 , 1.20
+ENDIF
+;刚强
+IF TALENT:12
+	TIMES UP:5 , 0.80
+	TIMES UP:6 , 0.80
+	TIMES UP:7 , 0.80
+	TIMES UP:11 , 0.80
+	TIMES UP:12 , 1.20
+	TIMES UP:14 , 1.20
+ENDIF
+;直率
+IF TALENT:13
+	TIMES UP:5 , 1.20
+	TIMES UP:12 , 0.80
+ENDIF
+;老实
+IF TALENT:14
+	TIMES UP:5 , 0.80
+	TIMES UP:12 , 0.80
+ENDIF
+;高傲
+IF TALENT:15
+	TIMES UP:7 , 0.80
+	TIMES UP:11 , 0.80
+	TIMES UP:12 , 1.20
+ENDIF
+;自大
+IF TALENT:16
+	TIMES UP:5 , 0.80
+	TIMES UP:7 , 0.80
+	TIMES UP:12 , 1.20
+ENDIF
+;自卑
+IF TALENT:17
+	TIMES UP:7 , 1.20
+	TIMES UP:11 , 1.20
+	TIMES UP:12 , 0.80
+ENDIF
+;傲娇
+IF TALENT:18
+	;陷落素質がある場合と無い場合で変化する
+	IF TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8
+		TIMES UP:5 , 1.20
+		TIMES UP:7 , 1.20
+		TIMES UP:12 , 0.80
+	ELSE
+		TIMES UP:5 , 0.80
+		TIMES UP:7 , 0.80
+		TIMES UP:12 , 1.20
+	ENDIF
+ENDIF
+
+;自制力
+IF TALENT:20
+	TIMES UP:7 , 0.80
+	TIMES UP:11 , 0.80
+	TIMES UP:12 , 1.20
+ENDIF
+;无动于衷
+IF TALENT:21
+	TIMES UP:5 , 0.80
+	TIMES UP:6 , 0.80
+	TIMES UP:7 , 0.80
+	TIMES UP:11 , 0.80
+	TIMES UP:12 , 0.80
+ENDIF
+;缺乏感情
+IF TALENT:22
+	TIMES UP:5 , 0.80
+	TIMES UP:6 , 0.80
+	TIMES UP:7 , 0.80
+	TIMES UP:9 , 0.80
+	TIMES UP:11 , 0.80
+	TIMES UP:12 , 0.80
+	TIMES UP:13 , 0.80
+	TIMES UP:14 , 0.80
+ENDIF
+;性好奇
+SIF TALENT:23
+	TIMES UP:8 , 1.20
+;性保守
+SIF TALENT:24
+	TIMES UP:8 , 0.80
+;乐观
+SIF TALENT:25
+	TIMES UP:14 , 0.80
+;悲观
+SIF TALENT:26
+	TIMES UP:14 , 1.20
+;喜欢引人注目
+SIF TALENT:28
+	TIMES UP:5 , 1.20
+
+;性压抑
+IF TALENT:32
+	TIMES UP:6 , 0.80
+	TIMES UP:12 , 1.20
+	TIMES UP:14 , 1.20
+ENDIF
+;性开放
+IF TALENT:33
+	TIMES UP:6 , 1.20
+	TIMES UP:7 , 1.20
+ENDIF
+;抵抗
+IF TALENT:34
+	TIMES UP:5 , 0.80
+	TIMES UP:12 , 1.20
+	TIMES UP:14 , 1.20
+ENDIF
+
+;怕痛
+SIF TALENT:40
+	TIMES UP:10 , 1.20
+;耐痛
+SIF TALENT:41
+	TIMES UP:10 , 0.80
+
+;学得快
+SIF TALENT:50
+	TIMES UP:8 , 1.20
+;学得慢
+SIF TALENT:51
+	TIMES UP:8 , 0.80
+
+;自我奉献
+SIF TALENT:63
+	TIMES UP:7 , 1.20
+
+;接受快感
+SIF TALENT:70
+	TIMES UP:6 , 1.20
+;否定快感（淫乱、娼妇で无效）
+SIF TALENT:71 && (TALENT:4 == 0 && TALENT:7 == 0)
+	TIMES UP:6 , 0.80
+;容易高潮
+IF TALENT:73 && !TALENT:嫉妒
+	TIMES UP:5 , 2.00
+	TIMES UP:6 , 2.00
+	TIMES UP:7 , 2.00
+	TIMES UP:8 , 2.00
+	TIMES UP:9 , 2.00
+	TIMES UP:11 , 2.00
+	TIMES UP:12 , 0.50
+	TIMES UP:13 , 0.50
+	TIMES UP:14 , 0.50
+ENDIF
+;自慰狂
+SIF TALENT:74
+	TIMES UP:6 , 1.20
+;淫壶
+SIF TALENT:75
+	TIMES UP:5 , 1.20
+;尻穴狂
+SIF TALENT:76
+	TIMES UP:7 , 1.20
+;淫乳
+SIF TALENT:77
+	TIMES UP:9 , 1.20
+;性爱狂
+Q = SELECTCOM
+IF TALENT:78 && (Q == 60 || Q == 61 || Q == 62 || Q == 63 || Q == 64 || Q == 65 || Q == 66 || Q == 67 || Q == 68 || Q == 69 || Q == 70 || Q == 71 || Q == 72 || Q == 73 || Q == 74 || Q == 75 || Q == 76 || Q == 77 || Q == 122 || Q == 205 || Q == 206 || Q == 211 || Q == 212 || Q == 213 || Q == 214 || Q == 225 || Q == 226 || Q == 500 || Q == 506 || Q == 507 || Q == 512 || Q == 513 || Q == 514 || Q == 515 || Q == 516 || Q == 517 || Q == 518)
+	TIMES UP:5 , 1.20
+	TIMES UP:6 , 1.20
+	TIMES UP:7 , 1.20
+	TIMES UP:9 , 1.20
+ENDIF
+
+;性倒错
+IF TALENT:80
+	TIMES UP:7 , 1.20
+	TIMES UP:9 , 1.20
+ENDIF
+;讨厌男人（女性のみ恋慕、相亲相爱で无效）
+IF TALENT:82 && MALE(PLAYER) && ((TALENT:3 == 0 && TALENT:6 == 0) || TALENT:嫉妒)
+	TIMES UP:5 , 0.80
+	TIMES UP:6 , 0.80
+	TIMES UP:7 , 0.80
+	TIMES UP:8 , 0.80
+	TIMES UP:12 , 1.20
+	TIMES UP:13 , 1.20
+ENDIF
+;施虐狂
+IF TALENT:83
+	TIMES UP:7 , 0.80
+	TIMES UP:11 , 0.80
+ENDIF
+;受虐狂
+IF TALENT:84
+	TIMES UP:7 , 1.20
+	TIMES UP:11 , 1.20
+	TIMES UP:14 , 0.80
+ENDIF
+;盲信
+IF TALENT:86 && !TALENT:嫉妒
+	TIMES UP:7 , 1.20
+	TIMES UP:12 , 0.80
+ENDIF
+;讨厌女人（恋慕、相亲相爱で无效）
+IF TALENT:88 && !MALE(PLAYER) && ((TALENT:3 == 0 && TALENT:6 == 0) || TALENT:嫉妒)
+	TIMES UP:5 , 0.80
+	TIMES UP:6 , 0.80
+	TIMES UP:7 , 0.80
+	TIMES UP:8 , 0.80
+	TIMES UP:12 , 1.20
+	TIMES UP:13 , 1.20
+ENDIF
+
+;Omega發情期
+IF 發情期 && TALENT:164
+	TIMES UP:5 , 1.20
+	TIMES UP:6 , 2.00
+	TIMES UP:7 , 1.20
+	TIMES UP:13 , 0.75
+ENDIF
+
+;-------------------------------------------------
+;其他
+;-------------------------------------------------
+;痛苦刻印
+IF MARK:0 == 3
+	TIMES UP:10 , 1.30
+	TIMES UP:11 , 1.30
+ELSEIF MARK:0 == 2
+	TIMES UP:10 , 1.20
+	TIMES UP:11 , 1.20
+ELSEIF MARK:0 == 1
+	TIMES UP:10 , 1.10
+	TIMES UP:11 , 1.10
+ENDIF
+
+;快乐刻印
+IF MARK:1 == 3
+	TIMES UP:6 , 1.30
+	TIMES UP:8 , 1.30
+ELSEIF MARK:1 == 2
+	TIMES UP:6 , 1.20
+	TIMES UP:8 , 1.20
+ELSEIF MARK:1 == 1
+	TIMES UP:6 , 1.10
+	TIMES UP:8 , 1.10
+ENDIF
+
+;屈服刻印
+IF MARK:2 == 3
+	TIMES UP:5 , 1.30
+	TIMES UP:7 , 1.30
+ELSEIF MARK:2 == 2
+	TIMES UP:5 , 1.20
+	TIMES UP:7 , 1.20
+ELSEIF MARK:2 == 1
+	TIMES UP:5 , 1.10
+	TIMES UP:7 , 1.10
+ENDIF
+
+;反抗刻印　嫉妒を持つと、反抗刻印3と同じ
+IF MARK:3 == 3 || TALENT:嫉妒
+	TIMES UP:5 , 0.10
+	TIMES UP:12 , 1.30
+ELSEIF MARK:3 == 2
+	TIMES UP:5 , 0.40
+	TIMES UP:12 , 1.20
+ELSEIF MARK:3 == 1
+	TIMES UP:5 , 0.60
+	TIMES UP:12 , 1.10
+ENDIF
+;-------------------------------------------------
+;困难度などによる上下の処理
+;-------------------------------------------------
+;EASY
+IF FLAG:4 == 1
+	TIMES UP:4 , 1.60
+	TIMES UP:5 , 1.60
+	TIMES UP:6 , 1.60
+	TIMES UP:7 , 1.60
+	TIMES UP:8 , 1.60
+	TIMES UP:9 , 1.60
+	TIMES UP:10 , 1.60
+	TIMES UP:11 , 1.60
+	TIMES UP:12 , 0.80
+	TIMES UP:13 , 0.80
+	TIMES UP:14 , 0.80
+;NORMAL
+ELSEIF FLAG:4 == 2
+	TIMES UP:4 , 1.20
+	TIMES UP:5 , 1.20
+	TIMES UP:6 , 1.20
+	TIMES UP:7 , 1.20
+	TIMES UP:8 , 1.20
+	TIMES UP:9 , 1.20
+	TIMES UP:10 , 1.20
+	TIMES UP:11 , 1.20
+	TIMES UP:12 , 1.20
+	TIMES UP:13 , 1.20
+	TIMES UP:14 , 1.20
+;HARD
+ELSEIF FLAG:4 == 3
+	TIMES UP:4 , 0.80
+	TIMES UP:5 , 0.80
+	TIMES UP:6 , 0.80
+	TIMES UP:7 , 0.80
+	TIMES UP:8 , 0.80
+	TIMES UP:9 , 0.80
+	TIMES UP:10 , 0.80
+	TIMES UP:11 , 0.80
+	TIMES UP:12 , 1.60
+	TIMES UP:13 , 1.60
+	TIMES UP:14 , 1.60
+ENDIF
+
+;-------------------------------------------------
+;相性による上下の処理
+;-------------------------------------------------
+R = NO:PLAYER
+IF RELATION:R != 0
+	UP:6 *= RELATION:R
+	UP:6 /= 100
+	UP:7 *= RELATION:R
+	UP:7 /= 100
+	UP:9 *= RELATION:R
+	UP:9 /= 100
+	UP:12 *= 100
+	UP:12 /= RELATION:R
+	UP:13 *= 100
+	UP:13 /= RELATION:R
+	UP:14 *= 100
+	UP:14 /= RELATION:R
+ENDIF
+
+;-------------------------------------------------
+;同じ指令の連続実行による上下の処理
+;-------------------------------------------------
+IF SELECTCOM == PREVCOM && TFLAG:56 == -1
+	;UP:0,1,2は绝顶に絡むので先に処理してある
+	UP:5 /= 2
+	UP:6 /= 2
+	UP:7 /= 2
+	UP:8 /= 2
+	UP:9 /= 2
+	UP:10 /= 2
+	UP:11 /= 2
+ENDIF
+
+;-------------------------------------------------
+;气力０による上下の処理
+;-------------------------------------------------
+IF BASE:1 <= 0
+	;PRINTL ★气力０★
+	;UP:0,1,2は绝顶に絡むので先に処理してある
+	UP:5 /= 2
+	UP:6 /= 2
+	UP:7 /= 2
+	UP:9 /= 2
+	UP:11 /= 2
+	UP:14 /= 2
+
+	LOSEBASE:0 *= 2
+	LOSEBASE:0 += 80
+ENDIF
+
+;-------------------------------------------------
+;痛苦からくる体力・气力の減少
+;-------------------------------------------------
+D = UP:10/20
+;ABL:受虐属性をみる
+IF ABL:9 == 0
+	TIMES D , 1.00
+ELSEIF ABL:9 == 1
+	TIMES D , 0.95
+ELSEIF ABL:9 == 2
+	TIMES D , 0.90
+ELSEIF ABL:9 == 3
+	TIMES D , 0.80
+ELSEIF ABL:9 == 4
+	TIMES D , 0.65
+ELSE
+	TIMES D , 0.50
+ENDIF
+;怕痛
+SIF TALENT:40
+	TIMES D , 1.20
+;耐痛
+SIF TALENT:41
+	TIMES D , 0.80
+
+LOSEBASE:0 += D
+LOSEBASE:1 += D
+
+;-------------------------------------------------
+;体力・气力の減少
+;-------------------------------------------------
+BASE:0 -= LOSEBASE:0
+IF BASE:0 < 0
+	BASE:0 = 0
+ELSEIF BASE:0 > MAXBASE:0
+	BASE:0 = MAXBASE:0
+ENDIF
+BASE:1 -= LOSEBASE:1
+IF BASE:1 < 0
+	BASE:1 = 0
+ELSEIF BASE:1 > MAXBASE:1
+	BASE:1 = MAXBASE:1
+ENDIF
+
+;-------------------------------------------------
+;痛苦快乐经验、侍奉快乐经验のチェック
+;-------------------------------------------------
+CALL EXP_GOT_CHECK
+;-------------------------------------------------
+;做爱時の插入継続フラグ
+;-------------------------------------------------
+TFLAG:60 = 0
+SIF (SEXPLAY(TARGET) == 1 || SEXPLAY(TARGET) == 2 || SELECTCOM == 185 || SELECTCOM == 122 || SELECTCOM == 215) && (!TFLAG:31 && PALAM:6 >= PALAMLV:4) && CFLAG:TARGET:106 == 0
+	TFLAG:60 = 1
+CALL SAMESEXPLAY
+
+;-------------------------------------------------
+;调教者の射精時の口上
+;-------------------------------------------------
+CALL KOJO_MESSAGE_PALAMCNG_A
+;-------------------------------------------------
+;射精フラグはここで初期化
+;-------------------------------------------------
+CFLAG:TARGET:106 = 0
+;-------------------------------------------------
+;触手の射精時の口上
+;-------------------------------------------------
+CALL KOJO_MESSAGE_PALAMCNG_E
+;-------------------------------------------------
+;奴隶の绝顶時の口上
+;-------------------------------------------------
+CALL KOJO_MESSAGE_PALAMCNG_B
+;-------------------------------------------------
+;绝顶時の放尿処理
+;-------------------------------------------------
+CALL ORGASM_ADD_URINE
+;-------------------------------------------------
+;パラメータ変動による口上
+;-------------------------------------------------
+CALL KOJO_MESSAGE_PALAMCNG_D
+;-------------------------------------------------
+;刻印取得のチェック
+;-------------------------------------------------
+CALL MARK_GOT_CHECK
+;-------------------------------------------------
+;刻印取得による口上
+;-------------------------------------------------
+CALL KOJO_MESSAGE_MARKCNG
+;-------------------------------------------------
+;顺从上昇による[抵抗]の消滅チェック
+;-------------------------------------------------
+CALL JUJUN_UP_CHECK
+;-------------------------------------------------
+;依赖度チェック
+;-------------------------------------------------
+;助手が调教してる場合、依赖度は減少する
+SIF ASSIPLAY
+	TFLAG:33 = 5
+CALL MASTER_DEPENDENCE_CHECK
+;-------------------------------------------------
+;调教ソースの表示
+;-------------------------------------------------
+CALL SHOW_SOURCE
+;-------------------------------------------------
+;数値変動の表示
+;-------------------------------------------------
+;相性
+R = NO:PLAYER
+SIF RELATION:R != 0 && RELATION:R != 100
+	PRINTFORML ＜相性{RELATION:R/100}.{RELATION:R%100}倍＞
+
+;同じ指令の連続実行
+IF SELECTCOM == PREVCOM && TFLAG:56 == -1 && !TEQUIP:PLAYER:60
+	SETCOLOR 168,0,0
+	PRINTL ＜同一指令连续实行＞
+	RESETCOLOR
+ENDIF
+;今回の指令を「前回の指令」とする
+IF  TFLAG:56 == -1
+	PREVCOM = SELECTCOM
+ELSE
+	PREVCOM = TFLAG:56
+ENDIF
+;前回の调教者が助手か主人か
+IF ASSIPLAY
+	TFLAG:50 = 1
+ELSE
+	TFLAG:50 = 0
+ENDIF
+
+;气力０
+SIF BASE:1 <= 0
+	PRINTL ★气力０★
+
+;体力・气力の減少
+PRINT 体力-
+PRINTV LOSEBASE:0
+PRINT  气力-
+PRINTVL LOSEBASE:1
+
+;-------------------------------------------------
+;射精後の再装填処理
+;-------------------------------------------------
+REPEAT CHARANUM
+	SIF CFLAG:COUNT:9 > 0
+		CFLAG:COUNT:9 -= 1
+REND
+
+;-------------------------------------------------
+;パラメータの上昇＆表示（DOWNもここで）
+;-------------------------------------------------
+UPCHECK
+
+;-------------------------------------------------
+;调教ソースの表示（DOWNもここで）
+;-------------------------------------------------
+@SHOW_SOURCE
+;PRINTL 　
+SIF SOURCE:0 > 0
+	PRINTFORM 快Ｃ({SOURCE:0})
+SIF SOURCE:1 > 0
+	PRINTFORM 快Ｖ({SOURCE:1})
+SIF SOURCE:2 > 0
+	PRINTFORM 快Ａ({SOURCE:2})
+SIF SOURCE:3 > 0
+	PRINTFORM 快Ｂ({SOURCE:3})
+SIF SOURCE:4 > 0
+	PRINTFORM 情爱({SOURCE:4})
+SIF SOURCE:5 > 0
+	PRINTFORM 性行动({SOURCE:5})
+SIF SOURCE:6 > 0
+	PRINTFORM 达成感({SOURCE:6})
+SIF SOURCE:7 > 0
+	PRINTFORM 疼痛({SOURCE:7})
+SIF SOURCE:8 > 0
+	PRINTFORM 恐惧({SOURCE:8})
+SIF SOURCE:9 > 0
+	PRINTFORM 中毒充足({SOURCE:9})
+SIF SOURCE:10 > 0
+	PRINTFORM 液体({SOURCE:10})
+SIF SOURCE:11 > 0
+	PRINTFORM 情欲({SOURCE:11})
+SIF SOURCE:12 > 0
+	PRINTFORM 恭顺({SOURCE:12})
+SIF SOURCE:13 > 0
+	PRINTFORM 露出({SOURCE:13})
+SIF SOURCE:14 > 0
+	PRINTFORM 屈从({SOURCE:14})
+SIF SOURCE:15 > 0
+	PRINTFORM 不洁({SOURCE:15})
+SIF SOURCE:16 > 0
+	PRINTFORM 郁闷({SOURCE:16})
+SIF SOURCE:17 > 0
+	PRINTFORM 逸脱({SOURCE:17})
+SIF SOURCE:18 > 0
+	PRINTFORM 反抗({SOURCE:18})
+SIF SOURCE:22 > 0
+	PRINTFORM 快Ｗ({SOURCE:22})
+SIF SOURCE:23 > 0
+	PRINTFORM 快Ｔ({SOURCE:23})
+SIF SOURCE:24 > 0
+	PRINTFORM 快Ｅ({SOURCE:24})
+PRINTL 　
+
+

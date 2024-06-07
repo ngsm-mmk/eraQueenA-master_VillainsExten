@@ -1,0 +1,857 @@
+﻿;---------------------------------
+;@QUEST_FLAG  满足条件才会出现任务
+;FLAG:2001～2050 用于任务编号和进度
+;---------------------------------
+@QUEST_FLAG_1
+IF FLAG:2001 == 0
+    RESULTS = Ｎ级：「千里之行始于足下」
+	RETURN 1
+ENDIF
+
+@QUEST_FLAG_2
+IF FLAG:2002 == 0
+    RESULTS = Ｎ级：「心跳❤回忆」
+	RETURN 1
+ENDIF
+
+@QUEST_FLAG_3
+IF FLAG:2003 == 0
+    RESULTS = Ｎ级：「酒池肉林」
+	RETURN 1
+ENDIF
+
+@QUEST_FLAG_4
+IF FLAG:2004 == 0
+    RESULTS = Ｎ级：「绝对服从命令」
+	RETURN 1
+ENDIF
+
+@QUEST_FLAG_5
+IF FLAG:2001 && FLAG:2002  && FLAG:2003 && FLAG:2004
+    RESULTS = Ｒ级：「约会券交易」
+	RETURN 1
+ENDIF
+
+@QUEST_FLAG_6
+IF FLAG:2006 > 0
+    RESULTS = Ｒ级：「月老的红线」
+	RETURN 1
+ENDIF
+
+@QUEST_FLAG_10
+IF FLAG:2001 && FLAG:2002 && FLAG:2003 && FLAG:2004
+    RESULTS = Ｒ级：「洗腦催眠」
+	RETURN 1
+ENDIF
+;---------------------------------
+;@QUEST_EVENT  满足条件才能进入任务
+;---------------------------------
+@QUEST_EVENT_1
+IF FLAG:2001 <= 0 && CHARANUM > 0
+	CALL QUEST_EVENT_1_1
+	RETURN 0
+ELSE
+    PRINTW （解锁条件：至少购入一名奴隶）
+ENDIF
+
+@QUEST_EVENT_2
+IF FLAG:2002 <= 0 && FLAG:30 >= 1
+	CALL QUEST_EVENT_1_2
+	RETURN 0
+ELSE
+    PRINTW （解锁条件：至少需要一名恋慕陷落的奴隶）
+ENDIF
+
+@QUEST_EVENT_3
+IF FLAG:2003 <= 0 && FLAG:31 >= 1
+	CALL QUEST_EVENT_1_3
+	RETURN 0
+ELSE
+    PRINTW （解锁条件：至少需要一名淫乱陷落的奴隶）
+ENDIF
+
+@QUEST_EVENT_4
+IF FLAG:2004 <= 0 && FLAG:32 >= 1
+	CALL QUEST_EVENT_1_4
+	RETURN 0
+ELSE
+    PRINTW （解锁条件：至少需要一名服从陷落的奴隶）
+ENDIF
+
+@QUEST_EVENT_5
+CALL QUEST_EVENT_1_5
+RETURN 0
+
+@QUEST_EVENT_6
+IF ITEM:97 < 1
+    IF TIME
+        PRINTW （夜晚不可出行，请白天再来）
+    ELSE
+        PRINTW （解锁条件：需要持有约会券）
+    ENDIF
+ELSE
+    IF TIME
+        PRINTW （夜晚不可出行，请白天再来）
+    ELSE
+        CALL QUEST_EVENT_1_6
+        RETURN 0
+    ENDIF
+ENDIF
+
+@QUEST_EVENT_10
+CALL QUEST_EVENT_1_10
+RETURN 0
+;---------------------------------
+;@QUEST_EVENT_XX  任务详情
+;---------------------------------
+@QUEST_EVENT_1_1
+IF FLAG:2001 == 0
+    CALL KAIGYO
+    PRINTL （此为测试任务，之后的版本不一定采用）
+    PRINTW 很棒，拥有一名奴隶，就意味着成为正式的调教师了
+    PRINTW 这是奖励哦，拿去买喜欢的道具吧
+    MONEY += 500
+    PRINTL
+    PRINTFORMW 金钱增加了 500
+    FLAG:2001 = 1
+	CALL QUEST_R
+ENDIF
+
+@QUEST_EVENT_1_2
+IF FLAG:2002 == 0
+    CALL KAIGYO
+    PRINTL （此为测试任务，之后的版本不一定采用）
+    PRINTW 让奴隶爱上自己的滋味很不错吧？
+    PRINTW 这是奖励哦，拿去和心爱的奴隶享用吧
+    IF ITEM:40 >= 95
+        PRINTW 嗯？似乎并不缺嘛，那就换成相应的金钱吧
+        MONEY += 1000
+        PRINTL
+        PRINTFORMW 金钱增加了 1000
+    ELSE
+        ITEM:40 += 5
+        PRINTL
+        PRINTFORMW 获得了5个%ITEMNAME:40%
+    ENDIF
+    FLAG:2002 = 1
+	CALL QUEST_R
+ENDIF
+
+@QUEST_EVENT_1_3
+IF FLAG:2003 == 0
+    CALL KAIGYO
+    PRINTL （此为测试任务，之后的版本不一定采用）
+    PRINTW 啊，是最能赚钱的淫乱系奴隶呢
+    PRINTW 这是奖励哦，请好好使用
+    IF ITEM:41 >= 99
+        PRINTW 嗯？似乎并不缺嘛，那就换成相应的金钱吧
+        MONEY += 2000
+        PRINTL
+        PRINTFORMW 金钱增加了 2000
+    ELSE
+        ITEM:41 += 1
+        PRINTL
+        PRINTFORMW 获得了1个%ITEMNAME:41%
+    ENDIF
+    FLAG:2003 = 1
+	CALL QUEST_R
+ENDIF
+
+@QUEST_EVENT_1_4
+IF FLAG:2004 == 0
+    CALL KAIGYO
+    PRINTL （此为测试任务，之后的版本不一定采用）
+    PRINTW 正统的服从系奴隶，做得很棒哦
+    PRINTW 那么这是奖励，还请收好
+    IF ITEM:46 >= 99
+        PRINTW 嗯？似乎并不缺嘛，那就换成相应的金钱吧
+        MONEY += 2000
+        PRINTL
+        PRINTFORMW 金钱增加了 {M}
+    ELSE
+        ITEM:46 += 1
+        PRINTL
+        PRINTFORMW 获得了1个%ITEMNAME:46%
+    ENDIF
+    FLAG:2004 = 1
+	CALL QUEST_R
+ENDIF
+
+@QUEST_EVENT_1_5
+CALL KAIGYO
+PRINTL 顾名思义，是来自主人的仁慈
+PRINTL 该任务为重复性任务，只要完成随机任务就能为奴隶们购买约会券
+PRINTL 约会券可以让奴隶们去约会增加之间的感情
+PRINTL 因为还没想好剧情，所以只能以金钱交易代替了
+PRINTW 那么要花费$50000购买约会券吗？
+PRINTL
+$INPUT_LOOP_E5
+PRINTL [0] 是的
+PRINTL [1] 不要
+PRINTL [2] 自己决定购买数量
+PRINTL
+INPUT
+IF RESULT == 0
+    IF MONEY < 50000
+        PRINTL
+        PRINTFORML 余额不足……
+        PRINTW
+        RETURN
+    ELSEIF ITEM:97 >= 99
+        PRINTL
+        PRINTFORML 无法持有那么多
+        PRINTW
+        RETURN
+    ELSE
+        MONEY -= 50000
+        PRINTW 获得了一张约会券！
+        ITEM:97 += 1
+        IF !FLAG:2006
+            PRINTL
+            PRINTL ☆ 出现了新的Ｒ级任务：「月老的红线」 ☆
+            PRINTW
+            FLAG:2006 += 1
+        ENDIF
+    ENDIF
+ELSEIF RESULT == 1
+    PRINTW 欢迎下次再来呐！
+ELSEIF RESULT == 2
+    B = 99-ITEM:97
+    C = MONEY/50000+1
+    IF B <= C
+        D = B
+        E = 0
+    ELSE
+        D = C
+        E = 1
+    ENDIF
+    DRAWLINE
+    PRINTFORM 要购入多少张约会券？ （1-
+    PRINTV D
+    PRINTL 、输入0的话返回）
+    $INPUT_DATEITEM
+    INPUT
+    IF RESULT == 0
+        PRINTW 欢迎下次再来呐！
+    ELSEIF RESULT < 0
+    	GOTO INPUT_DATEITEM
+    ELSEIF RESULT > D
+    	IF RESULT > D && E == 0
+    		PRINTL 无法持有那么多
+    	ELSEIF RESULT > D && E == 1
+    		PRINTL 余额不足
+    	ENDIF
+    	GOTO INPUT_DATEITEM
+    ELSEIF RESULT == 1
+    	PRINTFORMW ＜购入了%ITEMNAME:97%＞
+        IF !FLAG:2006
+            PRINTL
+            PRINTL ☆ 出现了新的Ｒ级任务：「月老的红线」 ☆
+            PRINTW
+            FLAG:2006 += 1
+        ENDIF
+    	RETURN 0
+    ELSE
+    	PRINTFORMW ＜购入了{RESULT}张%ITEMNAME:97%＞
+    	ITEM:97 += RESULT
+    	MONEY -= 50000*RESULT
+        IF !FLAG:2006
+            PRINTL
+            PRINTL ☆ 出现了新的Ｒ级任务：「月老的红线」 ☆
+            PRINTW
+            FLAG:2006 += 1
+        ENDIF
+    	RETURN 0
+    ENDIF
+ELSE
+    GOTO INPUT_LOOP_E5
+ENDIF
+
+@QUEST_R
+    IF FLAG:2001 && FLAG:2002 && FLAG:2003 && FLAG:2004
+        PRINTL
+        PRINTL ☆ 出现了新的Ｒ级任务：「约会券交易」 ☆
+        PRINTW
+		PRINTL
+		PRINTL ☆ 出现了新的Ｒ级任务：「 洗脑催眠 」 ☆
+		PRINTW
+    ENDIF
+;--------------------
+;奴隶约会任务
+;--------------------
+@QUEST_EVENT_1_6
+CALL KAIGYO
+A = 0
+C = 0
+PRINTL 哦呀，您有那种神奇的东西呢
+PRINTL 只要使用这张约会券让奴隶们去约会的话，就可能大幅增进二人的感情哦（笑）
+PRINTL 甚至可能产生恋心成为恋人也说不定w
+PRINTW 另外由于附加了一定神奇的力量，即使是吸血鬼也能尽情享受日间外出的乐趣。
+DRAWLINE
+PRINTL 那么，请选择要派出去约会的两名奴隶。
+PRINTL （只有满足拍卖和助手条件，且不在劳役中的奴隶才可选择）
+PRINTL （奴隶的体力需大于500，夜晚不可出行）
+DRAWLINE
+REPEAT CHARANUM
+    ;主人不可
+	SIF COUNT == MASTER
+		CONTINUE
+	;拍卖、助手
+	SIF CFLAG:COUNT:1 < 2
+		CONTINUE
+	;娼馆、出租劳役中
+	SIF CFLAG:COUNT:12 > 0
+		CONTINUE
+	C = COUNT
+	;育儿室
+	CALL CHECK_CHILD_CARE
+	SIF RESULT == 1
+		CONTINUE
+	SIF BASE:COUNT:0 > 500
+		PRINTFORML [  {COUNT}] - %CALLNAME:COUNT%
+REND
+PRINTL [100] - 返回
+$INPUT_DATE
+INPUT
+IF RESULT == 100
+    PRINTW 那么期待您的再次光临。
+	RETURN 0
+ELSEIF RESULT < 0 || RESULT >= CHARANUM
+	GOTO INPUT_DATE
+ELSEIF RESULT == MASTER
+	GOTO INPUT_DATE
+ELSEIF CFLAG:RESULT:1 < 2
+	GOTO INPUT_DATE
+ELSEIF CFLAG:RESULT:12 > 0
+	GOTO INPUT_DATE
+ELSEIF BASE:RESULT:0 <= 500
+	GOTO INPUT_DATE
+ELSE
+	A = RESULT
+ENDIF
+CALL KAIGYO
+DRAWLINE
+PRINTFORML 已选择%NAME:A%
+DRAWLINE
+
+E = 0
+
+REPEAT 100
+	G:COUNT = 0
+REND
+REPEAT CHARANUM
+	SIF COUNT == MASTER || COUNT == A
+		CONTINUE
+	SIF CFLAG:COUNT:1 < 2
+		CONTINUE
+	SIF CFLAG:COUNT:12 > 0
+		CONTINUE
+	SIF TALENT:COUNT:9
+		CONTINUE
+	C = COUNT
+	CALL CHECK_CHILD_CARE
+	SIF BASE:COUNT:0 > 500
+		PRINTFORML [  {COUNT}] - %CALLNAME:COUNT%
+	G:COUNT = 1
+REND
+DRAWLINE
+PRINTL [100] - 返回
+
+$INPUT_DATE2
+INPUT
+IF RESULT == 100
+    PRINTW 那么期待您的再次光临。
+	RETURN 0
+ELSEIF G:RESULT == 0
+	GOTO INPUT_DATE2
+ELSE
+	E = RESULT
+ENDIF
+CALL KAIGYO
+DRAWLINE
+PRINTFORML 已选择%NAME:A%和%NAME:E%两人
+PRINTL 那么，要让他们去哪里约会呢？
+DRAWLINE
+ITEM:97 -= 1
+LOCAL:2 = 0
+;選択肢に出る约会場所を随机で決定
+LOCALS:1 = %DATE_PLACES()%
+STR:21 = %STR:5%
+$DATE_PLACE2
+LOCALS:2 = %DATE_PLACES()%
+SIF LOCALS:2 == LOCALS:1
+    GOTO DATE_PLACE2
+STR:22 = %STR:5%
+$DATE_PLACE3
+LOCALS:3 = %DATE_PLACES()%
+SIF LOCALS:3 == LOCALS:1 || LOCALS:3 == LOCALS:2
+    GOTO DATE_PLACE3
+STR:23 = %STR:5%
+PRINTFORML 　[1] %LOCALS:1%
+PRINTFORML 　[2] %LOCALS:2%
+PRINTFORML 　[3] %LOCALS:3%
+PRINTFORML 　[4] 让%CALLNAME:A%决定
+PRINTFORML 　[5] 让%CALLNAME:E%决定
+$DATE_PLACES_DECIDE
+INPUT
+SIF RESULT < 1 || RESULT > 5
+    GOTO DATE_PLACES_DECIDE
+;约会場所決定
+IF RESULT >= 1 && RESULT <= 3
+    LOCALS = %LOCALS:RESULT%
+    LOCAL:2 = 1
+    STR:5 = %STR:(20+RESULT)%
+ELSEIF RESULT == 4
+    LOCAL:1 = 0
+    $DATE_PLACE4
+    LOCALS = %DATE_PLACES()%
+    STR:6 = %LOCALS%
+    IF DATE_PLACES_LIKE_A() < 0 && LOCAL:1 < 10
+        LOCAL:1 += 1
+        GOTO DATE_PLACE4
+    ENDIF
+ELSE
+    LOCAL:1 = 0
+    $DATE_PLACE5
+    LOCALS = %DATE_PLACES()%
+    STR:6 = %LOCALS%
+    IF DATE_PLACES_LIKE_E() < 0 && LOCAL:1 < 10
+        LOCAL:1 += 1
+        GOTO DATE_PLACE5
+    ENDIF
+ENDIF
+
+IF CFLAG:A:2404 == 1
+    PRINTL
+    PRINTFORML 房间里的%CALLNAME:A%被带出来了
+    PRINTW
+    CFLAG:A:2404 = 0
+ELSEIF CFLAG:A:2414 == 1
+    C = 0
+    REPEAT CHARANUM
+        SIF CFLAG:COUNT:(NO:A+3000) == 1
+            C = COUNT
+    REND
+    PRINTL
+    PRINTFORML 在%CALLNAME:C%房间里的%CALLNAME:A%被带出来了
+    PRINTW
+    CFLAG:A:2414 = 0
+    CFLAG:C:(NO:A+3000) = 0
+    CFLAG:C:2404 = 0
+ENDIF
+
+IF CFLAG:E:2404 == 1
+    PRINTL
+    PRINTFORML 房间里的%CALLNAME:E%被带出来了
+    PRINTW
+    CFLAG:E:2404 = 0
+ELSEIF CFLAG:E:2414 == 1
+    C = 0
+    REPEAT CHARANUM
+        SIF CFLAG:COUNT:(NO:E+3000) == 1
+            C = COUNT
+    REND
+    PRINTL
+    PRINTFORML 在%CALLNAME:C%房间里的%CALLNAME:E%被带出来了
+    PRINTW
+    CFLAG:A:2414 = 0
+    CFLAG:C:(NO:E+3000) = 0
+    CFLAG:C:2404 = 0
+ENDIF
+
+PRINTL
+PRINTL 　　　・
+PRINTL 　　　・
+PRINTW 　　　・
+PRINTL
+PRINTFORMW %CALLNAME:A%和%CALLNAME:E%穿戴整齐，一起来到了%LOCALS%。
+PRINTFORMW 两人%STR:5%。
+PRINTL
+PRINTL 　　　・
+PRINTL 　　　・
+PRINTW 　　　・
+PRINTL
+;奴隶の　場所に对する好みを計算
+STR:6 = %LOCALS%
+
+;A的场合
+;LOCAL ：本心で好きかどうかの値
+LOCAL = DATE_PLACES_LIKE_A()
+;LOCAL:1 ：どう答えたかの値　1は好き　0は普通　-1は嫌い
+LOCAL:1 = 0
+;すごく好きな場所
+IF LOCAL > 3
+    ;嘘をつく確率が下がる
+    LOCAL:1 = 1
+    SIF !RAND:3
+        LOCAL:1 = 0
+    SIF !RAND:6
+        LOCAL:1 = -1
+;好きな場所
+ELSEIF LOCAL > 1
+    LOCAL:1 = 1
+    SIF !RAND:2
+        LOCAL:1 = 0
+    SIF !RAND:4
+        LOCAL:1 = -1
+;すごく嫌いな場所
+ELSEIF LOCAL < -3
+    LOCAL:1 = -1
+    SIF !RAND:3
+        LOCAL:1 = 0
+    SIF !RAND:6
+        LOCAL:1 = 1
+;嫌いな場所
+ELSEIF LOCAL < -1
+    LOCAL:1 = -1
+    SIF !RAND:2
+        LOCAL:1 = 0
+    SIF !RAND:4
+        LOCAL:1 = 1
+;まあまあの場所
+ELSE
+    LOCAL:1 = 0
+    SIF !RAND:2
+        LOCAL:1 = 1
+    SIF !RAND:2
+        LOCAL:1 = -1
+ENDIF
+IF LOCAL:1 == 1
+    IF CFLAG:A:600 == 1
+        PRINTFORMW 「嘿嘿，很开心哦！」
+    ELSEIF CFLAG:A:600 == 2
+        PRINTFORMW 「值得纳入回忆呢」
+    ELSEIF CFLAG:A:600 == 3
+        PRINTFORMW 「…做了正确的决定」
+    ELSEIF CFLAG:A:600 == 4
+        PRINTFORMW 「什么时候再一起出去？是现在，还是明天？」
+    ELSEIF CFLAG:A:600 == 5
+        PRINTFORMW 「不、不得不说，这相当的厉害啊…」
+    ELSEIF CFLAG:A:600 == 6
+        PRINTFORMW 「以%MASTERNAME:A%的水准能安排到这样的程度已经是匪夷所思了」
+    ELSEIF CFLAG:A:600 == 7
+        PRINTFORMW 「%CSTR:A:0%想说的，只有褒奖之类的话哦？」
+    ELSEIF CFLAG:A:600 == 8
+        PRINTFORMW 「%CSTR:A:0%很开心…」
+    ELSEIF CFLAG:A:600 == 9
+        PRINTFORMW 「虽然也不想每天都出来…每周一次的话就能接受」
+    ELSEIF CFLAG:A:600 == 10
+        PRINTFORMW 「下次再带%CSTR:A:0%去吧，%CALLNAME:E%！」
+    ELSEIF CFLAG:A:600 == 11
+        PRINTFORMW 「现在的%CALLNAME:E%，%CSTR:A:0%非常喜欢…！」
+    ELSEIF CFLAG:A:600 == 12
+        PRINTFORMW 「几乎要忘记自己是为什么才答应的了…不过很尽兴」
+    ELSEIF CFLAG:A:600 == 13
+        PRINTFORMW 「很惊喜…就像盒子里跳出来的小丑那样」
+	ELSE
+		PRINTDATAL
+		DATAFORM 「好愉快啊，今天过得真开心…」
+		DATAFORM 「意外地充实呢」
+		DATAFORM 「感觉没有白来呀！」
+		ENDDATA
+    ENDIF
+    PRINTFORMW %CALLNAME:A%看起来很高兴
+ELSEIF LOCAL:1 == 0
+    IF CFLAG:A:600 == 1
+        PRINTFORMW 「平平淡淡吧…啊，倒也没那么坏啦」
+    ELSEIF CFLAG:A:600 == 2
+        PRINTFORMW 「到底是哪里出了问题呢？」
+    ELSEIF CFLAG:A:600 == 3
+        PRINTFORMW 「应该还能再改进一下」
+    ELSEIF CFLAG:A:600 == 4
+        PRINTFORMW 「所以说一开始就选错了地方吗…」
+    ELSEIF CFLAG:A:600 == 5
+        PRINTFORMW 「受够了，为什么%CSTR:A:0%要和%CALLNAME:E%一起…」
+    ELSEIF CFLAG:A:600 == 6
+        PRINTFORMW 「哼，和预料中的一样平淡不知所谓」
+    ELSEIF CFLAG:A:600 == 7
+        PRINTFORMW 「说起来…呵呵，不是在对%CSTR:A:2%说哦」
+    ELSEIF CFLAG:A:600 == 8
+        PRINTFORMW 「度过了一段无意义的时光…」
+    ELSEIF CFLAG:A:600 == 9
+        PRINTFORMW 「再接再厉如何？%CALLNAME:E%也是，%MASTERNAME:A%也是」
+    ELSEIF CFLAG:A:600 == 10
+        PRINTFORMW 「%CSTR:A:0%有努力在想好听的话了…啊啊，不行，无法评价！」
+    ELSEIF CFLAG:A:600 == 11
+        PRINTFORMW 「那个…其实%CSTR:A:0%觉得很高兴哦。毕竟是%MASTERNAME:A%特意安排…」
+    ELSEIF CFLAG:A:600 == 12
+        PRINTFORMW 「那句话怎么说的来着…强扭的瓜不会甜？」
+    ELSEIF CFLAG:A:600 == 13
+        PRINTFORMW 「有些无聊了…」
+    ELSE
+		PRINTDATAL
+		DATAFORM 「普普通通…的感觉？」
+		DATAFORM 「…真算不上有趣呢」
+		DATAFORM 「下次换个更好玩的地方吧？」
+		ENDDATA
+    ENDIF
+    PRINTFORMW %CALLNAME:A%看起来不怎么感兴趣
+ELSE
+    IF CFLAG:A:600 == 1
+        PRINTFORMW 「STOP——就在这里结束吧，现在立刻！」
+    ELSEIF CFLAG:A:600 == 2
+        PRINTFORMW 「很是艰辛呢…」
+    ELSEIF CFLAG:A:600 == 3
+        PRINTFORMW 「生活不易，这个道理%CSTR:A:0%也是懂的」
+    ELSEIF CFLAG:A:600 == 4
+        PRINTFORMW 「从第一秒开始就知道相性不合了，不要问%CSTR:A:0%为什么现在才说！」
+    ELSEIF CFLAG:A:600 == 5
+        PRINTFORMW 「所以之前就有不好的预感了，这种预感成真一点都高兴不起来…」
+    ELSEIF CFLAG:A:600 == 6
+        PRINTFORMW 「再见，也不用送%CSTR:A:0%了」
+    ELSEIF CFLAG:A:600 == 7
+        PRINTFORMW 「……嗯？请不要看这边，%CSTR:A:0%也是会有不知道说什么的时候的」
+    ELSEIF CFLAG:A:600 == 8
+        PRINTFORMW 「…想开点吧，%CSTR:A:1%也是，%CSTR:A:0%也是」
+    ELSEIF CFLAG:A:600 == 9
+        PRINTFORMW 「有人最好回去反省一下」
+    ELSEIF CFLAG:A:600 == 10
+        PRINTFORMW 「可以走了吗？那告辞了哦」
+    ELSEIF CFLAG:A:600 == 11
+        PRINTFORMW 「为什么会变成这样啊…」
+    ELSEIF CFLAG:A:600 == 12
+        PRINTFORMW 「这到底算什么…某种意义上也蛮厉害呢」
+    ELSEIF CFLAG:A:600 == 13
+        PRINTFORMW 「地面掉下来，陨石升上去了…」
+    ELSE
+		PRINTDATAL
+		DATAFORM 「唉…早点回去就好了…」
+		DATAFORM 「明明想出来散心，却莫名其妙更烦躁了啊…」
+		DATAFORM 「这算是无妄之灾吗？也许不出来会更好呢…」
+		ENDDATA
+    ENDIF
+    PRINTFORMW %CALLNAME:A%似乎不太高兴…
+ENDIF
+PRINTL
+;普通成功
+IF LOCAL >= -1 && LOCAL <= 1
+    CALL RELATION_UP2(A,E,8)
+    PRINTFORMW %CALLNAME:A%对%CALLNAME:E%的好感上升了！
+;成功
+ELSEIF LOCAL > 1
+    IF !RAND:3
+        CALL RELATION_UP2(A,E,15)
+    ELSEIF !RAND:2
+        CALL RELATION_UP2(A,E,13)
+    ELSE
+        CALL RELATION_UP2(A,E,10)
+    ENDIF
+    PRINTFORMW %CALLNAME:A%对%CALLNAME:E%的好感大幅上升了！
+;失败
+ELSE
+    CALL RELATION_UP2(A,E,5)
+    PRINTFORMW %CALLNAME:A%对%CALLNAME:E%的好感略微上升了！
+ENDIF
+;单相思可能性
+IF RELATION:A:(NO:E) >= 160 && CFLAG:A:(NO:E + 2000) != 22
+    IF RAND:2
+        PRINT
+    ELSE
+        PRINTL
+        CFLAG:A:(NO:E + 2000) = 22
+        PRINTFORMW %CALLNAME:A%对%CALLNAME:E%好像有了点不一样的感觉…
+    ENDIF
+ENDIF
+
+PRINTL
+;E的场合
+;LOCAL ：本心で好きかどうかの値
+LOCAL = DATE_PLACES_LIKE_E()
+;LOCAL:1 ：どう答えたかの値　1は好き　0は普通　-1は嫌い
+LOCAL:1 = 0
+;すごく好きな場所
+IF LOCAL > 3
+    ;嘘をつく確率が下がる
+    LOCAL:1 = 1
+    SIF !RAND:3
+        LOCAL:1 = 0
+    SIF !RAND:6
+        LOCAL:1 = -1
+;好きな場所
+ELSEIF LOCAL > 1
+    LOCAL:1 = 1
+    SIF !RAND:2
+        LOCAL:1 = 0
+    SIF !RAND:4
+        LOCAL:1 = -1
+;すごく嫌いな場所
+ELSEIF LOCAL < -3
+    LOCAL:1 = -1
+    SIF !RAND:3
+        LOCAL:1 = 0
+    SIF !RAND:6
+        LOCAL:1 = 1
+;嫌いな場所
+ELSEIF LOCAL < -1
+    LOCAL:1 = -1
+    SIF !RAND:2
+        LOCAL:1 = 0
+    SIF !RAND:4
+        LOCAL:1 = 1
+;まあまあの場所
+ELSE
+    LOCAL:1 = 0
+    SIF !RAND:2
+        LOCAL:1 = 1
+    SIF !RAND:2
+        LOCAL:1 = -1
+ENDIF
+IF LOCAL:1 == 1
+    IF CFLAG:E:600 == 1
+        PRINTFORMW 「今天过得真愉快啊！」
+    ELSEIF CFLAG:E:600 == 2
+        PRINTFORMW 「真是尽情享受了一番啊」
+    ELSEIF CFLAG:E:600 == 3
+        PRINTFORMW 「是很有意义的一天，%CSTR:E:0%会把这一天记在心中的」
+    ELSEIF CFLAG:E:600 == 4
+        PRINTFORMW 「偶尔这样还蛮开心的嘛」
+    ELSEIF CFLAG:E:600 == 5
+        PRINTFORMW 「如果还有下次的话…没什么」
+    ELSEIF CFLAG:E:600 == 6
+        PRINTFORMW 「哼，用心准备了啊」
+    ELSEIF CFLAG:E:600 == 7
+        PRINTFORMW 「总得来说，没有让人失望呢」
+    ELSEIF CFLAG:E:600 == 8
+        PRINTFORMW 「稍微有点动摇了…不，不能这样轻易下判断…」
+    ELSEIF CFLAG:E:600 == 9
+        PRINTFORMW 「本来以为会浪费时间…这一天比预想的要有价值」
+    ELSEIF CFLAG:E:600 == 10
+        PRINTFORMW 「下一次是什么时候呢？%MASTERNAME:E%，再安排下一次吧～」
+    ELSEIF CFLAG:E:600 == 11
+        PRINTFORMW 「今天真的好开心，什么时候能再和%CALLNAME:A%一起出去呢？」
+    ELSEIF CFLAG:E:600 == 12
+        PRINTFORMW 「不管怎么说，这样也不坏哦？」
+    ELSEIF CFLAG:E:600 == 13
+        PRINTFORMW 「难道%CSTR:E:0%…不，这一定是错觉」
+    ELSE
+		PRINTDATAL
+		DATAFORM 「真是不错的一天」
+		DATAFORM 「今天的行程非常有意思呢」
+		DATAFORM 「今天真开心，没想到这有趣！」
+		ENDDATA
+    ENDIF
+    PRINTFORMW %CALLNAME:E%看起来很高兴
+ELSEIF LOCAL:1 == 0
+    IF CFLAG:E:600 == 1
+        PRINTFORMW 「一、一般般的感觉…」
+    ELSEIF CFLAG:E:600 == 2
+        PRINTFORMW 「有些遗憾…没什么……」
+    ELSEIF CFLAG:E:600 == 3
+        PRINTFORMW 「不够，虽然不清楚具体是哪里不够，总之不够」
+    ELSEIF CFLAG:E:600 == 4
+        PRINTFORMW 「这完全达不到%CSTR:E:0%以前的标准，说真的啦」
+    ELSEIF CFLAG:E:600 == 5
+        PRINTFORMW 「还不如回去睡觉呢…！」
+    ELSEIF CFLAG:E:600 == 6
+        PRINTFORMW 「白开水虽然能解渴，但还是太平淡了一点」
+    ELSEIF CFLAG:E:600 == 7
+        PRINTFORMW 「昨天看书的时候有看到…嗯？没有错，这就是在转移话题哦」
+    ELSEIF CFLAG:E:600 == 8
+        PRINTFORMW 「没什么事的话，%CSTR:E:0%就先回去了」
+    ELSEIF CFLAG:E:600 == 9
+        PRINTFORMW 「不过不失，也只能给出这样的评价了」
+    ELSEIF CFLAG:E:600 == 10
+        PRINTFORMW 「%CSTR:E:0%没有觉得失望哦，一点都没哦」
+    ELSEIF CFLAG:E:600 == 11
+        PRINTFORMW 「总感觉…受到打击了……」
+    ELSEIF CFLAG:E:600 == 12
+        PRINTFORMW 「竟然这就结束了，不敢相信」
+    ELSEIF CFLAG:E:600 == 13
+        PRINTFORMW 「如果一定要列出优点的话…不过也没有缺点」
+    ELSE
+		PRINTDATAL
+		DATAFORM 「还是早点回去好了……」
+		DATAFORM 「今天的行程乏善可陈啊……」
+		DATAFORM 「说不上哪里不好，但就是开心不起来啊……」
+		ENDDATA
+    ENDIF
+    PRINTFORMW %CALLNAME:E%看起来不怎么感兴趣
+ELSE
+    IF CFLAG:E:600 == 1
+        PRINTFORMW 「哇，不行，这一天也太糟糕了，饶了我们吧」
+    ELSEIF CFLAG:E:600 == 2
+        PRINTFORMW 「%CSTR:E:0%突然想起有些事，先回去了…！」
+    ELSEIF CFLAG:E:600 == 3
+        PRINTFORMW 「是%CSTR:E:0%，还是%CALLNAME:A%有问题？」
+    ELSEIF CFLAG:E:600 == 4
+        PRINTFORMW 「这种都能算约会的话，%CSTR:E:0%早就是位于夜店顶端的男人了哦？！」
+    ELSEIF CFLAG:E:600 == 5
+        PRINTFORMW 「今天答应出来真是个错误的决定……」
+    ELSEIF CFLAG:E:600 == 6
+        PRINTFORMW 「这已经不是白开水，而是生石灰的级别了吧」
+    ELSEIF CFLAG:E:600 == 7
+        PRINTFORMW 「嘘——%CSTR:E:0%现在不是太想说话呢」
+    ELSEIF CFLAG:E:600 == 8
+        PRINTFORMW 「会答应出来的%CSTR:E:0%真是愚蠢透顶」
+    ELSEIF CFLAG:E:600 == 9
+        PRINTFORMW 「这里必须有个人做一下自我检讨，%CSTR:E:0%看就%CALLNAME:A%吧」
+    ELSEIF CFLAG:E:600 == 10
+        PRINTFORMW 「不行啊，就算是%CSTR:E:0%也受不了这样的氛围啦……」
+    ELSEIF CFLAG:E:600 == 11
+        PRINTFORMW 「可、可能是%CSTR:E:0%状态不太好吧…」
+    ELSEIF CFLAG:E:600 == 12
+        PRINTFORMW 「总算结束了吗？真是度秒如年」
+    ELSEIF CFLAG:E:600 == 13
+        PRINTFORMW 「字面意义的没有意思」
+    ELSE
+		PRINTDATAL
+		DATAFORM 「感觉开始头痛了……」
+		DATAFORM 「喂喂…还不回去吗…」
+		DATAFORM 「早知道这样，真不应该出门的…」
+		ENDDATA
+    ENDIF
+    PRINTFORMW %CALLNAME:E%似乎不太高兴…
+ENDIF
+
+PRINTL
+;普通成功
+IF LOCAL >= -1 && LOCAL <= 1
+    CALL RELATION_UP2(E,A,8)
+    PRINTFORMW %CALLNAME:E%对%CALLNAME:A%的好感上升了！
+;成功
+ELSEIF LOCAL > 1
+    IF !RAND:3
+        CALL RELATION_UP2(E,A,10)
+    ELSEIF !RAND:2
+        CALL RELATION_UP2(E,A,13)
+    ELSE
+        CALL RELATION_UP2(E,A,15)
+    ENDIF
+    PRINTFORMW %CALLNAME:E%对%CALLNAME:A%的好感大幅上升了！
+;失败
+ELSE
+    CALL RELATION_UP2(E,A,5)
+    PRINTFORMW %CALLNAME:E%对%CALLNAME:A%的好感略微上升了！
+ENDIF
+
+;单相思可能性
+IF RELATION:E:(NO:A) >= 160 && CFLAG:E:(NO:A + 2000) != 22
+     IF RAND:2
+        PRINT
+	 ELSE
+        PRINTL
+        CFLAG:E:(NO:A + 2000) = 22
+        PRINTFORMW %CALLNAME:E%对%CALLNAME:A%好像有了点不一样的感觉…
+	 ENDIF
+ENDIF
+
+;双方单相思的条件下可能成为恋人
+IF CFLAG:E:(NO:A + 2000) == 22 && CFLAG:A:(NO:E + 2000) == 22 && CFLAG:A:(NO:E + 2000) != 29 && CFLAG:E:(NO:A + 2000) != 29
+    IF !RAND:3
+        PRINTL
+        CFLAG:A:(NO:E + 2000) = 29
+        CFLAG:E:(NO:A + 2000) = 29
+        PRINTFORML ❤ %CALLNAME:A%和%CALLNAME:E%似乎坠入了爱河 ❤
+        PRINTW
+    ENDIF
+ENDIF
+
+BASE:A:0 -= 500
+BASE:E:0 -= 500
+
+;休憩フラグを立てる（ここは特別）
+FLAG:0 = 2
+BEGIN TURNEND
+
+PRINTL
+

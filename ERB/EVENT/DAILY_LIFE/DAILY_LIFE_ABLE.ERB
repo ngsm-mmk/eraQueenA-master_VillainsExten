@@ -1,0 +1,1190 @@
+﻿;-------------------------------------------------
+;日常イベント実行判定
+;-------------------------------------------------
+;部屋にいる
+@DAILY_LIFE_ABLE_0
+;共犯者は不可
+SIF CFLAG:A:1 == 3
+	RETURN 0
+RETURN 1
+
+;歌唱练习
+@DAILY_LIFE_ABLE_1
+;歌唱技能がない
+SIF !ABL:A:歌唱技能
+	RETURN 0
+;暗い・無口・冷静タイプは歌好きじゃないと駄目
+SIF CFLAG:A:600 == 8 && !TALENT:A:擅长歌唱
+	RETURN 0
+RETURN 1
+
+;壁にブツブツ言う
+@DAILY_LIFE_ABLE_2
+;[疯癫]を持っていない
+SIF !TALENT:A:疯癫
+	RETURN 0
+RETURN 1
+
+;魔法っぽいことをしている
+@DAILY_LIFE_ABLE_3
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;[魔法・占卜属性を持っていない]
+SIF !TALENT:A:魔法／占卜属性
+	RETURN 0
+RETURN 1
+
+;実験っぽいことをしている
+@DAILY_LIFE_ABLE_4
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;[化学属性を持っていない]
+SIF !TALENT:A:化学属性
+	RETURN 0
+RETURN 1
+
+;读书
+@DAILY_LIFE_ABLE_5
+;共犯者は不可
+;SIF CFLAG:A:1 == 3
+;	RETURN 0
+SIF KANRAKU(A) && !TALENT:A:喜欢读书 && !(TALENT:A:幼稚 || TALENT:A:幼儿／幼儿退行)
+	RETURN 0
+RETURN 1
+
+;おもらし
+@DAILY_LIFE_ABLE_6
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;[漏尿癖]をもっていない
+SIF !TALENT:A:漏尿癖
+	RETURN 0
+RETURN 1
+
+;庭院でひなたぼっこ
+@DAILY_LIFE_ABLE_7
+;夜はダメ
+SIF TIME
+	RETURN 0
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;月光浴は不可
+SIF TALENT:A:月光浴
+	RETURN 0
+;吸血鬼は不可
+SIF TALENT:A:吸血鬼
+	RETURN 0
+RETURN 1
+
+;屋根の上で笑っている
+@DAILY_LIFE_ABLE_8
+;昼はダメ
+SIF !TIME
+	RETURN 0
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[妖狐][魅惑][谜之魅力][月光浴]をどれももっていない
+SIF !TALENT:A:妖狐 && !TALENT:A:魅惑 && !TALENT:A:谜之魅力 && !TALENT:A:月光浴
+	RETURN 0
+RETURN 1
+
+;兽耳/庭院で摇摇晃晃している
+@DAILY_LIFE_ABLE_9
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;[兽耳]をもっていない
+SIF !TALENT:A:兽耳
+	RETURN 0
+SIF TALENT:A:大叔 || TALENT:A:污臭敏感 || TALENT:A:兽耳 == 11 || TALENT:A:兽耳 == 12 || TALENT:A:兽耳 == 13
+	RETURN 0
+RETURN 1
+
+;縫物
+@DAILY_LIFE_ABLE_10
+;擅长裁缝無いとだめ（奴隶は男がデフォで、普通は縫物しないと思うので）
+SIF !TALENT:A:擅长裁缝
+	RETURN 0
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;侍奉精神４以下かつ[自我奉献]が無いときは不可
+SIF ABL:A:侍奉精神 <= 4 && !TALENT:A:自我奉献
+	RETURN 0
+RETURN 1
+
+;扫除
+@DAILY_LIFE_ABLE_11
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;侍奉精神４以下かつ[自我奉献]でないとき不可、喜欢扫除持ちならOK
+IF TALENT:A:喜欢扫除
+ELSEIF ABL:A:侍奉精神 <= 4 && !TALENT:A:自我奉献
+	RETURN 0
+ENDIF
+RETURN 1
+
+;洗濯
+@DAILY_LIFE_ABLE_12
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;侍奉精神４以下かつ[自我奉献]でないとき不可、喜欢扫除持ちならOK
+IF TALENT:A:喜欢扫除
+ELSEIF ABL:A:侍奉精神 <= 4 && !TALENT:A:自我奉献
+	RETURN 0
+ENDIF
+;夜は駄目
+SIF TIME
+	RETURN 0
+RETURN 1
+
+;お祈り
+@DAILY_LIFE_ABLE_13
+;共犯者は不可
+;SIF CFLAG:A:1 == 3
+;	RETURN 0
+;信仰之心ないとだめ
+SIF !TALENT:A:信仰虔诚
+	RETURN 0
+SIF TALENT:A:疯癫
+	RETURN 0
+RETURN 1
+
+;ぼー
+@DAILY_LIFE_ABLE_14
+;[缺乏感情][无动于衷]をもっていない
+SIF !TALENT:A:缺乏感情 && !TALENT:A:无动于衷
+	RETURN 0
+RETURN 1
+
+;ダンシング
+@DAILY_LIFE_ABLE_15
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意 || TALENT:A:嫉妒
+	RETURN 0
+;[喜欢引人注目]、ナルシーが無い＋踊りが得意ではないと不可
+SIF !TALENT:A:喜欢引人注目 && CSTR:A:11 != "舞蹈" && CSTR:A:11 != "踊り" && CFLAG:A:600 != 12
+	RETURN 0
+;堅物、冷静は不可
+SIF CFLAG:A:600 == 3 || CFLAG:A:600 == 8
+	RETURN 0
+RETURN 1
+
+;夜にトイレに
+@DAILY_LIFE_ABLE_16
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;[幼稚][幼儿／幼儿退行]のどちらも持っていないとき不可
+SIF !TALENT:A:幼稚 && !TALENT:A:幼儿／幼儿退行
+	RETURN 0
+;主人が[胆怯][幼稚][幼儿／幼儿退行]のいずれかを持っているとき不可
+SIF TALENT:MASTER:胆怯 || TALENT:MASTER:幼稚 || TALENT:MASTER:幼儿／幼儿退行
+	RETURN 0
+;昼間は不可
+SIF !TIME
+	RETURN 0
+RETURN 1
+
+;木に登っている
+@DAILY_LIFE_ABLE_17
+;性格タイプ：元気、甘えん坊、ショタ、不思議子限定
+SIF CFLAG:A:600 != 1 && CFLAG:A:600 != 10 && CFLAG:A:600 != 11 && CFLAG:A:600 != 13
+	RETURN 0
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;反抗刻印３あると不可
+SIF MARK:A:反抗刻印 >= 3
+	RETURN 0
+;夜は駄目
+SIF TIME
+	RETURN 0
+;喜欢运动OR性好奇がないと駄目
+SIF !TALENT:A:喜欢运动 || !TALENT:A:性好奇
+	RETURN 0
+;大人はだめ
+SIF TALENT:A:大人
+	RETURN 0
+RETURN 1
+
+;手伝い
+@DAILY_LIFE_ABLE_18
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意 || TALENT:A:疯癫
+	RETURN 0
+;反抗刻印３あると不可
+SIF MARK:A:反抗刻印 >= 3
+	RETURN 0
+;[直率][反抗]自大、自尊心高、堅物のいずれかを持っていなければ不可
+SIF !TALENT:A:直率 && !TALENT:A:反抗 && !TALENT:A:自大 && !TALENT:A:高傲 && CFLAG:A:600 == 3
+	RETURN 0
+RETURN 1
+
+;庭院で遊んでいる
+@DAILY_LIFE_ABLE_19
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意 || TALENT:A:嫉妒
+	RETURN 0
+;[幼稚][幼儿／幼儿退行]のいずれかを持っていなければ不可
+SIF !TALENT:A:幼稚 && !TALENT:A:幼儿／幼儿退行
+	RETURN 0
+;[缺乏感情][无动于衷]をもっていない
+SIF !TALENT:A:缺乏感情 && !TALENT:A:无动于衷
+	RETURN 0
+RETURN 1
+
+;ビデオ観賞
+@DAILY_LIFE_ABLE_20
+;未陷落は不可
+SIF !KANRAKU(A)
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;摄影したビデオを持っていない
+SIF !CFLAG:A:20
+	RETURN 0
+RETURN 1
+
+;浴室上がり
+@DAILY_LIFE_ABLE_21
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;堅物タイプはだめ
+SIF CFLAG:A:600 == 3
+	RETURN 0
+;[说教癖]か[害羞]を持っているとだめ
+SIF TALENT:A:说教癖 || TALENT:A:害羞
+	RETURN 0
+RETURN 1
+
+;可愛いものを見ている
+@DAILY_LIFE_ABLE_22
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[性好奇]を持っていない
+SIF !TALENT:A:性好奇
+	RETURN 0
+RETURN 1
+
+;つまみぐい
+@DAILY_LIFE_ABLE_23
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;堅物タイプ､自制力､性压抑､胆怯はだめ
+SIF CFLAG:A:600 == 3 || TALENT:A:自制力 || TALENT:A:性压抑 || TALENT:A:胆怯
+	RETURN 0
+;大人はだめ、しかし天然不思議タイプならOK
+SIF TALENT:A:大人 && CFLAG:A:600 != 13
+	RETURN 0
+RETURN 1
+
+;他の奴隶を慰めている
+@DAILY_LIFE_ABLE_24
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意 || TALENT:A:嫉妒 || TALENT:A:疯癫
+	RETURN 0
+;[元気タイプ][優しいタイプ][鼓舞]のいずれかを持っていなければ不可
+SIF !TALENT:A:鼓舞 && CFLAG:A:600 != 1 && CFLAG:A:600 != 2
+	RETURN 0
+;[悲观]か[失意]のいずれかを持つキャラがいなければ不可
+SIF DAILYLIFE_GETTALENT_1(26,162) < 0
+	RETURN 0
+;[幼稚][幼儿／幼儿退行]のいずれかを持っているとき不可
+SIF TALENT:A:幼稚 || TALENT:A:幼儿／幼儿退行
+	RETURN 0
+RETURN 1
+
+;哼着小曲ふふんふ
+@DAILY_LIFE_ABLE_25
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意 || TALENT:A:嫉妒
+	RETURN 0
+;[乐观]を持っていなければ不可
+SIF !TALENT:A:乐观
+	RETURN 0
+RETURN 1
+
+;ため息ひとつ
+@DAILY_LIFE_ABLE_26
+;共犯者
+SIF CFLAG:A:1 == 3
+	RETURN 0
+;[失意][悲观]のいずれかを持っていなければ不可
+SIF !TALENT:A:失意 && !TALENT:A:悲观 && !TALENT:A:嫉妒
+	RETURN 0
+RETURN 1
+
+;吃饭当番
+@DAILY_LIFE_ABLE_27
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;反抗刻印３あると不可
+SIF MARK:A:反抗刻印 >= 3
+	RETURN 0
+;料理技能も[擅长料理]もないと不可
+SIF !ABL:A:料理技能 && !TALENT:A:擅长料理
+	RETURN 0
+RETURN 1
+
+;ナルシズム
+@DAILY_LIFE_ABLE_28
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;[幼儿／幼儿退行]は不可
+SIF TALENT:A:幼儿／幼儿退行
+	RETURN 0
+RETURN 1
+
+;陷落前の态度
+@DAILY_LIFE_ABLE_29
+;陷落は不可
+SIF KANRAKU(A)
+	RETURN 0
+;共犯者不可
+SIF CFLAG:A:1 == 3
+	RETURN 0
+;反抗刻印１以上でないと不可
+SIF MARK:A:反抗刻印 < 2
+	RETURN 0
+;屈服刻印２以上不可
+SIF MARK:A:屈服刻印 > 1
+	RETURN 0
+;快乐刻印３以上不可
+SIF MARK:A:快乐刻印 > 2
+	RETURN 0
+;顺从３以上不可
+SIF ABL:A:顺从 > 2
+	RETURN 0
+RETURN 1
+
+;营养剂
+@DAILY_LIFE_ABLE_30
+;未陷落は不可
+SIF !KANRAKU(A)
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意 || TALENT:A:嫉妒
+	RETURN 0
+;反抗刻印３あると不可
+SIF MARK:A:反抗刻印 >= 3
+	RETURN 0
+;[化学属性]或いは[调和知识]を持ってないと不可
+SIF !TALENT:A:化学属性
+	RETURN 0
+SIF !TALENT:A:调和知识
+	RETURN 0
+RETURN 1
+
+;部屋から連れだす
+@DAILY_LIFE_ABLE_31
+;服从陷落限定
+SIF KANRAKU(A) != 3
+	RETURN 0
+;反抗刻印３あると不可
+SIF MARK:A:反抗刻印 >= 3 || TALENT:A:疯癫
+	RETURN 0
+SIF CFLAG:A:600 == 1
+	RETURN 0
+;喜欢运动はだめ
+SIF TALENT:A:喜欢运动
+	RETURN 0
+;日光浴はだめ
+SIF TALENT:A:日光浴
+	RETURN 0
+;[无动于衷][缺乏感情][悲观][老实]のどれも無い
+SIF !TALENT:A:无动于衷 && !TALENT:A:缺乏感情 && !TALENT:A:悲观 && !TALENT:A:老实
+	RETURN 0
+RETURN 1
+
+;幼稚な奴隶を励ます
+@DAILY_LIFE_ABLE_32
+;[幼稚][幼儿／幼儿退行]持ちがいない
+SIF DAILYLIFE_GETTALENT_1(150, 151) == -1
+	RETURN 0
+;[自我奉献]が無く侍奉精神４以下だと駄目
+SIF !TALENT:A:自我奉献 && ABL:A:侍奉精神 <= 4
+	RETURN 0
+;[幼稚]だと駄目
+SIF TALENT:A:幼稚 || TALENT:A:幼儿／幼儿退行
+	RETURN 0
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;反抗刻印３あると不可
+SIF MARK:A:反抗刻印 >= 3
+	RETURN 0
+RETURN 1
+
+;自我奉献な扫除
+@DAILY_LIFE_ABLE_33
+;[自我奉献]が無く侍奉精神４以下だと駄目
+SIF !TALENT:A:自我奉献 && ABL:A:侍奉精神 <= 4
+	RETURN 0
+;未陷落は不可
+SIF !KANRAKU(A)
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+RETURN 1
+
+;ドミノ倒し
+@DAILY_LIFE_ABLE_34
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;[鼓舞]が無いと不可
+;SIF !TALENT:A:鼓舞
+;	RETURN 0
+RETURN 1
+
+;いたずら/罠
+@DAILY_LIFE_ABLE_35
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;大人はだめ、しかし天然不思議タイプならOK
+SIF TALENT:A:大人 && CFLAG:A:600 != 13
+	RETURN 0
+;[温和タイプ]､[堅物タイプ]､[冷静タイプ]は不可
+SIF CFLAG:A:600 == 2 || CFLAG:A:600 == 3 || CFLAG:A:600 == 8
+	RETURN 0
+;[反抗][自大][幼稚]のいずれも無いと不可
+SIF !TALENT:A:反抗 && !TALENT:A:自大 && !TALENT:A:幼稚
+	RETURN 0
+;もうあやまったことある
+SIF GETBIT(CFLAG:A:141, 2)
+	RETURN 0
+RETURN 1
+
+;いたずら/仓库漁り
+@DAILY_LIFE_ABLE_36
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;反抗刻印３あると不可
+SIF MARK:A:反抗刻印 >= 3
+	RETURN 0
+;大人はだめ、しかし天然不思議タイプならOK
+SIF TALENT:A:大人 && CFLAG:A:600 != 13
+	RETURN 0
+;[性好奇][幼稚][孩童尺寸]いずれも無いと不可
+SIF !TALENT:A:性好奇 && !TALENT:A:幼稚 && !TALENT:A:幼儿／幼儿退行
+	RETURN 0
+;[堅物タイプ]､[冷静タイプ]は不可
+SIF CFLAG:A:600 == 3 || CFLAG:A:600 == 8
+	RETURN 0
+RETURN 1
+
+;幼儿／幼儿退行な奴隶を励ます
+@DAILY_LIFE_ABLE_37
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]、无动于衷、缺乏感情は不可
+SIF TALENT:A:失意 || TALENT:A:无动于衷 || TALENT:A:缺乏感情 || TALENT:A:嫉妒
+	RETURN 0
+;[幼儿／幼儿退行]がいない
+LOCAL = DAILYLIFE_GETTALENT_1(150)
+SIF LOCAL == -1
+	RETURN 0
+;[幼稚][孩童尺寸]不可
+SIF TALENT:A:幼稚 || TALENT:A:幼儿／幼儿退行
+	RETURN 0
+RETURN 1
+
+
+;奴隶逃走記
+@DAILY_LIFE_ABLE_40
+;陷落は不可
+SIF KANRAKU(A) > 0
+	RETURN 0
+;共犯者はNG
+SIF !CFLAG:A:1 == 3
+	RETURN 0
+SIF TALENT:A:幼儿／幼儿退行
+	RETURN 0
+;反抗刻印1以下だと不可
+SIF MARK:A:反抗刻印 < 2
+	RETURN 0
+;屈服刻印3以上だと不可
+SIF MARK:A:屈服刻印 >= 3
+	RETURN 0
+RETURN 1
+
+;[喜欢运动]素質イベント
+@DAILY_LIFE_ABLE_41
+;[喜欢运动]がないと駄目
+SIF !TALENT:A:喜欢运动
+	RETURN 0
+;未陷落は不可
+SIF !KANRAKU(A) 
+	RETURN 0
+;他出場キャラがいない
+SIF DAILYLIFE_GETCHARA(1) < 1
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意 || TALENT:A:嫉妒
+	RETURN 0
+RETURN 1
+
+;[美术属性]素質イベント
+@DAILY_LIFE_ABLE_42
+;[美术属性]がないと駄目
+SIF !TALENT:A:美术属性
+	RETURN 0
+;未陷落は不可
+SIF !KANRAKU(A) 
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;反抗刻印2以上だと不可
+SIF MARK:A:反抗刻印 >= 2
+	RETURN 0
+RETURN 1
+
+;[音乐属性]素質イベント
+@DAILY_LIFE_ABLE_43
+;得意が乐器がないと不可
+SIF CSTR:A:13 == ""
+	RETURN 0
+;未陷落は不可
+SIF !KANRAKU(A) 
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;反抗刻印2以上だと不可
+SIF MARK:A:反抗刻印 >= 2
+	RETURN 0
+RETURN 1
+
+;日常エロイベントのC責め
+@DAILY_LIFE_ABLE_50
+SIF CFLAG:A:1 == 3
+	RETURN 0
+;上位陷落でないと不可
+SIF !TALENT:A:相亲相爱 && !TALENT:A:娼妇 && !TALENT:A:隶属
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;反抗刻印あると不可
+SIF MARK:A:反抗刻印
+	RETURN 0
+RETURN 1
+
+;日常エロイベントの(肛)自慰棒を入れさせて通りを歩かせる
+@DAILY_LIFE_ABLE_51
+;共犯者は不可
+SIF CFLAG:A:1 == 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;处女＋后庭处子は不可
+SIF TALENT:A:处女 && TALENT:A:后庭处子
+	RETURN 0
+;奴隶S、主人Mの場合は不可
+SIF ABL:A:嗜虐属性 > ABL:A:受虐属性 &&  ABL:A:嗜虐属性 > 2 && ABL:MASTER:嗜虐属性 < ABL:MASTER:受虐属性 &&  ABL:MASTER:受虐属性 > 2
+	RETURN 0
+;自慰棒持ってないとダメ
+IF (TALENT:A:男性 || TALENT:A:处女 || (EXP:A:Ａ经验 > EXP:A:Ｖ经验)) && !ITEM:肛塞
+	RETURN 0
+ELSEIF !TALENT:A:男性 && !ITEM:自慰棒
+	RETURN 0
+ENDIF
+;未陷落の場合
+IF !KANRAKU(A)
+	SIF MARK:A:屈服刻印 > 2 
+		RETURN 0
+	IF (TALENT:A:男性 || TALENT:A:处女 || (EXP:A:Ａ经验 > EXP:A:Ｖ经验)) && ABL:A:Ａ感觉 < 3
+		RETURN 0
+	ELSEIF !TALENT:A:男性
+		SIF ABL:A:Ｖ感觉 < 2
+			RETURN 0
+	ENDIF
+ENDIF
+RETURN 1
+
+;舔阴/口交の練習
+@DAILY_LIFE_ABLE_71
+;共犯者は不可
+SIF CFLAG:A:1 == 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;侍奉精神2以下だと不可
+SIF ABL:A:侍奉精神 <= 2
+	RETURN 0
+RETURN 1
+
+;イケナイコトの練習
+@DAILY_LIFE_ABLE_72
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;淫乱陷落でないと不可
+SIF TALENT:A:淫乱 || TALENT:A:娼妇
+	RETURN 0
+RETURN 1
+
+;ＳＭプ雷の練習(绳子)
+@DAILY_LIFE_ABLE_73
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;绳子が無い
+SIF !ITEM:绳子
+	RETURN 0
+;[施虐狂]でない
+SIF !TALENT:A:施虐狂
+	RETURN 0
+RETURN 1
+
+;ＳＭプ雷の練習(肛責め)
+@DAILY_LIFE_ABLE_74
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;飞机杯が無い
+SIF !ITEM:飞机杯
+	RETURN 0
+;淫乱陷落でないと不可
+SIF TALENT:A:淫乱 || TALENT:A:娼妇
+	RETURN 0
+;调教经验が一定以上ないとだめ
+SIF EXP:A:调教经验 < 50
+	RETURN 0
+RETURN 1
+
+;ＳＭプ雷の練習(鞭子、打屁股)
+@DAILY_LIFE_ABLE_75
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;[施虐狂]でない
+SIF !TALENT:A:施虐狂
+	RETURN 0
+RETURN 1
+
+;ちぎれ触手
+@DAILY_LIFE_ABLE_76
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;現在の主人に[禁断的知识]ないとダメ
+SIF !TALENT:MASTER:禁断的知识
+	RETURN 0
+;触手役使术が無いとダメ
+SIF !ITEM:触手役使术
+	RETURN 0
+RETURN 1
+
+;みんなといっしょ/二人の会话１/反抗・陷落素質
+@DAILY_LIFE_ABLE_100
+;他出場キャラがいない
+SIF DAILYLIFE_GETCHARA(1) < 1
+	RETURN 0
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意 || TALENT:A:嫉妒
+	RETURN 0
+RETURN 1
+
+;みんなといっしょ/お説教
+@DAILY_LIFE_ABLE_101
+;说教癖も真面目タイプも持ってない
+SIF !TALENT:A:说教癖 && CFLAG:A:600 != 3
+	RETURN 0
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;反抗刻印３あると不可
+SIF MARK:A:反抗刻印 >= 3
+	RETURN 0
+RETURN 1
+
+
+;みんなといっしょ/二人の会话２/相性・兄弟
+@DAILY_LIFE_ABLE_102
+;他出場キャラがいない
+SIF DAILYLIFE_GETCHARA(1) < 1
+	RETURN 0
+;未陷落は不可
+SIF !KANRAKU(A)
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+RETURN 1
+
+
+;读书にドキッとする
+@DAILY_LIFE_ABLE_130
+SIF !TALENT:A:喜欢读书 && TALENT:A:喜欢运动
+	RETURN 0
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;幼稚、幼儿／幼儿退行は不可
+SIF TALENT:A:幼稚 || TALENT:A:幼儿／幼儿退行
+	RETURN 0
+;反抗刻印３あると不可
+SIF MARK:A:反抗刻印 >= 3
+	RETURN 0
+RETURN 1
+
+;吃饭にドキッとする
+@DAILY_LIFE_ABLE_131
+;未陷落は不可だけど共犯者はOK
+SIF !KANRAKU(A) && CFLAG:A:1 != 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;幼儿／幼儿退行は不可
+SIF TALENT:A:幼儿／幼儿退行
+	RETURN 0
+;反抗刻印３あると不可
+SIF MARK:A:反抗刻印 >= 3
+	RETURN 0
+RETURN 1
+
+;嫁との一時/買い物
+@DAILY_LIFE_ABLE_132
+;共犯者は不可
+SIF CFLAG:A:1 == 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;反抗刻印３あると不可
+SIF MARK:A:反抗刻印 >= 3
+	RETURN 0
+;幼儿／幼儿退行は不可
+SIF TALENT:A:幼儿／幼儿退行
+	RETURN 0
+;主人に对して恋慕陷落か隶属
+SIF !TALENT:A:恋慕 && !TALENT:A:相亲相爱 && !TALENT:A:隶属
+	RETURN 0
+RETURN 1
+
+;嫁との一時/耳扫除
+@DAILY_LIFE_ABLE_133
+;共犯者は不可
+SIF CFLAG:A:1 == 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;[相亲相爱]がないと不可
+SIF !TALENT:A:相亲相爱
+	RETURN 0
+;反抗刻印３あると不可
+SIF MARK:A:反抗刻印 >= 3
+	RETURN 0
+RETURN 1
+
+;嫁との一時/お浴室
+@DAILY_LIFE_ABLE_134
+;共犯者は不可
+SIF CFLAG:A:1 == 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;[相亲相爱]がないと不可
+SIF !TALENT:A:相亲相爱
+	RETURN 0
+;内容的に、キャラの性格が合わないと不可
+SIF !CFLAG:A:600 == 2 && !CFLAG:A:600 == 10 && !CFLAG:A:600 == 11
+	RETURN 0
+SIF !TALENT:A:老实 && !TALENT:A:自我奉献
+	RETURN 0
+;反抗刻印３あると不可
+SIF MARK:A:反抗刻印 >= 3
+	RETURN 0
+RETURN 1
+
+;嫁との一時/晩酌
+@DAILY_LIFE_ABLE_135
+;共犯者は不可
+SIF CFLAG:A:1 == 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;大人が無いと不可
+SIF !TALENT:A:大人
+	RETURN 0
+;恋慕陷落ないと不可
+SIF !TALENT:A:相亲相爱 && !TALENT:A:恋慕
+	RETURN 0
+;反抗刻印３あると不可
+SIF MARK:A:反抗刻印 >= 3
+	RETURN 0
+;昼間は不可
+SIF !TIME
+	RETURN 0
+RETURN 1
+
+;嫁との一時/料理
+@DAILY_LIFE_ABLE_136
+;共犯者は不可
+SIF CFLAG:A:1 == 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;反抗刻印３あると不可
+SIF MARK:A:反抗刻印 >= 3
+	RETURN 0
+;主人に对して恋慕陷落していないと不可
+SIF !TALENT:A:恋慕 && !TALENT:A:相亲相爱
+	RETURN 0
+IF MALE(A)
+	SIF !TALENT:A:擅长裁缝 && !TALENT:A:喜欢扫除 && !TALENT:A:自我奉献
+		RETURN 0
+	SIF TALENT:A:喜欢运动 || TALENT:A:污臭钝感
+		RETURN 0
+	SIF ABL:A:侍奉精神 < 5
+		RETURN 0
+ENDIF
+RETURN 1
+
+;嫁との一時/约会
+@DAILY_LIFE_ABLE_137
+;共犯者は不可
+SIF CFLAG:A:1 == 3
+	RETURN 0
+;反抗刻印３あると不可
+SIF MARK:A:反抗刻印 >= 3
+	RETURN 0
+;[失意]は不可
+SIF TALENT:A:失意
+	RETURN 0
+;约会フラグがないと不可
+SIF !CFLAG:A:140
+	RETURN 0
+;[相亲相爱]がないと不可
+SIF !TALENT:A:相亲相爱
+	RETURN 0
+;[小人体型]孩童尺寸は不可
+SIF TALENT:A:小人体型 || TALENT:A:幼儿／幼儿退行
+	RETURN 0
+RETURN 1
+
+;嫁との一時/花嫁修業
+@DAILY_LIFE_ABLE_138
+;共犯者は不可
+SIF CFLAG:A:1 == 3
+	RETURN 0
+;反抗３以上だと不可
+SIF MARK:A:反抗刻印 >= 3
+	RETURN 0
+;[失意]だと不可
+SIF TALENT:A:失意 || TALENT:A:嫉妒
+	RETURN 0
+;主人に对して恋慕陷落でないと駄目
+SIF !TALENT:A:恋慕 && !TALENT:A:相亲相爱
+	RETURN 0
+SIF !TALENT:A:自我奉献
+	RETURN 0
+IF MALE(A)
+	SIF !TALENT:A:擅长裁缝 && !TALENT:A:喜欢扫除 && !TALENT:A:自我奉献
+		RETURN 0
+	SIF TALENT:A:喜欢运动 || TALENT:A:污臭钝感
+		RETURN 0
+	SIF ABL:A:侍奉精神 < 5
+		RETURN 0
+ENDIF
+RETURN 1
+
+;一任阶前点滴到天明
+@DAILY_LIFE_ABLE_139
+;共犯者は不可
+SIF CFLAG:A:1 == 3
+	RETURN 0
+;未陷落は不可
+SIF !KANRAKU(A)
+	RETURN 0
+;反抗刻印３あると不可
+SIF MARK:A:反抗刻印 >= 3
+	RETURN 0
+;夜はダメ
+SIF TIME
+	RETURN 0
+;小孩子不可以
+SIF TALENT:A:幼稚 || TALENT:A:幼儿／幼儿退行
+	RETURN 0
+RETURN 1
+
+;嫁との一時/妊婦を労わる
+@DAILY_LIFE_ABLE_140
+;共犯者は不可
+SIF CFLAG:A:1 == 3
+	RETURN 0
+;[怀孕]でない
+SIF !TALENT:A:怀孕
+	RETURN 0
+;[失意]だと不可
+SIF TALENT:A:失意
+	RETURN 0
+;主人と[相亲相爱]でない
+SIF !TALENT:A:相亲相爱
+	RETURN 0
+;反抗３以上だと不可
+SIF MARK:A:反抗刻印 >= 3
+	RETURN 0
+RETURN 1
+
+;嫁との一時/写真
+@DAILY_LIFE_ABLE_141
+;共犯者は不可
+SIF CFLAG:A:1 == 3
+	RETURN 0
+;反抗３以上だと不可
+SIF MARK:A:反抗刻印 >= 3
+	RETURN 0
+;[失意]だと不可
+SIF TALENT:A:失意
+	RETURN 0
+;未陷落は不可
+SIF !KANRAKU(A)
+	RETURN 0
+;照相机と胶卷を持っていない
+SIF !ITEM:照相机 || !ITEM:胶卷
+	RETURN 0
+RETURN 1
+
+;嫁との一時/差し入れ
+@DAILY_LIFE_ABLE_142
+;共犯者は不可
+SIF CFLAG:A:1 == 3
+	RETURN 0
+;反抗３以上だと不可
+SIF MARK:A:反抗刻印 >= 3
+	RETURN 0
+;[失意]だと不可
+SIF TALENT:A:失意
+	RETURN 0
+;主人に对して恋慕・服从陷落でないと駄目
+SIF !TALENT:A:恋慕 && !TALENT:A:相亲相爱 && !TALENT:A:服从 && !TALENT:A:隶属
+	RETURN 0
+IF MALE(A)
+	SIF !TALENT:A:擅长裁缝 && !TALENT:A:喜欢扫除 && !TALENT:A:自我奉献
+		RETURN 0
+	SIF TALENT:A:喜欢运动 || TALENT:A:污臭钝感
+		RETURN 0
+	SIF ABL:A:侍奉精神 < 5
+		RETURN 0
+ENDIF
+RETURN 1
+
+;嫁との一時/点心作り
+@DAILY_LIFE_ABLE_143
+;共犯者は不可
+SIF CFLAG:A:1 == 3
+	RETURN 0
+;反抗３以上だと不可
+SIF MARK:A:反抗刻印 >= 3
+	RETURN 0
+;[失意]だと不可
+SIF TALENT:A:失意
+	RETURN 0
+;幼稚、幼儿／幼儿退行は不可
+SIF TALENT:A:幼稚 || TALENT:A:幼儿／幼儿退行 || TALENT:A:嫉妒
+	RETURN 0
+;主人に对して恋慕陷落でないと駄目
+SIF !TALENT:A:恋慕 && !TALENT:A:相亲相爱
+	RETURN 0
+IF MALE(A)
+	SIF !TALENT:A:擅长裁缝 && !TALENT:A:喜欢扫除 && !TALENT:A:自我奉献
+		RETURN 0
+	SIF TALENT:A:喜欢运动 || TALENT:A:污臭钝感
+		RETURN 0
+	SIF ABL:A:侍奉精神 < 5
+		RETURN 0
+ENDIF
+RETURN 1
+
+;嫁との一時/仮眠
+@DAILY_LIFE_ABLE_144
+;共犯者は不可
+SIF CFLAG:A:1 == 3
+	RETURN 0
+;反抗３以上だと不可
+SIF MARK:A:反抗刻印 >= 3
+	RETURN 0
+;[失意]だと不可
+SIF TALENT:A:失意
+	RETURN 0
+;[相亲相爱]でないと駄目
+SIF !TALENT:A:相亲相爱
+	RETURN 0
+RETURN 1
+
+;嫁との一時/くつろぎ
+@DAILY_LIFE_ABLE_145
+;共犯者は不可
+SIF CFLAG:A:1 == 3
+	RETURN 0
+;反抗３以上だと不可
+SIF MARK:A:反抗刻印 >= 3
+	RETURN 0
+;[失意]だと不可
+SIF TALENT:A:失意
+	RETURN 0
+;[相亲相爱]でないと駄目
+SIF !TALENT:A:相亲相爱
+	RETURN 0
+RETURN 1
+
+
+;奴隶同士、アプローチ
+@DAILY_LIFE_ABLE_180
+;未陷落は不可
+SIF !KANRAKU(A)
+	RETURN 0
+;恋慕陷落は不可
+SIF KANRAKU(A) == 1
+	RETURN 0
+;[失意]だと不可
+SIF TALENT:A:失意
+	RETURN 0
+;对象に、思い人设定の相手がいない、またはイベントに出られる状態でない
+B = 0
+REPEAT CHARANUM
+	SIF CFLAG:A:(2000 + NO:COUNT) == 22
+		B = COUNT
+REND
+SIF B < 1
+	RETURN 0
+SIF !ABL:B:同性倾向
+	RETURN 0
+SIF !DAILYLIFE_CHARA(B, 1)
+	RETURN 0
+RETURN 1
+
+
+;奴隶同士、二人でいちゃいちゃ
+@DAILY_LIFE_ABLE_181
+;未陷落は不可
+SIF !KANRAKU(A)
+	RETURN 0
+;[失意]だと不可
+SIF TALENT:A:失意 || TALENT:A:嫉妒
+	RETURN 0
+;对象に、恋人同士设定で相性130以上の相手がいない、またはイベントに出られる状態でない
+B = 0
+REPEAT CHARANUM
+	SIF CFLAG:A:(2000 + NO:COUNT) == 29
+		B = COUNT
+REND
+SIF B < 1
+	RETURN 0
+;B未陷落は不可
+SIF !KANRAKU(B)
+	RETURN 0
+SIF !DAILYLIFE_CHARA(B, 1)
+	RETURN 0
+RETURN 1
+
+

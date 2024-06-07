@@ -1,0 +1,157 @@
+﻿;-------------------------------------------------
+;两穴拳交
+;严厉な调教指令、レベル4
+;-------------------------------------------------
+@COM143
+PRINTL 两穴拳交
+STR:0 = 两穴拳交
+
+
+;丝袜びりびりフラグ
+IF TEQUIP:1 == 5 || TEQUIP:1 == 6
+	TFLAG:55 = 1
+ENDIF
+
+
+;V经验を伴う指令のフラグ(处女膜再生对応)
+TFLAG:19 = 1
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 500
+LOSEBASE:1 += 300
+
+SOURCE:1 = 200
+SOURCE:2 = 200
+SOURCE:7 = 1800
+SOURCE:13 = 100
+SOURCE:14 = 2000
+SOURCE:17 = 2000
+SOURCE:18 = 2000
+
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;フィストなどのVへの大きな痛苦は先に処理しておく
+;EXP:Ｖ经验をみる
+IF EXP:0 < EXPLV:1
+	TIMES SOURCE:7 , 2.50
+	TIMES SOURCE:18 , 4.00
+ELSEIF EXP:0 < EXPLV:2
+	TIMES SOURCE:7 , 2.00
+	TIMES SOURCE:18 , 3.50
+ELSEIF EXP:0 < EXPLV:3
+	TIMES SOURCE:7 , 1.80
+	TIMES SOURCE:18 , 3.00
+ELSEIF EXP:0 < EXPLV:4
+	TIMES SOURCE:7 , 1.60
+	TIMES SOURCE:18 , 2.50
+ELSEIF EXP:0 < EXPLV:5
+	TIMES SOURCE:7 , 1.40
+	TIMES SOURCE:18 , 2.00
+ELSEIF EXP:0 >= EXPLV:5
+	TIMES SOURCE:7 , 1.20
+	TIMES SOURCE:18 , 2.00
+ENDIF
+
+;PALAM:润滑をみる
+IF PALAM:4 < PALAMLV:1
+	TIMES SOURCE:7 , 3.00
+	TIMES SOURCE:18 , 2.00
+ELSEIF PALAM:4 < PALAMLV:2
+	TIMES SOURCE:7 , 2.50
+	TIMES SOURCE:18 , 1.50
+ELSEIF PALAM:4 < PALAMLV:3
+	TIMES SOURCE:7 , 2.00
+	TIMES SOURCE:18 , 1.20
+ELSEIF PALAM:4 < PALAMLV:4
+	TIMES SOURCE:7 , 1.50
+ELSEIF PALAM:4 >= PALAMLV:4
+	TIMES SOURCE:7 , 1.00
+ENDIF
+
+
+;フィストなどのAへの大きな痛苦は先に処理しておく
+;EXP:Ａ经验をみる
+IF EXP:1 < EXPLV:1
+	TIMES SOURCE:7 , 3.00
+	TIMES SOURCE:18 , 4.00
+ELSEIF EXP:1 < EXPLV:2
+	TIMES SOURCE:7 , 2.50
+	TIMES SOURCE:18 , 3.50
+ELSEIF EXP:1 < EXPLV:3
+	TIMES SOURCE:7 , 2.40
+	TIMES SOURCE:18 , 3.00
+ELSEIF EXP:1 < EXPLV:4
+	TIMES SOURCE:7 , 2.00
+	TIMES SOURCE:18 , 2.50
+ELSEIF EXP:1 < EXPLV:5
+	TIMES SOURCE:7 , 1.80
+	TIMES SOURCE:18 , 2.00
+ELSEIF EXP:1 >= EXPLV:5
+	TIMES SOURCE:7 , 1.60
+	TIMES SOURCE:18 , 1.50
+ENDIF
+
+;PALAM:润滑をみる
+IF PALAM:4 < PALAMLV:1
+	TIMES SOURCE:7 , 3.00
+	TIMES SOURCE:18 , 2.00
+ELSEIF PALAM:4 < PALAMLV:2
+	TIMES SOURCE:7 , 2.50
+	TIMES SOURCE:18 , 1.50
+ELSEIF PALAM:4 < PALAMLV:3
+	TIMES SOURCE:7 , 2.00
+	TIMES SOURCE:18 , 1.20
+ELSEIF PALAM:4 < PALAMLV:4
+	TIMES SOURCE:7 , 1.50
+ELSEIF PALAM:4 >= PALAMLV:4
+	TIMES SOURCE:7 , 1.00
+ENDIF
+
+;调教者が小人体型
+SIF TALENT:PLAYER:142
+	TIMES SOURCE:7 , 0.80
+
+;-------------------------------------------------
+;经验の処理
+;-------------------------------------------------
+;Ｖ经验
+EXP:0 += 25
+PRINTL Ｖ经验＋２５
+
+;Ａ经验
+EXP:1 += 25
+PRINTL Ａ经验＋２５
+
+;Ｖ,Ａ扩张经验
+IF EXP:52 == 0 && EXP:53 == 0 
+	EXP:50 += 1
+	PRINTL 异常经验＋１
+ENDIF
+
+EXP:52 += 5
+PRINTL Ｖ扩张经验＋5
+
+EXP:53 += 5
+PRINTL Ａ扩张经验＋5
+
+;蔷薇经验とか加算
+CALL COM_EXP(2)
+
+;依赖度ベクトル
+TFLAG:33 = 5
+
+;依赖度補正値(服从で1、隶属で2）
+IF TALENT:5 && ASSIPLAY == 0
+	TFLAG:30 += 1
+ELSEIF TALENT:8 && ASSIPLAY == 0
+	TFLAG:30 += 2
+ENDIF
+
+
+RETURN 1
+

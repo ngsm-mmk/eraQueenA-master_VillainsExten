@@ -1,0 +1,1485 @@
+﻿;------------------------------------
+;称号表示テスト
+;------------------------------------
+@CHARA_TITLE
+PRINTFORML 
+
+;称号ゲットしたかフラグ
+A = 0
+
+;-------------------------------------------------
+;900,総攻
+;-------------------------------------------------
+
+;主人の場合…嗜虐属性5以上、嗜虐快乐经验1500以上、落とした人数10人以上
+IF TALENT:MASTER:900 == 0
+	IF ABL:MASTER:10 > 4 && EXP:MASTER:32 >= 1500
+		Q = 0
+		Q = FLAG:30 + FLAG:31 + FLAG:32
+		IF Q > 9
+			PRINTFORM %CALLNAME:MASTER%
+			PRINT 获得了【
+			PRINTFORM %TALENTNAME:900%
+			PRINTL 】称号
+			TALENT:MASTER:900 = 1
+			A = 1
+		ENDIF
+	ENDIF
+ENDIF
+
+;奴隶の場合…嗜虐属性3以上、嗜虐快乐经验300以上、Ｖ经验＆Ａ经验10未満
+IF TALENT:TARGET:900 == 0
+	IF ABL:TARGET:10 > 2 && EXP:TARGET:32 >= 300 && EXP:TARGET:0 < 10 && EXP:TARGET:1 < 10
+		PRINTFORM %CALLNAME:TARGET%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:900%
+		PRINTL 】称号
+		TALENT:TARGET:900 = 1
+		A = 1
+	ENDIF
+ENDIF
+IF ASSI > 0 && TALENT:ASSI:900 == 0
+	IF ABL:ASSI:10 > 2 && EXP:ASSI:32 >= 300 && EXP:ASSI:0 < 10 && EXP:ASSI:1 < 10
+		PRINTFORM %CALLNAME:ASSI%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:900%
+		PRINTL 】称号
+		TALENT:ASSI:900 = 1
+		A = 1
+	ENDIF
+ENDIF
+;称号喪失　奴隶の場合…Ｖ经验ｏｒＡ经验11以上
+IF TALENT:TARGET:900
+	IF EXP:TARGET:0 > 10 || EXP:TARGET:1 > 10
+		PRINTFORM %CALLNAME:TARGET%
+		PRINT 失去了【
+		PRINTFORM %TALENTNAME:900%
+		PRINTL 】称号
+		TALENT:TARGET:900 = 0
+		A = 1
+	ENDIF
+ENDIF
+IF ASSI > 0 && TALENT:ASSI:900
+	IF EXP:ASSI:0 > 10 || EXP:ASSI:1 > 10
+		PRINTFORM %CALLNAME:ASSI%
+		PRINT 失去了【
+		PRINTFORM %TALENTNAME:900%
+		PRINTL 】称号
+		TALENT:ASSI:900 = 0
+		A = 1
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;901,捆绑达人
+;-------------------------------------------------
+	;施虐狂、眼罩、绳子、口塞球、项圈所持、嗜虐快乐经验1500以上で全角色の紧缚经验の合計が1000越え
+	;紧缚してるのは助手かも分かりませんが、「道具買った奴の趣味」ということで
+IF TALENT:MASTER:901 == 0
+	IF TALENT:MASTER:83 && ITEM:15 && ITEM:16 && ITEM:17 && ITEM:22 && EXP:MASTER:32 >= 1500
+		Q = 0
+		REPEAT CHARANUM
+			Q += EXP:COUNT:51
+		REND
+		IF Q >= 1000
+			PRINTFORM %CALLNAME:MASTER%
+			PRINT 获得了【
+			PRINTFORM %TALENTNAME:901%
+			PRINTL 】称号
+			TALENT:MASTER:901 = 1
+			A = 1
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;902,正太控
+;-------------------------------------------------
+	;手持ちキャラ3人以上且二分の一以上が矮小の男
+IF TALENT:MASTER:902 == 0 && CHARANUM > 3
+		Q = 0
+		REPEAT CHARANUM
+			SIF TALENT:COUNT:100 && MALE(COUNT)
+			Q += 1
+		REND
+		Q = Q * 2
+		IF CHARANUM <= Q
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:902%
+		PRINTL 】称号
+		TALENT:MASTER:902 = 1
+		A = 1
+		ENDIF
+ENDIF
+
+IF TALENT:MASTER:902
+	Q = 0
+	REPEAT CHARANUM
+		SIF TALENT:COUNT:100 && MALE(COUNT)
+			Q += 1
+	REND
+	Q = Q * 2
+	IF CHARANUM > Q
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 失去了【
+		PRINTFORM %TALENTNAME:902%
+		PRINTL 】称号
+		TALENT:MASTER:902 = 0
+		A = 1
+	ENDIF
+ENDIF
+
+
+;-------------------------------------------------
+;903,肌肉控
+;-------------------------------------------------
+	;手持ちキャラ3人以上且二分の一以上が高大の男
+IF TALENT:MASTER:903 == 0 && CHARANUM > 3
+		Q = 0
+		REPEAT CHARANUM
+			SIF TALENT:COUNT:113 && MALE(COUNT)
+			Q += 1
+		REND
+		Q = Q * 2
+		IF CHARANUM <= Q
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:903%
+		PRINTL 】称号
+		TALENT:MASTER:903 = 1
+		A = 1
+		ENDIF
+ENDIF
+
+IF TALENT:MASTER:903
+	Q = 0
+	REPEAT CHARANUM
+		SIF TALENT:COUNT:113 && MALE(COUNT)
+			Q += 1
+	REND
+	Q = Q * 2
+	IF CHARANUM > Q
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 失去了【
+		PRINTFORM %TALENTNAME:903%
+		PRINTL 】称号
+		TALENT:MASTER:903 = 0
+		A = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;904,腐调教师
+;-------------------------------------------------
+	;手持ちキャラ4人以上で、半分以上の同性倾向が3以上
+IF TALENT:MASTER:904 == 0
+	IF CHARANUM > 4
+		Q = 0
+		REPEAT CHARANUM
+			SIF ABL:COUNT:20 > 2 && MALE(COUNT)
+				Q += 1
+		REND
+		Q = Q * 2
+		IF CHARANUM <= Q
+			PRINTFORM %CALLNAME:MASTER%
+			PRINT 获得了【
+			PRINTFORM %TALENTNAME:904%
+			PRINTL 】称号
+			TALENT:MASTER:904 = 1
+			A = 1
+		ENDIF
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;905,女仆控
+;-------------------------------------------------
+	;手持ちキャラ3人以上且二分の一以上に女仆装を着せて调教结束状態
+IF TALENT:MASTER:905 == 0 && CHARANUM > 3
+		Q = 0
+		REPEAT CHARANUM
+			SIF CFLAG:COUNT:129 == 4
+			Q += 1
+		REND
+		Q = Q * 2
+		IF CHARANUM <= Q
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:905%
+		PRINTL 】称号
+		TALENT:MASTER:905 = 1
+		A = 1
+		ENDIF
+ENDIF
+IF TALENT:MASTER:905 == 1
+	Q = 0
+	REPEAT CHARANUM
+		SIF CFLAG:COUNT:129 == 4
+			Q += 1
+	REND
+	Q = Q * 2
+	IF CHARANUM > Q
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 失去了【
+		PRINTFORM %TALENTNAME:905%
+		PRINTL 】称号
+		TALENT:MASTER:905 = 0
+		A = 1
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;906,眼镜控
+;-------------------------------------------------
+;手持ちキャラ3人以上、且つ半分以上に眼镜をつけて调教结束状態
+IF TALENT:MASTER:906 == 0 && CHARANUM > 3
+	Q = 0
+	REPEAT CHARANUM
+		SIF CFLAG:COUNT:131 == 1
+			Q += 1
+	REND
+	Q = Q * 2
+	IF CHARANUM <= Q
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:906%
+		PRINTL 】称号
+		TALENT:MASTER:906 = 1
+		A = 1
+	ENDIF
+ENDIF
+IF TALENT:MASTER:906 == 1
+	Q = 0
+	REPEAT CHARANUM
+		SIF CFLAG:COUNT:131 == 1
+			Q += 1
+	REND
+	Q = Q * 2
+	IF CHARANUM > Q
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 失去了【
+		PRINTFORM %TALENTNAME:906%
+		PRINTL 】称号
+		TALENT:MASTER:906 = 0
+		A = 1
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;907,女王様受
+;-------------------------------------------------
+	;主人の場合…嗜虐属性3以上、Ｖ经验500以上、嗜虐快乐经验1000以上
+IF TALENT:MASTER:907 == 0
+    ;男性主人
+    IF TALENT:MASTER:140 || TALENT:MASTER:137
+        IF ABL:MASTER:10 > 2 && EXP:MASTER:1 >= 500 && EXP:MASTER:32 >= 1000
+            PRINTFORM %CALLNAME:MASTER%
+            PRINT 获得了【
+            PRINTFORM %TALENTNAME:907%
+            PRINTL 】称号
+            TALENT:MASTER:907 = 1
+            A = 1
+        ENDIF
+    ELSE
+        IF ABL:MASTER:10 > 2 && EXP:MASTER:0 >= 500 && EXP:MASTER:32 >= 1000
+            PRINTFORM %CALLNAME:MASTER%
+            PRINT 获得了【
+            PRINTFORM %TALENTNAME:907%
+            PRINTL 】称号
+            TALENT:MASTER:907 = 1
+            A = 1
+        ENDIF
+    ENDIF
+ENDIF
+	;奴隶の場合…嗜虐属性3以上、高傲、Ａ经验200以上、嗜虐快乐经验200以上
+IF TALENT:TARGET:907 == 0
+	IF ABL:TARGET:10 > 2 && TALENT:TARGET:15 && EXP:TARGET:1 > 199 && EXP:TARGET:32 >= 200
+		PRINTFORM %CALLNAME:TARGET%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:907%
+		PRINTL 】称号
+		TALENT:TARGET:907 = 1
+		A = 1
+	ENDIF
+ENDIF
+IF ASSI > 0 && TALENT:ASSI:907 == 0
+	IF ABL:ASSI:10 > 2 && TALENT:ASSI:15 && EXP:ASSI:1 > 199 && EXP:ASSI:32 >= 200
+		PRINTFORM %CALLNAME:ASSI%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:907%
+		PRINTL 】称号
+		TALENT:ASSI:907 = 1
+		A = 1
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;908,轻佻
+;-------------------------------------------------
+;恋慕＋SEX中毒3。想いは一途なんだが、誘われたら誰彼構わず股を開くようです
+;欲望3以上+CVAB感覚合計10以上+快印3+绝顶200以上+百合/蔷薇经验1000以上)
+
+IF TALENT:TARGET:908 == 0 && (TALENT:TARGET:3 == 1 || TALENT:TARGET:6 == 1) && ABL:18 > 2
+	IF ABL:1 >= 3 && ABL:3+ABL:4+ABL:5+ABL:6 >= 10 && MARK:1 == 3 && EXP:2 >= 200 && (EXP:40 >= 1000 || EXP:41 >= 1000)
+		;絡んだことがある人数
+		R = 0
+		REPEAT CHARANUM
+			SIF CFLAG:(NO:COUNT + 1199) > 0
+				R += 1
+		REND
+		IF R > 3
+			PRINTFORM %CALLNAME:TARGET%
+			PRINT 获得了【
+			PRINTFORM %TALENTNAME:908%
+			PRINTL 】称号
+			TALENT:TARGET:908 = 1
+			A = 1
+		ENDIF
+	ENDIF
+ENDIF
+IF ASSI > 0 && TALENT:ASSI:908 == 0 && (TALENT:ASSI:3 == 1 || TALENT:ASSI:6 == 1) && ABL:ASSI:18 > 2
+	IF ABL:ASSI:1 >= 3 && ABL:ASSI:3+ABL:ASSI:4+ABL:ASSI:5+ABL:ASSI:6 >= 10 && MARK:ASSI:1 == 3 && EXP:ASSI:2 >= 200 && (EXP:ASSI:40 >= 1000 || EXP:ASSI:41 >= 1000)
+		;絡んだことがある人数
+		R = 0
+		REPEAT CHARANUM
+			SIF CFLAG:(NO:COUNT + 1199) > 0
+				R += 1
+		REND
+		IF R > 3
+			PRINTFORM %CALLNAME:ASSI%
+			PRINT 获得了【
+			PRINTFORM %TALENTNAME:908%
+			PRINTL 】称号
+			TALENT:ASSI:908 = 1
+			A = 1
+		ENDIF
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;909,触手控
+;-------------------------------------------------
+;奴隶の触手经验100以上
+IF TALENT:TARGET:909 == 0 && EXP:触手经验 >= 100
+			PRINTFORM %CALLNAME:TARGET%
+			PRINT 获得了【
+			PRINTFORM %TALENTNAME:909%
+			PRINTL 】称号
+			TALENT:TARGET:909 = 1
+			A = 1
+ENDIF
+
+;-------------------------------------------------
+;910,すっごいドS
+;-------------------------------------------------
+;主人の場合…嗜虐属性6以上、嗜虐快乐经验2000以上
+IF TALENT:MASTER:910 == 0
+	IF ABL:MASTER:10 > 5 && EXP:MASTER:32 >= 2000
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:910%
+		PRINTL 】称号
+		TALENT:MASTER:910 = 1
+		A = 1
+	ENDIF
+ENDIF
+;奴隶の場合…嗜虐属性4以上、嗜虐快乐经验500以上
+IF TALENT:TARGET:910 == 0
+	IF ABL:TARGET:10 > 3 && EXP:TARGET:32 >= 500
+		PRINTFORM %CALLNAME:TARGET%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:910%
+		PRINTL 】称号
+		TALENT:TARGET:910 = 1
+		A = 1
+	ENDIF
+ENDIF
+IF ASSI > 0 && TALENT:ASSI:910 == 0
+	IF ABL:ASSI:10 > 3 && EXP:ASSI:32 >= 500
+		PRINTFORM %CALLNAME:ASSI%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:910%
+		PRINTL 】称号
+		TALENT:ASSI:910 = 1
+		A = 1
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;911,すっごいドM
+;-------------------------------------------------
+;受虐属性5以上、痛苦快乐经验500以上
+IF TALENT:MASTER:911 == 0
+	IF ABL:MASTER:9 > 4 && EXP:MASTER:30 >= 500
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:911%
+		PRINTL 】称号
+		TALENT:MASTER:911 = 1
+		A = 1
+	ENDIF
+ENDIF
+IF TALENT:TARGET:911 == 0
+	IF ABL:TARGET:9 > 4 && EXP:TARGET:30 >= 500
+		PRINTFORM %CALLNAME:TARGET%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:911%
+		PRINTL 】称号
+		TALENT:TARGET:911 = 1
+		A = 1
+	ENDIF
+ENDIF
+IF ASSI > 0 && TALENT:ASSI:911 == 0
+	IF ABL:ASSI:9 > 4 && EXP:ASSI:30 >= 500
+		PRINTFORM %CALLNAME:ASSI%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:911%
+		PRINTL 】称号
+		TALENT:ASSI:911 = 1
+		A = 1
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;912,爱的传道士
+;-------------------------------------------------
+;5人以上に恋慕をつけた
+IF TALENT:MASTER:912 == 0
+	IF FLAG:30 > 4
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:912%
+		PRINTL 】称号
+		TALENT:MASTER:912 = 1
+		A = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;913,酒池肉林的国王
+;-------------------------------------------------
+;5人以上に淫乱をつけた
+IF TALENT:MASTER:913 == 0
+	IF FLAG:31 > 4
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:913%
+		PRINTL 】称号
+		TALENT:MASTER:913 = 1
+		A = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;914,异常
+;-------------------------------------------------
+;主人の場合：奴隶達の异常经验の合計が30以上
+IF TALENT:MASTER:914 == 0
+	Q = 0
+	REPEAT CHARANUM
+		Q += EXP:COUNT:50
+	REND
+	IF Q >= 30
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:914%
+		PRINTL 】称号
+		TALENT:MASTER:914 = 1
+		A = 1
+	ENDIF
+ENDIF
+
+;异常经验10以上
+IF TALENT:TARGET:914 == 0
+	IF EXP:TARGET:50 > 9
+	PRINTFORM %CALLNAME:TARGET%
+	PRINT 获得了【
+		PRINTFORM %TALENTNAME:914%
+		PRINTL 】称号
+		TALENT:TARGET:914 = 1
+		A = 1
+	ENDIF
+ENDIF
+IF ASSI > 0 && TALENT:ASSI:914 == 0
+	IF EXP:ASSI:50 > 9
+	PRINTFORM %CALLNAME:ASSI%
+	PRINT 获得了【
+		PRINTFORM %TALENTNAME:914%
+		PRINTL 】称号
+		TALENT:ASSI:914 = 1
+		A = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;915,ＳＭ的女王大人
+;-------------------------------------------------
+;5人以上に服从をつけた
+IF TALENT:MASTER:915 == 0
+	IF FLAG:32 > 4
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:915%
+		PRINTL 】称号
+		TALENT:MASTER:915 = 1
+		A = 1
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;916,处女守护者
+;-------------------------------------------------
+;落とした人数1人以上&&处女
+IF TALENT:MASTER:916 == 0
+	Q = FLAG:30 + FLAG:31 + FLAG:32
+	IF Q >= 1 && TALENT:MASTER:0
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:916%
+		PRINTL 】称号
+		TALENT:MASTER:916 = 1
+		A = 1
+	ENDIF
+ENDIF
+
+IF TALENT:MASTER:916 && TALENT:MASTER:0 == 0
+	PRINTFORM %CALLNAME:MASTER%
+	PRINT 失去了【
+	PRINTFORM %TALENTNAME:916%
+	PRINTL 】称号
+	TALENT:MASTER:916 = 0
+	A = 1
+ENDIF
+
+
+;-------------------------------------------------
+;917,铁壁的Ｗ城门
+;-------------------------------------------------
+;落とした人数2人以上&处女&后庭处子
+IF TALENT:MASTER:917 == 0
+	Q = FLAG:30 + FLAG:31 + FLAG:32
+	IF Q >= 2 && TALENT:MASTER:0 && TALENT:MASTER:161
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:917%
+		PRINTL 】称号
+		TALENT:MASTER:917 = 1
+		A = 1
+	ENDIF
+ENDIF
+
+IF TALENT:MASTER:917 && (TALENT:MASTER:0 == 0 || TALENT:MASTER:161 == 0)
+	PRINTFORM %CALLNAME:MASTER%
+	PRINT 失去了【
+	PRINTFORM %TALENTNAME:917%
+	PRINTL 】称号
+	TALENT:MASTER:917 = 0
+	A = 1
+ENDIF
+
+;-------------------------------------------------
+;918,可攻可受
+;-------------------------------------------------
+;奴隶…嗜虐属性3以上、嗜虐快乐经验200以上、Ａ经验200以上､同性倾向lv3以上
+IF TALENT:TARGET:918 == 0
+	IF ABL:TARGET:10 > 2 && EXP:TARGET:32 >= 200 && EXP:TARGET:1 >= 200 && ABL:TARGET:20 > 2
+		PRINTFORM %CALLNAME:TARGET%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:918%
+		PRINTL 】称号
+		TALENT:TARGET:918 = 1
+		A = 1
+	ENDIF
+ENDIF
+IF ASSI > 0 && TALENT:ASSI:918 == 0
+	IF ABL:ASSI:10 > 2 && EXP:ASSI:32 >= 200 && EXP:ASSI:1 >= 200 && ABL:ASSI:20 > 2
+		PRINTFORM %CALLNAME:ASSI%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:918%
+		PRINTL 】称号
+		TALENT:ASSI:918 = 1
+		A = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;919,暴露狂､
+;-------------------------------------------------
+;露出プ雷中のまま一日を終えた。露出癖lv4以上｡
+IF TALENT:919 == 0 && TEQUIP:29 && ABL:8 > 3
+	PRINTFORM %CALLNAME:TARGET%
+	PRINT 获得了【
+	PRINTFORM %TALENTNAME:919%
+	PRINTL 】称号
+	TALENT:TARGET:919 = 1
+	A = 1
+ENDIF
+
+
+;-------------------------------------------------
+;920,动物园园长
+;-------------------------------------------------
+;兽耳の奴隶3人以上。设定を前回着衣状態にしないと达成できない
+IF TALENT:MASTER:920 == 0
+	Q = 0
+	REPEAT CHARANUM
+		SIF TALENT:COUNT:143
+			Q += 1
+	REND
+	IF Q > 2
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:920%
+		PRINTL 】称号
+		TALENT:MASTER:920 = 1
+		A = 1
+	ENDIF
+ENDIF
+IF TALENT:MASTER:920 == 1
+	Q = 0
+	REPEAT CHARANUM
+		SIF TALENT:COUNT:143
+			Q += 1
+	REND
+	IF Q <= 2
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 失去了【
+		PRINTFORM %TALENTNAME:920%
+		PRINTL 】称号
+		TALENT:MASTER:920 = 0
+		A = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;921,兄弟丼
+;-------------------------------------------------
+;兄弟キャラとの絡みの经验が200以上
+IF TALENT:921 == 0 
+	;兄弟を探すCFLAG:2000～2400
+	REPEAT CHARANUM
+		IF (CFLAG:(2000 + NO:COUNT) == 1 || CFLAG:(2000 + NO:COUNT) == 2)
+			;もし兄弟がいるなら、今度はそのキャラとの调教经验を見る
+			IF CFLAG:(NO:COUNT + 1199) >= 200 && TALENT:921 == 0 
+				PRINTFORM %CALLNAME%和%CALLNAME:COUNT%
+				PRINT 获得了【
+				PRINTFORM %TALENTNAME:921%
+				PRINTL 】称号
+				TALENT:921 = 1
+				TALENT:COUNT:921 = 1
+				A = 1
+			ENDIF
+		ENDIF
+	REND
+ENDIF
+IF ASSI > 0 && TALENT:ASSI:921 == 0 
+	;兄弟を探すCFLAG:2000～2400
+	REPEAT CHARANUM
+		IF (CFLAG:ASSI:(2000 + NO:COUNT) == 1 || CFLAG:ASSI:(2000 + NO:COUNT) == 2)
+			;もし兄弟がいるなら、今度はそのキャラとの调教经验を見る
+			IF CFLAG:ASSI:(NO:COUNT + 1199) >= 200 && TALENT:ASSI:921 == 0 
+				PRINTFORM %CALLNAME:ASSI%和%CALLNAME:COUNT%
+				PRINT 获得了【
+				PRINTFORM %TALENTNAME:921%
+				PRINTL 】称号
+				TALENT:ASSI:921 = 1
+				TALENT:COUNT:921 = 1
+				A = 1
+			ENDIF
+		ENDIF
+	REND
+ENDIF
+;-------------------------------------------------
+;922,挂满精液
+;-------------------------------------------------
+;奴隶の精液经验500以上
+IF TALENT:922 == 0 && EXP:精液经验 >= 500
+	PRINTFORM %CALLNAME:TARGET%
+	PRINT 获得了【
+	PRINTFORM %TALENTNAME:922%
+	PRINTL 】称号
+	TALENT:922 = 1
+	A = 1
+ENDIF
+IF ASSI > 0 && TALENT:ASSI:922 == 0 && EXP:ASSI:精液经验 >= 500
+	PRINTFORM %CALLNAME:ASSI%
+	PRINT 获得了【
+	PRINTFORM %TALENTNAME:922%
+	PRINTL 】称号
+	TALENT:ASSI:922 = 1
+	A = 1
+ENDIF
+
+
+;-------------------------------------------------
+;923,榨精师
+;-------------------------------------------------
+;精液经验500以上
+IF TALENT:MASTER:923 == 0 && EXP:MASTER:精液经验 >= 500
+	PRINTFORM %CALLNAME:MASTER%
+	PRINT 获得了【
+	PRINTFORM %TALENTNAME:923%
+	PRINTL 】称号
+	TALENT:MASTER:923 = 1
+	A = 1
+ENDIF
+;-------------------------------------------------
+;924,口交达人
+;-------------------------------------------------
+;主人…口交经验500以上
+IF TALENT:MASTER:924 == 0 && EXP:MASTER:口交经验 >= 500
+	PRINTFORM %CALLNAME:MASTER%
+	PRINT 获得了【
+	PRINTFORM %TALENTNAME:924%
+	PRINTW 】称号
+	TALENT:MASTER:924 = 1
+	IF !TALENT:MASTER:善用舌头
+		PRINTL 学会了『善用舌头』
+		TALENT:MASTER:善用舌头 = 1
+	ENDIF
+	A = 1
+ENDIF
+
+;奴隶…口交经验200以上
+IF TALENT:924 == 0 && EXP:口交经验 >= 200
+	PRINTFORM %CALLNAME%
+	PRINT 获得了【
+	PRINTFORM %TALENTNAME:924%
+	PRINTL 】称号
+	TALENT:924 = 1
+	A = 1
+ENDIF
+IF ASSI > 0 && TALENT:ASSI:924 == 0 && EXP:ASSI:口交经验 >= 200
+	PRINTFORM %CALLNAME:ASSI%
+	PRINT 获得了【
+	PRINTFORM %TALENTNAME:924%
+	PRINTL 】称号
+	TALENT:ASSI:924 = 1
+	A = 1
+ENDIF
+;-------------------------------------------------
+;925,废物
+;-------------------------------------------------
+;奴隶が童贞でＡ经验200以上
+IF TALENT:925 == 0 && TALENT:童贞 && EXP:Ａ经验 >= 200
+	PRINTFORM %CALLNAME%
+	PRINT 获得了【
+	PRINTFORM %TALENTNAME:925%
+	PRINTL 】称号
+	TALENT:925 = 1
+	A = 1
+ENDIF
+;童贞じゃないと無くす
+IF TALENT:925 == 1 && !TALENT:童贞
+	PRINTFORM %CALLNAME%
+	PRINT 失去了【
+	PRINTFORM %TALENTNAME:925%
+	PRINTL 】称号
+	TALENT:925 = 0
+	A = 1
+ENDIF
+
+
+;-------------------------------------------------
+;926,舌尖高手
+;-------------------------------------------------
+;主人…舔阴经验200以上
+IF TALENT:MASTER:926 == 0 && EXP:MASTER:舔阴经验 >= 200
+	PRINTFORM %CALLNAME:MASTER%
+	PRINT 获得了【
+	PRINTFORM %TALENTNAME:926%
+	PRINTW 】称号
+	TALENT:MASTER:926 = 1
+	IF !TALENT:MASTER:善用舌头
+		PRINTL 学会了『善用舌头』
+		TALENT:MASTER:善用舌头 = 1
+	ENDIF
+	A = 1
+ENDIF
+
+;奴隶…舔阴经验200以上
+IF TALENT:926 == 0 && EXP:舔阴经验 >= 200
+	PRINTFORM %CALLNAME%
+	PRINT 获得了【
+	PRINTFORM %TALENTNAME:926%
+	PRINTL 】称号
+	TALENT:926 = 1
+	A = 1
+ENDIF
+IF ASSI > 0 && TALENT:ASSI:926 == 0 && EXP:ASSI:舔阴经验 >= 200
+	PRINTFORM %CALLNAME:ASSI%
+	PRINT 获得了【
+	PRINTFORM %TALENTNAME:926%
+	PRINTL 】称号
+	TALENT:ASSI:926 = 1
+	A = 1
+ENDIF
+
+;-------------------------------------------------
+;927,扩张高手
+;-------------------------------------------------
+;奴隶達の拡張经验が合計200以上
+IF TALENT:MASTER:927 == 0
+	Q = 0
+	REPEAT CHARANUM
+		Q += EXP:COUNT:49
+		Q += EXP:COUNT:52
+		Q += EXP:COUNT:53
+	REND
+	IF Q >= 200
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:927%
+		PRINTL 】称号
+		TALENT:MASTER:927 = 1
+		A = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;928,触手高手
+;-------------------------------------------------
+;奴隶達の觸手经验が合計500以上
+IF TALENT:MASTER:928 == 0
+	Q = 0
+	REPEAT CHARANUM
+		Q += EXP:COUNT:触手经验
+	REND
+	IF Q >= 500
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:928%
+		PRINTL 】称号
+		TALENT:MASTER:928 = 1
+		A = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;929,光屁股星人
+;-------------------------------------------------
+;お尻だけで绝顶しちゃった经验が合計100以上（男奴隶限定）
+IF TALENT:929 == 0 && CFLAG:50 >= 100 && MALE(TARGET)
+	PRINTFORM %CALLNAME%
+	PRINT 获得了【
+	PRINTFORM %TALENTNAME:929%
+	PRINTL 】称号
+	TALENT:929 = 1
+	A = 1
+ENDIF
+IF TALENT:929 == 1 && !MALE(TARGET)
+	PRINTFORM %CALLNAME%
+	PRINT 失去了【
+	PRINTFORM %TALENTNAME:929%
+	PRINTL 】称号
+	TALENT:929 = 0
+	A = 1
+ENDIF
+;-------------------------------------------------
+;930,淫乳男孩
+;-------------------------------------------------
+;乳首だけで绝顶しちゃった经验が合計100以上（男奴隶限定）
+IF TALENT:930 == 0 && CFLAG:51 >= 100 && MALE(TARGET)
+	PRINTFORM %CALLNAME%
+	PRINT 获得了【
+	PRINTFORM %TALENTNAME:930%
+	PRINTL 】称号
+	TALENT:930 = 1
+	A = 1
+ENDIF
+IF TALENT:930 == 1 && !MALE(TARGET)
+	PRINTFORM %CALLNAME%
+	PRINT 失去了【
+	PRINTFORM %TALENTNAME:930%
+	PRINTL 】称号
+	TALENT:930 = 0
+	A = 1
+ENDIF
+;-------------------------------------------------
+;931,童贞マニア
+;-------------------------------------------------
+;陷落キャラ3人以上で、半分以上がまだ童贞
+IF TALENT:MASTER:931 == 0
+	Q = FLAG:30 + FLAG:31 + FLAG:32
+	IF Q >= 3
+		R = 0
+		REPEAT CHARANUM
+			SIF TALENT:COUNT:童贞 && KANRAKU(COUNT)
+				R += 1
+		REND
+		R = R * 2
+		IF Q <= R
+			PRINTFORM %CALLNAME:MASTER%
+			PRINT 获得了【
+			PRINTFORM %TALENTNAME:931%
+			PRINTL 】称号
+			TALENT:MASTER:931 = 1
+			A = 1
+		ENDIF
+	ENDIF
+ENDIF
+IF TALENT:MASTER:931
+	Q = FLAG:30 + FLAG:31 + FLAG:32
+	R = 0
+	REPEAT CHARANUM
+		SIF TALENT:COUNT:童贞 && KANRAKU(COUNT)
+			R += 1
+	REND
+	R = R * 2
+	IF Q > R
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 失去了【
+		PRINTFORM %TALENTNAME:931%
+		PRINTL 】称号
+		TALENT:MASTER:931 = 0
+		A = 1
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;932,接吻魔
+;-------------------------------------------------
+;陷落キャラ3人以上で、半分以上の接吻指令実行回数が100回以上。
+IF TALENT:MASTER:932 == 0
+	Q = FLAG:30 + FLAG:31 + FLAG:32
+	IF Q >= 3
+		R = 0
+		REPEAT CHARANUM
+			SIF CFLAG:COUNT:314 >= 100
+				R += 1
+		REND
+		R = R * 2
+		IF Q <= R
+			PRINTFORM %CALLNAME:MASTER%
+			PRINT 获得了【
+			PRINTFORM %TALENTNAME:932%
+			PRINTL 】称号
+			TALENT:MASTER:932 = 1
+			A = 1
+		ENDIF
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;933,反被狩猎
+;-------------------------------------------------
+;逆强奸された回数が200回以上。
+IF TALENT:933 == 0
+	IF (CFLAG:422 + CFLAG:423) >= 200
+		PRINTFORM %CALLNAME%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:933%
+		PRINTL 】称号
+		TALENT:933 = 1
+		A = 1
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;934,热衷假阳具
+;-------------------------------------------------
+;主人専用称号　ペニバンで入れた回数が500回以上
+IF TALENT:MASTER:934 == 0
+	IF FLAG:96 >= 500
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:934%
+		PRINTL 】称号
+		TALENT:MASTER:934 = 1
+		A = 1
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;935,包装师
+;-------------------------------------------------
+;射精止め指令の実行回数が50以上
+IF TALENT:MASTER:935 == 0
+	IF CFLAG:MASTER:27 >= 50
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:935%
+		PRINTL 】称号
+		TALENT:MASTER:935 = 1
+		A = 1
+	ENDIF
+ENDIF
+IF ASSI > 0 && TALENT:ASSI:935 == 0
+	IF CFLAG:ASSI:27 >= 50
+		PRINTFORM %CALLNAME:ASSI%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:935%
+		PRINTL 】称号
+		TALENT:ASSI:935 = 1
+		A = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;936,人体椅子
+;-------------------------------------------------
+;家具された回数＋颜面骑乘された回数が100以上
+IF TALENT:TARGET:936 == 0
+	IF (CFLAG:374 + CFLAG:377) >= 100
+		PRINTFORM %CALLNAME:TARGET%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:936%
+		PRINTL 】称号
+		TALENT:TARGET:936 = 1
+		A = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;937,针山
+;-------------------------------------------------
+;针で刺された回数が100以上
+IF TALENT:TARGET:937 == 0
+	IF CFLAG:368 >= 50
+		PRINTFORM %CALLNAME:TARGET%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:937%
+		PRINTL 】称号
+		TALENT:TARGET:937 = 1
+		A = 1
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;938,究极抖M调教师
+;-------------------------------------------------
+;痛苦快乐经验1000以上、嗜虐快乐经验200未満、嗜虐属性3以上の奴隶が半分越え
+IF TALENT:MASTER:938 == 0
+	IF EXP:MASTER:痛苦快乐经验 >= 1000 && EXP:MASTER:嗜虐快乐经验 < 200
+		Q = 0
+		REPEAT CHARANUM
+			SIF ABL:COUNT:嗜虐属性 >= 3
+				Q += 1
+		REND
+		Q = Q * 2
+		IF CHARANUM < Q
+			PRINTFORM %CALLNAME:MASTER%
+			PRINT 获得了【
+			PRINTFORM %TALENTNAME:938%
+			PRINTL 】称号
+			TALENT:MASTER:938 = 1
+			A = 1
+		ENDIF
+	ENDIF
+ENDIF
+
+IF TALENT:MASTER:938
+	Q = 0
+	REPEAT CHARANUM
+		SIF ABL:COUNT:嗜虐属性 >= 3
+			Q += 1
+	REND
+	Q = Q * 2
+	IF EXP:MASTER:嗜虐快乐经验 >= 200 || CHARANUM >= Q
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 失去了【
+		PRINTFORM %TALENTNAME:938%
+		PRINTL 】称号
+		TALENT:MASTER:938 = 0
+		A = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;939,踢踏舞队
+;-------------------------------------------------
+;100回も踏まれてイったものが得られる
+IF TALENT:TARGET:939 == 0
+	IF CFLAG:28 >= 100
+		PRINTFORM %CALLNAME:TARGET%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:939%
+		PRINTL 】称号
+		TALENT:TARGET:939 = 1
+		A = 1
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;940,像狗一样留下记号
+;-------------------------------------------------
+;20回の调教で野外放尿した
+IF TALENT:TARGET:940 == 0 && CFLAG:5 > CFLAG:8
+	CFLAG:29 += 1
+	CFLAG:8 = CFLAG:5
+	IF CFLAG:29 >= 20
+		PRINTFORM %CALLNAME:TARGET%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:940%
+		PRINTL 】称号
+		TALENT:TARGET:940 = 1
+		A = 1
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;941,萝莉控
+;-------------------------------------------------
+;主人獲得的條件，持有角色3人以上且半數非男人+嬌小體型+貧乳
+IF TALENT:MASTER:941 == 0 && CHARANUM > 3
+	Q = 0
+	REPEAT CHARANUM
+		SIF !(TALENT:COUNT:140) && (TALENT:COUNT:矮小体型 || TALENT:COUNT:小人体型) && (TALENT:COUNT:贫乳 || TALENT:COUNT:绝壁)
+			Q += 1
+	REND
+	Q = Q * 2
+	IF CHARANUM <= Q
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:941%
+		PRINTL 】称号
+		TALENT:MASTER:941 = 1
+		A = 1
+	ENDIF
+ENDIF
+IF TALENT:MASTER:941
+	Q = 0
+	REPEAT CHARANUM
+		SIF !(TALENT:COUNT:140) && (TALENT:COUNT:矮小体型 || TALENT:COUNT:小人体型) && (TALENT:COUNT:贫乳 || TALENT:COUNT:绝壁)
+			Q += 1
+	REND
+	Q = Q * 2
+	IF CHARANUM > Q
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 失去了【
+		PRINTFORM %TALENTNAME:941%
+		PRINTL 】称号
+		TALENT:MASTER:941 = 0
+		A = 1
+	ENDIF
+ENDIF
+
+;奴隸獲得的條件
+;恋慕ルートか服从ルート、主人が矮小で贫乳の女
+IF TALENT:TARGET:941 == 0
+	IF (KANRAKU(TARGET) == 1 || KANRAKU(TARGET) == 3) && !MALE(MASTER) && (TALENT:MASTER:矮小体型 || TALENT:MASTER:小人体型) && (TALENT:MASTER:贫乳 || TALENT:MASTER:绝壁)
+		PRINTFORM %CALLNAME:TARGET%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:941%
+		PRINTL 】称号
+		TALENT:TARGET:941 = 1
+		A = 1
+	ENDIF
+ENDIF
+IF TALENT:TARGET:941 && ((!TALENT:MASTER:矮小体型 && !TALENT:MASTER:小人体型) || (!TALENT:MASTER:贫乳 && !TALENT:MASTER:绝壁))
+	PRINTFORM %CALLNAME:TARGET%
+	PRINT 失去了【
+	PRINTFORM %TALENTNAME:941%
+	PRINTL 】称号
+	TALENT:TARGET:941 = 0
+	A = 1
+ENDIF
+;-------------------------------------------------
+;942,おっぱい星人
+;-------------------------------------------------
+;主人の場合…胸を弄った回数が2000以上、乳飲みした回数20以上
+IF TALENT:MASTER:942 == 0
+	IF CFLAG:MASTER:54 >= 2000 && CFLAG:MASTER:55 >= 20
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:942%
+		PRINTL 】称号
+		TALENT:MASTER:942 = 1
+		A = 1
+	ENDIF
+ENDIF
+;奴隶の場合…主人が巨乳。胸を弄った回数が100以上、乳飲みした回数10以上
+IF TALENT:TARGET:942 == 0
+	IF (TALENT:MASTER:巨乳 || TALENT:MASTER:爆乳) && (CFLAG:477 + CFLAG:412 + CFLAG:54) >= 100 && (CFLAG:467 + CFLAG:55) >= 10
+		PRINTFORM %CALLNAME:TARGET%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:942%
+		PRINTL 】称号
+		TALENT:TARGET:942 = 1
+		A = 1
+	ENDIF
+ENDIF
+IF ASSI > 0 && TALENT:ASSI:942 == 0
+	IF (TALENT:MASTER:巨乳 || TALENT:MASTER:爆乳) && (CFLAG:ASSI:477 + CFLAG:ASSI:412 + CFLAG:ASSI:54) >= 100 && (CFLAG:ASSI:467 + CFLAG:ASSI:55) >= 10
+		PRINTFORM %CALLNAME:ASSI%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:942%
+		PRINTL 】称号
+		TALENT:ASSI:942 = 1
+		A = 1
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;943,アナニスト
+;-------------------------------------------------
+;アナニーをした回数が200以上
+IF TALENT:TARGET:943 == 0
+	IF CFLAG:466+CFLAG:53 >= 200
+		PRINTFORM %CALLNAME:TARGET%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:943%
+		PRINTL 】称号
+		TALENT:TARGET:943 = 1
+		A = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;944,女装癖
+;-------------------------------------------------
+;露出癖Lv3以上、女装を着たまま时间経過した回数が100以上
+IF TALENT:TARGET:944 == 0 && MALE(TARGET)
+	IF CFLAG:113 >= 100 && ABL:露出癖 >= 3
+		PRINTFORM %CALLNAME:TARGET%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:944%
+		PRINTL 】称号
+		TALENT:TARGET:944 = 1
+		A = 1
+	ENDIF
+ENDIF
+;称号喪失：男ではなくなった（性転換した）
+IF TALENT:TARGET:944 && !MALE(TARGET)
+	PRINTFORM %CALLNAME:TARGET%
+	PRINT 失去了【
+	PRINTFORM %TALENTNAME:944%
+	PRINTL 】称号
+	TALENT:TARGET:944 = 0
+	A = 1
+ENDIF
+;-------------------------------------------------
+;945,亲子丼
+;-------------------------------------------------
+;特定の親か子供キャラとの絡みの经验が200以上
+IF TALENT:945 == 0 
+	;親か子供を探す
+	REPEAT CHARANUM
+		IF (CFLAG:(2000 + NO:COUNT) == 5 || CFLAG:(2000 + NO:COUNT) == 6 || CFLAG:(2000 + NO:COUNT) == 7 || CFLAG:(2000 + NO:COUNT) == 8)
+			;もしいるなら、今度はそのキャラとの调教经验を見る
+			IF CFLAG:(NO:COUNT + 1199) >= 200 && TALENT:945 == 0 
+				PRINTFORM %CALLNAME%和%CALLNAME:COUNT%
+				PRINT 获得了【
+				PRINTFORM %TALENTNAME:945%
+				PRINTL 】称号
+				TALENT:945 = 1
+				TALENT:COUNT:945 = 1
+				A = 1
+			ENDIF
+		ENDIF
+	REND
+ENDIF
+IF ASSI > 0 && TALENT:ASSI:945 == 0 
+	;親か子供を探す
+	REPEAT CHARANUM
+		IF (CFLAG:ASSI:(2000 + NO:COUNT) == 5 || CFLAG:ASSI:(2000 + NO:COUNT) == 6 || CFLAG:ASSI:(2000 + NO:COUNT) == 7 || CFLAG:ASSI:(2000 + NO:COUNT) == 8)
+			;もしいるなら、今度はそのキャラとの调教经验を見る
+			IF CFLAG:ASSI:(NO:COUNT + 1199) >= 200 && TALENT:ASSI:945 == 0 
+				PRINTFORM %CALLNAME:ASSI%和%CALLNAME:COUNT%
+				PRINT 获得了【
+				PRINTFORM %TALENTNAME:945%
+				PRINTL 】称号
+				TALENT:ASSI:945 = 1
+				TALENT:COUNT:945 = 1
+				A = 1
+			ENDIF
+		ENDIF
+	REND
+ENDIF
+;-------------------------------------------------
+;946,総受
+;-------------------------------------------------
+;男奴隶専用 館にいる奴隶が3人以上 童贞、V经验+A经验が200以上 半分以上の館にいる人类と絡んだことがある
+IF TALENT:946 == 0
+	IF CHARANUM > 3 && MALE(TARGET) && TALENT:童贞 && (EXP:Ｖ经验 + EXP:Ａ经验 >= 200)
+		;半分以上の館にいる人类と絡んだことがある
+		R = 0
+		REPEAT CHARANUM
+			SIF CFLAG:(NO:COUNT + 1199) > 0
+				R += 1
+		REND
+		R = R * 2
+		IF CHARANUM <= R
+			PRINTFORM %CALLNAME%
+			PRINT 获得了【
+			PRINTFORM %TALENTNAME:946%
+			PRINTL 】称号
+			TALENT:946 = 1
+			A = 1
+		ENDIF
+	ENDIF
+ENDIF
+IF TALENT:946 == 1
+	R = 0
+	REPEAT CHARANUM
+		SIF CFLAG:(NO:COUNT + 1199) > 0
+			R += 1
+	REND
+	IF !MALE(TARGET) || !TALENT:童贞 || CHARANUM > R*2
+		PRINTFORM %CALLNAME%
+		PRINT 失去了【
+		PRINTFORM %TALENTNAME:946%
+		PRINTL 】称号
+		TALENT:946 = 0
+		A = 1
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;947,病娇
+;-------------------------------------------------
+;嫉妒と疯癫を同時に持った
+IF TALENT:TARGET:947 == 0
+	IF TALENT:嫉妒 && TALENT:疯癫
+		PRINTFORM %CALLNAME%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:947%
+		PRINTL 】称号
+		TALENT:TARGET:947 = 1
+		A = 1
+	ENDIF
+ENDIF
+;-------------------------------------------------
+;948,人外控
+;-------------------------------------------------
+IF TALENT:MASTER:948 == 0 && CHARANUM > 3
+	Q = 0
+	REPEAT CHARANUM
+		SIF TALENT:COUNT:人外
+			Q += 1
+	REND
+	Q = Q * 2
+	IF CHARANUM <= Q
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 获得了【
+		PRINTFORM %TALENTNAME:948%
+		PRINTL 】称号
+		TALENT:MASTER:948 = 1
+		A = 1
+	ENDIF
+ENDIF
+
+IF TALENT:MASTER:948
+	Q = 0
+	REPEAT CHARANUM
+		SIF TALENT:COUNT:人外
+			Q += 1
+	REND
+	Q = Q * 2
+	IF CHARANUM > Q
+		PRINTFORM %CALLNAME:MASTER%
+		PRINT 失去了【
+		PRINTFORM %TALENTNAME:948%
+		PRINTL 】称号
+		TALENT:MASTER:948 = 0
+		A = 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;990,吉时已到
+;-------------------------------------------------
+;傲娇に恋慕がついた。
+IF TALENT:990 == 0 && TALENT:傲娇 && (TALENT:3 || TALENT:6)
+	PRINTFORM %CALLNAME:TARGET%
+	PRINT 获得了【
+	PRINTFORM %TALENTNAME:990%
+	PRINTL 】称号
+	TALENT:TARGET:990 = 1
+	A = 1
+ENDIF
+;-------------------------------------------------
+;991,
+;-------------------------------------------------
+
+;-------------------------------------------------
+;992,上級调教师
+;-------------------------------------------------
+;困难度HARD(FLAG:4 == 3)で陷落4人以上
+IF FLAG:4 == 3 && TALENT:MASTER:992 == 0 && (FLAG:30 + FLAG:31 + FLAG:32) > 3
+	PRINTFORM %CALLNAME:MASTER%
+	PRINT 获得了【
+	PRINTFORM %TALENTNAME:992%
+	PRINTL 】称号
+	TALENT:MASTER:992 = 1
+	A = 1
+ENDIF
+
+
+
+;-------------------------------------------------
+;999,千里之行
+;-------------------------------------------------
+;IF TALENT:MASTER:999 == 0
+;	PRINTFORM %CALLNAME:MASTER%
+;	PRINT 获得了【
+;	PRINTFORM %TALENTNAME:999%
+;	PRINTL 】称号
+;	TALENT:MASTER:999 = 1
+;	A = 1
+;ENDIF
+
+;-------------------------------------------------
+;称号獲得があった場合はスクロールを止める。読み手にやさしくあれ
+;-------------------------------------------------
+IF A > 0	
+	PRINTW 
+ENDIF
+
+
+
+
+;=======================================================
+;オプションに置いてあったものをこっちに移植
+@CHARATITLE_SETTING
+
+PRINTL 请选择称号的显示方式。
+;PRINT 现在的显示方式是【
+;	IF (FLAG:2 & 4) == 0
+;		PRINT 不
+;	ENDIF
+;PRINTL 显示】。
+PRINTL [  0] - 不显示
+PRINTL [  1] - 显示
+PRINTL [  2] - 将获得的称号初始化
+PRINTL [100] - 返回
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 0
+	PRINTFORMW 不显示称号
+	SIF FLAG:2 & 4
+		FLAG:2 -= 4
+ELSEIF RESULT == 1
+	PRINTFORMW 显示称号
+	FLAG:2 |= 4
+ELSEIF RESULT == 2
+	PRINTFORML 要将谁的称号初始化？
+	REPEAT CHARANUM
+			PRINTFORML [{COUNT}] - %NAME:COUNT%
+	REND
+	
+	PRINTL [100] - 全员
+	PRINTL 
+	PRINTL [101] - 返回
+
+	$INPUT_LOOP2
+	INPUT
+	IF RESULT <= CHARANUM
+		;ループでTALENTを0にする
+		X = RESULT
+		CALL CHARATITLE_RESET
+		PRINTFORMW %NAME:X%的称号已初始化。
+	ELSEIF RESULT == 100
+		REPEAT CHARANUM
+			X = COUNT
+			CALL CHARATITLE_RESET
+			COUNT = X
+		REND
+	PRINTW 全员称号已初始化。
+	ELSEIF RESULT == 101
+		RETURN 0
+	ELSE
+		GOTO INPUT_LOOP2
+	ENDIF
+
+
+ELSEIF RESULT == 100
+	RETURN 0
+
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+;=======================================================
+@CHARATITLE_RESET
+REPEAT 100
+	A = COUNT + 900
+	TALENT:X:A = 0
+REND
+;=======================================================
+
+

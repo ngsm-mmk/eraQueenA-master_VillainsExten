@@ -1,0 +1,101 @@
+﻿;-------------------------------------------------
+;助手化形
+;人外限定指令
+;-------------------------------------------------
+@COM33
+PRINTL 助手化形
+STR:0 = 助手化形
+
+;-------------------------------------------------
+;变身！
+;-------------------------------------------------
+IF TALENT:ASSI:羽翅 && CFLAG:ASSI:620 == 0
+    CFLAG:ASSI:620 = 1
+    TALENT:ASSI:羽翅 = 0
+ELSEIF CFLAG:ASSI:620 == 1
+    TALENT:ASSI:羽翅 = 1
+    CFLAG:ASSI:620 = 0
+ENDIF
+IF TALENT:ASSI:骨翅 && CFLAG:ASSI:621 == 0
+    CFLAG:ASSI:621 = 1
+    TALENT:ASSI:骨翅 = 0
+ELSEIF CFLAG:ASSI:621 == 1
+    TALENT:ASSI:骨翅 = 1
+    CFLAG:ASSI:621 = 0
+ENDIF
+IF TALENT:ASSI:蝠翼 && CFLAG:ASSI:622 == 0
+    CFLAG:ASSI:622 = 1
+    TALENT:ASSI:蝠翼 = 0
+ELSEIF CFLAG:ASSI:622 == 1
+    TALENT:ASSI:蝠翼 = 1
+    CFLAG:ASSI:622 = 0
+ENDIF
+IF TALENT:ASSI:虫翼 && CFLAG:ASSI:623 == 0
+    CFLAG:ASSI:623 = 1
+    TALENT:ASSI:虫翼 = 0
+ELSEIF CFLAG:ASSI:623 == 1
+    TALENT:ASSI:虫翼 = 1
+    CFLAG:ASSI:623 = 0
+ENDIF
+IF TALENT:ASSI:鱼尾 && CFLAG:ASSI:624 == 0
+    CFLAG:ASSI:624 = 1
+    TALENT:ASSI:鱼尾 = 0
+ELSEIF CFLAG:ASSI:624 == 1
+    TALENT:ASSI:鱼尾 = 1
+    CFLAG:ASSI:624 = 0
+ENDIF
+IF TALENT:ASSI:蛇尾 && CFLAG:ASSI:625 == 0
+    CFLAG:ASSI:625 = 1
+    TALENT:ASSI:蛇尾 = 0
+ELSEIF CFLAG:ASSI:625 == 1
+    TALENT:ASSI:蛇尾 = 1
+    CFLAG:ASSI:625 = 0
+ENDIF
+IF TALENT:ASSI:手爪 && CFLAG:ASSI:626 == 0
+    CFLAG:ASSI:626 = 1
+    TALENT:ASSI:手爪 = 0
+ELSEIF CFLAG:ASSI:626 == 1
+    TALENT:ASSI:手爪 = 1
+    CFLAG:ASSI:626 = 0
+ENDIF
+IF TALENT:ASSI:足爪 && CFLAG:ASSI:627 == 0
+    CFLAG:ASSI:627 = 1
+    TALENT:ASSI:足爪 = 0
+ELSEIF CFLAG:ASSI:627 == 1
+    TALENT:ASSI:足爪 = 1
+    CFLAG:ASSI:627 = 0
+ENDIF
+IF TALENT:ASSI:多足 && CFLAG:ASSI:628 == 0
+    CFLAG:ASSI:628 = 1
+    TALENT:ASSI:多足 = 0
+ELSEIF CFLAG:ASSI:628 == 1
+    TALENT:ASSI:多足 = 1
+    CFLAG:ASSI:628 = 0
+ENDIF
+IF TALENT:ASSI:触手 && CFLAG:ASSI:629 == 0
+    CFLAG:ASSI:629 = 1
+    TALENT:ASSI:触手 = 0
+ELSEIF CFLAG:ASSI:629 == 1
+    TALENT:ASSI:触手 = 1
+    CFLAG:ASSI:629 = 0
+ENDIF
+IF TALENT:ASSI:马身 && CFLAG:ASSI:630 == 0
+    CFLAG:ASSI:630 = 1
+    TALENT:ASSI:马身 = 0
+ELSEIF CFLAG:ASSI:630 == 1
+    TALENT:ASSI:马身 = 1
+    CFLAG:ASSI:630 = 0
+ENDIF
+IF TALENT:ASSI:无形体 && CFLAG:ASSI:633 == 0
+    CFLAG:ASSI:633 = 1
+    TALENT:ASSI:无形体 = 0
+ELSEIF CFLAG:ASSI:633 == 1
+    TALENT:ASSI:无形体 = 1
+    CFLAG:ASSI:633 = 0
+ENDIF
+
+
+;依赖度ベクトル
+TFLAG:33 = 0
+
+RETURN 1

@@ -1,0 +1,141 @@
+﻿;-----------------------------------------------------------
+;このファイルは"eratohoYM v0-proto2"に同梱されているDAILY_LIFE.ERBを
+;"eratohoYM Mk-0 Rev.11"に改造したものを、erahetaA私家改造版用に改変したものを、
+;さらにeraQueenA用に改変したものです
+;
+;【使用変数】
+;CFLAG:140 おもちゃの戒指フラグ
+;CFLAG:141 罠にかけたフラグ
+;CFLAG:142 アドバイスフラグ
+;------------------------------------------------------------
+@DAILY_LIFE
+;変数初期化
+VARSET LOCAL
+;キャラ登录数が1以下の時は引き返すフラグ
+SIF CHARANUM <= 1
+	LOCAL:4++
+REPEAT CHARANUM
+	;日常イベントに出場可能なキャラの人数を数える
+	SIF DAILYLIFE_CHARA(COUNT)
+		LOCAL++
+REND
+;日常イベントに出場可能なキャラがいなければ回家フラグ
+SIF !LOCAL
+	LOCAL:4++
+;回家フラグが立っていたらイベントを呼んで終了
+IF LOCAL:4
+	DRAWLINE
+	CALL DAILY_LIFE_RETURN
+	RETURN 1
+ENDIF
+
+DRAWLINE
+;まず、メインキャラを選ぶ
+B = -1
+C = -1
+A = -1
+A = DAILYLIFE_GETCHARA(0)
+
+IF A == -1
+	DRAWLINE
+	CALL DAILY_LIFE_RETURN
+	RETURN 1
+ENDIF
+
+;キャラ登录番号ごとに口上を呼び出す
+RESULT = 0
+CALL DAILY_LIFE_MASSAGE
+;キャラ個別日常イベントが呼ばれたら終了
+SIF RESULT
+	RETURN 0
+
+;変数の初期化
+VARSET LOCAL
+B = -1
+C = -1
+;どのイベントを発生させることが可能か判定し、可能イベント数をLOCAL:1に、イベントの種類をLOCAL:10～に記録
+FOR LOCAL, 0, 500
+	RESULT = 0
+	TRYCALLFORM DAILY_LIFE_ABLE_{LOCAL}
+	B = -1
+	C = -1
+	IF RESULT
+		IF LOCAL == 0 || LOCAL == 3 || LOCAL == 4 || LOCAL == 41 || LOCAL == 42 || LOCAL == 43 || LOCAL == 102
+			;上記番号のイベントの確率を小アップさせる
+			REPEAT 3
+				LOCAL:(10 + LOCAL:1) = LOCAL
+				LOCAL:1++
+			REND
+		ELSEIF LOCAL == 181 || LOCAL == 140 || LOCAL == 2 || LOCAL == 24
+			;上記番号のイベントの確率を大アップさせる
+			REPEAT 5
+				LOCAL:(10 + LOCAL:1) = LOCAL
+				LOCAL:1++
+			REND
+		ELSEIF LOCAL == 40 || (!KANRAKU(A) && LOCAL == 51)
+			;上記番号のイベントの確率を大大アップさせる
+			REPEAT 7
+				LOCAL:(10 + LOCAL:1) = LOCAL
+				LOCAL:1++
+			REND
+		ELSE
+			LOCAL:(10 + LOCAL:1) = LOCAL
+			LOCAL:1++
+		ENDIF
+	ENDIF
+NEXT
+;発生可能イベントが無い
+SIF !LOCAL:1
+	RETURN 1
+
+;今の调教对象をTFLAG:403に一旦退避、Aにする。Aの口調をセット
+TFLAG:403 = TARGET
+TARGET = A
+
+;イベントの呼び出し
+;体力が一定値より低ければ休憩中
+IF MAXBASE:A:体力 >= 3000
+	Z = 1200
+ELSEIF MAXBASE:A:体力 <= 1200
+	Z = 800
+ELSE
+	Z = 1000
+ENDIF
+IF BASE:A:体力 <= Z
+	CALL DAILY_LIFE_睡眠
+ELSE
+	LOCAL:2 = RAND:(LOCAL:1)
+	LOCAL:3 = LOCAL:(10 + LOCAL:2)
+	CALLFORM DAILY_LIFE_{LOCAL:3}
+ENDIF
+
+;调教对象を戻す
+TARGET = TFLAG:403
+
+;日常面識のセット
+CALL DAILY_MENSIKI(MASTER, A, B, C)
+
+;体力气力回復数値オーバーを戻す
+SIF BASE:MASTER:体力 > MAXBASE:MASTER:体力
+	BASE:MASTER:体力 = MAXBASE:MASTER:体力
+SIF BASE:MASTER:气力 > MAXBASE:MASTER:气力
+	BASE:MASTER:气力 = MAXBASE:MASTER:气力
+IF A > -1
+	SIF BASE:A:体力 > MAXBASE:A:体力
+		BASE:A:体力 = MAXBASE:A:体力
+	SIF BASE:A:气力 > MAXBASE:A:气力
+		BASE:A:气力 = MAXBASE:A:气力
+ENDIF
+IF B > -1
+	SIF BASE:B:体力 > MAXBASE:B:体力
+		BASE:B:体力 = MAXBASE:B:体力
+	SIF BASE:B:气力 > MAXBASE:B:气力
+		BASE:B:气力 = MAXBASE:B:气力
+ENDIF
+IF C > -1
+	SIF BASE:C:体力 > MAXBASE:C:体力
+		BASE:C:体力 = MAXBASE:C:体力
+	SIF BASE:C:气力 > MAXBASE:C:气力
+		BASE:C:气力 = MAXBASE:C:气力
+ENDIF
+

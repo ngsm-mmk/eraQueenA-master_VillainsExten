@@ -1,0 +1,1178 @@
+﻿;--------------------------------------------------
+;このファイル内では调教指令についての記述があります。
+;--------------------------------------------------
+;=============================================================================
+;调教指令における解説
+;=============================================================================
+;调教指令に解説を入れる
+@DICTIONARY_TRAIN_COMMAND
+P = 0
+$TRAIN_HELP
+DRAWLINE
+PRINTFORML 「调教指令」相关的大体说明。
+PRINTFORML 请选择想要了解的调教指令。 ＜page.{P+1}/8＞
+DRAWLINE
+IF P >= 0 && P < 6
+	FOR LOCAL:1, 0, 40
+		LOCAL = LOCAL:1 + P*40
+		STRLENS TRAINNAME:LOCAL
+		IF !MALE(MASTER) && (TARGET < 0 || (TARGET >= 0 && TALENT:TARGET:男性))
+			SIF RESULT > 0 && (LOCAL != 60 && LOCAL != 61 && LOCAL != 62 && LOCAL != 63 && LOCAL != 66 && LOCAL != 67 && LOCAL != 68 && LOCAL != 69 && LOCAL != 70 && LOCAL != 71 && LOCAL != 74 && LOCAL != 75 && LOCAL != 76 && LOCAL != 77 && LOCAL != 120 && LOCAL != 123 && LOCAL != 205 && LOCAL != 206 && LOCAL != 213 && LOCAL != 214)
+				PRINTFORML [{LOCAL, 3}]%TRAINNAME:LOCAL%
+		ELSE
+			SIF RESULT > 0 && (LOCAL != 52 && LOCAL != 53 && LOCAL != 54 && LOCAL != 55 && LOCAL != 56 && LOCAL != 57 && LOCAL != 58 && LOCAL != 79 && LOCAL != 99 && LOCAL != 216 && LOCAL != 217 && LOCAL != 218 && LOCAL != 219)
+				PRINTFORML [{LOCAL, 3}]%TRAINNAME:LOCAL%
+		ENDIF
+	NEXT
+ELSEIF P == 6
+	PRINTL [300]触手玩弄乳腺
+	PRINTL [301]触手玩弄Ｇ点
+	PRINTL [302]触手玩弄子宫
+	PRINTL [303]触手玩弄前列腺
+	PRINTL [304]触手阴道扩张
+	PRINTL [305]触手肛门扩张
+	PRINTL [306]触手两穴扩张
+	PRINTL [307]触手产卵
+	PRINTL [308]触手肛产卵
+	PRINTL [320]叫人过来
+	PRINTL [321]轮奸
+	PRINTL [330]成为奴隶便器
+	PRINTL [500]３Ｐ
+	PRINTL [501]６９式
+	PRINTL [502]岩清水
+	PRINTL [503]Ｇ点刺激
+	PRINTL [504]淫乱牡丹
+	PRINTL [505]骑乘胸自慰
+	PRINTL [506]插入Ｇ点玩弄
+	PRINTL [507]插入子宫口玩弄
+	PRINTL [508]６９乳交
+	PRINTL [509]搾乳
+	PRINTL [510]双人素股
+ELSEIF P == 7
+	PRINTL [511]双枪口交
+	PRINTL [512]双龙插入
+	PRINTL [513]双龙肛插入
+	PRINTL [514]车站便当
+	PRINTL [515]打屁股做爱
+	PRINTL [516]打屁股肛交
+	PRINTL [517]窒息做爱
+	PRINTL [518]窒息肛交
+	PRINTL [590]前列腺刺激
+	PRINTL [591]插入玩弄前列腺
+	PRINTL [592]骑乘阴茎自慰
+	PRINTL [593]插入中阴茎爱抚
+	PRINTL [594]插入中胸爱抚
+	PRINTL [595]三点齐攻
+	PRINTL [800]能力显示(奴隶)
+	PRINTL [801]污物显示
+	PRINTL [802]着衣设定
+	PRINTL [803]能力显示(主人/助手)
+	PRINTL [804]避孕套设定
+	PRINTL [805]自动射精设置
+	PRINTL [807]命令显示设置
+	PRINTL [900]换助手调教/换主人调教
+	PRINTL [990]登入调教菜单
+	PRINTL [999]调教结束
+ENDIF
+DRAWLINE
+PRINTFORMLC \@(P <= 0) ? %" " * 18% # [1001]上一页\@
+PRINTLC [1000]返回
+PRINTFORMLC \@(P >= 7) ? %" " * 18% # [1009]下一页\@
+$INPUT_LOOP
+INPUT
+IF RESULT == 1000
+	RETURN 0
+ELSEIF RESULT == 1001 && P > 0
+	P -= 1
+	GOTO TRAIN_HELP
+ELSEIF RESULT == 1009 && P < 11
+	P += 1
+	GOTO TRAIN_HELP
+;女主人→男奴隶の表示調整用
+ELSEIF RESULT == 52
+	RESULT = 62
+ELSEIF RESULT == 53
+	RESULT = 63
+ELSEIF RESULT == 54
+	RESULT = 67
+ELSEIF RESULT == 55
+	RESULT = 70
+ELSEIF RESULT == 56
+	RESULT = 71
+ELSEIF RESULT == 57
+	RESULT = 75
+ELSEIF RESULT == 58
+	RESULT = 77
+ELSEIF RESULT == 79
+	RESULT = 120
+ELSEIF RESULT == 99
+	RESULT = 123
+ELSEIF RESULT == 216
+	RESULT = 205
+ELSEIF RESULT == 217
+	RESULT = 206
+ELSEIF RESULT == 218
+	RESULT = 213
+ELSEIF RESULT == 219
+	RESULT = 214
+ENDIF
+;=============================================================================
+;0番台,０．爱抚系指令
+;=============================================================================
+IF RESULT == 0
+	PRINTL 【爱抚】
+	PRINTW 爱抚奴隶的胸部和性器。有时也会接吻。
+ELSEIF RESULT == 1
+	PRINTL 【舔阴】
+	PRINTL 用舌头舔弄奴隶的阴唇和小穴。
+	PRINTW 满足条件的话会有[501]６９式、[508]６９乳交的派生指令。
+ELSEIF RESULT == 2
+	PRINTL 【口交】
+	PRINTL 调教者用嘴含入奴隶的阴茎舔弄吮吸。
+	PRINTW 满足条件的话会有[501]６９式的派生指令。
+ELSEIF RESULT == 3
+	PRINTL 【玩弄小穴】
+	PRINTL 把手指插入奴隶的阴道。
+	PRINTL 唯一能够不破处女膜而使快Ｖ上升的指令。
+	PRINTL 积累到足够的快Ｖ可以缓和丧失处女时的疼痛。
+	PRINTW 满足条件的话会有[503]Ｇ点刺激的派生指令。
+ELSEIF RESULT == 4
+	PRINTL 【舔肛门】
+	PRINTW 调教者用舌头舔舐奴隶的肛门。
+ELSEIF RESULT == 5
+	PRINTL 【玩弄肛门】
+	PRINTW 调教者用手指刺激奴隶的肛门。
+ELSEIF RESULT == 6
+	PRINTL 【揉搓胸部】
+	PRINTL 揉捏奴隶的胸部。
+	PRINTW 满足条件的话会有[509]搾乳的派生指令。
+ELSEIF RESULT == 7
+	PRINTL 【玩弄乳头】
+	PRINTW 拨弄奴隶的乳头。
+ELSEIF RESULT == 8
+	PRINTL 【爱抚胸部】
+	PRINTW 用手抚摸奴隶的胸部。
+ELSEIF RESULT == 9
+	PRINTL 【自己扒开】
+	PRINTW 命令奴隶把阴唇或肛穴扒开给自己看。
+ELSEIF RESULT == 10
+	PRINTL 【命其胸部自慰】
+	PRINTL 命令奴隶自己爱抚胸部。
+	PRINTL 这个指令根据场合可能会变成公开自慰。
+	PRINTW 满足条件的话会有[505]骑乘胸自慰的派生指令。
+ELSEIF RESULT == 11
+	PRINTL 【命其自慰】
+	PRINTL 命令奴隶自慰。
+	PRINTL 这个指令根据场合可能会变成公开自慰或淋浴自慰。
+	PRINTW 也有可能变成自慰棒/肛塞自慰。
+ELSEIF RESULT == 12
+	PRINTL 【抚弄发丝】
+	PRINTL 抚弄奴隶的呆毛。有时也会接吻。
+	PRINTW 只有奴隶有呆毛的时候才会出现这个指令。
+ELSEIF RESULT == 13
+	PRINTL 【玩弄阴茎】
+	PRINTW 用手撸动奴隶的阴茎。
+ELSEIF RESULT == 14
+	PRINTL 【命其肛门自慰】
+	PRINTL 命令奴隶亲自玩弄肛门。
+	PRINTW 这个指令根据场合可能会变成公开自慰。
+ELSEIF RESULT == 15
+	PRINTL 【抚摸翅膀】
+	PRINTW 抚摸奴隶/契约对象的翅膀。
+ELSEIF RESULT == 16
+	PRINTL 【抚摸尾巴】
+	PRINTW 抚摸奴隶/契约对象的尾巴。
+ELSEIF RESULT == 17
+	PRINTL 【抚摸兽耳】
+	PRINTW 抚摸奴隶/契约对象的兽耳或是尖耳。
+ELSEIF RESULT == 18
+	PRINTL 【舔耳朵】
+	PRINTW 用舌头舔弄奴隶/契约对象的耳朵。
+
+;=============================================================================
+;20番台,１．日常系指令
+;=============================================================================
+ELSEIF RESULT == 20
+	PRINTL 【亲吻】
+	PRINTW 和奴隶接吻。
+ELSEIF RESULT == 21
+	PRINTL 【什么也不做】
+	PRINTL 暂时中止调教。
+	PRINTW 依赖度不会产生变化。
+ELSEIF RESULT == 22
+	PRINTL 【聊天】
+	PRINTL 和奴隶聊天。
+	PRINTW 奴隶必须有恋慕系素质，且调教者必须是主人才能实行。
+ELSEIF RESULT == 23
+	PRINTL 【送礼物】
+	PRINTL 赠送礼品给奴隶。效果和价格成正比。
+	PRINTL 满足特殊条件的话可以赠送『特別的礼物』。
+	PRINTL 如果对方同意的话可以进入单人结局。
+	PRINTW 奴隶必须有恋慕系素质，且调教者必须是主人才能实行。
+ELSEIF RESULT == 24
+	PRINTL 【亲肤接触】
+	PRINTL 和奴隶身体接触。
+	PRINTW 奴隶必须有恋慕系素质，且调教者必须是主人才能实行。
+ELSEIF RESULT == 25
+	PRINTL 【悠闲度过】
+	PRINTL 和奴隶悠闲地度过。
+	PRINTW 奴隶必须有恋慕系素质，且调教者必须是主人才能实行。
+ELSEIF RESULT == 26
+	PRINTL 【家务】
+	PRINTL 和奴隶一起做家务。
+	PRINTW 奴隶必须有恋慕系素质，且调教者必须是主人才能实行。
+ELSEIF RESULT == 27
+	PRINTL 【歌唱练习】
+	PRINTL 让奴隶进行歌唱练习。
+	PRINTW 奴隶必须有恋慕系素质，且调教者必须是主人才能实行。
+ELSEIF RESULT == 28
+	PRINTL 【辱骂】
+	PRINTL 对奴隶破口大骂。
+	PRINTW 调教者不是[施虐狂]就不能实行。
+ELSEIF RESULT == 29
+	PRINTL 【观看视频】
+	PRINTL 和奴隶一起欣赏之前的录像。
+	PRINTL 奴隶未陷落的话无法实行。
+	PRINTW 没有录像机的话无法实行。
+ELSEIF RESULT == 30
+	PRINTL 【施暴】
+	PRINTL 对奴隶施加暴力。
+	PRINTW 调教者的嗜虐属性未达Lv4以上，不是[施虐狂]的话就不能实行。
+ELSEIF RESULT == 31
+	PRINTL 【化形】
+	PRINTL 让人外种族变换身姿。
+	PRINTL 翅膀、鱼尾、爪子、触手等会收起来。
+	PRINTL 无形体的人外会显现出身形，或是让意识进入备用身体。
+	PRINTL 调教对象没有这个技能将无法选择该指令。
+	PRINTW 再选择一次相同指令则变回原状。
+ELSEIF RESULT == 32
+	PRINTL 【变化体型】
+	PRINTL 让人外种族变成人类的体型。
+	PRINTL 体型不一样的话，很多指令无法实行。
+	PRINTL 调教对象没有这个技能将无法选择该指令。
+	PRINTW 再选择一次相同指令则变回原本体型。
+ELSEIF RESULT == 33
+	PRINTL 【助手化形】
+	PRINTL 同[化形]，让人外种族的助手变换身姿。
+	PRINTW 再选择一次相同指令则变回原状。
+ELSEIF RESULT == 34
+	PRINTL 【助手变化体型】
+	PRINTL 同[变化体型]，让人外种族的助手变成人类的体型。
+	PRINTW 再选择一次相同指令则变回原本体型。
+
+;=============================================================================
+;40番台,２．道具使用指令
+;=============================================================================
+ELSEIF RESULT == 40
+	PRINTL 【跳蛋】
+	PRINTL 用震动的跳蛋刺激奴隶的性器。
+	PRINTW 没有跳蛋无法实行。
+ELSEIF RESULT == 41
+	PRINTL 【电动按摩棒】
+	PRINTL 在奴隶的股间贴上肩用按摩棒施与刺激。
+	PRINTW 没有电动按摩棒无法实行。
+ELSEIF RESULT == 42
+	PRINTL 【阴蒂夹】
+	PRINTL 把阴蒂夹夹在奴隶的阴蒂上给予刺激。
+	PRINTL 在装着的前提下再选择一次相同指令就能取下。
+	PRINTW 没有阴蒂夹无法实行。
+ELSEIF RESULT == 43
+	PRINTL 【飞机杯】
+	PRINTL 把飞机杯套在奴隶的阴茎上给予刺激。
+	PRINTL 在装着的前提下再选择一次相同指令就能取下。
+	PRINTW 没有飞机杯无法实行。
+ELSEIF RESULT == 44
+	PRINTL 【自慰棒】
+	PRINTL 把模仿男根形状的棒状物插入奴隶的阴道。
+	PRINTL 在装着的前提下再选择一次相同指令就能取下。
+	PRINTL 没有自慰棒无法实行。
+	PRINTW 如果用自慰棒夺走奴隶的[处女]，会获得异常经验。
+ELSEIF RESULT == 45
+	PRINTL 【肛塞】
+	PRINTL 把模仿男根形状的肛塞插入奴隶的肛门。
+	PRINTL 在装着的前提下再选择一次相同指令就能取下。
+	PRINTW 没有肛塞无法实行。
+ELSEIF RESULT == 46
+	PRINTL 【后庭拉珠】
+	PRINTL 在奴隶的肛门内插入一颗颗后庭拉珠。
+	PRINTL 在装着的前提下再选择一次相同指令就能一次性拉出。
+	PRINTL 后庭拉珠是一串珠子连接在一起的性具。
+	PRINTL 从肛门插入直肠再拉出来的话能让奴隶得到快感。
+	PRINTL 比起插入的时候，拉出来时会有更大的负担。
+	PRINTW 没有后庭拉珠无法实行。
+ELSEIF RESULT == 47
+	PRINTL 【乳头夹】
+	PRINTL 把振动乳头夹夹在奴隶的乳头上给予刺激。
+	PRINTL 在装着的前提下再选择一次相同指令就能取下。
+	PRINTW 没有乳头夹无法实行。
+ELSEIF RESULT == 48
+	PRINTL 【乳头跳蛋】
+	PRINTL 把震动的跳蛋压在奴隶的乳头上给予刺激。
+	PRINTW 没有跳蛋无法实行。
+ELSEIF RESULT == 49
+	PRINTL 【挤奶器】
+	PRINTL 把挤奶器装在奴隶的胸部上榨乳。
+	PRINTL 在装着的前提下再选择一次相同指令就能取下。
+	PRINTW 没有挤奶器无法实行。
+ELSEIF RESULT == 50
+	PRINTL 【导尿管】
+	PRINTL 把导尿管插入奴隶的尿道。
+	PRINTL 在装着的前提下再选择一次相同指令就能取下。
+	PRINTL 是医疗用的中空管道，柔软的管子。
+	PRINTW 没有导尿管无法实行。
+
+
+;=============================================================================
+;60番台,３．做爱系指令
+;=============================================================================
+ELSEIF RESULT == 60
+	PRINTL 【正常位】
+	PRINTL 让奴隶仰躺，分开双腿插入奴隶小穴的体位。
+	PRINTL 调教者失去[童贞]，奴隶失去[处女]。
+	PRINTL 满足条件的话会有[500]３Ｐ、[506]插入Ｇ点玩弄、
+	PRINTW [507]插入子宫口玩弄、[517]窒息做爱的派生指令。
+ELSEIF RESULT == 61
+	PRINTL 【后背位】
+	PRINTL 让奴隶趴下，从后面插入奴隶小穴的体位。
+	PRINTL 调教者失去[童贞]，奴隶失去[处女]。
+	PRINTL 满足条件的话会有[500]３Ｐ、[506]插入Ｇ点玩弄、
+	PRINTW [507]插入子宫口玩弄、[515]打屁股做爱的派生指令。
+ELSEIF RESULT == 62
+	IF !MALE(MASTER) && (TARGET < 0 || (TARGET >= 0 && TALENT:TARGET:男性))
+		PRINTL 【逆肛正常位】
+	ELSE
+		PRINTL 【正常位肛交】
+	ENDIF
+	PRINTL 让奴隶仰躺，分开双腿插入奴隶肛穴的体位。
+	PRINTL 调教者失去[童贞]，奴隶失去[后庭处子]。
+	PRINTW 满足条件的话会有[500]３Ｐ和[518]窒息肛交的派生指令。
+ELSEIF RESULT == 63
+	IF !MALE(MASTER) && (TARGET < 0 || (TARGET >= 0 && TALENT:TARGET:男性))
+		PRINTL 【逆肛后背位】
+	ELSE
+		PRINTL 【后背位肛交】
+	ENDIF
+	PRINTL 让奴隶趴下，从后面插入奴隶肛穴的体位。
+	PRINTL 调教者失去[童贞]，奴隶失去[后庭处子]。
+	PRINTW 满足条件的话会有[500]３Ｐ和[516]打屁股肛交的派生指令。
+ELSEIF RESULT == 65
+	PRINTL 【乳头奸】
+	PRINTW 在奴隶的胸上摩擦阴茎。
+ELSEIF RESULT == 66
+	PRINTL 【骑乘位】
+	PRINTL 调教者仰躺，让奴隶自己坐着动的体位。
+	PRINTW 调教者失去[童贞]，奴隶失去[处女]。
+ELSEIF RESULT == 67
+	IF !MALE(MASTER) && (TARGET < 0 || (TARGET >= 0 && TALENT:TARGET:男性))
+		PRINTL 【逆肛骑乘位】
+	ELSE
+		PRINTL 【骑乘位肛交】
+	ENDIF
+	PRINTL 调教者仰躺，让奴隶自己坐着动的体位。
+	PRINTW 调教者失去[童贞]，奴隶失去[后庭处子]。
+ELSEIF RESULT == 68
+	PRINTL 【对面座位】
+	PRINTL 对坐着贯穿奴隶阴道的体位。
+	PRINTL 调教者失去[童贞]，奴隶失去[处女]。
+	PRINTW 满足条件的话会有[506]插入Ｇ点玩弄、[507]插入子宫口玩弄的派生指令。
+ELSEIF RESULT == 69
+	PRINTL 【背面座位】
+	PRINTL 一起坐下来从背面贯穿奴隶阴道的体位。
+	PRINTL 调教者失去[童贞]，奴隶失去[处女]。
+	PRINTW 满足条件的话会有[506]插入Ｇ点玩弄、[507]插入子宫口玩弄的派生指令。
+ELSEIF RESULT == 70
+	IF !MALE(MASTER) && (TARGET < 0 || (TARGET >= 0 && TALENT:TARGET:男性))
+		PRINTL 【逆肛对面座位】
+	ELSE
+		PRINTL 【对面座位肛交】
+	ENDIF
+	PRINTL 对坐着贯穿奴隶肛门的体位。
+	PRINTW 调教者失去[童贞]，奴隶失去[后庭处子]。
+ELSEIF RESULT == 71
+	IF !MALE(MASTER) && (TARGET < 0 || (TARGET >= 0 && TALENT:TARGET:男性))
+		PRINTL 【逆肛背面座位】
+	ELSE
+		PRINTL 【背面座位肛交】
+	ENDIF
+	PRINTL 一起坐下来从背面贯穿奴隶肛门的体位。
+	PRINTW 调教者失去[童贞]，奴隶失去[后庭处子]。
+ELSEIF RESULT == 72
+	PRINTL 【错开内裤插入】
+	PRINTL 从内裤的间隙插入奴隶的阴道。
+	PRINTW 调教者失去[童贞]，奴隶失去[处女]。
+ELSEIF RESULT == 73
+	PRINTL 【错开内裤插入肛门】
+	PRINTL 从内裤的间隙插入奴隶的肛门。
+	PRINTW 调教者失去[童贞]，奴隶失去[后庭处子]。
+ELSEIF RESULT == 74
+	PRINTL 【对面立位】
+	PRINTL 让奴隶站立，正面贯穿奴隶阴道的体位。
+	PRINTL 调教者失去[童贞]，奴隶失去[处女]。
+	PRINTW 满足条件的话会有[514]车站便当、[517]窒息做爱的派生指令。
+ELSEIF RESULT == 75
+	IF !MALE(MASTER) && (TARGET < 0 || (TARGET >= 0 && TALENT:TARGET:男性))
+		PRINTL 【逆肛对面立位】
+	ELSE
+		PRINTL 【对面立位肛】
+	ENDIF
+	PRINTL 让奴隶站立，正面贯穿奴隶肛门的体位。
+	PRINTW 调教者失去[童贞]，奴隶失去[后庭处子]。
+	PRINTW 满足条件的话会有[514]车站便当、[518]窒息肛交的派生指令。
+ELSEIF RESULT == 76
+	PRINTL 【背面立位】
+	PRINTL 让奴隶站立，从背后贯穿奴隶阴道的体位。
+	PRINTL 调教者失去[童贞]，奴隶失去[处女]。
+	PRINTW 满足条件的话会有[515]打屁股做爱的派生指令。
+ELSEIF RESULT == 77
+	IF !MALE(MASTER) && (TARGET < 0 || (TARGET >= 0 && TALENT:TARGET:男性))
+		PRINTL 【逆肛背面立位】
+	ELSE
+		PRINTL 【背面立位肛】
+	ENDIF
+	PRINTL 让奴隶站立，从背后贯穿奴隶肛门的体位。
+	PRINTL 调教者失去[童贞]，奴隶失去[后庭处子]。
+	PRINTW 满足条件的话会有[516]打屁股肛的派生指令。
+;=============================================================================
+;80番台,４．侍奉系指令
+;=============================================================================
+ELSEIF RESULT == 80
+	PRINTL 【手交命令】
+	PRINTW 命令奴隶用手侍奉自己的阴茎。
+ELSEIF RESULT == 81
+	PRINTL 【口交命令】
+	PRINTL 命令奴隶用嘴侍奉自己的阴茎。
+	PRINTW 满足条件的话会有[500]３Ｐ、[501]６９式、[511]双枪口交的派生指令。
+ELSEIF RESULT == 82
+	PRINTL 【乳交命令】
+	PRINTL 命令奴隶用胸部夹住自己的阴茎进行侍奉。
+	PRINTW 满足条件的话会有[508]６９乳交的派生指令。
+ELSEIF RESULT == 83
+	PRINTL 【素股命令】
+	PRINTL 让奴隶用股间夹住阴茎，模仿性交时那样擦动。
+	PRINTW 满足条件的话会有[510]双人素股的派生指令。
+ELSEIF RESULT == 84
+	PRINTL 【泡泡浴】
+	PRINTL 命令奴隶在身上涂抹泡沫，再用身体来为主人清洗。
+	PRINTW 不是浴室PLAY中无法实行。
+ELSEIF RESULT == 85
+	PRINTL 【足交命令】
+	PRINTW 命令奴隶用脚摩擦自己的阴茎。
+ELSEIF RESULT == 86
+	PRINTL 【舔足命令】
+	PRINTW 命令奴隶舔自己的脚。
+ELSEIF RESULT == 87
+	PRINTL 【深乳交命令】
+	PRINTW 让奴隶用胸部将自己的阴茎完全包裹。
+ELSEIF RESULT == 88
+	PRINTL 【乳夹口交命令】
+	PRINTW 命令奴隶用胸部夹着阴茎，再用嘴侍奉阴茎。
+ELSEIF RESULT == 89
+	PRINTL 【饮用母乳】
+	PRINTW 从奴隶的乳头吮吸母乳后饮用。
+ELSEIF RESULT == 90
+	PRINTL 【发交】
+	PRINTW 用奴隶的头发缠住阴茎摩擦。
+ELSEIF RESULT == 91
+	PRINTL 【命其舔手指】
+	PRINTL 命令奴隶含住自己的手指。
+	PRINTW 在这个指令后进行[3]玩弄小穴、[5]玩弄肛门的指令，疼痛数值会减轻。
+ELSEIF RESULT == 92
+	PRINTL 【腋交】
+	PRINTW 用阴茎在奴隶的腋下摩擦。
+ELSEIF RESULT == 93
+	PRINTL 【喂奶】
+	PRINTW 命令奴隶喝自己的奶。婴儿ＰＬＡＹ？
+ELSEIF RESULT == 94
+	PRINTL 【尾交】
+	PRINTW 用奴隶/契约对象的尾巴来摩擦阴茎。
+ELSEIF RESULT == 95
+	PRINTL 【耳交】
+	PRINTW 用奴隶/契约对象的耳朵来摩擦阴茎，限定兽耳或尖耳。
+
+;=============================================================================
+;100番台,５．SM系指令
+;=============================================================================
+ELSEIF RESULT == 100
+	PRINTL 【打屁股】
+	PRINTL 用手拍打奴隶的屁股。
+	PRINTW 满足条件的话会有[515]打屁股做爱、[516]打屁股肛交的派生指令。
+ELSEIF RESULT == 101
+	PRINTL 【打胸部】
+	PRINTW 用手拍打奴隶的胸部。
+ELSEIF RESULT == 102
+	PRINTL 【鞭打】
+	PRINTL 用鞭子鞭打奴隶。
+	PRINTL 没有鞭子无法实行。
+	PRINTW 奴隶不是全裸状态就不能实行。
+ELSEIF RESULT == 103
+	PRINTL 【滴蜡】
+	PRINTL 点燃蜡烛，在奴隶身上滴落蜡油。
+	PRINTL 没有低温蜡烛无法实行。
+	PRINTW 奴隶不是全裸状态就不能实行。
+ELSEIF RESULT == 104
+	PRINTL 【针刺】
+	PRINTL 用针刺扎奴隶的阴蒂、乳头等部位。
+	PRINTW 没有针无法实行。
+ELSEIF RESULT == 105
+	PRINTL 【眼罩】
+	PRINTL 给奴隶戴上眼罩。
+	PRINTL 在装着的前提下再选择一次相同指令就能取下。
+	PRINTW 没有眼罩无法实行。
+ELSEIF RESULT == 106
+	PRINTL 【捆绑】
+	PRINTL 用绳子捆绑奴隶。束缚的方法任君想象。
+	PRINTL 在捆绑的前提下再选择一次相同指令就能松绑。
+	PRINTL 没有绳子无法实行。
+	PRINTW 调教者的技巧最低Lv1才能实行。
+ELSEIF RESULT == 107
+	PRINTL 【口塞球】
+	PRINTL 给奴隶的嘴套上口枷。
+	PRINTL 在装着的前提下再选择一次相同指令就能取下。
+	PRINTL 口塞球是口枷的一种，虽然不能说话但能够呼吸。
+	PRINTL 没有口塞球无法实行。
+	PRINTW 调教者的嗜虐属性最低Lv1才能实行。
+ELSEIF RESULT == 108
+	PRINTL 【拷问】
+	PRINTL 拷打奴隶。拷问的内容任君想象。
+	PRINTL 如果角色有相应口上，也许会有拷问的方向吧。
+	PRINTW 调教者的嗜虐属性最低Lv4才能实行。
+ELSEIF RESULT == 109
+	PRINTL 【禁止射精】
+	PRINTL 用蝴蝶结束缚奴隶的阴茎根部抑制射精。
+	PRINTL 在装着的前提下再选择一次相同指令就能松绑。
+	PRINTW 没有蝴蝶结无法实行。
+ELSEIF RESULT == 110
+	PRINTL 【人体家具】
+	PRINTL 把奴隶当家具使用。
+	PRINTW （其实就是当椅子坐）
+	;PRINTW 実行者が小人体型だとＳＭどころかハートフル指令になる場合もある。
+ELSEIF RESULT == 111
+	PRINTL 【剃毛】
+	PRINTW 刮掉奴隶的阴毛。
+ELSEIF RESULT == 112
+	PRINTL 【掐脖子】
+	PRINTL 勒紧奴隶的脖子。
+	PRINTL 满足条件的话会有[517]窒息做爱、[518]窒息肛交的派生指令。
+	PRINTW 调教者的嗜虐属性最低Lv2才能实行。
+	;PRINTW 当然もちめりかにも実行できる。
+ELSEIF RESULT == 113
+	PRINTL 【颜骑圧迫】
+	PRINTL 坐在奴隶脸上，用胯部压迫奴隶的嘴巴和鼻子。
+	PRINTL 女调教者×男奴隶限定。
+	PRINTW 奴隶的受虐属性和侍奉精神的等级不同，反应也会有不同变化。
+ELSEIF RESULT == 114
+	PRINTL 【踢胯部】
+	PRINTL 毫不留情地踢上男性奴隶的胯部。
+	PRINTL 不是施虐狂不能实行。
+	PRINTW 奴隶的受虐属性等级不同，反应也会有不同变化。
+ELSEIF RESULT == 115
+	PRINTL 【电气按摩】
+	PRINTL 用脚踩在男性奴隶的胯股间激烈震动。
+	PRINTL 同时给予羞耻、疼痛和快感的一种PLAY。
+	PRINTW 奴隶的受虐属性等级不同，反应也会有不同变化。
+;=============================================================================
+;120番台,６．助手による指令、及び百合プ雷
+;=============================================================================
+ELSEIF RESULT == 120
+	PRINTL 【命其舔阴】
+	PRINTL 命令奴隶舔舐自己的阴部。
+	PRINTW 满足条件的话会有[501]６９式的派生指令。
+ELSEIF RESULT == 121
+	PRINTL 【磨镜】
+	PRINTW 调教者和奴隶互相摩擦小穴。
+ELSEIF RESULT == 122
+	PRINTL 【命其侵犯助手】
+	PRINTL 命令奴隶侵犯助手。体位任君想象。
+	PRINTL 没有助手无法实行。这个属于助手相关的指令。
+	PRINTW 助手会失去[处女]或[后庭处子]。
+ELSEIF RESULT == 123
+	PRINTL 【足交施虐】
+	PRINTW 用脚踩奴隶的阴茎。有时可能会践踏｡
+ELSEIF RESULT == 124
+	PRINTL 【双人口交】
+	PRINTL 让奴隶和助手同时用嘴侍奉调教者的阴茎。
+	PRINTW 没有助手无法实行。这个属于助手相关的指令。
+ELSEIF RESULT == 125
+	PRINTL 【双人乳交】
+	PRINTL 让奴隶和助手同时用胸部侍奉调教者的阴茎。
+	PRINTW 没有助手无法实行。这个属于助手相关的指令。
+ELSEIF RESULT == 126
+	PRINTL 【胸部互蹭】
+	PRINTW 调教者和奴隶互相摩擦胸部。
+	;PRINTW 调教者侍奉・ウフフ系指令がオフの時は実行できない。
+ELSEIF RESULT == 127
+	PRINTL 【阴茎互蹭】
+	PRINTW 调教者和奴隶互相摩擦阴茎。
+	;PRINTW 初出はerasma。だと思う。
+
+;=============================================================================
+;140番台,７．严厉な调教指令
+;=============================================================================
+ELSEIF RESULT == 140
+	PRINTL 【深喉】
+	PRINTL 强行把阴茎塞进奴隶的喉咙。
+	PRINTW 满足条件的话会有[500]３Ｐ的派生指令。
+ELSEIF RESULT == 141
+	PRINTL 【拳交】
+	PRINTL 用拳头塞进并搅拌奴隶的阴道。根据场合可能会获得异常经验。
+	PRINTW 奴隶没有服从系陷落素质的话无法实行。
+ELSEIF RESULT == 142
+	PRINTL 【肛门拳交】
+	PRINTL 用拳头塞进并搅拌奴隶的肛门。根据场合可能会获得异常经验。
+	PRINTW 奴隶没有服从系陷落素质的话无法实行。
+ELSEIF RESULT == 143
+	PRINTL 【两穴拳交】
+	PRINTL 用拳头塞进并搅拌奴隶的阴道和肛门。根据场合可能会获得异常经验。
+	PRINTW 奴隶没有服从系陷落素质的话无法实行。
+ELSEIF RESULT == 144
+	PRINTL 【放尿】
+	PRINTL 命令奴隶小便。没显示尿意槽的时候无法实行。
+	PRINTW 这个指令根据场合可能会变成野外放尿。
+ELSEIF RESULT == 145
+	PRINTL 【命其舔肛】
+	PRINTW 命令奴隶舔舐自己的肛门。
+ELSEIF RESULT == 146
+	PRINTL 【灌肠】
+	PRINTL 用灌肠器给奴隶灌肠。
+	PRINTL 在装着的前提下再选择一次相同指令就能拔下塞子。
+	PRINTW 没有灌肠器＋塞头无法实行。
+ELSEIF RESULT == 147
+	PRINTL 【空气灌肠】
+	PRINTL 用泵给奴隶的肛门输送空气，塞上塞子。
+	PRINTL 在装着的前提下再选择一次相同指令就能拔下塞子。
+	PRINTW 没有打气筒无法实行。
+	;PRINTW 「よく解らない」と評判だが、要するに強制放屁指令みたいなものである。
+ELSEIF RESULT == 148
+	PRINTL 【扩张气球】
+	PRINTL 把气球插入奴隶的肛门，然后向内送入空气。
+	PRINTL 在装着的前提下再选择一次相同指令就能拔出来。
+	PRINTL 根据场合可能会获得异常经验。
+	PRINTW 没有扩张气球无法实行。
+ELSEIF RESULT == 149
+	PRINTL 【肛门电极】
+	PRINTL 给奴隶的肛门插入电极，然后通电。
+	PRINTL 在装着的前提下再选择一次相同指令就能拔出来。
+	PRINTL 根据场合可能会获得异常经验。
+	PRINTL 奴隶没有服从系陷落素质的话无法实行。
+	PRINTW 没有电极接头无法实行。
+ELSEIF RESULT == 150
+	PRINTL 【乳房电极】
+	PRINTL 给奴隶的胸部贴上电极，然后通电。
+	PRINTL 在装着的前提下再选择一次相同指令就能取下。
+	PRINTL 根据场合可能会获得异常经验。
+	PRINTL 奴隶没有服从系陷落素质的话无法实行。
+	PRINTW 没有电极接头无法实行。
+ELSEIF RESULT == 151
+	PRINTL 【鳗鱼池】
+	PRINTL 把装着无数蠕动鳗鱼的水桶扣在奴隶身上。
+	PRINTL 再次选择相同指令可以把奴隶从里面拉出来。
+	PRINTL 奴隶会失去[处女]。
+	PRINTL 根据场合可能会获得异常经验。
+	PRINTL 奴隶没有服从系陷落素质的话无法实行。
+	PRINTW 需要用绳子捆绑奴隶后再执行。
+ELSEIF RESULT == 152
+	PRINTL 【虫子池】
+	PRINTL 把装着无数蠢动虫子的水桶扣在奴隶身上。
+	PRINTL 再次选择相同指令可以把奴隶从里面拉出来。
+	PRINTL 根据场合可能会获得异常经验。
+	PRINTL 奴隶没有服从系陷落素质的话无法实行。
+	PRINTW 需要用绳子捆绑奴隶后再执行。
+ELSEIF RESULT == 153
+	PRINTL 【尿道气球】
+	PRINTL 给奴隶的尿道插入带气球的导尿管。
+	PRINTL 在装着的前提下再选择一次相同指令就能拔出来。
+	PRINTW 没有扩张气球和导尿管无法实行。
+ELSEIF RESULT == 154
+	PRINTL 【肉便器】
+	PRINTL 在奴隶的肛门里小便。
+	PRINTL 调教者失去[童贞]，奴隶失去[后庭处子]。
+	PRINTW 奴隶没有服从系陷落素质的话无法实行。
+ELSEIF RESULT == 155
+	PRINTL 【兽奸】
+	PRINTL 放出野兽侵犯奴隶。野兽的种类任君想象。
+	PRINTL 没有笼子无法实行。
+	PRINTL 调教者必须持有[禁断的知识]才会出现这个指令。
+	PRINTW 奴隶会失去[处女]或[后庭处子]。
+ELSEIF RESULT == 156
+	PRINTL 【烙印】
+	PRINTL 给奴隶打上属于自己的[烙印]。
+	PRINTL 只有主人才能实行这个指令。
+	PRINTL 打上[烙印]的奴隶拍卖额会降低。
+	PRINTW OPTION里设定为「只有情景文本」的场合不能正常执行，还请注意。
+ELSEIF RESULT == 157
+	PRINTL 【强制饮尿】
+	PRINTW 强迫奴隶喝自己的尿。
+ELSEIF RESULT == 158
+	PRINTL 【尾巴插入】
+	PRINTL 用奴隶/契约对象的尾巴插入其自身的阴道。
+	PRINTW 如果对象拥有[多尾]素质，可以再用另一根尾巴插入对象的肛门。
+ELSEIF RESULT == 159
+	PRINTL 【尾巴肛插入】
+	PRINTL 用奴隶/契约对象的尾巴插入其自身的肛门。
+	PRINTW 如果对象拥有[多尾]素质，可以再用另一根尾巴插入对象的阴道。
+
+;=============================================================================
+;160番台,８．触手系指令
+;=============================================================================
+ELSEIF RESULT == 160
+	PRINTL 【召唤触手】
+	PRINTL 从深渊里将触手召唤出来。
+	PRINTL 已经召唤的状态下再选择一次相同指令就可以送回。
+	PRINTW 触手PLAY的基础。
+ELSEIF RESULT == 161
+	PRINTL 【触手插入】
+	PRINTL 触手插入奴隶的小穴。
+	PRINTW 奴隶会失去[处女]。
+ELSEIF RESULT == 162
+	PRINTL 【触手肛门插入】
+	PRINTL 触手插入奴隶的肛门。
+	PRINTW 奴隶会失去[后庭处子]。
+ELSEIF RESULT == 163
+	PRINTL 【触手玩弄阴蒂】
+	PRINTL 触手玩弄奴隶的阴蒂。
+	PRINTW 再选择一次相同指令则会收回。
+ELSEIF RESULT == 164
+	PRINTL 【触手玩弄乳头】
+	PRINTL 触手玩弄奴隶的乳头。
+	PRINTW 再选择一次相同指令则会收回。
+ELSEIF RESULT == 165
+	PRINTL 【触手挤奶】
+	PRINTL 触手挤压奴隶的胸部，榨取乳汁。
+	PRINTW 再选择一次相同指令则会收回。
+ELSEIF RESULT == 166
+	PRINTL 【触手紧缚】
+	PRINTL 无数触手束缚奴隶的身体。
+	PRINTW 再选择一次相同指令则解开拘束。
+ELSEIF RESULT == 167
+	PRINTL 【触手灌肠】
+	PRINTL 触手给奴隶灌肠。
+	PRINTW 再选择一次相同指令则解除。
+ELSEIF RESULT == 168
+	PRINTL 【触手侵犯口腔】
+	PRINTL 触手侵犯奴隶的口腔。
+	PRINTW 再选择一次相同指令则抽出来。
+ELSEIF RESULT == 169
+	PRINTL 【触手玩弄阴茎】
+	PRINTL 触手包裹玩弄奴隶的阴茎。
+	PRINTW 再选择一次相同指令则解放。
+ELSEIF RESULT == 170
+	PRINTL 【触手尿道插入】
+	PRINTL 触手插入奴隶的尿道。
+	PRINTW 再选择一次相同指令则抽出来。
+
+
+;=============================================================================
+;180番台,９．特殊指令
+;=============================================================================
+ELSEIF RESULT == 180
+	PRINTL 【润滑乳液】
+	PRINTL 给奴隶涂上润滑乳液。增加润滑度。
+	PRINTL 没有润滑乳液无法实行。
+	PRINTW 会消耗一个润滑乳液。
+ELSEIF RESULT == 181
+	PRINTL 【媚药】
+	PRINTL 给奴隶喂下媚药。使其变得兴奋。
+	PRINTL 没有媚药无法实行。
+	PRINTW 会消耗一个媚药。
+ELSEIF RESULT == 182
+	PRINTL 【利尿剂】
+	PRINTL 给奴隶喂下利尿剂。使其产生尿意。
+	PRINTL 没有利尿剂无法实行。
+	PRINTW 会消耗一个利尿剂。
+ELSEIF RESULT == 183
+	PRINTL 【视频拍摄】
+	PRINTL 开始视频拍摄。
+	PRINTL 已经在拍摄的情况下选择相同指令则提前结束。
+	PRINTL 开始摄影后会消耗一盒录像带。
+	PRINTW 没有摄像机和录像带无法实行。
+ELSEIF RESULT == 184
+	PRINTL 【野外PLAY】
+	PRINTL 把奴隶带到外面去。
+	PRINTL 已经出去的场合再选择相同指令则回家。
+	PRINTL 没有项圈无法实行。
+	PRINTW 奴隶不是全裸状态就不能实行。
+ELSEIF RESULT == 185
+	PRINTL 【侵犯助手】
+	PRINTL 当着奴隶的面侵犯助手。没有助手无法实行。
+	PRINTW 助手会失去[处女]或[后庭处子]。
+ELSEIF RESULT == 186
+	PRINTL 【羞耻PLAY】
+	PRINTL 把奴隶带到镜子前。
+	PRINTL 已经在镜子面前的场合再选择相同指令则离开。
+	PRINTW 没有大镜子无法实行。
+ELSEIF RESULT == 187
+	PRINTL 【浴室PLAY】
+	PRINTL 把奴隶带到浴室里。
+	PRINTW 已经在浴室的场合再选择相同指令则离开。
+ELSEIF RESULT == 188
+	PRINTL 【淋浴】
+	PRINTL 给奴隶淋浴。温度可以选择。
+	PRINTL 已经在淋浴中的话再选择相同指令则停止淋浴。
+	PRINTL 淋浴会清洗掉污物。
+	PRINTW 没有在浴室PLAY中无法实行。
+ELSEIF RESULT == 189
+	PRINTL 【新妻PLAY】
+	PRINTL 让奴隶穿上围裙。
+	PRINTL 在装着的前提下再选择一次相同指令就能脱下。
+	PRINTL 没有围裙无法实行。
+	PRINTW 奴隶没有恋慕系陷落素质的话无法实行。
+ELSEIF RESULT == 190
+	PRINTL 【写真摄影】
+	PRINTL 用照相机拍下奴隶的姿态。
+	PRINTL 没有照相机和胶卷无法实行。
+	PRINTW 会消耗一盒胶卷。
+ELSEIF RESULT == 191
+	PRINTL 【强精神药】
+	PRINTL 让奴隶喝下强精神药。
+	PRINTL 抑制绝顶的发生，失效后快感会一股脑涌上来。
+	PRINTL 没有强精神药无法实行。
+	PRINTW 会消耗一瓶强精神药。
+ELSEIF RESULT == 192
+	PRINTL 【避孕套精饮(奴隶)】
+	PRINTL 让奴隶喝避孕套中的精液。
+	PRINTW 没有装满精液的避孕套就无法实行。
+ELSEIF RESULT == 193
+	PRINTL 【避孕套精饮(助手)】
+	PRINTL 在奴隶面前让助手喝避孕套中的精液。
+	PRINTL 没有助手无法选择。
+	PRINTW 没有装满精液的避孕套就无法实行。
+ELSEIF RESULT == 194
+	PRINTL 【含精接吻】
+	PRINTL 把调教者含在嘴里的精液用接吻的方式渡入奴隶口中。
+	PRINTW 嘴里没有精液无法实行。
+ELSEIF RESULT == 195
+	PRINTL 【去约会】
+	PRINTL 和奴隶去约会。约会的具体过程任君想象。
+	PRINTL 要是穿着奇怪的衣服，哪怕只有一点情欲也是无法实行的。
+	PRINTW 奴隶没有恋慕系陷落素质的话无法实行。
+	;PRINTW 口上によっては金がかかる。
+ELSEIF RESULT == 196
+	PRINTL 【剥包皮】
+	PRINTL 字面意思。
+	PRINTW 多剥几次就不会再长出来了。
+ELSEIF RESULT == 197
+	PRINTL 【水下PLAY】
+	PRINTL 把调教对象带到温水泳池中。
+	PRINTL 因为是在水下进行调教，对象没有[潜游]素质时无法实行。
+	PRINTW 已经在温水泳池的场合再选择相同指令则离开。
+
+;=============================================================================
+;200番台,１０．主人受指令
+;=============================================================================
+ELSEIF RESULT == 200
+	PRINTL 【当面手淫】
+	PRINTW 当着奴隶的面自慰。
+ELSEIF RESULT == 201
+	PRINTL 【令其爱抚胸部】
+	PRINTW 让奴隶爱抚自己的胸部。
+ELSEIF RESULT == 202
+	PRINTL 【令其爱抚】
+	PRINTW 让奴隶爱抚自己。
+ELSEIF RESULT == 203
+	PRINTL 【令其辱骂】
+	PRINTW 让奴隶辱骂自己。
+ELSEIF RESULT == 204
+	PRINTL 【索要礼物】
+	PRINTL 向奴隶索要礼物。不是主人的话无法实行。
+	PRINTW 没有陷落素质的话只会得到反感数值。
+ELSEIF RESULT == 205
+	IF !MALE(MASTER) && (TARGET < 0 || (TARGET >= 0 && TALENT:TARGET:男性))
+		PRINTL 【正常位】
+	ELSE
+		PRINTL 【逆正常位】
+	ENDIF
+	PRINTL 调教者仰面躺下，让奴隶插进阴道。
+	PRINTW 奴隶失去[童贞]，调教者失去[处女]。
+ELSEIF RESULT == 206
+	IF !MALE(MASTER) && (TARGET < 0 || (TARGET >= 0 && TALENT:TARGET:男性))
+		PRINTL 【后背位】
+	ELSE
+		PRINTL 【逆后背位】
+	ENDIF
+	PRINTL 调教者趴下，让奴隶从后面插入阴道。
+	PRINTW 奴隶失去[童贞]，调教者失去[处女]。
+ELSEIF RESULT == 207
+	PRINTL 【令其打屁股】
+	PRINTW 让奴隶打自己的屁股。
+ELSEIF RESULT == 208
+	PRINTL 【令其鞭打】
+	PRINTL 让奴隶用鞭子打自己。
+	PRINTW 奴隶不是嗜虐属性Lv3以上且是[施虐狂]的话无法实行。
+ELSEIF RESULT == 209
+	PRINTL 【强制口交】
+	PRINTW 调教者强行吞入奴隶的阴茎。
+ELSEIF RESULT == 210
+	PRINTL 【舔足】
+	PRINTL 调教者用舌头舔奴隶的脚。
+	PRINTW 侍奉・逆调教系指令关闭的时候无法选择。
+ELSEIF RESULT == 211
+	PRINTL 【逆强奸】
+	PRINTL 让奴隶用阴茎插入自己的阴道。
+	PRINTW 奴隶失去[童贞]，调教者失去[处女]。
+ELSEIF RESULT == 212
+	PRINTL 【逆肛门强奸】
+	PRINTL 让奴隶用阴茎插入自己的肛门。
+	PRINTW 奴隶失去[童贞]，调教者失去[后庭处子]。
+ELSEIF RESULT == 213
+	IF !MALE(MASTER) && (TARGET < 0 || (TARGET >= 0 && TALENT:TARGET:男性))
+		PRINTL 【正常位肛交】
+	ELSE
+		PRINTL 【逆正常位肛交】
+	ENDIF
+	PRINTL 调教者仰面躺下，让奴隶插进肛门。
+	PRINTW 奴隶失去[童贞]，调教者失去[后庭处子]。
+ELSEIF RESULT == 214
+	IF !MALE(MASTER) && (TARGET < 0 || (TARGET >= 0 && TALENT:TARGET:男性))
+		PRINTL 【后背位肛交】
+	ELSE
+		PRINTL 【逆后背位肛交】
+	ENDIF
+	PRINTL 调教者趴下，让奴隶从后面插入肛门。
+	PRINTW 奴隶失去[童贞]，调教者失去[后庭处子]。
+ELSEIF RESULT == 215
+	PRINTL 【让助手侵犯自己】
+	PRINTW 让助手插入自己，可以选择是插入阴道还是肛门。
+
+
+;=============================================================================
+;220番台,１１．助手命令指令
+;=============================================================================
+ELSEIF RESULT == 220
+	PRINTL 【阴蒂爱抚•助手命令】
+	PRINTL 命令助手爱抚奴隶的阴蒂。
+	PRINTW 再选择一次相同指令可以取消。
+ELSEIF RESULT == 221
+	PRINTL 【阴茎爱抚•助手命令】
+	PRINTL 命令助手爱抚奴隶的阴茎。
+	PRINTW 再选择一次相同指令可以取消。
+ELSEIF RESULT == 222
+	PRINTL 【胸爱抚•助手命令】
+	PRINTL 命令助手爱抚奴隶的胸部。
+	PRINTW 再选择一次相同指令可以取消。
+ELSEIF RESULT == 223
+	PRINTL 【玩弄小穴•助手命令】
+	PRINTL 命令助手玩弄奴隶的小穴。
+	PRINTW 再选择一次相同指令可以取消。
+ELSEIF RESULT == 224
+	PRINTL 【肛门爱抚•助手命令】
+	PRINTL 命令助手爱抚奴隶的肛门。
+	PRINTW 再选择一次相同指令可以取消。
+ELSEIF RESULT == 225
+	PRINTL 【插入•助手命令】
+	PRINTL 命令助手插入奴隶的阴道。
+	PRINTW 插入的状态下再选择一次相同指令可以抽出来。
+	PRINTW 助手失去[童贞]，奴隶失去[处女]。
+ELSEIF RESULT == 226
+	PRINTL 【肛插入•助手命令】
+	PRINTL 命令助手插入奴隶的肛门。
+	PRINTW 插入的状态下再选择一次相同指令可以抽出来。
+	PRINTW 助手失去[童贞]，奴隶失去[后庭处子]。
+
+
+;=============================================================================
+;300番台,１１．拡張触手指令
+;=============================================================================
+ELSEIF RESULT == 300
+	PRINTL 【触手玩弄乳腺】
+	PRINTL 极细的触手钻入奴隶的乳腺进行玩弄。
+	PRINTL 在此状态选择相同指令可以抽回。
+	PRINTL 初次实行时会增加异常经验。
+	PRINTW 没有进化之秘法无法实行。
+ELSEIF RESULT == 301
+	PRINTL 【触手玩弄Ｇ点】
+	PRINTL 触手潜入奴隶阴道深处玩弄Ｇ点。
+	PRINTL 没有进化之秘法无法实行。
+	PRINTW 奴隶大概会失去[处女]吧。
+ELSEIF RESULT == 302
+	PRINTL 【触手玩弄子宫】
+	PRINTL 触手潜入奴隶阴道深处玩弄子宫。
+	PRINTL 没有进化之秘法无法实行。
+	PRINTW 奴隶大概会失去[处女]吧。
+ELSEIF RESULT == 303
+	PRINTL 【触手玩弄前列腺】
+	PRINTL 触手潜入奴隶肛门深处玩弄前列腺。
+	PRINTW 没有进化之秘法无法实行。
+ELSEIF RESULT == 304
+	PRINTL 【触手阴道扩张】
+	PRINTL 用苦瓜一样大的触手插入搅拌奴隶的阴道。
+	PRINTW 没有进化之秘法无法实行。
+ELSEIF RESULT == 305
+	PRINTL 【触手肛门扩张】
+	PRINTL 用苦瓜一样大的触手插入搅拌奴隶的肛门。
+	PRINTW 没有进化之秘法无法实行。
+ELSEIF RESULT == 306
+	PRINTL 【触手两穴扩张】
+	PRINTL 用苦瓜一样大的触手插入搅拌奴隶的阴道和肛门。
+	PRINTW 没有进化之秘法无法实行。
+ELSEIF RESULT == 307
+	PRINTL 【触手产卵】
+	PRINTL 触手在奴隶的子宫里产卵。
+	PRINTL 已经在产卵的状态下选择相同指令会追加产卵。
+	PRINTL 没有进化之秘法无法实行。
+	PRINTW 奴隶大概会失去[处女]吧。
+ELSEIF RESULT == 308
+	PRINTL 【触手肛产卵】
+	PRINTL 触手在奴隶的直肠里产卵。
+	PRINTL 已经在产卵的状态下选择相同指令会追加产卵。
+	PRINTL 没有进化之秘法无法实行。
+	PRINTW 奴隶大概会失去[后庭处子]吧。
+;=============================================================================
+;320番台,拡張特殊指令
+;=============================================================================
+ELSEIF RESULT == 320
+	PRINTL 【叫人过来】
+	PRINTL 没有人的话就会聚集人过来，已经有人的话可以煽动群众的情绪（欲望）。
+	PRINTL 只有在野外PLAY中才能实行。
+	PRINTW 有时被喊过来的不一定是人类。
+ELSEIF RESULT == 321
+	PRINTL 【轮奸】
+	PRINTL 野外PLAY中让路人们轮奸奴隶。
+	PRINTL 群众的情绪（欲望）没有被煽动到最高值前无法实行。
+	PRINTL 奴隶会失去[处女]和[后庭处子]。根据场合可能也会失去[童贞]。
+	PRINTW 不能对恋慕系陷落的奴隶使用。
+;=============================================================================
+;330番台,補丁指令
+;=============================================================================
+ELSEIF RESULT == 330
+	PRINTL 【成为奴隶便器】
+	PRINTL 可以让奴隶尿在主人身上或直接尿在主人嘴巴里。
+	PRINTL 这么匪夷所思的命令，所以主人必定是个"受虐狂"才能想到。
+	PRINTL 不过，奴隶没有漏尿癖或者不想上厕所也不能勉强人家是吧？
+	PRINTW 哦…听说还有”利尿剂”这种东西的样子……
+;=============================================================================
+;500番台,派生指令
+;=============================================================================
+ELSEIF RESULT == 500
+	PRINTL 【３Ｐ】
+	PRINTL 调教者和助手分别插入奴隶的小穴和肛门。
+	PRINTL 谁进哪个洞要看具体情况。
+	PRINTL 没有助手的话无法实行。
+	PRINTW ※提示：要使用「换主人调教/换助手调教」指令，而不是助手命令系。
+ELSEIF RESULT == 501
+	PRINTL 【６９式】
+	PRINTW 调教者和奴隶互相舔舐对方的性器。
+ELSEIF RESULT == 502
+	PRINTL 【岩清水】
+	PRINTW 让奴隶坐到调教者脸上，调教者一边发出滋滋的声响一边舔舐奴隶的小穴。
+ELSEIF RESULT == 503
+	PRINTL 【Ｇ点刺激】
+	PRINTL 用手指刺激奴隶的Ｇ点。
+	PRINTW 所谓Ｇ点，就是最敏感的性感带的意思。
+ELSEIF RESULT == 504
+	PRINTL 【淫乱牡丹】
+	PRINTL 调教者坐下，把奴隶抱在怀里，双脚打开，
+	PRINTW 然后一边照着镜子一边抽插奴隶，欣赏结合部位的体位。
+	;PRINTL 满足条件的话会有[500]３Ｐおよび[506]插入Ｇスポット責め
+	;PRINTW および[507]插入子宫口玩弄的派生指令。
+ELSEIF RESULT == 505
+	PRINTL 【骑乘胸自慰】
+	PRINTL 调教者让奴隶以骑乘位的姿势坐下，
+	PRINTW 然后命令奴隶自己玩弄胸部，同时活动腰部的体位。
+ELSEIF RESULT == 506
+	PRINTL 【插入Ｇ点玩弄】
+	PRINTL 插入状态下不断顶弄奴隶阴道里的Ｇ点。
+	PRINTW 根据具体情况名称和效果多少也有不同。
+ELSEIF RESULT == 507
+	PRINTL 【插入子宫口玩弄】
+	PRINTL 插入状态下不断顶弄奴隶的子宫。
+	PRINTW 根据具体情况名称和效果多少也有不同。
+ELSEIF RESULT == 508
+	PRINTL 【６９乳交】
+	PRINTL 奴隶用胸部侍奉调教者阴茎的同时，
+	PRINTW 调教者也用舌头舔舐着奴隶的性器。
+ELSEIF RESULT == 509
+	PRINTL 【搾乳】
+	PRINTW 就是更加粗暴地挤弄勒紧奴隶的胸部。
+ELSEIF RESULT == 510
+	PRINTL 【双人素股】
+	PRINTL 让奴隶和助手用阴唇摩擦调教者的性器。
+	PRINTW 没有助手的话无法实行。（男奴隶的场合则是阴茎互蹭的派生）
+ELSEIF RESULT == 511
+	PRINTL 【双枪口交】
+	PRINTL 让奴隶同时用嘴侍奉调教者和助手的阴茎。
+	PRINTW 没有助手的话无法实行。
+ELSEIF RESULT == 512
+	PRINTL 【双龙插入】
+	PRINTW 调教者和助手同时插入奴隶的阴道。
+ELSEIF RESULT == 513
+	PRINTL 【双龙肛插入】
+	PRINTW 调教者和助手同时插入奴隶的肛门。
+ELSEIF RESULT == 514
+	PRINTL 【车站便当】
+	PRINTW 调教者抱起奴隶，边走边插的体位。
+ELSEIF RESULT == 515
+	PRINTL 【打屁股做爱】
+	PRINTW 在插入的状态下拍打奴隶的屁股。
+ELSEIF RESULT == 516
+	PRINTL 【打屁股肛交】
+	PRINTW 在肛门插入的状态下拍打奴隶的屁股。
+ELSEIF RESULT == 517
+	PRINTL 【窒息做爱】
+	PRINTW 在插入的状态下勒紧奴隶的脖子。
+ELSEIF RESULT == 518
+	PRINTL 【窒息肛交】
+	PRINTW 在肛门插入的状态下勒紧奴隶的脖子。
+ELSEIF RESULT == 590
+	PRINTL 【前列腺刺激】
+	PRINTW 用手指刺激奴隶的前列腺。
+ELSEIF RESULT == 591
+	PRINTL 【插入玩弄前列腺】
+	PRINTL 在插入的状态下刺激顶弄奴隶的前列腺。
+	PRINTW 调教者的技巧等级够高的话，会从正常位/后背位肛交派生。
+ELSEIF RESULT == 592
+	PRINTL 【骑乘阴茎自慰】
+	PRINTL 调教者让奴隶以骑乘位的姿势坐下，
+	PRINTW 然后命令奴隶自己玩弄阴茎，同时活动腰部的体位。
+ELSEIF RESULT == 593
+	PRINTL 【插入中阴茎爱抚】
+	PRINTW 在插入的状态下爱抚奴隶的阴茎。
+ELSEIF RESULT == 594
+	PRINTL 【插入中胸爱抚】
+	PRINTL 在插入的状态下爱抚奴隶的胸部。
+	PRINTW 有揉搓胸部、玩弄乳头、爱抚胸部三种模式。
+ELSEIF RESULT == 595
+	PRINTL 【三点齐攻】
+	PRINTL 肛＋胸＋阴茎的,三点齐攻。需要调教者有足够高的技巧。
+	PRINTW 本游戏中是男奴隶专用。
+;=============================================================================
+;800番台以降,USERCOM解説
+;=============================================================================
+ELSEIF RESULT == 800
+	PRINTL 【能力显示(奴隶)】
+	PRINTW 显示奴隶的能力和珠子。
+ELSEIF RESULT == 801
+	PRINTL 【污物显示】
+	PRINTW 显示主人、助手和奴隶各部位的污物。
+ELSEIF RESULT == 802
+	PRINTL 【着衣设定】
+	PRINTW 变更奴隶的着装。穿着衣服的情况下可实行的指令会有所变化。
+ELSEIF RESULT == 803
+	PRINTL 【能力显示(主人/助手)】
+	PRINTW 显示调教者的能力。
+ELSEIF RESULT == 804
+	PRINTL 【避孕套设定】
+	PRINTW 是否穿戴避孕套的相关设定。
+ELSEIF RESULT == 805
+	PRINTL 【自动射精设置】
+	PRINTL 选择射精时的部位，是否自动射精等。
+	PRINTW 需要在设定中事先开启该功能。
+ELSEIF RESULT == 807
+	PRINTL 【命令显示设置】
+	PRINTL 除派生指令以外的各个指令的开启/关闭。
+	PRINTW 还可以选择是否启用颜色区分的功能。
+ELSEIF RESULT == 900
+	PRINTL 【换助手调教/换主人调教】
+	PRINTL 交换调教者。
+	PRINTW 没有助手的话无法选择。
+ELSEIF RESULT == 990
+	PRINTL 【登入调教菜单】
+	PRINTL 定制调教套餐，一次可以登录十个。
+	PRINTL 决定好一套指令的内容后选择保存并返回，之后就可以实行菜单了。
+	PRINTW 可以有效地减轻操作量，请务必用一下看看。
+ELSEIF RESULT == 999
+	PRINTL 【调教结束】
+	PRINTW 本次调教结束。可能会发生调教后的随机事件。
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+GOTO TRAIN_HELP

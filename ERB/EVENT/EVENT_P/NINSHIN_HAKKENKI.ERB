@@ -1,0 +1,127 @@
+﻿@NINSHIN_HAKKENKI
+SETCOLOR 192, 192, 192
+;怀孕発見器用 TFLAG:112は中出しされた者の登录番号　TFLAG:113は中出しした者の登录番号
+PRINTL ------怀孕探测器------
+PRINTFORM 正在检测被
+IF P == 1
+	PRINTS CALLNAME:MASTER
+ELSEIF P == 2
+	PRINTS CALLNAME:ASSI
+ELSEIF P == 3
+	PRINTS CALLNAME:TARGET
+ELSE
+	PRINT 路人
+ENDIF
+PRINTFORML 中出后的%CALLNAME:T%的怀孕概率。
+;Omega發情期懷孕機率
+IF 發情期 && TALENT:T:164
+	PRINTFORML 因为%CALLNAME:T%处於Omega的发情期中
+	PRINTL →怀孕概率上升
+	GOTO Omega_RUT
+ENDIF
+;排卵剤の有無による定数设定
+;[禁断的知识]があるとき
+IF TALENT:T:禁断的知识
+	;恋慕陷落 奴隶→主人 or 主人→奴隶
+	IF (P == 1  && T == TARGET || P == 3 && T == MASTER) && KANRAKU(TARGET) == 1
+		IF CFLAG:T:109
+			PRINTFORM %CALLNAME:T%持有[禁断的知识]
+			IF T == TARGET
+				PRINTL ＆恋慕陷落＆排卵诱发剂使用
+			ELSE
+				PRINTFORML ＆排卵诱发剂使用＋%CALLNAME:TARGET%恋慕陷落
+			ENDIF
+			PRINTL →怀孕概率上升
+		ENDIF
+	;淫乱陷落済みかつ[母性]があり、ストレス２０以下
+	ELSEIF KANRAKU(T) == 2 && TALENT:T:母性 && CFLAG:T:10 <= 20
+		PRINTFORML %CALLNAME:T%持有[禁断的知识]＆淫乱陷落＆[母性]＆轻微的压力
+		PRINTL →怀孕概率上升
+	;服从陷落済みかつ排卵诱发剂使用
+	ELSEIF KANRAKU(T) == 3 && CFLAG:T:109
+		PRINTFORML %CALLNAME:T%持有[禁断的知识]＆服从陷落＆排卵诱发剂使用
+		PRINTL →怀孕概率上升
+	;排卵诱发剂使用
+	ELSEIF CFLAG:T:109
+		IF T == MASTER
+			PRINTFORML %CALLNAME:T%持有[禁断的知识]＆排卵诱发剂使用
+			PRINTL →怀孕概率上升
+		ELSEIF !TALENT:T:矮小体型 && !TALENT:T:人偶 && !TALENT:T:机器人 && !TALENT:T:僵尸 && !TALENT:T:幽灵 && !TALENT:T:无形体
+			PRINTL 怀孕概率无变动
+		ENDIF
+	;其他
+	ELSE
+		PRINTFORML %CALLNAME:T%持有[禁断的知识]→怀孕概率下降
+	ENDIF
+ELSE
+	IF CFLAG:T:109
+		PRINTFORML 排卵诱发剂使用→怀孕概率上升
+	ELSEIF !TALENT:T:矮小体型 && !TALENT:T:人偶 && !TALENT:T:机器人 && !TALENT:T:僵尸 && !TALENT:T:幽灵 && !TALENT:T:无形体
+		PRINTL 怀孕概率无变动
+	ENDIF
+ENDIF
+SIF TALENT:T:矮小体型 && !TALENT:T:人偶 && !TALENT:T:机器人 && !TALENT:T:僵尸 && !TALENT:T:幽灵 && !TALENT:T:无形体
+	PRINTFORML %CALLNAME:T%[矮小体型]→怀孕概率下降
+SIF TALENT:T:人偶 || TALENT:T:机器人 || TALENT:T:僵尸 || TALENT:T:幽灵 || TALENT:T:无形体
+	PRINTFORML %CALLNAME:T%[特殊种族]→无法怀孕
+
+$Omega_RUT
+;CFLAG:T:F　中出し量
+PRINTFORM 中出量:{CFLAG:T:F}(Lv
+IF CFLAG:T:F >= 1 && CFLAG:T:F < 5
+	PRINT 1
+ELSEIF CFLAG:T:F >= 5 && CFLAG:T:F < 15
+	PRINT 2
+ELSEIF CFLAG:T:F >= 15 && CFLAG:T:F < 25
+	PRINT 3
+ELSEIF CFLAG:T:F >= 25 && CFLAG:T:F < 50
+	PRINT 4
+ELSEIF CFLAG:T:F >= 50 && CFLAG:T:F < 100
+	PRINT 5
+ELSEIF CFLAG:T:F >= 100
+	PRINT MAX
+ELSE
+	PRINTL ？
+ENDIF
+PRINT )
+PRINT 　⇒怀孕概率：1/
+;Omega發情期懷孕機率
+IF 發情期 && TALENT:T:164
+	IF CFLAG:T:F >= 1 && CFLAG:T:F < 5
+		PRINTVL 5
+	ELSEIF CFLAG:T:F >= 5 && CFLAG:T:F < 15
+		PRINTVL 4
+	ELSEIF CFLAG:T:F >= 15 && CFLAG:T:F < 25
+		PRINTVL 3
+	ELSEIF CFLAG:T:F >= 25 && CFLAG:T:F < 50
+		PRINTVL 2
+	ELSEIF CFLAG:T:F >= 50 
+		PRINTVL 1
+	ENDIF
+ELSE
+	IF CFLAG:T:F >= 1 && CFLAG:T:F < 5
+		PRINTVL (12 + TALENT:T:矮小体型 * 2) * C
+	ELSEIF CFLAG:T:F >= 5 && CFLAG:T:F < 15
+		PRINTVL (10 + TALENT:T:矮小体型 * 2) * C
+	ELSEIF CFLAG:T:F >= 15 && CFLAG:T:F < 25
+		PRINTVL (8 + TALENT:T:矮小体型 * 2) * C
+	ELSEIF CFLAG:T:F >= 25 && CFLAG:T:F < 50
+		PRINTVL (6 + TALENT:T:矮小体型 * 2) * C
+	ELSEIF CFLAG:T:F >= 50 && CFLAG:T:F < 100
+		PRINTVL (4 + TALENT:T:矮小体型 * 2) * C
+	ELSEIF CFLAG:T:F >= 100
+		PRINTVL (2 + TALENT:T:矮小体型 * 2) * C
+	ELSEIF TALENT:T:人偶 || TALENT:T:机器人 || TALENT:T:僵尸 || TALENT:T:幽灵 || TALENT:T:无形体
+		PRINTL ∞
+	ELSE
+		PRINTL ？
+	ENDIF
+ENDIF	
+IF CFLAG:T:102 > 0
+	PRINTFORML ⇒%CALLNAME:T%　已怀孕
+	PRINTW ----------------------
+ELSE
+	PRINTFORML ⇒%CALLNAME:T%　未怀孕
+	PRINTW ----------------------
+ENDIF
+RESETCOLOR

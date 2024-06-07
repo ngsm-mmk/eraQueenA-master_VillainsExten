@@ -1,0 +1,398 @@
+﻿; 游戏标题
+@SYSTEM_TITLE
+LOADGLOBAL
+IF GLOBAL:0 == 2
+    CALL KAIGYO
+    PRINTW 嗯？说只爱我一个，是骗人的吗？
+    PRINTW 这么快就要食言，可不是我认识的那个神明大人哦。
+    PRINTW 来，再说一次，我只爱你吧。
+    PRINTL [0] 我只爱你一个
+    PRINTL [1] 骗你的
+    $INPUT_WHAT
+    INPUT
+    IF RESULT == 0
+        PRINTL 乖孩子…那就闭上眼睛，和我坠入梦乡吧……
+        QUIT
+    ELSEIF RESULT == 1
+        PRINTW 诚实的神明大人也非常可爱，虽然这个答案令人遗憾。
+        PRINTW 接下来就如您所愿……
+        GLOBAL:0 = 1
+        SAVEGLOBAL
+    ELSE
+        GOTO INPUT_WHAT
+    ENDIF
+ENDIF
+$PRINT_TITLE
+CALL KAIGYO
+HTML_PRINT "<p align='center'><img src='TITLE' width='3200' height='1100' ypos='-950'></p>"
+ALIGNMENT CENTER
+DRAWLINE
+PRINTFORML eraQueenA+ 人外拓展版
+;PRINTFORML ver.0.98
+SETCOLOR 187,255,255
+PRINTFORML （最新維護更新日:2021.11）
+RESETCOLOR
+PRINTFORML
+PRINTFORML ☆ 汉化、魔改：失格菌
+PRINTFORML ☆ 立绘、口上翻译协力：永恆中永恆
+PRINTFORML ☆ 人类口上补完：天轨·嘻乐年华（1号性格）、褀瑶（4号性格）
+PRINTFORML
+PRINTFORML · 该版本是以楼兰汉化版为基础的进一步魔改汉化 ·
+PRINTFORML · 本游戏仅作为汉化交流及代码练习使用，请于24小时内删除 ·
+PRINTFORML · 私自传播及运行本程序所产生的一切后果，请自行负责 ·
+PRINTFORML
+PRINTFORML ※ 本作品为调教SLG游戏erakanon的改造·二次发布。
+DRAWLINE
+PRINTL 
+PRINTFORML [0] 新的猎物
+PRINTFORML [1] 旧的奴隶
+PRINTL 
+PRINTL 
+INPUT
+
+IF RESULT == 0
+CLEARLINE LINECOUNT
+RESETDATA
+ADDCHARA 0
+BEGIN FIRST
+ELSEIF RESULT == 1
+CLEARLINE LINECOUNT
+ALIGNMENT LEFT
+CALL SYSTEM_LOADGAME
+;LOADGAME
+GOTO PRINT_TITLE
+IF RESULT == -1
+CLEARLINE LINECOUNT
+RESTART
+ENDIF
+ELSE
+CLEARLINE LINECOUNT
+RESTART
+ENDIF
+
+;「CALL EVENT_NEXTDAY_T」「CALL EVENTCHECK_M」を追加
+@EVENTFIRST
+
+LOADGLOBAL
+TARGET = -1
+ASSI = -1
+
+CALL CHARA_PRICE
+
+PBAND = 12
+
+FLAG:6 = 1
+FLAG:99 = 8
+;初期の着衣を全裸に设定
+FLAG:1 = 3
+;称号表示设定
+FLAG:2 |= 2
+FLAG:2 |= 4
+;汎用喘ぎをオン
+FLAG:10 = 1
+;爱心贴士
+FLAG:97 = 1
+
+
+;モード選択
+PRINTL ★★请选择模式★★
+PRINTL （EXTRA模式没有剧情，也不会有多周目系统）
+PRINTL [0]START （期限50日 目标金额$500,000）
+;PRINTL [8]FREE   (自由任务)
+;フリー使节はまだなので非表示に
+PRINTL [9]EXTRA （无期限 endless）
+
+
+
+
+
+
+$INPUT_LOOP
+INPUT
+IF RESULT == 0
+	FLAG:5 = 0
+	CALL START_CHARA_SELECT
+ELSEIF RESULT == 9
+	FLAG:5 = 9
+	CALL START_CHARA_SELECT
+;フリー使节に入らないようにした/フリー使节実装の際はここのコメントアウトを戻してください
+;ELSEIF RESULT == 8
+;	;追加使节
+;	FLAG:5 = 8
+;	CALL FREE_MISSION_START
+ELSE
+	GOTO INPUT_LOOP
+ENDIF
+
+
+
+;困难度選択
+PRINTL ★★请选择游戏困难程度★★
+PRINTL [0]EASY
+PRINTL [1]NORMAL
+PRINTL [2]HARD
+
+$INPUT_LOOP_2
+INPUT
+IF RESULT >= 0 && RESULT <= 2
+	FLAG:4 = RESULT+1
+ELSE
+	GOTO INPUT_LOOP_2
+ENDIF
+
+
+
+;オープニング表示
+$INPUT_LOOP_3
+IF FLAG:5 == 0
+	PRINTL 是否跳过开场剧情？
+	PRINTL [0] - 否
+	PRINTL [1] - 是
+	INPUT
+	IF RESULT == 0
+		CALL OPENING
+		DRAWLINE
+	ELSEIF RESULT == 1
+		DRAWLINE
+	ELSE
+		GOTO INPUT_LOOP_3
+	ENDIF
+ENDIF
+
+;チュートリアル表示
+$INPUT_LOOP_4
+PRINTL 是否阅读新手教程？
+PRINTL ※第一次玩ERA的新用户建议阅读哦
+PRINTL [0] - 看
+PRINTL [1] - 不看
+INPUT
+IF RESULT == 0
+	CALL TUTORIAL
+	DRAWLINE
+ELSEIF RESULT == 1
+	DRAWLINE
+ELSE
+	GOTO INPUT_LOOP_4
+ENDIF
+
+
+CSTR:MASTER:91 =
+CSTR:MASTER:92 = 主人公。
+CSTR:MASTER:93 =
+CSTR:MASTER:94 = 看起来很平凡，但拥有远比常人要高的欲望。
+CSTR:MASTER:95 = 迫于生计成为了调教师。
+CSTR:MASTER:96 =
+
+
+
+DAY = 1
+MONEY = 3000
+SIF FLAG:5 == 9
+	MONEY += 7000
+
+BEGIN SHOP
+
+
+@EVENTCOM
+;调教指令選択するたびに、初期化するフラグ
+#PRI
+REPEAT 30
+	TFLAG:COUNT = 0
+REND
+TFLAG:30 = 0
+TFLAG:33 = 0
+TFLAG:56 = -1
+TFLAG:100 = 0
+TFLAG:160 = 0
+TFLAG:161 = 0
+TFLAG:162 = 0
+TFLAG:163 = 0
+TFLAG:164 = 0
+TFLAG:165 = 0
+
+@EVENTCOMEND
+#PRI
+IF BASE:0 <= 0
+	PRINTFORMW ………………
+	PRINTFORMW …………
+	PRINTFORMW ……
+	PRINTFORMW （激烈的调教后，%CALLNAME:TARGET%昏厥过去了　调教结束）
+	;顺从ダウン
+	IF ABL:0 > 0
+		ABL:0 -= 1
+		PRINTFORML %CALLNAME:TARGET%的顺从下降了1点
+	ENDIF
+	;体力回復停止フラグ
+	CFLAG:6 += 2
+	SIF TALENT:147
+		CFLAG:6 -= 1
+	CFLAG:10 += 10
+	BASE:0 = 1
+	逆推渴望 = 0
+	BEGIN AFTERTRAIN
+ELSEIF BASE:0 < 500
+	PRINTW （体力到达极限　调教结束）
+	逆推渴望 = 0
+	BEGIN AFTERTRAIN
+ENDIF
+
+;嫉妒が解除されるかどうか 14回の内にこの奴隶を调教した回数が多ければ多いほど解除する。病娇になったら解除できない
+;体力は消耗しなければならない（ちゃんと调教している）　ほかの男助手が居ても駄目
+IF TALENT:嫉妒 && !TALENT:病娇 && NO:TARGET == PREVCOM:801 && (MAXBASE:0 - BASE:0 >= 200) && (ASSI < 0  || (ASSI > 0 && CFLAG:ASSI:1 == 3))
+	LOCAL = 0
+	FOR COUNT, 0,14
+		SIF PREVCOM:(COUNT +801) == NO:TARGET
+			LOCAL += 1
+	NEXT
+	SIF LOCAL > 7
+		LOCAL = 7
+	IF RAND:9 < LOCAL
+		PRINTL 
+		PRINTL 
+		PRINTFORMW %NAME%的【嫉妒】状态解除！
+		PRINTL 
+		PRINTL 
+		TALENT:嫉妒 = 0
+	ENDIF
+ENDIF
+
+;逆推可能计算
+SIF (TALENT:3 || TALENT:4 || TALENT:5 || TALENT:6 || TALENT:7 || TALENT:8) && !(TALENT:9 || TALENT:162)
+CALL 逆推PALY
+
+@EVENTTURNEND
+#PRI
+;夜イベント呼び出し
+IF TIME == 1
+	CALL EVENT_NIGHT_SELF
+	CALL EVENT_NIGHT_AFTER
+ENDIF
+REPEAT CHARANUM
+	;气力の回復
+	BASE:COUNT:1 = MAXBASE:COUNT:1
+
+	;労役中のキャラは体力回復処理无
+	SIF CFLAG:COUNT:12 > 0
+		CONTINUE
+
+	;体力回復停止処理
+	IF CFLAG:COUNT:6 > 0
+		CFLAG:COUNT:6 -= 1
+		CONTINUE
+	ENDIF
+
+	;体力の回復（午後の调教後は夜の休みが入るので回復大きい）
+	IF TIME == 0
+		A = MAXBASE:COUNT:0 / 15
+	ELSE
+		A = MAXBASE:COUNT:0 / 5
+	ENDIF
+
+	;恢复快、恢复慢、蓬莱人
+	IF TALENT:COUNT:130
+		TIMES A , 1.50
+	ELSEIF TALENT:COUNT:131
+		TIMES A , 0.75
+	ELSEIF TALENT:COUNT:147
+		TIMES A , 1.80
+	ENDIF
+
+	;日光浴、月光浴、吸血鬼
+	IF TIME == 0
+		SIF TALENT:COUNT:133
+			A += 100
+	ELSE
+		SIF TALENT:COUNT:132
+			TIMES A , 1.50
+		SIF TALENT:COUNT:134
+			A += 100
+	ENDIF
+
+	;治疗
+	IF ASSI >= 0
+		SIF TALENT:ASSI:135
+		A += 150
+	ENDIF
+
+	;休憩フラグ（休憩フラグが経っている、もしくは调教对象でない）
+	IF FLAG:0 || TARGET != COUNT
+		A += 100
+		CFLAG:COUNT:10 -= 1
+	ENDIF
+
+	;ショップで休憩を選択時
+	IF FLAG:0 == 2
+		TIMES A , 2.00
+		CFLAG:COUNT:10 -= 1
+	ENDIF
+
+	BASE:COUNT:0 += A
+	SIF BASE:COUNT:0 > MAXBASE:COUNT:0
+		BASE:COUNT:0 = MAXBASE:COUNT:0
+
+	;ストレス値が0未満の場合は0にする
+	SIF CFLAG:COUNT:10 < 0
+		CFLAG:COUNT:10 = 0
+	
+
+REND
+CALL EVENTCHECK_ABL
+
+
+
+FLAG:0 = 0
+;2 称号機能あり かつ、 4 称号機能オンのとき
+;オプションONの場合は、称号取得処理を行う
+IF (FLAG:2 & 6) == 6 && CHARANUM > 1 && TARGET > 0
+	CALL CHARA_TITLE
+ENDIF
+
+;午後なら次の日、午前なら午後にする
+IF TIME == 1
+	FLAG:81 += 1
+	FLAG:82 += 1
+
+	;日付变更時のイベント呼び出し
+	CALL EVENT_NEXTDAY
+
+	DAY = DAY+1
+	PRINTW 一天结束了……
+	TIME = 0
+	;バッドエンドの判定
+	SIF DAY > 50 && FLAG:5 == 0
+		CALL BADENDING_1
+	SIF MONEY < 0
+		CALL BADENDING_2
+	;今の奴隶(调教对象)を記録する
+	TFLAG:403 = TARGET
+
+	;朝になった時のイベント呼び出し
+	CALL EVENT_NEWDAY
+	CALL EVENT_NEWDAY_SELF
+
+	;调教对象を戻す
+	SIF TFLAG:403 > 0 && TFLAG:403 < CHARANUM && TARGET > 0 && TARGET < CHARANUM
+		TARGET = TFLAG:403
+ELSE
+	;全体の怀孕判定の処理
+	CALL IN_VAGINA_ALL
+	TIME = 1
+ENDIF
+
+;發情期判定
+IF (FLAG:81)%15 == 0
+	發情期 = 1
+ELSE
+	發情期 = 0
+ENDIF
+
+REPEAT CHARANUM
+	;全員の女装してる回数を計算
+	SIF (TALENT:COUNT:137 || TALENT:COUNT:140) && (CFLAG:COUNT:124 == 4 || CFLAG:COUNT:124 == 6 || CFLAG:COUNT:125 == 1 || CFLAG:COUNT:125 == 4 || CFLAG:COUNT:125 == 6 || CFLAG:COUNT:126 == 1 || CFLAG:COUNT:126 == 2 || CFLAG:COUNT:127 == 1 || CFLAG:COUNT:127 == 6 || CFLAG:COUNT:129 == 2 || CFLAG:COUNT:129 == 3 || CFLAG:COUNT:129 == 4 || CFLAG:COUNT:129 == 6 || CFLAG:COUNT:129 == 9 || CFLAG:COUNT:129 == 10 || CFLAG:COUNT:132 == 9)
+		CFLAG:COUNT:113 += 1
+REND
+
+BEGIN SHOP
+
+
+

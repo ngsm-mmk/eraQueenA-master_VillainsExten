@@ -1,0 +1,502 @@
+﻿;-------------------------------------------------
+;野外PLAY
+;特殊な指令
+;-------------------------------------------------
+@COM184
+PRINTL 野外PLAY
+STR:0 = 野外PLAY
+
+
+;着脱の処理　終了時はソース、经验の加算は行わない
+IF TEQUIP:29 == 1
+	CALL KOJO_MESSAGE_COM
+	TEQUIP:29 = 0
+	TFLAG:151 = 0
+	TFLAG:500 = 0
+	RETURN 1
+ELSE
+	CALL KOJO_MESSAGE_COM
+ENDIF
+
+
+;-------------------------------------------------
+;ソース追加処理
+;-------------------------------------------------
+;消費体力、气力
+LOSEBASE:0 += 0
+LOSEBASE:1 += 150
+
+SOURCE:8 = 800
+SOURCE:13 = 1300
+SOURCE:17 = 300
+SOURCE:18 = 600
+
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 600
+
+;痛苦を伴わない受虐属性及び受虐狂の処理は先にしておく
+;受虐属性を見る
+IF ABL:9 == 0
+	TIMES SOURCE:13 , 0.80
+	SOURCE:10 += 0
+	SOURCE:11 += 0
+ELSEIF ABL:9 == 1
+	TIMES SOURCE:13 , 1.00
+	SOURCE:10 += 20
+	SOURCE:11 += 30
+ELSEIF ABL:9 == 2
+	TIMES SOURCE:13 , 1.20
+	SOURCE:10 += 40
+	SOURCE:11 += 70
+ELSEIF ABL:9 == 3
+	TIMES SOURCE:13 , 1.40
+	SOURCE:10 += 70
+	SOURCE:11 += 120
+ELSEIF ABL:9 == 4
+	TIMES SOURCE:13 , 1.50
+	SOURCE:10 += 110
+	SOURCE:11 += 180
+ELSEIF ABL:9 == 5
+	TIMES SOURCE:13 , 1.70
+	SOURCE:10 += 150
+	SOURCE:11 += 250
+ELSEIF ABL:9 == 6
+	TIMES SOURCE:13 , 1.90
+	SOURCE:10 += 200
+	SOURCE:11 += 300
+ELSEIF ABL:9 == 7
+	TIMES SOURCE:13 , 2.10
+	SOURCE:10 += 250
+	SOURCE:11 += 350
+ELSEIF ABL:9 == 8
+	TIMES SOURCE:13 , 2.30
+	SOURCE:10 += 300
+	SOURCE:11 += 400
+ELSEIF ABL:9 == 9
+	TIMES SOURCE:13 , 2.50
+	SOURCE:10 += 350
+	SOURCE:11 += 450
+ELSEIF ABL:9 >= 10
+	TIMES SOURCE:13 , 3.00
+	SOURCE:10 += 500
+	SOURCE:11 += 500
+ENDIF
+
+;依赖度ベクトル
+TFLAG:33 = 3
+
+;CALL KOJO_MESSAGE_COM
+
+TEQUIP:29 = 1
+
+RETURN 1
+
+
+;-------------------------------------------------
+;装着継続の処理
+;-------------------------------------------------
+@EQUIP_COM184
+;野外PLAY
+PRINTL ＜野外PLAY中＞
+;SIF TEQUIP:29 == 1
+;	CALL OUTDOOR_SITUATION_CHANGE
+LOSEBASE:0 += 50
+LOSEBASE:1 += 50
+
+SOURCE:8 += 1000
+SOURCE:17 += 1000
+SOURCE:18 += 1000
+
+
+;-------------------------------------------------
+;特殊ソース処理
+;-------------------------------------------------
+;性压抑、抵抗持ちには、抑郁ソース追加
+SIF TALENT:32 || TALENT:34
+	SOURCE:16 += 700
+
+;痛苦を伴わない受虐属性及び受虐狂の処理は先にしておく
+;受虐属性を見る
+A = 2000
+IF ABL:9 == 0
+	TIMES A , 0.80
+	SOURCE:10 += 0
+	SOURCE:11 += 0
+ELSEIF ABL:9 == 1
+	TIMES A , 1.00
+	SOURCE:10 += 20
+	SOURCE:11 += 30
+ELSEIF ABL:9 == 2
+	TIMES A , 1.20
+	SOURCE:10 += 40
+	SOURCE:11 += 70
+ELSEIF ABL:9 == 3
+	TIMES A , 1.40
+	SOURCE:10 += 70
+	SOURCE:11 += 120
+ELSEIF ABL:9 == 4
+	TIMES A , 1.50
+	SOURCE:10 += 110
+	SOURCE:11 += 180
+ELSEIF ABL:9 == 5
+	TIMES A , 1.70
+	SOURCE:10 += 150
+	SOURCE:11 += 250
+ELSEIF ABL:9 == 6
+	TIMES A , 1.90
+	SOURCE:10 += 200
+	SOURCE:11 += 300
+ELSEIF ABL:9 == 7
+	TIMES A , 2.10
+	SOURCE:10 += 250
+	SOURCE:11 += 350
+ELSEIF ABL:9 == 8
+	TIMES A , 2.30
+	SOURCE:10 += 300
+	SOURCE:11 += 400
+ELSEIF ABL:9 == 9
+	TIMES A , 2.50
+	SOURCE:10 += 350
+	SOURCE:11 += 450
+ELSEIF ABL:9 >= 10
+	TIMES A , 3.00
+	SOURCE:10 += 500
+	SOURCE:11 += 500
+ENDIF
+SOURCE:13 += A
+
+;依赖度ベクトルを強制的に变更
+SIF TFLAG:33 == 1 || TFLAG:33 == 2
+	TFLAG:33 = 3
+
+;依赖度補正値(服从で1、隶属で2　強制变更なので重置）
+IF TALENT:5 && ASSIPLAY == 0
+	TFLAG:30 = 1
+ELSEIF TALENT:8 && ASSIPLAY == 0
+	TFLAG:30 = 2
+ENDIF
+
+
+RETURN 1
+
+;-------------------------------------------------
+;野外イベント
+;eratohoYMより移植
+;-------------------------------------------------
+@OUTDOOR_SITUATION_CHANGE
+;野外调教、集団視姦モード
+IF TFLAG:151 >= 4
+	PRINTFORM 聚集而来的%OUTDOOR_GALLERY_NAME()%
+	A = RAND:8
+	;演出费リーが狗のとき、3以上は其他に回す
+	SIF TFLAG:500 == 4 && A > 2
+		A = -1
+	;演出费リーが照相机小僧だと摄影会＆実況開始
+	IF TFLAG:500 == 5
+		PRINTFORML 们举起照相机拍摄%CALLNAME:TARGET%的痴态
+		PRINTFORMW 逐一实况转播现场情况…
+	ELSEIF A == 0
+		PRINTFORMW 们像是要把%CALLNAME:TARGET%拆吃入腹般紧紧地盯着后者的痴态
+	ELSEIF A == 1
+		PRINTFORMW 们一边凝视着%CALLNAME:TARGET%的痴态一边\@ TFLAG:500 == 4 ? 下流地摇动着腰部 # 处理着自己胯间的玩意儿 \@
+	ELSEIF A == 2
+		PRINTFORMW 们像是很羡慕似的望着%PLAYER_NAME()%这边。
+	ELSEIF A == 3
+		PRINTFORMW 们双手捂脸，从手指间的缝隙偷偷观察着%PLAYER_NAME()%这边。
+	ELSEIF A == 4
+		PRINTFORMW 们对%CALLNAME:TARGET%指指点点，吐露着无心之言。
+	ELSEIF A == 5
+		PRINTFORML 指着这边，
+		PRINTFORMW 像是要煽动%CALLNAME:TARGET%的羞耻心一样交头接耳。
+	ELSEIF A == 6 && (TFLAG:500 == 1 || TFLAG:500 == 5 || TFLAG:500 == 7)
+		PRINTFORMW 们不停地用手机拍摄%CALLNAME:TARGET%的痴态。
+	ELSE
+		PRINTFORMW 们用热切的目光视奸着%CALLNAME:TARGET%的身体…
+	ENDIF
+	PRINTFORM %CALLNAME:TARGET%
+	IF ABL:露出癖 >= 4
+		A = RAND:3
+		IF PALAM:6 >= PALAMLV:8
+			PRINTFORMW 沉浸在强烈快感中，好像还没有察觉到外界的情况。
+		ELSEIF A == 0
+			PRINTFORMW 好像很高兴看到%OUTDOOR_GALLERY_NAME()%们似的，举起手挥舞回应着。
+		ELSEIF A == 1
+			PRINTFORMW 露出害羞的神情，周围的%OUTDOOR_GALLERY_NAME()%反响更加强烈了。
+		ELSEIF A == 2
+			PRINTFORMW 或许是被第三者看见后有了感觉，脸变得更红了。
+		ENDIF
+	ELSE
+		PRINTFORMW 拼命压抑自己的羞耻心。
+	ENDIF
+	;指令が「人を呼ぶ」でないとき、随机で集団視姦モード終了
+	IF SELECTCOM != 320 && !RAND:5
+		PRINTL 
+		PRINTFORMW 过了一会儿，不知是满足了还是厌倦了，%OUTDOOR_GALLERY_NAME()%们各自散去了。
+		;状況と演出费リーを重置
+		TFLAG:151 = 0
+		TFLAG:500 = 0
+	;輪姦可能
+	ELSEIF TFLAG:151 >= 5
+		PRINTL 
+		PRINTFORMW 兴奋起来的%OUTDOOR_GALLERY_NAME()%们扑上来袭击了%CALLNAME%…
+	ENDIF
+	;輪姦可能に（指令が「人を呼ぶ」でなく状況が重置されていないとき、随机）
+	SIF SELECTCOM == 320 || !RAND:3
+		TFLAG:151 += 1
+;野外调教、見つかるかどうかどきどきするモード
+ELSE
+	A = RAND:11
+	;状況悪化（指令が「人を呼ぶ」なら必ず悪化する）
+	IF A <= ABL:8 || SELECTCOM == 320
+	;集団視姦モードへ
+		IF TFLAG:151 == 3
+			IF TFLAG:500 == 4
+				PRINTL 看来周围的狗狗们也对此感兴趣了。
+			ELSEIF TFLAG:150 == 6
+				PRINTL 看起来周围的黑手党们也快要按捺不住了。
+			ELSEIF TFLAG:150 == 8
+				PRINTL 人以外的什么东西渐渐聚拢过来了…
+			ELSE
+				PRINTFORMW 发现了%CALLNAME:TARGET%的%OUTDOOR_GALLERY_NAME()%们聚集过来了。
+			ENDIF
+			PRINTFORML 聚集而来的%OUTDOOR_GALLERY_NAME()%们好像十分兴奋，
+			PRINTFORMW 用一副要把%CALLNAME:TARGET%拆吃入腹般的眼神舔舐着后者的身体。
+			PRINTFORM %CALLNAME:TARGET%
+			IF ABL:露出癖 >= 6
+				PRINTW 恍惚而享受地痴笑着。
+			ELSEIF ABL:露出癖 >= 4
+				PRINTW 隐隐流露出期待的神色。
+			ELSE
+				PRINTW 眼看就要哭出来了。
+			ENDIF
+			TFLAG:151 = 4
+		ELSEIF TFLAG:151 == 2
+			IF TFLAG:500 == 4
+				PRINT 如果注意到的话，周围的狗狗们明显已经看见
+			ELSEIF TFLAG:500 == 6
+				PRINT 如果注意到的话，附近的黑手党们明显已经看见
+			ELSEIF TFLAG:500 == 8
+				PRINT 如果注意到的话，周围那些非人之物明显已经看见
+			ELSE
+				PRINT 突然意识到好像有谁看见
+			ENDIF
+			PRINTFORM %CALLNAME:TARGET%的样子了。
+			PRINTL 
+			PRINTFORM %CALLNAME:TARGET%
+			IF ABL:露出癖 >= 6
+				PRINTW 媚态横生地投过去勾人的目光。
+			ELSEIF ABL:露出癖 >= 4
+				PRINTFORMW 稍加思索，向那边投过去满怀期待的目光。
+			ELSE
+				PRINTFORMW 不由低着头移开了视线。
+			ENDIF
+			TFLAG:151 = 3
+		ELSE
+			PRINTFORML 感觉到%OUTDOOR_GALLERY_NAME()%的气息，%PLAYER_NAME()%停止前进。
+			IF TFLAG:500 == 0
+				PRINT 附近似乎传来了谁的脚步声。
+			;通行人
+			ELSEIF TFLAG:500 == 1
+				PRINT 附近传来热闹的人声。
+			;カップル
+			ELSEIF TFLAG:500 == 2
+				PRINT 附近传来情侣间低声的甜言蜜语。
+			;子供達
+			ELSEIF TFLAG:500 == 3
+				PRINT 附近传来孩子们的欢声笑语与轻快的脚步声。
+			;狗
+			ELSEIF TFLAG:500 == 4
+				PRINT 感觉周围的狗好像在看着这边。
+			;照相机小僧
+			ELSEIF TFLAG:500 == 5
+				PRINT 附近传来吵闹的人声和脚步声。
+			;マフィア
+			ELSEIF TFLAG:500 == 6
+				PRINT 虽然感觉到了什么人的杀气，但那种刺痛感很快就消失了。
+			;浮浪者
+			ELSEIF TFLAG:500 == 7
+				PRINT 附近传来醉汉的骂声跟骚乱声。
+			;人外の気配
+			ELSEIF TFLAG:500 == 8
+				PRINTL 有异样的感觉……
+				PRINT 周围明明一个人都没有，却好像被很多人注视着一样……
+			ENDIF
+			PRINTL 
+			PRINTFORM %CALLNAME:TARGET%
+			IF ABL:露出癖 >= 6
+				PRINTFORMW 故意\@ TALENT:缺乏感情 || TALENT:无动于衷 || TALENT:胆怯 ? 发出声音 # 提高了声音 \@，似乎想要引起%OUTDOOR_GALLERY_NAME()%们的兴趣。
+			ELSEIF ABL:露出癖 >= 4
+				PRINTW 的双眼因期待和害羞湿润起来。
+			ELSE
+				PRINTW 因过度恐惧跟羞耻，身体变得僵硬。
+			ENDIF
+			TFLAG:151 = 2
+		ENDIF
+	;発見者、逃亡
+	ELSEIF A >= ABL:8 && TFLAG:151 == 3
+		IF TFLAG:500 == 4
+			PRINTFORML 周围的狗注意到了%PLAYER_NAME()%的视线
+			PRINTFORML 随即像是没什么兴趣般离开了，不知去向。
+		ELSEIF TFLAG:500 == 6 || TFLAG:500 == 8
+			PRINTFORML %OUTDOOR_GALLERY_NAME()%们注意到了%PLAYER_NAME()%的视线
+			PRINTFORMW 然后就不知到哪里去了
+		ELSE
+			PRINTFORML 不知是谁发现了%CALLNAME:TARGET%们的身姿和行为
+			PRINTFORMW 尖叫着逃跑了。
+		ENDIF
+		TFLAG:151 = 1
+	;状況、回復
+	ELSEIF A >= 7 && TFLAG:151 == 2
+		IF TFLAG:500 == 4 || TFLAG:500 == 6 || TFLAG:500 == 8
+			IF TFLAG:500 == 4
+				PRINTFORML 过了一会儿，狗狗们又回来了。
+				PRINTFORMW 是心理作用吗，数量好像增加了……？
+			ELSE
+				PRINTFORML 过了一会儿，%OUTDOOR_GALLERY_NAME()%又们回来了。
+				PRINTFORMW 是心理作用吗，人数好像增加了……？
+			ENDIF
+		ELSE
+			PRINTFORML 过了一会儿，周围恢复了寂静。
+			PRINTFORM %CALLNAME:TARGET%
+			IF ABL:露出癖 >= 6
+				PRINTW 的期待落空了，似乎很是失望。
+			ELSEIF ABL:露出癖 >= 4
+				PRINTW 虽然有点遗憾，但还是继续沉浸在调教中。
+			ELSE
+				PRINTW 稍微平静了一些，但还没完全放下心来。
+			ENDIF
+			TFLAG:151 = 1
+		ENDIF
+	;現状維持
+	ELSE
+		IF TFLAG:151 == 2
+			PRINTFORM 老样子，
+			IF TFLAG:500 == 0
+				PRINT 附近似乎传来了谁的脚步声。
+			;通行人
+			ELSEIF TFLAG:500 == 1
+				PRINT 附近传来热闹的人声。
+			;カップル
+			ELSEIF TFLAG:500 == 2
+				PRINT 附近传来情侣间低声的甜言蜜语。
+			;子供達
+			ELSEIF TFLAG:500 == 3
+				PRINT 附近传来孩子们的欢声笑语与轻快的脚步声。
+			;狗
+			ELSEIF TFLAG:500 == 4
+				PRINT 感觉周围的狗好像在看着这边。
+			;照相机小僧
+			ELSEIF TFLAG:500 == 5
+				PRINT 附近传来吵闹的人声和脚步声。
+			;マフィア
+			ELSEIF TFLAG:500 == 6
+				PRINT 附近传来了雪茄的香味，以及窸窸窣窣的密谈声。
+			;浮浪者
+			ELSEIF TFLAG:500 == 7
+				PRINT 附近传来醉汉的骂声跟骚乱声。
+			;人外の気配
+			ELSEIF TFLAG:500 == 8
+				PRINTL 有异样的感觉……
+				PRINT 周围明明一个人都没有，却好像被很多人注视着一样……
+			ENDIF
+			PRINTL 
+			PRINTFORM %CALLNAME%
+			IF ABL:露出癖 >= 6
+				IF PENIS(TARGET)
+					;射精槽8000以上
+					IF BASE:2 >= 8000
+						PRINT 的肉棒早就一柱擎天了，
+					;射精槽2000以上8000未満
+					ELSEIF BASE >= 2000
+						PRINT 的肉棒变得硬邦邦的了，
+					;射精槽2000未満
+					ELSE
+						PRINT 的阴茎稍微有些抬头了，
+					ENDIF
+					PRINTL 警觉地注意着周围的动静。
+				ELSE
+					IF PALAM:润滑 >= PALAMLV:4
+						PRINTL 已经完全兴奋了，两腿之间正流淌着亮晶晶的淫液。
+					ELSEIF PALAM:润滑 >= PALAMLV:2
+						PRINTL 的女阴已经湿漉漉的了。
+					ELSE
+						PRINTL 因期待和害羞的心情双目湿润。
+					ENDIF
+				ENDIF
+			ELSEIF ABL:露出癖 >= 4
+				PRINTW 因期待和害羞的心情双目湿润。
+			ELSE
+				PRINTW 的脸羞得通红。
+			ENDIF
+		ELSE
+			;PRINTFORM 老样子，
+			IF TFLAG:500 == 4
+				PRINT 周围的狗狗们无动于衷。
+			ELSEIF TFLAG:150 == 6
+				PRINT 附近的黑手党们对此视而不见。
+			ELSEIF TFLAG:150 == 8
+				PRINT 感觉不到周围有非人生物的气息。
+			ELSE
+				PRINT 周围没有其他人存在的迹象。
+			ENDIF
+			PRINTL 
+			PRINTFORM %CALLNAME:TARGET%
+			IF ABL:露出癖 >= 4
+				PRINTFORMW 有点无聊。
+			ELSE
+				PRINTFORMW 在意着不知什么时候就会有人经过的现状，浑身不适。
+			ENDIF
+			TFLAG:151 = 1
+		ENDIF
+	ENDIF
+ENDIF
+RETURN 0
+
+
+@OUTDOOR_GALLERY_NAME(ARG)
+#FUNCTIONS
+;时间×随机で演出费リー決定
+;一度決定した後はTFLAG:500で管理
+;昼間は普通の人多め
+IF TIME == 0
+	K:1 = RAND:5
+	IF (K:1 == 0 && TFLAG:500 == 0) || TFLAG:500 == 1
+	;お前どこで调教してるんだってツッコミは无で
+		LOCALS = 行人
+		TFLAG:500 = 1
+	ELSEIF (K:1 == 1 && TFLAG:500 == 0) || TFLAG:500 == 2
+		LOCALS = 情侣
+		TFLAG:500 = 2
+	ELSEIF (K:1 == 2 && TFLAG:500 == 0) || TFLAG:500 == 3
+		LOCALS = 孩子
+		TFLAG:500 = 3
+	ELSEIF (K:1 == 3 && TFLAG:500 == 0) || TFLAG:500 == 4
+		LOCALS = 狗狗
+		TFLAG:500 = 4
+	ELSEIF (K:1 == 4 && TFLAG:500 == 0) || TFLAG:500 == 5
+		LOCALS = 摄影学徒
+		TFLAG:500 = 5
+	ENDIF
+ELSE
+	;夜間は怪しい人（？）がよく出る
+	K:2 = RAND:3
+	IF (K:2 == 0 && TFLAG:500 == 0) || TFLAG:500 == 6
+		LOCALS = 黑手党
+		TFLAG:500 = 6
+	ELSEIF (K:2 == 1 && TFLAG:500 == 0) || TFLAG:500 == 7
+		LOCALS = 流浪者
+		TFLAG:500 = 7
+	ELSEIF (K:2 == 2 && TFLAG:500 == 0) || TFLAG:500 == 8
+	;多分妖精さんとか妖怪とかだと思う
+		LOCALS = 非人之物
+		TFLAG:500 = 8
+	ENDIF
+ENDIF
+RETURNF LOCALS
+
+
